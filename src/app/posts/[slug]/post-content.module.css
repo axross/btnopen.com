@@ -1,0 +1,310 @@
+@layer components {
+	@scope (.postContent) {
+		:where(:scope) {
+			container: post-content / inline-size;
+
+			--paragraph-block-margin: var(--size-16);
+			--chunk-block-margin: calc(var(--paragraph-block-margin) * 1.5);
+			--variant: "mobile";
+
+			@container (width > 50rem) {
+				--block-margin: var(--size-24);
+				--variant: "desktop";
+			}
+
+			&
+				> :is(
+					.h1,
+					.h2,
+					.h3,
+					.h4,
+					.h5,
+					.h6,
+					.p,
+					.pre,
+					.blockquote,
+					.ol,
+					.ul,
+					.img
+				):first-child {
+				margin-block-start: unset;
+			}
+
+			&
+				> :is(
+					.h1,
+					.h2,
+					.h3,
+					.h4,
+					.h5,
+					.h6,
+					.p,
+					.pre,
+					.blockquote,
+					.ol,
+					.ul,
+					.img
+				):last-child {
+				margin-block-end: unset;
+			}
+		}
+
+		.h1 {
+			margin-block-start: calc(var(--paragraph-block-margin) * 2.5);
+			margin-block-end: calc(var(--paragraph-block-margin) * 1.5);
+			color: var(--neutral-12);
+			font-size: var(--text-4xl);
+			font-weight: 700;
+		}
+
+		.h2 {
+			margin-block-start: calc(var(--paragraph-block-margin) * 2.25);
+			margin-block-end: calc(var(--paragraph-block-margin) * 1.25);
+			color: var(--neutral-12);
+			font-size: var(--text-3xl);
+			font-weight: 600;
+		}
+
+		.h3 {
+			margin-block-start: calc(var(--paragraph-block-margin) * 2);
+			margin-block-end: calc(var(--paragraph-block-margin) * 0.75);
+			color: var(--neutral-12);
+			font-size: var(--text-2xl);
+			font-weight: 600;
+		}
+
+		.h4 {
+			margin-block-start: calc(var(--paragraph-block-margin) * 1.5);
+			margin-block-end: calc(var(--paragraph-block-margin) * 0.75);
+			color: var(--neutral-12);
+			font-size: var(--text-xl);
+			font-weight: 600;
+		}
+
+		.h4 {
+			margin-block-start: calc(var(--paragraph-block-margin) * 1.5);
+			margin-block-end: calc(var(--paragraph-block-margin) * 0.75);
+			color: var(--neutral-12);
+			font-size: var(--text-xl);
+			font-weight: 600;
+		}
+
+		.h5 {
+			margin-block-start: calc(var(--paragraph-block-margin) * 1.25);
+			margin-block-end: calc(var(--paragraph-block-margin) * 0.5);
+			color: var(--neutral-12);
+			font-size: var(--text-lg);
+			font-weight: 600;
+		}
+
+		.blockquote {
+			margin-block: calc(var(--paragraph-block-margin) * 1.5);
+			padding-block: calc(var(--paragraph-block-margin) * 0.5);
+			padding-inline: var(--size-16);
+			border-left: var(--size-4) var(--accent-7) solid;
+			font-weight: 500;
+			font-style: italic;
+		}
+
+		.blockquote > *:first-of-type {
+			margin-block-start: 0;
+		}
+
+		.blockquote > *:last-of-type {
+			margin-block-end: 0;
+		}
+
+		.ol,
+		.ul {
+			margin-block: var(--chunk-block-margin);
+			padding-inline-start: var(--size-24);
+			font-size: var(--text-md);
+		}
+
+		.li > .ol,
+		.li > .ul {
+			margin-block: calc(var(--paragraph-block-margin) * 0.5);
+		}
+
+		.ol {
+			list-style: decimal;
+		}
+
+		.ul {
+			list-style: disc;
+		}
+
+		.ol[type="A"],
+		.ol[type="A" s] {
+			list-style: upper-alpha;
+		}
+
+		.ol[type="a"],
+		.ol[type="a" s] {
+			list-style: lower-alpha;
+		}
+
+		.ol[type="I"],
+		.ol[type="I" s] {
+			list-style: upper-roman;
+		}
+
+		.ol[type="i"],
+		.ol[type="i" s] {
+			list-style: lower-roman;
+		}
+
+		.ol[type="1"] {
+			list-style: decimal;
+		}
+
+		.li {
+			margin-block: calc(var(--paragraph-block-margin) * 0.5);
+			padding-inline-start: var(--size-4);
+			font-size: var(--text-md);
+
+			:is(.ol, .ul) > &:first-child {
+				margin-block-start: unset;
+			}
+
+			:is(.ol, .ul) > &:last-child {
+				margin-block-end: unset;
+			}
+		}
+
+		.ol > .li {
+			font-weight: 400;
+		}
+
+		:where(.ol, .ul) > .li::marker {
+			color: var(--neutral-11);
+		}
+
+		.p {
+			margin-block: var(--paragraph-block-margin);
+			color: var(--neutral-11);
+			font-size: var(--text-md);
+			line-height: var(--leading-lg);
+			word-break: break-word;
+
+			.li > &:first-child {
+				margin-block-start: unset;
+			}
+
+			.li > &:last-child {
+				margin-block-end: unset;
+			}
+
+			.li > &:has(+ :is(.ol, .ul)) {
+				margin-block-end: unset;
+			}
+		}
+
+		.dt {
+			color: var(--neutral-11);
+			font-weight: 600;
+		}
+
+		.hr {
+			width: 256px;
+			height: 6px;
+			margin-block: var(--chunk-block-margin);
+			margin-inline: auto;
+			background-image: linear-gradient(
+				-45deg,
+				transparent,
+				transparent 25%,
+				currentColor 25%,
+				currentColor 50%,
+				transparent 50%,
+				transparent 75%,
+				currentColor 75%
+			);
+			background-size: 10px 10px;
+			border: none;
+			color: var(--accent-6);
+		}
+
+		.img {
+			max-inline-size: 100%;
+			border-radius: var(--radius-md);
+
+			@container style(--theme: dark) {
+				filter: brightness(0.9);
+			}
+		}
+
+		.picture {
+			display: block;
+		}
+
+		.code {
+			padding-block: calc(var(--size-3) - 0.5px);
+			padding-inline: calc(var(--size-6) - 0.5px);
+			background-color: var(--neutral-2);
+			border: 0.5px var(--neutral-6) solid;
+			border-radius: var(--radius-sm);
+			font-family: var(--font-mono);
+			font-feature-settings: var(--font-mono-features);
+			word-break: break-word;
+
+			:where(.snippet) & {
+				padding-block: inherit;
+				padding-inline: inherit;
+				background-color: inherit;
+				border-radius: inherit;
+				font-family: inherit;
+				font-feature-settings: inherit;
+				word-break: inherit;
+			}
+		}
+
+		.a {
+			border-radius: var(--radius-sm);
+			color: var(--accent-11);
+			text-decoration: underline;
+			text-underline-offset: var(--size-2);
+			font-weight: 500;
+			outline: none;
+		}
+
+		.a:focus-visible {
+			outline: var(--action-5) solid var(--size-3);
+			outline-offset: var(--size-3);
+		}
+
+		.strong {
+			color: var(--neutral-12);
+			font-weight: 600;
+		}
+
+		.h1 > .strong,
+		.h2 > .strong,
+		.h3 > .strong,
+		.h4 > .strong,
+		.h5 > .strong,
+		.h6 > .strong {
+			color: inherit;
+			font-weight: 900;
+		}
+
+		.a .strong,
+		.blockquote .strong,
+		.thead .th .strong {
+			color: inherit;
+		}
+	}
+
+	.snippet {
+		margin-block: var(--chunk-block-margin);
+		margin-inline: calc(var(--post-content-negative-margin) * -1);
+
+		@container post-content style(--variant: "desktop") {
+			border-radius: var(--radius-md);
+		}
+	}
+
+	.webembed {
+		margin-block: var(--chunk-block-margin);
+	}
+}

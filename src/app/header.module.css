@@ -1,0 +1,29 @@
+@layer components {
+	@scope (.header) {
+		:where(:scope) {
+			display: flex;
+			align-items: center;
+			min-block-size: var(--size-64);
+			padding-block: var(--size-32);
+			padding-inline: var(--size-16);
+		}
+
+		.link {
+			display: flex;
+			align-items: center;
+			padding-block: var(--size-8);
+			padding-inline: var(--size-16);
+			border-radius: var(--radius-md);
+
+			&:hover {
+				background-color: var(--accent-2);
+			}
+		}
+
+		.logo {
+			width: auto;
+			height: 32px;
+			color: var(--accent-11);
+		}
+	}
+}

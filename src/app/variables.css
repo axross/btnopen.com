@@ -1,0 +1,185 @@
+@layer variables {
+	:where(:root) {
+		--text-xs: 0.75rem;
+		--text-sm: 0.875rem;
+		--text-md: 1rem;
+		--text-lg: 1.125rem;
+		--text-xl: 1.25rem;
+		--text-2xl: 1.5rem;
+		--text-3xl: 1.75rem;
+		--text-4xl: 2.1875rem;
+
+		--leading-sm: 1.25;
+		--leading-md: 1.5;
+		--leading-lg: 1.75;
+
+		--size-1: 1px;
+		--size-2: 2px;
+		--size-3: 0.1875rem;
+		--size-4: 0.25rem;
+		--size-6: 0.375rem;
+		--size-8: 0.5rem;
+		--size-12: 0.75rem;
+		--size-14: 0.875rem;
+		--size-16: 1rem;
+		--size-18: 1.125rem;
+		--size-20: 1.25rem;
+		--size-24: 1.5rem;
+		--size-32: 2rem;
+		--size-40: 2.5rem;
+		--size-48: 3rem;
+		--size-64: 4rem;
+		--size-80: 5rem;
+		--size-96: 6rem;
+		--size-160: 10rem;
+		--size-256: 16rem;
+		--size-480: 30rem;
+		--size-960: 60rem;
+
+		--radius-xs: 0.1875rem;
+		--radius-sm: 0.375rem;
+		--radius-md: 0.625rem;
+		--radius-lg: 1rem;
+		--radius-full: 100vw;
+
+		@supports (corner-shape: squircle) {
+			--radius-xs: 0.375rem;
+			--radius-sm: 0.75rem;
+			--radius-md: 1.25rem;
+			--radius-lg: 2rem;
+		}
+
+		--duration-sm: 150ms;
+		--duration-md: 200ms;
+		--duration-lg: 300ms;
+		--duration-xl: 450ms;
+		--duration-2xl: 1100ms;
+		--duration-3xl: 1950ms;
+
+		--ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+		--accent-chroma: 0.3;
+		--accent-hue: 307deg;
+		--neutral-chroma: 0.015;
+		--neutral-hue: calc(var(--accent-hue) + 6.5deg);
+
+		--lightness-0: 97.5%;
+		--lightness-1: 95%;
+		--lightness-2: 92.5%;
+		--lightness-3: 90%;
+		--lightness-4: 88%;
+		--lightness-5: 85%;
+		--lightness-6: 82.5%;
+		--lightness-7: 80%;
+		--lightness-8: 75%;
+		--lightness-9: 60%;
+		--lightness-10: 55%;
+		--lightness-11: 45%;
+		--lightness-12: 25%;
+
+		@media (prefers-color-scheme: dark) {
+			--lightness-0: 12.5%;
+			--lightness-1: 15%;
+			--lightness-2: 20%;
+			--lightness-3: 25%;
+			--lightness-4: 30%;
+			--lightness-5: 35%;
+			--lightness-6: 40%;
+			--lightness-7: 45%;
+			--lightness-8: 55%;
+			--lightness-9: 60%;
+			--lightness-10: 65%;
+			--lightness-11: 75%;
+			--lightness-12: 90%;
+		}
+
+		--neutral-0: oklch(
+			var(--lightness-0) var(--neutral-chroma) var(--neutral-hue)
+		);
+		--neutral-1: oklch(
+			var(--lightness-1) var(--neutral-chroma) var(--neutral-hue)
+		);
+		--neutral-2: oklch(
+			var(--lightness-2) var(--neutral-chroma) var(--neutral-hue)
+		);
+		--neutral-3: oklch(
+			var(--lightness-3) var(--neutral-chroma) var(--neutral-hue)
+		);
+		--neutral-4: oklch(
+			var(--lightness-4) var(--neutral-chroma) var(--neutral-hue)
+		);
+		--neutral-5: oklch(
+			var(--lightness-5) var(--neutral-chroma) var(--neutral-hue)
+		);
+		--neutral-6: oklch(
+			var(--lightness-6) var(--neutral-chroma) var(--neutral-hue)
+		);
+		--neutral-7: oklch(
+			var(--lightness-7) var(--neutral-chroma) var(--neutral-hue)
+		);
+		--neutral-8: oklch(
+			var(--lightness-8) var(--neutral-chroma) var(--neutral-hue)
+		);
+		--neutral-9: oklch(
+			var(--lightness-9) var(--neutral-chroma) var(--neutral-hue)
+		);
+		--neutral-10: oklch(
+			var(--lightness-10) var(--neutral-chroma) var(--neutral-hue)
+		);
+		--neutral-11: oklch(
+			var(--lightness-11) var(--neutral-chroma) var(--neutral-hue)
+		);
+		--neutral-12: oklch(
+			var(--lightness-12) var(--neutral-chroma) var(--neutral-hue)
+		);
+
+		--accent-1: oklch(
+			var(--lightness-1) calc(var(--accent-chroma) * 0.1) var(--accent-hue)
+		);
+		--accent-2: oklch(
+			var(--lightness-2) calc(var(--accent-chroma) * 0.15) var(--accent-hue)
+		);
+		--accent-3: oklch(
+			var(--lightness-3) calc(var(--accent-chroma) * 0.15) var(--accent-hue)
+		);
+		--accent-4: oklch(
+			var(--lightness-4) calc(var(--accent-chroma) * 0.4) var(--accent-hue)
+		);
+		--accent-5: oklch(
+			var(--lightness-5) calc(var(--accent-chroma) * 0.4) var(--accent-hue)
+		);
+		--accent-6: oklch(
+			var(--lightness-6) calc(var(--accent-chroma) * 0.5) var(--accent-hue)
+		);
+		--accent-7: oklch(
+			var(--lightness-7) calc(var(--accent-chroma) * 0.5) var(--accent-hue)
+		);
+		--accent-8: oklch(
+			var(--lightness-8) calc(var(--accent-chroma) * 0.666) var(--accent-hue)
+		);
+		--accent-9: oklch(
+			var(--lightness-9) var(--accent-chroma) var(--accent-hue)
+		);
+		--accent-10: oklch(
+			var(--lightness-10) var(--accent-chroma) var(--accent-hue)
+		);
+		--accent-11: oklch(
+			var(--lightness-11) var(--accent-chroma) var(--accent-hue)
+		);
+		--accent-12: oklch(
+			var(--lightness-12) var(--accent-chroma) var(--accent-hue)
+		);
+	}
+
+	:where(body) {
+		--font-sans:
+			var(--font-ibm-plex-sans), var(--font-ibm-plex-sans-jp), system-ui,
+			sans-serif;
+		--font-sans-features: "ss01" "ss02" "ss03";
+		--font-mono:
+			var(--font-jetbrains-mono), var(--font-ibm-plex-sans-jp), monospace;
+		--font-mono-features:
+			"cv02", "cv03", "cv04", "cv05", "cv06", "cv07", "cv11", "cv14", "cv16",
+			"cv17", "cv18", "cv20";
+	}
+}

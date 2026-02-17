@@ -1,42 +1,43 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@layer base {
+	:where(*) {
+		box-sizing: border-box;
+		padding: 0;
+		margin: 0;
+		corner-shape: squircle;
+	}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+	:where(:root) {
+		scroll-padding: var(--size-32);
+		background-color: var(--neutral-0);
+		color-scheme: var(--theme);
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
+		--theme: light;
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+		@media (prefers-color-scheme: dark) {
+			--theme: dark;
+		}
+	}
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
+	:where(body) {
+		container: body / inline-size;
+		min-block-size: 100dvh;
+		min-inline-size: 375px;
+		max-inline-size: 100vw;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		padding-block-end: var(--size-160);
+		color: var(--neutral-11);
+		font-size: var(--text-md);
+		font-family: var(--font-sans);
+		font-feature-settings: var(--font-sans-features);
+		line-height: var(--leading-md);
+		overflow-x: hidden;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+		&::selection {
+			background-color: var(--accent-5);
+		}
+	}
 }

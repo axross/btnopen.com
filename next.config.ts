@@ -1,8 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  reactCompiler: true,
+	reactCompiler: true,
+	cacheComponents: true,
+	images: {
+		remotePatterns: [new URL("https://cdn.hashnode.com/res/hashnode/**")],
+	},
+	experimental: {
+		viewTransition: true,
+	},
 };
 
 export default nextConfig;

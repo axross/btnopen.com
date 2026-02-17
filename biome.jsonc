@@ -1,0 +1,355 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.3.4/schema.json",
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"files": {
+		"ignoreUnknown": true,
+		"includes": [
+			"**",
+			"!node_modules",
+			"!.next",
+			"!dist",
+			"!build",
+			"!src/services/graphql/generated"
+		]
+	},
+	"formatter": {
+		"enabled": true,
+		"formatWithErrors": true,
+		"indentStyle": "tab"
+	},
+	"linter": {
+		"enabled": true,
+		"domains": {
+			"next": "recommended",
+			"project": "recommended",
+			"react": "recommended",
+			"test": "recommended"
+		},
+		"rules": {
+			"recommended": true,
+			"a11y": {
+				"noNoninteractiveElementInteractions": "error"
+			},
+			"complexity": {
+				"noExcessiveCognitiveComplexity": {
+					"level": "error",
+					"options": {
+						"maxAllowedComplexity": 24
+					}
+				},
+				"noExcessiveLinesPerFunction": {
+					"level": "info",
+					"options": {
+						"maxLines": 120
+					}
+				},
+				"noExcessiveNestedTestSuites": "warn",
+				"noForEach": "error",
+				"noVoid": "error"
+			},
+			"correctness": {
+				"noChildrenProp": "warn",
+				"noNestedComponentDefinitions": "error",
+				"noNodejsModules": "error",
+				// off because Number.parseInt parses strings as base 10 by default since ES5
+				"useParseIntRadix": "off",
+				"noReactPropAssignments": "error",
+				"noRenderReturnValue": "error",
+				"noRestrictedElements": {
+					"level": "error",
+					"options": {
+						"elements": {
+							"TouchableHighlight": "this is not deprecated but marked as not future-proof. Use Pressable instead.",
+							"TouchableOpacity": "this is not deprecated but marked as not future-proof. Use Pressable instead.",
+							"TouchableWithoutFeedback": "this is not deprecated but marked as not future-proof. Use Pressable instead."
+						}
+					}
+				},
+				"noUndeclaredDependencies": "error",
+				"noUndeclaredVariables": {
+					"level": "error",
+					"options": {
+						"checkTypes": true
+					}
+				},
+				"useExhaustiveDependencies": {
+					"level": "error",
+					"options": {
+						"hooks": [
+							{
+								"name": "useSharedValue",
+								"stableResult": true
+							}
+						]
+					}
+				},
+				"useHookAtTopLevel": "error",
+				"useImportExtensions": "off",
+				"useJsonImportAttributes": "warn",
+				"useJsxKeyInIterable": "error",
+				"useSingleJsDocAsterisk": "warn",
+				"useUniqueElementIds": "warn"
+			},
+			"nursery": {
+				"noContinue": "off",
+				"noDeprecatedImports": "warn",
+				"noEmptySource": "error",
+				"noImportCycles": "error",
+				"noIncrementDecrement": "error",
+				"noJsxLiterals": "error",
+				"noFloatingPromises": "warn",
+				"noMisusedPromises": "error",
+				"noNextAsyncClientComponent": "error",
+				"noParametersOnlyUsedInRecursion": "error",
+				"noReactForwardRef": "error",
+				"noShadow": "warn",
+				"noUnknownAttribute": "warn",
+				// off because the rule works inaccurately; anyways it will be checked by typescript
+				"noUnnecessaryConditions": "off",
+				// off because the rule works inaccurately; anyways it will be checked by typescript
+				"noUnresolvedImports": "off",
+				"noUnusedExpressions": "warn",
+				"noUselessCatchBinding": "error",
+				"noUselessUndefined": "warn",
+				"useConsistentArrowReturn": "warn",
+				"useExhaustiveSwitchCases": "error",
+				// off because it requires explicit type annotations for variables as well, which is too much
+				"useExplicitType": "off",
+				"useMaxParams": "warn",
+				"useSortedClasses": {
+					"level": "warn",
+					"options": {
+						"functions": ["clsx", "cva", "tw", "tw.*"]
+					}
+				}
+			},
+			"performance": {
+				"noAwaitInLoops": "error",
+				"noBarrelFile": "error",
+				"noDelete": "error",
+				"noImgElement": "warn",
+				"noNamespaceImport": "warn",
+				"noReExportAll": "error",
+				"noUnwantedPolyfillio": "error",
+				"useGoogleFontPreconnect": "warn",
+				"useTopLevelRegex": "warn"
+			},
+			"security": {
+				"noBlankTarget": "error",
+				"noDangerouslySetInnerHtml": "error",
+				"noDangerouslySetInnerHtmlWithChildren": "error",
+				"noGlobalEval": "error",
+				// off because its entropy check isn't very accurate
+				"noSecrets": "off"
+			},
+			"style": {
+				"noCommonJs": "error",
+				"noDefaultExport": "error",
+				"noDoneCallback": "error",
+				"noEnum": "error",
+				"noExportedImports": "warn",
+				"noHeadElement": "error",
+				// off because it's not widely common
+				"noImplicitBoolean": "off",
+				"noInferrableTypes": "warn",
+				"noMagicNumbers": "warn",
+				"noNamespace": "warn",
+				"noNegationElse": "warn",
+				"noNestedTernary": "warn",
+				"noParameterAssign": "error",
+				"noParameterProperties": "error",
+				"noProcessEnv": "warn",
+				"noRestrictedGlobals": "error",
+				"noRestrictedImports": {
+					"level": "error",
+					"options": {
+						"paths": {
+							"react-native": {
+								"importNames": ["StyleSheet"],
+								"message": "Use StyleSheet from react-native-unistyles instead."
+							}
+						}
+					}
+				},
+				"noRestrictedTypes": {
+					"level": "error",
+					"options": {
+						"types": {
+							"ThisIsNotConfigured": {
+								"message": "See https://biomejs.dev/linter/rules/no-restricted-types/ "
+							}
+						}
+					}
+				},
+				"noShoutyConstants": "error",
+				"noSubstr": "error",
+				"noUnusedTemplateLiteral": "error",
+				"noUselessElse": "error",
+				"noYodaExpression": "error",
+				"useAsConstAssertion": "error",
+				"useAtIndex": "warn",
+				"useBlockStatements": "warn",
+				"useCollapsedElseIf": "warn",
+				"useCollapsedIf": "warn",
+				// off because some modules want to export hooks with components
+				"useComponentExportOnlyModules": {
+					"level": "off",
+					"options": {
+						"allowConstantExport": true
+					}
+				},
+				"useConsistentArrayType": "error",
+				"useConsistentBuiltinInstantiation": "error",
+				// off because this conflicts with noJsxLiterals rule
+				"useConsistentCurlyBraces": "off",
+				"useConsistentMemberAccessibility": {
+					"level": "warn",
+					"options": {
+						"accessibility": "noPublic"
+					}
+				},
+				"useConsistentObjectDefinitions": "warn",
+				"useConsistentTypeDefinitions": {
+					"level": "error",
+					"options": {
+						"style": "interface"
+					}
+				},
+				"useDefaultParameterLast": "error",
+				"useDefaultSwitchClause": "error",
+				"useEnumInitializers": "error",
+				"useExplicitLengthCheck": "error",
+				"useExportsLast": "off",
+				"useFilenamingConvention": {
+					"level": "error",
+					"options": {
+						"filenameCases": ["kebab-case"]
+					}
+				},
+				"useForOf": "error",
+				"useFragmentSyntax": "error",
+				"useGroupedAccessorPairs": "error",
+				"useNamingConvention": {
+					"level": "error",
+					"options": {}
+				},
+				"useNodeAssertStrict": "error",
+				"useNumberNamespace": "error",
+				"useNumericSeparators": "warn",
+				"useObjectSpread": "error",
+				"useReactFunctionComponents": "error",
+				"useReadonlyClassProperties": {
+					"level": "warn",
+					"options": {
+						"checkAllProperties": true
+					}
+				},
+				"useSelfClosingElements": "error",
+				"useShorthandAssign": "error",
+				"useSingleVarDeclarator": "error",
+				"useSymbolDescription": "error",
+				"useThrowNewError": "error",
+				"useThrowOnlyError": "error",
+				"useTrimStartEnd": "warn",
+				"useUnifiedTypeSignatures": "warn"
+			},
+			"suspicious": {
+				"noAlert": "error",
+				"noArrayIndexKey": "error",
+				"noBitwiseOperators": "warn",
+				"noConsole": "warn",
+				"noConstantBinaryExpressions": "error",
+				"noDocumentImportInPage": "error",
+				"noDuplicateTestHooks": "error",
+				"noEmptyBlockStatements": "error",
+				"noEvolvingTypes": "error",
+				"noExportsInTest": "error",
+				"noFocusedTests": "error",
+				"noHeadImportInDocument": "error",
+				"noMisplacedAssertion": "error",
+				"noSkippedTests": "warn",
+				"noUnassignedVariables": "error",
+				"noVar": "error",
+				"useErrorMessage": "error",
+				"useGuardForIn": "error",
+				"useNumberToFixedDigitsArgument": "error",
+				"useStaticResponseMethods": "error"
+			}
+		}
+	},
+	"assist": {
+		"enabled": true,
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	},
+	"overrides": [
+		{
+			"includes": ["**/*.tsx"],
+			"linter": {
+				"rules": {
+					"style": {
+						// off because in components it's common to use nested ternaries during rendering
+						"noNestedTernary": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"**/*.spec.ts",
+				"**/*.spec.tsx",
+				"jest/**/*.ts",
+				"jest/**/*.tsx"
+			],
+			"linter": {
+				"rules": {
+					"complexity": {
+						"noExcessiveLinesPerFunction": {
+							// off because tests can more often be long
+							"level": "off"
+						}
+					},
+					"correctness": {
+						// off because some tests and mocks require nodejs modules
+						"noNodejsModules": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/app/**/*.tsx"],
+			"linter": {
+				"rules": {
+					"style": {
+						// off because route components requires default exports
+						"noDefaultExport": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["*.config.js", "*.config.cjs"],
+			"linter": {
+				"rules": {
+					"style": {
+						// off because config files are written in commonjs
+						"noCommonJs": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["package.json", "package-lock.json"],
+			"formatter": {
+				"enabled": false
+			}
+		}
+	]
+}

@@ -1,0 +1,114 @@
+@layer components {
+	@scope (.postPage) {
+		:where(:scope) {
+			display: flex;
+			width: stretch;
+			container: page / inline-size;
+			flex-direction: column;
+			align-items: center;
+
+			--post-content-negative-margin: var(--size-16);
+
+			@container (width > 30rem) {
+				--page-variant: "desktop";
+				--max-width: calc(30rem - var(--size-16) * 2);
+				--post-content-negative-margin: 0;
+			}
+
+			@container (width > 50rem) {
+				--max-width: calc(50rem - var(--size-32) * 2);
+			}
+		}
+
+		.header {
+			width: stretch;
+			max-width: var(--max-width);
+		}
+
+		.coverImage {
+			width: 100cqw;
+			max-width: var(--max-width);
+			height: auto;
+			aspect-ratio: 1600 / 840;
+			object-fit: cover;
+			filter: sepia(0) saturate(1) brightness(1) opacity(1);
+			transition: filter 3s ease-in-out;
+
+			@container style(--page-variant: "desktop") {
+				border-radius: var(--radius-md);
+			}
+		}
+
+		.timestamp {
+			margin-block-start: var(--size-24);
+			padding-inline: var(--size-16);
+			font-size: var(--text-sm);
+
+			@container style(--page-variant: "desktop") {
+				padding-inline: unset;
+			}
+		}
+
+		.title {
+			margin-block-start: var(--size-32);
+			padding-inline: var(--size-16);
+			color: var(--neutral-12);
+			font-size: var(--text-4xl);
+			font-weight: 700;
+
+			@container style(--page-variant: "desktop") {
+				padding-inline: unset;
+			}
+		}
+
+		.author {
+			display: flex;
+			align-items: center;
+			column-gap: var(--size-8);
+			margin-block-start: var(--size-32);
+			padding-inline: var(--size-16);
+
+			@container style(--page-variant: "desktop") {
+				padding-inline: unset;
+			}
+		}
+
+		.authorImage {
+			width: 24px;
+			height: 24px;
+			border-radius: 50%;
+		}
+
+		.tags {
+			display: flex;
+			flex-wrap: wrap;
+			margin-block-start: var(--size-24);
+			padding-inline: var(--size-16);
+			gap: var(--size-8);
+
+			@container style(--page-variant: "desktop") {
+				padding-inline: unset;
+			}
+		}
+
+		.tag {
+			list-style: none;
+			padding-block: var(--size-4);
+			padding-inline: var(--size-8);
+			background-color: var(--accent-3);
+			border-radius: var(--radius-sm);
+			color: var(--accent-11);
+		}
+
+		.content {
+			width: stretch;
+			max-width: var(--max-width);
+			margin-block-start: var(--size-32);
+			padding-inline: var(--size-16);
+
+			@container style(--page-variant: "desktop") {
+				padding-inline: unset;
+			}
+		}
+	}
+}
