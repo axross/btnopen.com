@@ -14,6 +14,7 @@ import type { ReactNode } from "react";
 import { hashnodePublicationHost } from "@/config";
 import { execute, graphql } from "@/services/graphql";
 import { Header } from "./header";
+import { PageViewTracking } from "./page-view-tracking";
 
 const ibmPlexSans = IBM_Plex_Sans({
 	variable: "--font-ibm-plex-sans",
@@ -87,6 +88,8 @@ export default function RootLayout({
 				<Header />
 
 				{children}
+
+				<PageViewTracking />
 			</body>
 		</html>
 	);

@@ -29,6 +29,7 @@
     "micromark-extension-gfm-strikethrough": "^2.1.0",
     "micromark-extension-gfm-table": "^2.1.1",
     "micromark-util-combine-extensions": "^2.0.1",
+    "mixpanel-browser": "^2.74.0",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",

@@ -1,35 +1,36 @@
-// This file configures the initialization of Sentry on the client.
-// The added config here will be used whenever a users loads a page in their browser.
-// https://docs.sentry.io/platforms/javascript/guides/nextjs/
-
 import {
 	captureRouterTransitionStart,
 	init as initializeSentry,
 	replayIntegration,
 } from "@sentry/nextjs";
+import mixpanel from "mixpanel-browser";
 
 initializeSentry({
 	dsn: "https://25638a2e4194d2240e9b974494d3a898@o30395.ingest.us.sentry.io/4510898509774848",
-
-	// Add optional integrations for additional features
 	integrations: [replayIntegration()],
-
-	// Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
 	tracesSampleRate: 1,
-	// Enable logs to be sent to Sentry
 	enableLogs: true,
-
-	// Define how likely Replay events are sampled.
-	// This sets the sample rate to be 10%. You may want this to be 100% while
-	// in development and sample at a lower rate in production
 	replaysSessionSampleRate: 0.1,
-
-	// Define how likely Replay events are sampled when an error occurs.
 	replaysOnErrorSampleRate: 1.0,
-
-	// Enable sending user PII (Personally Identifiable Information)
-	// https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#sendDefaultPii
 	sendDefaultPii: true,
+});
+
+mixpanel.init("1e718106bc4478f1c30aea60979efb12", {
+	// biome-ignore-start lint/style/useNamingConvention: Mixpanel uses snake_case
+	autocapture: {
+		pageview: false,
+		click: true,
+		rage_click: true,
+		dead_click: true,
+		input: true,
+		scroll: true,
+		submit: true,
+		capture_text_content: true,
+	},
+	record_sessions_percent: 100,
+	record_heatmap_data: true,
+	ignore_dnt: process.env.NODE_ENV === "development",
+	// biome-ignore-end lint/style/useNamingConvention: Mixpanel uses snake_case
 });
 
 export const onRouterTransitionStart = captureRouterTransitionStart;
