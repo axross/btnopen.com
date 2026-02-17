@@ -12,6 +12,7 @@
     "format": "biome format --write"
   },
   "dependencies": {
+    "@sentry/nextjs": "^10.39.0",
     "@shikijs/langs": "^3.22.0",
     "@shikijs/rehype": "^3.22.0",
     "clsx": "^2.1.1",
