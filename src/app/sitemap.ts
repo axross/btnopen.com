@@ -1,13 +1,12 @@
 import type { MetadataRoute } from "next";
-import { hashnodePublicationHost } from "@/config";
-import { execute, graphql } from "@/services/graphql";
+import { getPosts } from "./_fetcher/get-posts";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-	const posts = await getPostSummaries();
+	const posts = await getPosts();
 
 	return [
 		{
-			url: "https://btnopen.com",
+			url: process.env.NEXT_PUBLIC_VERCEL_URL ?? "https://btnopen2.com",
 			lastModified: new Date(),
 			changeFrequency: "yearly",
 			priority: 1,
@@ -22,34 +21,4 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 				}) satisfies MetadataRoute.Sitemap[number],
 		),
 	];
-}
-
-async function getPostSummaries() {
-	const postsResult = await execute(
-		graphql(`
-      query PostSummaries(
-        $host: String!
-      ) {
-        publication(host: $host) {
-          posts(first: 50) {
-            edges {
-              node {
-                slug
-                updatedAt
-              }
-            }
-            pageInfo {
-              endCursor
-              hasNextPage
-            }
-          }
-        }
-      }  
-    `),
-		{ host: hashnodePublicationHost },
-	);
-
-	return (postsResult.data?.publication?.posts.edges ?? []).map(
-		(edge) => edge.node,
-	);
 }

@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
 	images: {
 		remotePatterns: [new URL("https://cdn.hashnode.com/res/hashnode/**")],
 	},
+	serverExternalPackages: ["re2"],
 	experimental: {
 		viewTransition: true,
 	},

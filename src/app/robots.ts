@@ -1,11 +1,14 @@
 import type { MetadataRoute } from "next";
+import { getPublication } from "./_fetcher/get-publication";
 
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
+	const publication = await getPublication();
+
 	return {
 		rules: {
 			userAgent: "*",
 			allow: "/",
 		},
-		sitemap: "https://btnopen.com/sitemap.xml",
+		sitemap: `${publication.url}/sitemap.xml`,
 	};
 }

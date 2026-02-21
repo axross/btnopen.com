@@ -45,9 +45,9 @@ async function renderMarkdown({
 					children: node.children,
 				}),
 			},
-			unknownHandler: (state, node) => {
-				console.log(node);
-			},
+			// unknownHandler: (state, node) => {
+			// 	console.log(node);
+			// },
 		})
 		.use(rehypeShikiFromHighlighter, highlighter, {
 			theme: "css-variables",

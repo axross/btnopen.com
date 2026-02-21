@@ -1,22 +1,16 @@
 import type { Metadata } from "next";
 import { cacheLife } from "next/cache";
 import Image from "next/image";
-import Link from "next/link";
-import type { Blog, WithContext } from "schema-dts";
 import { Markdown } from "@/components/markdown";
 import { GitHubIcon, LinkedInIcon, XcomIcon } from "@/components/social-icon";
-import { hashnodePublicationHost } from "@/config";
-import { execute, graphql } from "@/services/graphql";
-import { BrushGrunge } from "./brush-grunge";
+import { BlogJsonLd } from "./_components/blog-json-jd";
+import { BrushGrunge } from "./_components/brush-grunge";
+import { PostList } from "./_components/post-list";
+import { getPublication } from "./_fetcher/get-publication";
 import css from "./page.module.css";
-import { PostList, PostListItem } from "./post-list";
 
 async function IndexPage() {
-	"use cache";
-
-	cacheLife("minutes");
-
-	const publication = await getPublicationWithPosts();
+	const publication = await getPublication();
 
 	return (
 		<>
@@ -77,48 +71,12 @@ async function IndexPage() {
 					<section className={css.section}>
 						<h1 className={css.sectionHeading}>{"Posts"}</h1>
 
-						<PostList className={css.posts}>
-							{publication.posts.edges.map((edge) => (
-								<Link
-									href={`/posts/${edge.node.slug}`}
-									className={css.post}
-									key={edge.node.slug}
-								>
-									<PostListItem
-										slug={edge.node.slug}
-										title={edge.node.title}
-										brief={edge.node.seo?.description ?? edge.node.brief}
-										imageUrl={edge.node.coverImage?.url}
-										publishedAt={edge.node.publishedAt}
-									/>
-								</Link>
-							))}
-						</PostList>
+						<PostList className={css.posts} />
 					</section>
 				</main>
 			</div>
 
-			<script
-				type="application/ld+json"
-				// biome-ignore lint/security/noDangerouslySetInnerHtml: this dangerouslySetInnerHTML is one of the common patterns to render JSON-LD
-				dangerouslySetInnerHTML={{
-					__html: JSON.stringify({
-						"@context": "https://schema.org",
-						"@type": "Blog",
-						"@id": publication.url,
-						name: publication.title,
-						url: publication.url,
-						author: {
-							"@type": "Person",
-							"@id":
-								publication.author.socialMediaLinks?.github ?? publication.url,
-							name: publication.author.name,
-							image: publication.author.profilePicture ?? undefined,
-							address: publication.author.location ?? undefined,
-						},
-					} as WithContext<Blog>),
-				}}
-			/>
+			<BlogJsonLd />
 		</>
 	);
 }
@@ -126,12 +84,12 @@ async function IndexPage() {
 export async function generateMetadata(): Promise<Metadata> {
 	"use cache";
 
-	cacheLife("minutes");
+	cacheLife("hours");
 
-	const publication = await getPublicationWithPosts();
+	const publication = await getPublication();
 
 	return {
-		description: publication.descriptionSEO,
+		description: publication.descriptionSEO ?? undefined,
 		keywords: [
 			"axross",
 			"Kohei Asai",
@@ -152,100 +110,13 @@ export async function generateMetadata(): Promise<Metadata> {
 		publisher: publication.author.name,
 		openGraph: {
 			title: publication.title,
-			description: publication.descriptionSEO,
+			description: publication.descriptionSEO ?? undefined,
 			siteName: publication.title,
 			type: "website",
 			images: "/images/bio.webp",
 			locale: "ja_JP",
 		},
 	};
-}
-
-async function getPublicationWithPosts() {
-	const result = await execute(
-		graphql(`
-			query GetPublicationWithPosts(
-				$host: String!
-			) {
-				publication(host: $host) {
-					title
-					url
-					about {
-						markdown
-					}
-					descriptionSEO
-					author {
-						id
-						name
-						profilePicture
-						socialMediaLinks {
-							website
-							github
-						}
-						location
-					}
-					posts(first: 50) {
-						edges {
-							node {
-								slug
-								title
-								brief
-								author {
-									username
-									name
-									profilePicture
-								}
-								tags {
-									slug
-									name
-									tagline
-									logo
-								}
-								coverImage {
-									url
-								}
-								seo {
-									description
-								}
-								publishedAt
-							}
-						}
-						pageInfo {
-							endCursor
-							hasNextPage
-						}
-					}
-				}
-			}  
-		`),
-		{ host: hashnodePublicationHost },
-	);
-
-	if (result.data?.publication) {
-		const publication = result.data.publication;
-
-		if (publication?.descriptionSEO == null) {
-			throw new Error("The publication doesn't contain valid descriptionSEO.");
-		}
-
-		if (publication?.about?.markdown == null) {
-			throw new Error("The publication doesn't contain valid about.markdown.");
-		}
-
-		if (publication?.author == null) {
-			throw new Error("The publication doesn't contain valid author.");
-		}
-
-		return {
-			...publication,
-			about: {
-				...publication.about,
-				markdown: publication.about.markdown,
-			},
-		};
-	}
-
-	throw new Error(result.errors?.map((error) => error.message).join(", "));
 }
 
 export default IndexPage;

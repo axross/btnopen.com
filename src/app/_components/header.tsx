@@ -9,6 +9,8 @@ export function Header() {
 					xmlns="http://www.w3.org/2000/svg"
 					fill="none"
 					viewBox="0 0 59.64 12.05"
+					role="img"
+					aria-label="btnopen.com"
 					className={css.logo}
 				>
 					<g fill="currentColor">

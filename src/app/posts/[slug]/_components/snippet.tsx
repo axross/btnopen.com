@@ -1,8 +1,11 @@
 import { clsx } from "clsx";
-import type { ComponentProps } from "react";
+import type { ComponentProps, JSX } from "react";
 import css from "./snippet.module.css";
 
-export function Snippet({ className, children }: ComponentProps<"pre">) {
+export function Snippet({
+	className,
+	children,
+}: ComponentProps<"pre">): JSX.Element {
 	return (
 		<div className={clsx(css.snippet, className)}>
 			<pre className={css.viewer}>{children}</pre>

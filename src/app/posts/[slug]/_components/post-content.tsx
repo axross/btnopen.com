@@ -1,11 +1,24 @@
 import { clsx } from "clsx";
-import { type ComponentProps, memo } from "react";
+import { type ComponentProps, type JSX, memo } from "react";
 import { createIntrinsicComponent, Markdown } from "@/components/markdown";
+import { getPostMarkdown } from "../_fetcher/get-post-markdown";
 import css from "./post-content.module.css";
 import { Snippet } from "./snippet";
 import { WebEmbed } from "./webembed";
 
-export async function PostContent({ markdown }: { markdown: string }) {
+export async function PostContent({
+	slug,
+}: {
+	slug: string;
+}): Promise<JSX.Element | null> {
+	"use cache";
+
+	const markdown = await getPostMarkdown(slug);
+
+	if (!markdown) {
+		return null;
+	}
+
 	return (
 		<div className={css.postContent}>
 			<Markdown
