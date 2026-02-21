@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.3.4/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.4.4/schema.json",
 	"vcs": {
 		"enabled": true,
 		"clientKind": "git",
@@ -49,11 +49,15 @@
 				},
 				"noExcessiveNestedTestSuites": "warn",
 				"noForEach": "error",
-				"noVoid": "error"
+				"noUselessCatchBinding": "error",
+				"noUselessUndefined": "warn",
+				"noVoid": "error",
+				"useMaxParams": "warn"
 			},
 			"correctness": {
 				"noChildrenProp": "warn",
 				"noNestedComponentDefinitions": "error",
+				"noNextAsyncClientComponent": "error",
 				"noNodejsModules": "error",
 				// off because Number.parseInt parses strings as base 10 by default since ES5
 				"useParseIntRadix": "off",
@@ -76,6 +80,14 @@
 						"checkTypes": true
 					}
 				},
+				"noUnknownProperty": {
+					"level": "error",
+					"options": {
+						"ignore": ["corner-shape"]
+					}
+				},
+				// off because the rule works inaccurately; anyways it will be checked by typescript
+				"noUnresolvedImports": "off",
 				"useExhaustiveDependencies": {
 					"level": "error",
 					"options": {
@@ -96,30 +108,17 @@
 			},
 			"nursery": {
 				"noContinue": "off",
-				"noDeprecatedImports": "warn",
-				"noEmptySource": "error",
-				"noImportCycles": "error",
 				"noIncrementDecrement": "error",
-				"noJsxLiterals": "error",
 				"noFloatingPromises": "warn",
 				"noMisusedPromises": "error",
-				"noNextAsyncClientComponent": "error",
 				"noParametersOnlyUsedInRecursion": "error",
-				"noReactForwardRef": "error",
 				"noShadow": "warn",
 				"noUnknownAttribute": "warn",
 				// off because the rule works inaccurately; anyways it will be checked by typescript
 				"noUnnecessaryConditions": "off",
-				// off because the rule works inaccurately; anyways it will be checked by typescript
-				"noUnresolvedImports": "off",
-				"noUnusedExpressions": "warn",
-				"noUselessCatchBinding": "error",
-				"noUselessUndefined": "warn",
-				"useConsistentArrowReturn": "warn",
 				"useExhaustiveSwitchCases": "error",
 				// off because it requires explicit type annotations for variables as well, which is too much
 				"useExplicitType": "off",
-				"useMaxParams": "warn",
 				"useSortedClasses": {
 					"level": "warn",
 					"options": {
@@ -156,6 +155,7 @@
 				// off because it's not widely common
 				"noImplicitBoolean": "off",
 				"noInferrableTypes": "warn",
+				"noJsxLiterals": "error",
 				"noMagicNumbers": "warn",
 				"noNamespace": "warn",
 				"noNegationElse": "warn",
@@ -203,6 +203,7 @@
 					}
 				},
 				"useConsistentArrayType": "error",
+				"useConsistentArrowReturn": "warn",
 				"useConsistentBuiltinInstantiation": "error",
 				// off because this conflicts with noJsxLiterals rule
 				"useConsistentCurlyBraces": "off",
@@ -258,6 +259,11 @@
 				"useUnifiedTypeSignatures": "warn"
 			},
 			"suspicious": {
+				"noDeprecatedImports": "warn",
+				"noEmptySource": "error",
+				"noImportCycles": "error",
+				"noReactForwardRef": "error",
+				"noUnusedExpressions": "warn",
 				"noAlert": "error",
 				"noArrayIndexKey": "error",
 				"noBitwiseOperators": "warn",
@@ -324,12 +330,27 @@
 			}
 		},
 		{
-			"includes": ["src/app/**/*.tsx"],
+			"includes": [
+				"src/app/**/*.tsx",
+				"src/app/sitemap.ts",
+				"src/app/robots.ts"
+			],
 			"linter": {
 				"rules": {
 					"style": {
 						// off because route components requires default exports
 						"noDefaultExport": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/app/**/opengraph-image.tsx"],
+			"linter": {
+				"rules": {
+					"correctness": {
+						// off because opengraph-image.tsx needs some nodejs modules
+						"noNodejsModules": "off"
 					}
 				}
 			}
@@ -346,7 +367,18 @@
 			}
 		},
 		{
-			"includes": ["package.json", "package-lock.json"],
+			"includes": ["*.config.ts", "*.config.cts", "codegen.ts"],
+			"linter": {
+				"rules": {
+					"style": {
+						// off because graphql codegen config requires default exports
+						"noDefaultExport": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["package.json", "package-lock.json", "*.graphql"],
 			"formatter": {
 				"enabled": false
 			}
