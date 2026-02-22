@@ -11,6 +11,16 @@ const nextConfig: NextConfig = {
 	experimental: {
 		viewTransition: true,
 	},
+	headers: () => [
+		{
+			source: "/:path*",
+			headers: [
+				{ key: "Accept-CH", value: "Sec-CH-Prefers-Color-Scheme" },
+				{ key: "Critical-CH", value: "Sec-CH-Prefers-Color-Scheme" },
+				{ key: "Vary", value: "Sec-CH-Prefers-Color-Scheme" },
+			],
+		},
+	],
 };
 
 export default withSentryConfig(nextConfig, {
