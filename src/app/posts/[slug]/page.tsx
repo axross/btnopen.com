@@ -71,9 +71,11 @@ export default async function PostPage({ params }: PageProps) {
 					</ul>
 				</header>
 
-				<main className={css.content}>
-					<PostContent slug={slug} />
-				</main>
+				<ViewTransition name={`post-${slug}-content`}>
+					<main className={css.content}>
+						<PostContent slug={slug} />
+					</main>
+				</ViewTransition>
 			</article>
 
 			<BlogPostingJsonLd slug={slug} />

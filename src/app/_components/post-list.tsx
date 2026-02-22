@@ -69,7 +69,9 @@ function PostListItem({
 				<div className={css.title}>{title}</div>
 			</ViewTransition>
 
-			<div className={css.brief}>{brief}</div>
+			<ViewTransition name={`post-${slug}-content`}>
+				<div className={css.brief}>{brief}</div>
+			</ViewTransition>
 		</li>
 	);
 }
