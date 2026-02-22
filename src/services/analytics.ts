@@ -1,5 +1,7 @@
 import Mixpanel from "mixpanel-browser";
+import { configure as configureOds, view as odsView } from "onedollarstats";
 import { mixpanelToken } from "@/config";
+import { isDevelopment } from "@/runtime";
 
 let mixpanel: typeof Mixpanel | null = null;
 
@@ -25,6 +27,12 @@ export function initializeAnalytics() {
 
 		mixpanel = Mixpanel;
 	}
+
+	configureOds({
+		hostname: "btnopen.com",
+		autocollect: false,
+		devmode: isDevelopment,
+	});
 }
 
 export function trackPageView({
@@ -40,4 +48,7 @@ export function trackPageView({
 			query: searchParams,
 		});
 	}
+
+	// biome-ignore lint/nursery/noFloatingPromises: it doesn't need to be awaited
+	odsView(pathname, Object.fromEntries(searchParams.entries()));
 }
