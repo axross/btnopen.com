@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { cacheLife } from "next/cache";
 import Image from "next/image";
 import { Markdown } from "@/components/markdown";
-import { GitHubIcon, LinkedInIcon, XcomIcon } from "@/components/social-icon";
 import { urlOrigin } from "@/config";
 import { BlogJsonLd } from "./_components/blog-json-jd";
 import { BrushGrunge } from "./_components/brush-grunge";
 import { PostList } from "./_components/post-list";
+import { SocialLinkList } from "./_components/social-link-list";
 import { getPublication } from "./_fetcher/get-publication";
 import css from "./page.module.css";
 
@@ -38,34 +38,7 @@ async function IndexPage() {
 								<Markdown markdown={publication.about.markdown} />
 							</div>
 
-							<div className={css.bioSocialLinks}>
-								<a
-									href="https://github.com/axross"
-									target="_blank"
-									rel="noopener noreferrer"
-									className={css.bioSocialLink}
-								>
-									<GitHubIcon />
-								</a>
-
-								<a
-									href="https://x.com/axross"
-									target="_blank"
-									rel="noopener noreferrer"
-									className={css.bioSocialLink}
-								>
-									<XcomIcon />
-								</a>
-
-								<a
-									href="https://www.linkedin.com/in/axross"
-									target="_blank"
-									rel="noopener noreferrer"
-									className={css.bioSocialLink}
-								>
-									<LinkedInIcon />
-								</a>
-							</div>
+							<SocialLinkList />
 						</div>
 					</section>
 

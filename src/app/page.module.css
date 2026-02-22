@@ -101,24 +101,6 @@
 			line-height: var(--leading-lg);
 		}
 
-		.bioSocialLinks {
-			display: flex;
-			column-gap: var(--size-32);
-		}
-
-		.bioSocialLink {
-			display: flex;
-			padding: var(--size-8);
-			margin: calc(var(--size-8) * -1);
-			color: var(--accent-11);
-			border-radius: var(--radius-md);
-		}
-
-		.socialLink:hover {
-			color: var(--accent-12);
-			background-color: var(--accent-3);
-		}
-
 		.section {
 			width: stretch;
 			max-width: var(--max-width);
