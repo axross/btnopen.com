@@ -1,6 +1,6 @@
 import rehypeShikiFromHighlighter from "@shikijs/rehype/core";
 import type { Root as HastRoot } from "hast";
-import type { Root as MdastRoot } from "mdast";
+import type { Node as MdastNode, Root as MdastRoot } from "mdast";
 import type { LeafDirective } from "mdast-util-directive";
 import { gfmStrikethroughFromMarkdown } from "mdast-util-gfm-strikethrough";
 import { gfmTableFromMarkdown } from "mdast-util-gfm-table";
@@ -21,6 +21,7 @@ import remarkRehype from "remark-rehype";
 import { type Processor, unified } from "unified";
 import { visit } from "unist-util-visit";
 import { getSingletonHighlighter } from "@/services/shiki";
+import { trackError } from "./error";
 
 async function renderMarkdown({
 	markdown,
@@ -38,16 +39,18 @@ async function renderMarkdown({
 		.use(remarkRehype, {
 			passThrough: ["leafDirective"],
 			handlers: {
-				leafDirective: (_state: never, node: LeafDirective) => ({
+				leafDirective: (_state: unknown, node: LeafDirective) => ({
 					type: "element",
 					tagName: node.name,
 					properties: node.attributes,
 					children: node.children,
 				}),
 			},
-			// unknownHandler: (state, node) => {
-			// 	console.log(node);
-			// },
+			unknownHandler: (_state: unknown, node: MdastNode) => {
+				trackError(
+					new Error(`Handled unknown mdast node (type: ${node.type}).`),
+				);
+			},
 		})
 		.use(rehypeShikiFromHighlighter, highlighter, {
 			theme: "css-variables",

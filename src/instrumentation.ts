@@ -1,13 +1,8 @@
-import { captureRequestError } from "@sentry/nextjs";
+import { initializeServerErrorTracking } from "./services/error.server";
 
 export async function register() {
-	if (process.env.NEXT_RUNTIME === "nodejs") {
-		await import("../sentry.server.config");
-	}
-
-	if (process.env.NEXT_RUNTIME === "edge") {
-		await import("../sentry.edge.config");
-	}
+	initializeServerErrorTracking();
 }
 
-export const onRequestError = captureRequestError;
+// biome-ignore lint/performance/noBarrelFile: this is not a barrel file export
+export { onRequestError } from "./services/error.server";
