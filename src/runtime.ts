@@ -11,3 +11,6 @@ if (typeof globalThis.window !== "undefined") {
 export const runtimeType = resolvedRuntimeType;
 
 export const isDevelopment = process.env.NODE_ENV === "development";
+
+export const isSentryEnabled = !!process.env.NEXT_PUBLIC_SENTRY_DSN;
+export const isMixpanelEnabled = !!process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;

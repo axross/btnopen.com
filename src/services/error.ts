@@ -1,4 +1,5 @@
-import { isDevelopment, runtimeType } from "@/runtime";
+import { captureException } from "@sentry/nextjs";
+import { isDevelopment, isSentryEnabled, runtimeType } from "@/runtime";
 
 export function trackError(error: Error): void {
 	if (isDevelopment) {
@@ -6,39 +7,11 @@ export function trackError(error: Error): void {
 		console.error(error);
 	}
 
-	// biome-ignore lint/nursery/noFloatingPromises: it needs module imports for the sake of isomorphism
-	resolveTrackErrorFn().then((trackErrorFn) => trackErrorFn(error));
-}
+	if (isSentryEnabled) {
+		const errorId = captureException(error);
 
-let singletonTrackErrorFn: typeof trackError | null = null;
-
-async function resolveTrackErrorFn(): Promise<typeof trackError> {
-
-	console.log("resolveTrackErrorFn()", singletonTrackErrorFn);
-
-	if (singletonTrackErrorFn === null) {
-		console.log(runtimeType);
-
-		try {
-			if (runtimeType === "client") {
-				const module = await import("./error.client");
-
-				singletonTrackErrorFn = module.trackError;
-			} else {
-				const module = await import("./error.server");
-
-				console.log(module);
-
-				singletonTrackErrorFn = module.trackError;
-			}
-		} catch (error) {
-			console.error(error);
-
-			throw error;
+		if (runtimeType !== "client") {
+			console.info(`Tracked a server error ${errorId}.`);
 		}
 	}
-
-	console.log(singletonTrackErrorFn);
-
-	return singletonTrackErrorFn;
 }
