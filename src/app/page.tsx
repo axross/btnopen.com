@@ -3,6 +3,7 @@ import { cacheLife } from "next/cache";
 import Image from "next/image";
 import { Markdown } from "@/components/markdown";
 import { GitHubIcon, LinkedInIcon, XcomIcon } from "@/components/social-icon";
+import { urlOrigin } from "@/config";
 import { BlogJsonLd } from "./_components/blog-json-jd";
 import { BrushGrunge } from "./_components/brush-grunge";
 import { PostList } from "./_components/post-list";
@@ -103,7 +104,7 @@ export async function generateMetadata(): Promise<Metadata> {
 				url:
 					publication.author.socialMediaLinks?.website ??
 					publication.author.socialMediaLinks?.github ??
-					publication.url,
+					urlOrigin,
 			},
 		],
 		creator: publication.author.name,
@@ -113,7 +114,6 @@ export async function generateMetadata(): Promise<Metadata> {
 			description: publication.descriptionSEO ?? undefined,
 			siteName: publication.title,
 			type: "website",
-			images: "/images/bio.webp",
 			locale: "ja_JP",
 		},
 	};

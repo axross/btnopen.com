@@ -41,10 +41,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 	const publication = await getPublication();
 
-	if (!publication) {
-		throw new Error("Failed to fetch publication.");
-	}
-
 	return {
 		title: {
 			template: `%s | ${publication.title}`,

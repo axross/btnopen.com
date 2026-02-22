@@ -12,7 +12,6 @@ export async function getPublication() {
 				publication(host: $host) {
 				  id
 					title
-					url
 					about {
 						markdown
 					}

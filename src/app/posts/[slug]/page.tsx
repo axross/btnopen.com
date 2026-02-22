@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ViewTransition } from "react";
 import { getPosts } from "@/app/_fetcher/get-posts";
 import { getPublication } from "@/app/_fetcher/get-publication";
+import { urlOrigin } from "@/config";
 import { BlogPostingJsonLd } from "./_components/blog-posting-json-ld";
 import { PostContent } from "./_components/post-content";
 import { getPost } from "./_fetcher/get-post";
@@ -104,7 +105,7 @@ export async function generateMetadata({
 				url:
 					post.author?.socialMediaLinks?.website ??
 					post.author?.socialMediaLinks?.github ??
-					publication.url,
+					urlOrigin,
 			},
 		],
 		creator: publication.author?.name,
@@ -113,7 +114,7 @@ export async function generateMetadata({
 			title: post.title,
 			description: post.seo?.description ?? post.brief,
 			siteName: publication.title,
-			url: `${publication.url}/posts/${post.slug}`,
+			url: `${urlOrigin}/posts/${post.slug}`,
 			type: "article",
 			publishedTime: post.publishedAt,
 			modifiedTime: post.updatedAt,
