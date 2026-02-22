@@ -1,6 +1,7 @@
 import { captureRequestError, init as initializeSentry } from "@sentry/nextjs";
 import type { Instrumentation } from "next";
 import { sentryDsn } from "@/config";
+import { runtimeType } from "@/runtime";
 
 let sentry: NonNullable<ReturnType<typeof initializeSentry>> | null = null;
 
@@ -11,7 +12,7 @@ export function trackError(error: Error): void {
 }
 
 export function initializeServerErrorTracking(): void {
-	if (sentryDsn) {
+	if (sentryDsn && (runtimeType === "node" || runtimeType === "edge")) {
 		const client = initializeSentry({
 			dsn: sentryDsn,
 			tracesSampleRate: 1,
