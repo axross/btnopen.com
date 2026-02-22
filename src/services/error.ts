@@ -6,6 +6,7 @@ export function trackError(error: Error): void {
 		console.error(error);
 	}
 
+	// biome-ignore lint/nursery/noFloatingPromises: it needs module imports for the sake of isomorphism
 	resolveTrackErrorFn().then((trackErrorFn) => trackErrorFn(error));
 }
 

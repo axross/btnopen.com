@@ -63,11 +63,12 @@ async function renderMarkdown({
 }
 
 function remarkPartialGfm(this: Processor<MdastRoot>) {
-	const data = this.data();
+	// biome-ignore lint/suspicious/noExplicitAny: there's no way to better type this
+	const data = this.data() as any;
 
 	data.micromarkExtensions ??= [];
 	data.fromMarkdownExtensions ??= [];
-	(data as any).toMarkdownExtensions ??= [];
+	data.toMarkdownExtensions ??= [];
 
 	data.micromarkExtensions.push(
 		combineExtensions([gfmStrikethrough(), gfmTable()]),
@@ -76,7 +77,7 @@ function remarkPartialGfm(this: Processor<MdastRoot>) {
 		gfmStrikethroughFromMarkdown(),
 		gfmTableFromMarkdown(),
 	]);
-	(data as any).toMarkdownExtensions.push(
+	data.toMarkdownExtensions.push(
 		combineHtmlExtensions([gfmStrikethroughHtml(), gfmTableHtml()]),
 	);
 }

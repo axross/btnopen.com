@@ -345,6 +345,17 @@
 			}
 		},
 		{
+			"includes": ["src/config.ts", "src/runtime.ts"],
+			"linter": {
+				"rules": {
+					"style": {
+						// off because some modules need to access process.env; these are only exceptions
+						"noProcessEnv": "off"
+					}
+				}
+			}
+		},
+		{
 			"includes": ["src/app/**/opengraph-image.tsx"],
 			"linter": {
 				"rules": {
@@ -361,7 +372,9 @@
 				"rules": {
 					"style": {
 						// off because config files are written in commonjs
-						"noCommonJs": "off"
+						"noCommonJs": "off",
+						// off because config files often need to access process.env
+						"noProcessEnv": "off"
 					}
 				}
 			}
@@ -378,7 +391,7 @@
 			}
 		},
 		{
-			"includes": ["package.json", "package-lock.json", "*.graphql"],
+			"includes": ["package.json", "package-lock.json", "**/*.graphql"],
 			"formatter": {
 				"enabled": false
 			}
