@@ -13,6 +13,7 @@ export async function getPosts() {
 					posts(first: 50) {
 						edges {
 							node {
+							  id
 								slug
 								title
 								brief

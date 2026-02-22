@@ -10,6 +10,7 @@ export async function getPublication() {
 				$host: String!
 			) {
 				publication(host: $host) {
+				  id
 					title
 					url
 					about {

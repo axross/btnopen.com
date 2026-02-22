@@ -12,6 +12,7 @@ export async function getPostMarkdown(slug: string) {
 			) {
 				publication(host: $host) {
 					post(slug: $slug) {
+					  id
 						content {
 							markdown
 						}

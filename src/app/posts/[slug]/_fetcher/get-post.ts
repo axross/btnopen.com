@@ -12,6 +12,7 @@ export async function getPost(slug: string) {
 			) {
 				publication(host: $host) {
 					post(slug: $slug) {
+					  id
 						slug
 						title
 						brief
