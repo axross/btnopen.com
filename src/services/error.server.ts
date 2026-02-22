@@ -1,29 +1,37 @@
-import { captureRequestError, init as initializeSentry } from "@sentry/nextjs";
+import {
+	captureException,
+	captureRequestError,
+	init as initializeSentry,
+} from "@sentry/nextjs";
 import type { Instrumentation } from "next";
 import { sentryDsn } from "@/config";
 import { runtimeType } from "@/runtime";
 
-let sentry: NonNullable<ReturnType<typeof initializeSentry>> | null = null;
-
 export function trackError(error: Error): void {
-	if (sentry) {
-		sentry.captureException(error);
+	if (sentryDsn) {
+		const errorId = captureException(error);
+
+		console.info(`Tracked a server error ${errorId}.`);
 	}
 }
 
 export function initializeServerErrorTracking(): void {
+	console.info("Started initializing server error tracking.");
+
 	if (sentryDsn && (runtimeType === "node" || runtimeType === "edge")) {
-		const client = initializeSentry({
+		console.info(`Started initializing sentry (runtime type: ${runtimeType}).`);
+
+		initializeSentry({
 			dsn: sentryDsn,
 			tracesSampleRate: 1,
 			enableLogs: true,
 			sendDefaultPii: true,
 		});
 
-		if (client) {
-			sentry = client;
-		}
+		console.info("Finished initializing sentry.");
 	}
+
+	console.info("Finished initializing server error tracking.");
 }
 
 export const onRequestError: Instrumentation.onRequestError = (

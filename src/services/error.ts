@@ -13,17 +13,32 @@ export function trackError(error: Error): void {
 let singletonTrackErrorFn: typeof trackError | null = null;
 
 async function resolveTrackErrorFn(): Promise<typeof trackError> {
-	if (!singletonTrackErrorFn) {
-		if (runtimeType === "server") {
-			const module = await import("./error.server");
 
-			singletonTrackErrorFn = module.trackError;
-		} else {
-			const module = await import("./error.client");
+	console.log("resolveTrackErrorFn()", singletonTrackErrorFn);
 
-			singletonTrackErrorFn = module.trackError;
+	if (singletonTrackErrorFn === null) {
+		console.log(runtimeType);
+
+		try {
+			if (runtimeType === "client") {
+				const module = await import("./error.client");
+
+				singletonTrackErrorFn = module.trackError;
+			} else {
+				const module = await import("./error.server");
+
+				console.log(module);
+
+				singletonTrackErrorFn = module.trackError;
+			}
+		} catch (error) {
+			console.error(error);
+
+			throw error;
 		}
 	}
+
+	console.log(singletonTrackErrorFn);
 
 	return singletonTrackErrorFn;
 }

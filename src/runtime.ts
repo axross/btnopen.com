@@ -1,4 +1,4 @@
-let resolvedRuntimeType = "unknown";
+let resolvedRuntimeType: "client" | "node" | "edge" | "unknown" = "unknown";
 
 if (typeof globalThis.window !== "undefined") {
 	resolvedRuntimeType = "client";
