@@ -139,11 +139,5 @@
 		.posts {
 			margin-block-start: var(--size-24);
 		}
-
-		.post {
-			color: unset;
-			text-decoration: unset;
-			border-radius: var(--radius-md);
-		}
 	}
 }

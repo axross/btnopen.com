@@ -16,6 +16,12 @@
 				--variant: "desktop";
 			}
 		}
+
+		.link {
+			color: unset;
+			text-decoration: unset;
+			border-radius: var(--radius-md);
+		}
 	}
 }
 
