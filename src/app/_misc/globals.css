@@ -10,6 +10,7 @@
 		scroll-padding: var(--size-32);
 		background-color: var(--neutral-0);
 		color-scheme: var(--theme);
+		scrollbar-color: var(--accent-7) var(--accent-2);
 
 		--theme: light;
 
