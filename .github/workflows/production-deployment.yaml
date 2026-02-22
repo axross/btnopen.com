@@ -1,19 +1,14 @@
-name: Preview Deployment
+name: Production Deployment
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 on:
-  pull_request:
-    types:
-      - opened
-      - reopened
-      - synchronize
-permissions:
-  issues: write
-  pull-requests: write
+  push:
+    branches:
+      - main
 jobs:
   prebuild:
-    name: Prebuild (Preview)
+    name: Prebuild (Production)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -28,7 +23,7 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
       - name: Pull Vercel Environment Information
-        run: npx vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build Project Artifacts
         run: npx vercel build --token=${{ secrets.VERCEL_TOKEN }}
       - name: Zip .next Directory
@@ -47,10 +42,19 @@ jobs:
           include-hidden-files: true
           retention-days: 1
           if-no-files-found: error
-  deployment:
-    name: Deployment (Preview)
+  promotion:
+    name: Promotion
     runs-on: ubuntu-latest
     needs: prebuild
+    environment: Production Promotion
+    timeout-minutes: 15
+    steps:
+      - name: Approved
+        run: echo "Approved"
+  deployment:
+    name: Deployment (Production)
+    runs-on: ubuntu-latest
+    needs: promotion
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
@@ -71,32 +75,7 @@ jobs:
         # upload-artifact restrictions on filenames including colons.
         run: unzip .next.zip
       - name: Pull Vercel Environment Information
-        run: npx vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
       - run: ls -al
       - name: Deploy Project Artifacts to Vercel
-        id: deployment
-        run: |
-          npx vercel deploy \
-            --prebuilt \
-            --token=${{ secrets.VERCEL_TOKEN }} \
-            > ${{ runner.temp }}/url.txt
-          echo "url=$(cat ${{runner.temp}}/url.txt)" >> $GITHUB_OUTPUT
-      - name: Previous Comment Retrieval
-        uses: peter-evans/find-comment@v4
-        id: previous-comment
-        with:
-          issue-number: ${{ github.event.number }}
-          comment-author: "github-actions[bot]"
-          body-includes: "<!-- deployment #${{ github.event.number }} -->"
-          direction: last
-      - name: Comment Create/Update
-        uses: peter-evans/create-or-update-comment@v5
-        with:
-          issue-number: ${{ github.event.number }}
-          comment-id: ${{ steps.previous-comment.outputs.comment-id }}
-          edit-mode: replace
-          body: |
-            <!-- deployment #${{ github.event.number }} -->
-            🚀 Deployed a preview for `${{ github.sha }}`:
-
-            ${{ steps.deployment.outputs.url }}
+        run: npx vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
