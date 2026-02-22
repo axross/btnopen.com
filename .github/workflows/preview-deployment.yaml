@@ -2,15 +2,18 @@ name: Preview Deployment
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+permissions:
+  issues: write
+  pull-requests: write
 on:
   pull_request:
     types:
       - opened
       - reopened
       - synchronize
-permissions:
-  issues: write
-  pull-requests: write
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   prebuild:
     name: Prebuild (Preview)
