@@ -28,7 +28,7 @@ jobs:
       - name: Pull Vercel Environment Information
         run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build Project Artifacts
-        run: npx vercel build --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel build --target=production --token=${{ secrets.VERCEL_TOKEN }}
       - name: Zip .next Directory
         # let's zip the .next directory to upload it as an artifact
         # because Next.js generates files with colons in their names like
@@ -81,4 +81,4 @@ jobs:
         run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
       - run: ls -al
       - name: Deploy Project Artifacts to Vercel
-        run: npx vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel deploy --prebuilt --target=production --token=${{ secrets.VERCEL_TOKEN }}
