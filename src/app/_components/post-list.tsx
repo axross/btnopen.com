@@ -18,7 +18,7 @@ export async function PostList({
 	return (
 		<ul className={clsx(css.postList, className)} {...props}>
 			{posts.map((post) => (
-				<Link href={`/posts/${post.slug}`} className={css.post} key={post.slug}>
+				<Link href={`/posts/${post.slug}`} className={css.link} key={post.slug}>
 					<PostListItem
 						slug={post.slug}
 						title={post.title}
