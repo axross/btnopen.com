@@ -2,6 +2,7 @@ import "./_misc/layers.css";
 import "./_misc/globals.css";
 import "./_misc/variables.css";
 
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import { cacheLife } from "next/cache";
 import {
@@ -78,6 +79,8 @@ export default function RootLayout({
 				<Suspense>
 					<PageViewTracking />
 				</Suspense>
+
+				<SpeedInsights />
 			</body>
 		</html>
 	);
