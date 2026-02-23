@@ -15,13 +15,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  prebuild:
-    name: Prebuild (Preview)
+  deployment:
+    name: Deployment (Preview)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
@@ -34,48 +33,6 @@ jobs:
         run: npx vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build Project Artifacts
         run: npx vercel build --token=${{ secrets.VERCEL_TOKEN }}
-      - name: Zip .next Directory
-        # let's zip the .next directory to upload it as an artifact
-        # because Next.js generates files with colons in their names like
-        # node:fs, which is not supported to be uploaded as an artifact.
-        run: zip -r .next.zip .next
-      - run: ls -al
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v6
-        with:
-          name: prebuild
-          path: |
-            .vercel/output
-            .next.zip
-          include-hidden-files: true
-          retention-days: 1
-          if-no-files-found: error
-  deployment:
-    name: Deployment (Preview)
-    runs-on: ubuntu-latest
-    needs: prebuild
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v6
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: "package.json"
-      - name: Install Dependencies
-        run: npm ci
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v7
-        with:
-          name: prebuild
-      - name: Unzip .next Directory
-        # let's unzip the .next directory that was zipped in order to avoid
-        # upload-artifact restrictions on filenames including colons.
-        run: unzip .next.zip
-      - name: Pull Vercel Environment Information
-        run: npx vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
-      - run: ls -al
       - name: Deploy Project Artifacts to Vercel
         id: deployment
         run: |
