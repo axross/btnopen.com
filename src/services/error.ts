@@ -4,7 +4,8 @@ import { isDevelopment, isSentryEnabled, runtimeType } from "@/runtime";
 
 export function trackError(error: Error): void {
 	if (isDevelopment) {
-		logger.error(error);
+		// biome-ignore lint/suspicious/noConsole: nextjs prints the error better in development
+		console.error(error);
 	}
 
 	if (isSentryEnabled) {

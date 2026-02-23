@@ -19,6 +19,7 @@
     "@apollo/client": "^4.1.5",
     "@apollo/client-integration-nextjs": "^0.14.4",
     "@logtape/logtape": "^2.0.2",
+    "@logtape/pretty": "^2.0.2",
     "@sentry/nextjs": "^10.39.0",
     "@shikijs/langs": "^3.22.0",
     "@shikijs/rehype": "^3.22.0",

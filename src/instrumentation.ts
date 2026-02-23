@@ -1,10 +1,11 @@
 import {
 	configure as configureLogtape,
-	getAnsiColorFormatter,
 	getConsoleSink,
 	getTextFormatter,
 } from "@logtape/logtape";
+import { getPrettyFormatter } from "@logtape/pretty";
 import { captureRequestError } from "@sentry/nextjs";
+import { formatDate } from "date-fns";
 import { sentryDsn } from "@/config";
 import { logger } from "@/logger";
 import { isDevelopment, runtimeType } from "@/runtime";
@@ -14,11 +15,11 @@ export async function register() {
 		sinks: {
 			console: getConsoleSink({
 				formatter: isDevelopment
-					? getAnsiColorFormatter({
-							timestamp: "time",
+					? getPrettyFormatter({
+							timestamp: (timestamp) => formatDate(timestamp, "HH:mm:ss.SSS"),
+							level: () => "",
 						})
 					: getTextFormatter({
-							timestamp: "none",
 							format: (values) => values.message,
 						}),
 			}),
