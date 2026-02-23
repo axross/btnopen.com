@@ -29,7 +29,17 @@ async function IndexPage() {
 
 							<BrushGrunge
 								aria-label="Background"
-								className={css.portraitBackground}
+								className={css.portraitGrunge}
+							/>
+
+							<BrushGrunge
+								aria-label="Background"
+								className={css.portraitGrungeGlitchFirst}
+							/>
+
+							<BrushGrunge
+								aria-label="Background"
+								className={css.portraitGrungeGlitchSecond}
 							/>
 						</div>
 
