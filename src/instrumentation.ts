@@ -34,23 +34,15 @@ export async function register() {
 
 	logger.debug("Started initializing server error tracking.");
 
-	if (sentryDsn && (runtimeType === "node" || runtimeType === "edge")) {
+	if (sentryDsn) {
 		logger.debug(`Started initializing sentry (runtime type: ${runtimeType}).`);
 
-		try {
-			const { init: initializeSentry } = await import("@sentry/nextjs");
+		if (runtimeType === "node") {
+			await import("../sentry.server.config");
+		}
 
-			initializeSentry({
-				dsn: sentryDsn,
-				tracesSampleRate: 1,
-				enableLogs: true,
-				sendDefaultPii: true,
-			});
-		} catch (error) {
-			logger.error("Failed to initialize sentry.");
-			logger.error(
-				error instanceof Error ? (error.stack ?? error.message) : `${error}`,
-			);
+		if (runtimeType === "edge") {
+			await import("../sentry.edge.config");
 		}
 
 		logger.debug("Finished initializing sentry.");
