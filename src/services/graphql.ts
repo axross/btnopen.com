@@ -11,6 +11,7 @@ import {
 } from "@apollo/client-integration-nextjs";
 import { map } from "rxjs";
 import { rootLogger } from "@/logger";
+import { trackError } from "@/services/error";
 
 const hashnodeGraphqlEndpoint = "https://gql.hashnode.com";
 
@@ -31,7 +32,7 @@ export const { getClient, query, PreloadQuery } = registerApolloClient(
 					return forward(operation).pipe(
 						map((result) => {
 							logger.debug(
-								`Received the result for a GraphQL operation (name: ${operation.operationName})}) in ${(performance.now() - startedAt).toFixed(2)} ms.`,
+								`Received the result for a GraphQL operation (name: ${operation.operationName}) in ${(performance.now() - startedAt).toFixed(2)} ms.`,
 							);
 
 							return result;
@@ -40,32 +41,36 @@ export const { getClient, query, PreloadQuery } = registerApolloClient(
 				}),
 				new ErrorLink(({ error, operation }) => {
 					if (CombinedGraphQLErrors.is(error)) {
-						for (const { message, locations, path } of error.errors) {
-							logger.error(
-								`Failed to perform GraphQL operation ${operation.operationName} due to GraphQL errors. Message: ${message}, Location: ${locations}, Path: ${path}`,
-							);
-						}
+						trackError(
+							new Error(
+								`Failed to perform GraphQL operation ${operation.operationName} due to GraphQL errors.`,
+							),
+							{
+								extra: {
+									errors: error.errors,
+								},
+							},
+						);
 
 						return;
 					}
 
 					if (CombinedProtocolErrors.is(error)) {
-						logger.error(
-							`Failed to perform GraphQL operation ${operation.operationName} due to protocol errors.`,
+						trackError(
+							new Error(
+								`Failed to perform GraphQL operation ${operation.operationName} due to protocol errors.`,
+							),
+							{
+								extra: {
+									errors: error.errors,
+								},
+							},
 						);
-
-						for (const { message, extensions } of error.errors) {
-							logger.error(
-								`Failed to perform GraphQL operation ${operation.operationName} due to protocol errors. Message: ${message}, Extensions: ${JSON.stringify(
-									extensions,
-								)}`,
-							);
-						}
 
 						return;
 					}
 
-					logger.error(`[Network error]: ${error}`);
+					trackError(error);
 				}),
 				new HttpLink({
 					uri: hashnodeGraphqlEndpoint,
