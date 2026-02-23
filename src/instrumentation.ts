@@ -4,7 +4,7 @@ import {
 	getConsoleSink,
 	getTextFormatter,
 } from "@logtape/logtape";
-import { captureRequestError, init as initializeSentry } from "@sentry/nextjs";
+import { captureRequestError } from "@sentry/nextjs";
 import { sentryDsn } from "@/config";
 import { logger } from "@/logger";
 import { isDevelopment, runtimeType } from "@/runtime";
@@ -36,12 +36,21 @@ export async function register() {
 	if (sentryDsn && (runtimeType === "node" || runtimeType === "edge")) {
 		logger.debug(`Started initializing sentry (runtime type: ${runtimeType}).`);
 
-		initializeSentry({
-			dsn: sentryDsn,
-			tracesSampleRate: 1,
-			enableLogs: true,
-			sendDefaultPii: true,
-		});
+		try {
+			const { init: initializeSentry } = await import("@sentry/nextjs");
+
+			initializeSentry({
+				dsn: sentryDsn,
+				tracesSampleRate: 1,
+				enableLogs: true,
+				sendDefaultPii: true,
+			});
+		} catch (error) {
+			logger.error("Failed to initialize sentry.");
+			logger.error(
+				error instanceof Error ? (error.stack ?? error.message) : `${error}`,
+			);
+		}
 
 		logger.debug("Finished initializing sentry.");
 	}
