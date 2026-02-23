@@ -4,7 +4,11 @@ import Image from "next/image";
 import { Markdown } from "@/components/markdown";
 import { urlOrigin } from "@/config";
 import { BlogJsonLd } from "./_components/blog-json-jd";
-import { BrushGrunge } from "./_components/brush-grunge";
+import {
+	BrushGrunge,
+	BrushGrungeLeftOutline,
+	BrushGrungeRightOutline,
+} from "./_components/brush-grunge";
 import { PostList } from "./_components/post-list";
 import { SocialLinkList } from "./_components/social-link-list";
 import { getPublication } from "./_fetcher/get-publication";
@@ -32,12 +36,12 @@ async function IndexPage() {
 								className={css.portraitGrunge}
 							/>
 
-							<BrushGrunge
+							<BrushGrungeLeftOutline
 								aria-label="Background"
 								className={css.portraitGrungeGlitchFirst}
 							/>
 
-							<BrushGrunge
+							<BrushGrungeRightOutline
 								aria-label="Background"
 								className={css.portraitGrungeGlitchSecond}
 							/>
