@@ -1,12 +1,40 @@
+import {
+	configure as configureLogtape,
+	getAnsiColorFormatter,
+	getConsoleSink,
+	getTextFormatter,
+} from "@logtape/logtape";
 import { captureRequestError, init as initializeSentry } from "@sentry/nextjs";
-import { sentryDsn } from "./config";
-import { runtimeType } from "./runtime";
+import { sentryDsn } from "@/config";
+import { logger } from "@/logger";
+import { isDevelopment, runtimeType } from "@/runtime";
 
 export async function register() {
-	console.info("Started initializing server error tracking.");
+	await configureLogtape({
+		sinks: {
+			console: getConsoleSink({
+				formatter: isDevelopment
+					? getAnsiColorFormatter({
+							timestamp: "time",
+						})
+					: getTextFormatter({
+							timestamp: "none",
+							format: (values) => values.message,
+						}),
+			}),
+		},
+		loggers: [
+			{
+				category: [],
+				sinks: ["console"],
+			},
+		],
+	});
+
+	logger.debug("Started initializing server error tracking.");
 
 	if (sentryDsn && (runtimeType === "node" || runtimeType === "edge")) {
-		console.info(`Started initializing sentry (runtime type: ${runtimeType}).`);
+		logger.debug(`Started initializing sentry (runtime type: ${runtimeType}).`);
 
 		initializeSentry({
 			dsn: sentryDsn,
@@ -15,10 +43,10 @@ export async function register() {
 			sendDefaultPii: true,
 		});
 
-		console.info("Finished initializing sentry.");
+		logger.debug("Finished initializing sentry.");
 	}
 
-	console.info("Finished initializing server error tracking.");
+	logger.debug("Finished initializing server error tracking.");
 }
 
 export const onRequestError = captureRequestError;

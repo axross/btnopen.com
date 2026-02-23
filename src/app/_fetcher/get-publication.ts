@@ -1,8 +1,11 @@
 import { hashnodePublicationHost } from "@/config";
+import { logger } from "@/logger";
 import { gql, query } from "@/services/graphql";
 
 export async function getPublication() {
 	"use cache";
+
+	logger.debug("Started fetching publication.");
 
 	const result = await query({
 		query: gql(`
@@ -31,6 +34,8 @@ export async function getPublication() {
 		`),
 		variables: { host: hashnodePublicationHost },
 	});
+
+	logger.debug("Finished fetching publication.");
 
 	if (result.data?.publication) {
 		const publication = result.data.publication;
