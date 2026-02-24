@@ -73,13 +73,11 @@
 
 		.portraitGrunge {
 			right: 0;
-			color: var(--accent-9);
 			z-index: -5;
 		}
 
 		.portraitGrungeGlitchFirst {
 			right: -2px;
-			color: oklch(from var(--accent-9) l c calc(h - 4));
 			--grunge-outline: oklch(from var(--accent-9) l c calc(h - 32));
 			background-color: var(--neutral-0);
 			animation: noise-fast 2s infinite linear alternate-reverse;
@@ -88,7 +86,6 @@
 
 		.portraitGrungeGlitchSecond {
 			right: 2px;
-			color: oklch(from var(--accent-9) l c calc(h + 4));
 			--grunge-outline: oklch(from var(--accent-9) l c calc(h + 32));
 			background-color: var(--neutral-0);
 			animation: noise-slow 15s infinite linear alternate-reverse;
