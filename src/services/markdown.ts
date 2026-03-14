@@ -35,6 +35,7 @@ async function renderMarkdown({
 		.use(remarkParse)
 		.use(remarkDirective)
 		.use(remarkPartialGfm)
+		.use(remarkMedia)
 		.use(remarkHashnodeEmbeds)
 		.use(remarkRehype, {
 			passThrough: ["leafDirective"],
@@ -80,6 +81,14 @@ function remarkPartialGfm(this: Processor<MdastRoot>) {
 	data.toMarkdownExtensions.push(
 		combineHtmlExtensions([gfmStrikethroughHtml(), gfmTableHtml()]),
 	);
+}
+
+function remarkMedia() {
+	return (tree: MdastRoot) => {
+		visit(tree, "image", (node) => {
+			console.log(node);
+		});
+	};
 }
 
 const embedRegex = /^%\[(.*)\]$/;

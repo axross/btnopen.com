@@ -1,5 +1,18 @@
-import { getLogger } from "@logtape/logtape";
+import { pino } from "pino";
+import { isDevelopment } from "./runtime";
 
-export const logger = getLogger(["app"]);
-
-export const rootLogger = getLogger([]);
+export const rootLogger = pino(
+	isDevelopment
+		? {
+				level: "trace",
+				transport: {
+					target: "pino-pretty",
+					options: {
+						colorize: true,
+					},
+				},
+			}
+		: {
+				level: "info",
+			},
+);

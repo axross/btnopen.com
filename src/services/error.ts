@@ -1,6 +1,8 @@
 import { captureException } from "@sentry/nextjs";
-import { logger } from "@/logger";
+import { rootLogger } from "@/logger";
 import { isDevelopment, isSentryEnabled, runtimeType } from "@/runtime";
+
+const logger = rootLogger.child({}, { msgPrefix: "🐞 " });
 
 export function trackError(
 	error: Error,
