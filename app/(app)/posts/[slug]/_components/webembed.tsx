@@ -26,7 +26,11 @@ async function WebEmbed({
 			className={clsx(css.webembed, className)}
 			{...props}
 		>
-			{embedMetadata.imageUrl !== null ? (
+			{embedMetadata.imageUrl === null ? (
+				<div className={css.fallbackImage}>
+					<FallbackIllustration className={css.fallbackImageIllustration} />
+				</div>
+			) : (
 				<Image
 					src={embedMetadata.imageUrl}
 					alt={title ?? embedMetadata.title ?? href}
@@ -35,15 +39,11 @@ async function WebEmbed({
 					unoptimized
 					className={css.image}
 				/>
-			) : (
-				<div className={css.fallbackImage}>
-					<FallbackIllustration className={css.fallbackImageIllustration} />
-				</div>
 			)}
 
 			<span className={css.title}>{title ?? embedMetadata.title ?? href}</span>
 
-			{embedMetadata.description !== null ? (
+			{embedMetadata.description === null ? (
 				<span className={css.description}>{embedMetadata.description}</span>
 			) : null}
 

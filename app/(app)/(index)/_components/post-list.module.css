@@ -54,6 +54,7 @@
 				row-gap: var(--size-16);
 				background-color: unset;
 
+				/* biome-ignore lint/suspicious/noDuplicateCustomProperties: biome doesn't understand @scope */
 				--variant: "desktop";
 
 				&:hover {
