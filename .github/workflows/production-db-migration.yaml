@@ -1,0 +1,36 @@
+name: Production DB Migration
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+on:
+  repository_dispatch:
+    types:
+      - "vercel.deployment.ready"
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+jobs:
+  migration:
+    name: DB Migration
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      actions: read
+      statuses: write
+    steps:
+      - name: "notify vercel"
+        uses: "vercel/repository-dispatch/actions/status@v1"
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: "package.json"
+      - name: Install Dependencies
+        run: npm ci
+      - name: Pull Vercel Environment Information
+        run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Push Database Migrations
+        run: npx payload migrate | npx pino-pretty
