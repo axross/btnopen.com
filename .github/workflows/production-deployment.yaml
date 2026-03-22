@@ -37,5 +37,7 @@ jobs:
         run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build Project Artifacts
         run: npx vercel build --target=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Push Database Migrations
+        run: npx payload migrate | npx pino-pretty
       - name: Deploy Project Artifacts to Vercel
         run: npx vercel deploy --prebuilt --target=production --token=${{ secrets.VERCEL_TOKEN }}

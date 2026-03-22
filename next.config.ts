@@ -1,3 +1,4 @@
+import { withPayload } from "@payloadcms/next/withPayload";
 import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
@@ -9,11 +10,14 @@ const sentryProject = process.env.SENTRY_PROJECT;
 
 const nextConfig: NextConfig = {
 	reactCompiler: true,
-	cacheComponents: true,
 	images: {
-		remotePatterns: [new URL("https://cdn.hashnode.com/res/hashnode/**")],
+		remotePatterns: [
+			new URL("http://localhost:3000/api/**"),
+			new URL("https://cdn.hashnode.com/res/hashnode/**"),
+		],
 	},
-	serverExternalPackages: ["re2"],
+	serverExternalPackages: ["re2", "pino", "pino-pretty"],
+	// logging: false,
 	experimental: {
 		viewTransition: true,
 	},
@@ -29,7 +33,7 @@ const nextConfig: NextConfig = {
 	],
 };
 
-export default withSentryConfig(nextConfig, {
+export default withSentryConfig(withPayload(nextConfig), {
 	org: sentryOrg,
 	project: sentryProject,
 	silent: !isCi,

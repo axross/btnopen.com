@@ -23,7 +23,9 @@
 			}
 		],
 		"paths": {
-			"@/*": ["./src/*"]
+			"@/*": ["./app/(app)/_/*"],
+			"@/payload-config": ["./payload.config.ts"],
+			"@/payload/editor": ["./payload/helpers/editor.ts"]
 		}
 	},
 	"include": [

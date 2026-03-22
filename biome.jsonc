@@ -13,7 +13,9 @@
 			"!.next",
 			"!dist",
 			"!build",
-			"!src/services/graphql/generated"
+			"!payload/types.ts",
+			"!payload/migrations",
+			"!app/(payload)/admin/importMap.js"
 		]
 	},
 	"formatter": {
@@ -330,11 +332,7 @@
 			}
 		},
 		{
-			"includes": [
-				"src/app/**/*.tsx",
-				"src/app/sitemap.ts",
-				"src/app/robots.ts"
-			],
+			"includes": ["app/**/*.tsx", "app/sitemap.ts", "app/robots.ts"],
 			"linter": {
 				"rules": {
 					"style": {
@@ -345,18 +343,7 @@
 			}
 		},
 		{
-			"includes": ["src/config.ts", "src/runtime.ts"],
-			"linter": {
-				"rules": {
-					"style": {
-						// off because some modules need to access process.env; these are only exceptions
-						"noProcessEnv": "off"
-					}
-				}
-			}
-		},
-		{
-			"includes": ["src/app/**/opengraph-image.tsx"],
+			"includes": ["app/**/opengraph-image.tsx"],
 			"linter": {
 				"rules": {
 					"correctness": {
@@ -380,7 +367,7 @@
 			}
 		},
 		{
-			"includes": ["*.config.ts", "*.config.cts", "codegen.ts"],
+			"includes": ["*.config.ts", "*.config.mts", "*.config.cts", "codegen.ts"],
 			"linter": {
 				"rules": {
 					"style": {

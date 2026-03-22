@@ -1,0 +1,5 @@
+{
+	"minimumLevel": "trace",
+  "ignore": "pid,hostname,module",
+	"messageFormat": "{module} {msg}"
+}

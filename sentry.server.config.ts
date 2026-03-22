@@ -1,5 +1,5 @@
 import { init as initializeSentry } from "@sentry/nextjs";
-import { sentryDsn } from "@/config";
+import { sentryDsn } from "@/runtime";
 
 initializeSentry({
 	dsn: sentryDsn,
