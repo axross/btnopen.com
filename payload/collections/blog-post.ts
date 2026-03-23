@@ -17,30 +17,46 @@ export const blogPostCollection: CollectionConfig = {
 			type: "text",
 			required: true,
 			unique: true,
-		},
-		{
-			name: "author",
-			type: "relationship",
-			relationTo: "users",
-			required: true,
+			admin: {
+				position: "sidebar",
+			},
 		},
 		{
 			name: "coverImage",
 			type: "upload",
 			relationTo: "cover-images",
 			required: true,
+			admin: {
+				position: "sidebar",
+			},
+		},
+
+		{
+			name: "brief",
+			type: "textarea",
+			required: true,
+			localized: true,
+			admin: {
+				position: "sidebar",
+			},
 		},
 		{
 			name: "tags",
 			type: "relationship",
 			relationTo: "tags",
 			hasMany: true,
+			admin: {
+				position: "sidebar",
+			},
 		},
 		{
-			name: "brief",
-			type: "textarea",
+			name: "author",
+			type: "relationship",
+			relationTo: "users",
 			required: true,
-			localized: true,
+			admin: {
+				position: "sidebar",
+			},
 		},
 		{
 			name: "body",

@@ -197,10 +197,10 @@ export interface BlogPost {
   id: number;
   title: string;
   slug: string;
-  author: number | User;
   coverImage: string | CoverImage;
-  tags?: (number | Tag)[] | null;
   brief: string;
+  tags?: (number | Tag)[] | null;
+  author: number | User;
   body: {
     root: {
       type: string;
@@ -402,10 +402,10 @@ export interface UsersSelect<T extends boolean = true> {
 export interface BlogPostsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
-  author?: T;
   coverImage?: T;
-  tags?: T;
   brief?: T;
+  tags?: T;
+  author?: T;
   body?: T;
   updatedAt?: T;
   createdAt?: T;
