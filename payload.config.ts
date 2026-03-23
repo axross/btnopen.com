@@ -34,6 +34,35 @@ export default buildConfig({
 		coverImageCollection,
 		avatarImageCollection,
 	],
+	db: sqliteAdapter({
+		client:
+			libsqlUrl && libsqlToken
+				? { url: libsqlUrl, authToken: libsqlToken }
+				: { url: "file:.data/payload.db" },
+		migrationDir: resolve(selfDirname, "./payload/migrations"),
+		push: false,
+	}),
+	// biome-ignore lint/style/useNamingConvention: to follow the spec
+	graphQL: {
+		disable: true,
+	},
+	localization: {
+		locales: [
+			{
+				label: "English (US)",
+				code: "en-US",
+				fallbackLocale: "ja-JP",
+			},
+			{
+				label: "日本語",
+				code: "ja-JP",
+			},
+		],
+		defaultLocale: "ja-JP",
+	},
+	editor,
+	sharp,
+	logger,
 	admin: {
 		livePreview: {
 			breakpoints: [
@@ -58,34 +87,9 @@ export default buildConfig({
 			],
 		},
 	},
-	logger,
-	db: sqliteAdapter({
-		client:
-			libsqlUrl && libsqlToken
-				? { url: libsqlUrl, authToken: libsqlToken }
-				: { url: "file:.data/payload.db" },
-		migrationDir: resolve(selfDirname, "./payload/migrations"),
-		push: false,
-	}),
-	editor,
 	typescript: {
 		outputFile: resolve(selfDirname, "./payload/types.ts"),
 	},
-	localization: {
-		locales: [
-			{
-				label: "English (US)",
-				code: "en-US",
-				fallbackLocale: "ja-JP",
-			},
-			{
-				label: "日本語",
-				code: "ja-JP",
-			},
-		],
-		defaultLocale: "ja-JP",
-	},
-	sharp,
 	plugins: [
 		...(vercelBlobToken
 			? [

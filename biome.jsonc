@@ -378,7 +378,7 @@
 			}
 		},
 		{
-			"includes": ["package.json", "package-lock.json", "**/*.graphql"],
+			"includes": ["package.json", "package-lock.json"],
 			"formatter": {
 				"enabled": false
 			}
