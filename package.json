@@ -13,6 +13,7 @@
     "start": "next start | pino-pretty",
     "migrate:status": "payload migrate:status | pino-pretty",
     "migrate:create": "payload migrate:create | pino-pretty",
+    "migrate:up": "payload migrate | pino-pretty",
     "lint": "biome check",
     "format": "biome format --write"
   },
