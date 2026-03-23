@@ -18,7 +18,7 @@ jobs:
       actions: read
       statuses: write
     steps:
-      - name: "notify vercel"
+      - name: Notify Vercel
         uses: "vercel/repository-dispatch/actions/status@v1"
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
