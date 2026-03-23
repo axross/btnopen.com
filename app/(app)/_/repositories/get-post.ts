@@ -13,7 +13,7 @@ const BlogPostDetail = PayloadBlogPost.transform((post) => ({
 	tags: post.tags,
 	thumbnailImage: post.coverImage.sizes.og,
 	author: post.author,
-	publishedAt: post.createdAt,
+	publishedAt: post.publishedAt ?? post.createdAt,
 	updatedAt: post.updatedAt,
 }));
 

@@ -11,7 +11,7 @@ const BlogPostSummary = PayloadBlogPost.transform((post) => ({
 	title: post.title,
 	brief: post.brief,
 	thumbnailImage: post.coverImage.sizes.og,
-	publishedAt: post.createdAt,
+	publishedAt: post.publishedAt ?? post.createdAt,
 	updatedAt: post.updatedAt,
 }));
 

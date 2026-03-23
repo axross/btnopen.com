@@ -54,6 +54,7 @@ export const PayloadBlogPost = z.object({
 		}),
 	}),
 	author: PayloadUser,
+	publishedAt: z.iso.datetime().optional(),
 	createdAt: z.iso.datetime(),
 	updatedAt: z.iso.datetime(),
 });

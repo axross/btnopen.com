@@ -2,7 +2,6 @@ import type { CollectionConfig } from "payload";
 import { urlOrigin } from "@/runtime";
 import { logger } from "../helpers/logger";
 
-
 export const blogPostCollection: CollectionConfig = {
 	slug: "blog-posts",
 	fields: [
@@ -56,6 +55,17 @@ export const blogPostCollection: CollectionConfig = {
 			required: true,
 			admin: {
 				position: "sidebar",
+			},
+		},
+		{
+			name: "publishedAt",
+			type: "date",
+			admin: {
+				position: "sidebar",
+				date: {
+					pickerAppearance: "dayOnly",
+					displayFormat: "yyyy/MM/dd",
+				},
 			},
 		},
 		{

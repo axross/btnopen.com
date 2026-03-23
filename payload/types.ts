@@ -201,6 +201,7 @@ export interface BlogPost {
   brief: string;
   tags?: (number | Tag)[] | null;
   author: number | User;
+  publishedAt?: string | null;
   body: {
     root: {
       type: string;
@@ -406,6 +407,7 @@ export interface BlogPostsSelect<T extends boolean = true> {
   brief?: T;
   tags?: T;
   author?: T;
+  publishedAt?: T;
   body?: T;
   updatedAt?: T;
   createdAt?: T;
