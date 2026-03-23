@@ -5,7 +5,7 @@ import { rootLogger } from "@/logger";
 const logger = rootLogger.child({ module: "🌏" });
 
 export async function DELETE(_: NextRequest) {
-	revalidatePath("/");
+	revalidatePath("/", "page");
 
 	logger.info("Revalidated all post caches.");
 

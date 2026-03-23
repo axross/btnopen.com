@@ -14,7 +14,7 @@ export async function DELETE(
 ) {
 	const { slug } = await params;
 
-	revalidatePath(`/posts/${slug}`);
+	revalidatePath(`/posts/${slug}`, "page");
 
 	logger.info({ slug }, "Revalidated the post cache.");
 
