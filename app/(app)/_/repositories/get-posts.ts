@@ -22,7 +22,7 @@ export async function getPosts({
 }: {
 	draft?: boolean;
 } = {}): Promise<BlogPostSummary[]> {
-	logger.debug("Started fetching posts.");
+	logger.info("Started fetching posts.");
 
 	const payload = await getPayload({ config });
 	const result = await payload.find({
@@ -61,7 +61,7 @@ export async function getPosts({
 		}
 	}
 
-	logger.debug("Finished fetching posts.");
+	logger.info("Finished fetching posts.");
 
 	return posts;
 }

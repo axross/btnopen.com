@@ -1,5 +1,7 @@
 import type { CollectionConfig } from "payload";
 import { urlOrigin } from "@/runtime";
+import { logger } from "../helpers/logger";
+
 
 export const blogPostCollection: CollectionConfig = {
 	slug: "blog-posts",
@@ -64,9 +66,19 @@ export const blogPostCollection: CollectionConfig = {
 					operation === "delete" ||
 					operation === "updateByID"
 				) {
+					logger.info(
+						{ operation },
+						"Started requesting to clear all post caches.",
+					);
+
 					await fetch(`${urlOrigin}/posts/caches`, {
 						method: "DELETE",
 					});
+
+					logger.info(
+						{ operation },
+						"Finished requesting to clear all post caches.",
+					);
 
 					let docs: { slug?: string | null }[] = [];
 
@@ -77,24 +89,25 @@ export const blogPostCollection: CollectionConfig = {
 					}
 
 					await Promise.all(
-						docs.map((doc) => {
+						docs.map(async (doc) => {
 							if (doc.slug) {
-								return fetch(`${urlOrigin}/posts/${result.slug}/caches`, {
+								logger.info(
+									{ operation, slug: doc.slug },
+									"Started requesting to clear post cache.",
+								);
+
+								await fetch(`${urlOrigin}/posts/${doc.slug}/caches`, {
 									method: "DELETE",
 								});
-							}
 
-							return Promise.resolve();
+								logger.info(
+									{ operation, slug: doc.slug },
+									"Finished requesting to clear post cache.",
+								);
+							}
 						}),
 					);
 				}
-			},
-		],
-		afterChange: [
-			async ({ doc }) => {
-				await fetch(`${urlOrigin}/posts/${doc.slug}/caches`, {
-					method: "DELETE",
-				});
 			},
 		],
 	},

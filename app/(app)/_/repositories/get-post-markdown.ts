@@ -16,7 +16,7 @@ export async function getPostMarkdown({
 	slug: string;
 	draft?: boolean;
 }) {
-	logger.debug({ slug, draft }, "Started fetching post markdown.");
+	logger.info({ slug, draft }, "Started fetching post markdown.");
 
 	const payload = await getPayload({ config });
 	const result = await payload.find({
@@ -45,7 +45,7 @@ export async function getPostMarkdown({
 			}),
 		});
 
-		logger.debug({ slug }, "Finished fetching post markdown.");
+		logger.info({ slug }, "Finished fetching post markdown.");
 
 		return markdown;
 	}

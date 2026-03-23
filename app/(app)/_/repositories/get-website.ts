@@ -28,7 +28,7 @@ export async function getWebsite({
 }: {
 	draft?: boolean;
 } = {}): Promise<Website | null> {
-	logger.debug("Started fetching website record.");
+	logger.info("Started fetching website record.");
 
 	const payload = await getPayload({ config });
 	const doc = await payload.findGlobal({
@@ -61,12 +61,12 @@ export async function getWebsite({
 			}),
 		});
 
-		logger.debug("Successfully fetched the website record.");
+		logger.info("Successfully fetched the website record.");
 
 		return website;
 	}
 
-	logger.debug(
+	logger.info(
 		"Failed to fetch the website record. You need to set up the website in the admin dashboard.",
 	);
 

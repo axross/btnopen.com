@@ -4,7 +4,6 @@ import { sqliteAdapter } from "@payloadcms/db-sqlite";
 import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob";
 import { buildConfig } from "payload";
 import sharp from "sharp";
-import { rootLogger } from "@/logger";
 import { avatarImageCollection } from "./payload/collections/avatar-image";
 import { blogPostCollection } from "./payload/collections/blog-post";
 import { coverImageCollection } from "./payload/collections/cover-image";
@@ -13,6 +12,7 @@ import { tagCollection } from "./payload/collections/tag";
 import { userCollection } from "./payload/collections/user";
 import { websiteGlobal } from "./payload/globals/website";
 import { editor } from "./payload/helpers/editor";
+import { logger } from "./payload/helpers/logger";
 
 // biome-ignore-start lint/style/noProcessEnv: only place accessing env vars in payload realm
 const payloadSecret = process.env.PAYLOAD_SECRET ?? "local";
@@ -58,7 +58,7 @@ export default buildConfig({
 			],
 		},
 	},
-	logger: rootLogger.child({ module: "🚢" }),
+	logger,
 	db: sqliteAdapter({
 		client:
 			libsqlUrl && libsqlToken

@@ -26,7 +26,7 @@ export async function getPost({
 	slug: string;
 	draft?: boolean;
 }): Promise<BlogPostDetail | null> {
-	logger.debug({ slug, draft }, "Started fetching post.");
+	logger.info({ slug, draft }, "Started fetching post.");
 
 	const payload = await getPayload({ config });
 	const result = await payload.find({
@@ -53,12 +53,12 @@ export async function getPost({
 	});
 
 	if (result.docs.length > 0) {
-		logger.debug({ slug }, "Successfully fetched post.");
+		logger.info({ slug }, "Successfully fetched post.");
 
 		return BlogPostDetail.parse(result.docs[0]);
 	}
 
-	logger.debug({ slug }, "Failed to fetch post because it was not found.");
+	logger.info({ slug }, "Failed to fetch post because it was not found.");
 
 	return null;
 }
