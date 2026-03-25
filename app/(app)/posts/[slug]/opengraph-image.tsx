@@ -1,8 +1,9 @@
 import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { dirname, resolve } from "node:path";
 import { notFound } from "next/navigation";
 import { ImageResponse } from "next/og";
 import { getPost } from "@/repositories/get-post";
+import { urlOrigin } from "@/runtime";
 import type { PageProps } from "./page-props";
 
 export const size = {
@@ -12,12 +13,13 @@ export const size = {
 
 export const contentType = "image/png";
 
-export default async function Image({ params, searchParams }: PageProps) {
+const selfDirname = dirname(new URL(import.meta.url).pathname);
+
+export default async function Image({ params }: Pick<PageProps, "params">) {
 	const { slug } = await params;
-	const { draft } = await searchParams;
 	const [post, ibmPlexSansJpBold] = await Promise.all([
-		getPost({ slug, draft: draft === "true" }),
-		readFile(join(process.cwd(), "src/assets/fonts/ibm-plex-sans-jp-700.ttf")),
+		getPost({ slug, draft: true }),
+		readFile(resolve(selfDirname, "./_assets/ibm-plex-sans-jp-700.ttf")),
 	]);
 
 	if (!post) {
@@ -45,7 +47,7 @@ export default async function Image({ params, searchParams }: PageProps) {
 					left: 0,
 					right: 0,
 					bottom: 0,
-					backgroundImage: `url(${post.thumbnailImage.url})`,
+					backgroundImage: `url(${new URL(post.thumbnailImage.url, urlOrigin)})`,
 					backgroundSize: "cover",
 					filter: "sepia(1) saturate(1.5) hue-rotate(215deg) brightness(0.333)",
 				}}

@@ -1,7 +1,7 @@
 import type { CollectionConfig } from "payload";
 import { v7 as uuidV7 } from "uuid";
 import {
-	createWebpImageSize,
+	createPngImageSize,
 	getStaticDir,
 	webpFormatOptions,
 } from "../helpers/image";
@@ -18,7 +18,7 @@ export const coverImageCollection: CollectionConfig = {
 			width: 2560,
 			height: 1344,
 		},
-		imageSizes: [createWebpImageSize({ name: "og", width: 1200, height: 630 })],
+		imageSizes: [createPngImageSize({ name: "og", width: 1200, height: 630 })],
 	},
 	fields: [
 		{

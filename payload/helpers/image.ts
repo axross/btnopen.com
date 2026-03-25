@@ -19,7 +19,7 @@ export const webpFormatOptions: ImageUploadFormatOptions = {
 	},
 };
 
-export function createWebpImageSize({
+export function createPngImageSize({
 	name,
 	width,
 	height,
@@ -41,7 +41,15 @@ export function createWebpImageSize({
 		position: "center",
 		// if the image is smaller than the image size, return the original image
 		withoutEnlargement: true,
-		formatOptions: webpFormatOptions,
+		formatOptions: {
+			format: "png",
+			options: {
+				quality: 100,
+				smartSubsample: true,
+				smartDeblock: true,
+				effort: 4,
+			},
+		},
 		generateImageName: ({ originalName, sizeName, extension }) =>
 			`${originalName}-${sizeName}.${extension}`,
 	};
