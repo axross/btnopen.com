@@ -6,6 +6,8 @@ nextEnv.loadEnvConfig(process.cwd());
 
 // biome-ignore-start lint/style/noProcessEnv: config needs to access env-vars
 const isCI = !!process.env.CI;
+const vercelAutomationBypassSecret =
+	process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
 // biome-ignore-end lint/style/noProcessEnv: config needs to access env-vars
 
 export default defineConfig({
@@ -17,6 +19,12 @@ export default defineConfig({
 	reporter: isCI ? "github" : "line",
 	use: {
 		baseURL: urlOrigin,
+		extraHTTPHeaders: vercelAutomationBypassSecret
+			? {
+					"x-vercel-protection-bypass": vercelAutomationBypassSecret,
+					"x-vercel-set-bypass-cookie": "true",
+				}
+			: {},
 		trace: {
 			mode: "retain-on-failure",
 			screenshots: true,

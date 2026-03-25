@@ -46,6 +46,7 @@ jobs:
       statuses: write
     env:
       NEXT_PUBLIC_VERCEL_URL: ${{ github.event.client_payload.url }}
+      VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
     needs:
       - db-migration
     steps:
