@@ -18,7 +18,7 @@ const BlogPostSummary = PayloadBlogPost.transform((post) => ({
 export type BlogPostSummary = z.infer<typeof BlogPostSummary>;
 
 export async function getPosts({
-	draft,
+	draft = false,
 }: {
 	draft?: boolean;
 } = {}): Promise<BlogPostSummary[]> {
@@ -34,15 +34,32 @@ export async function getPosts({
 			tags: true,
 			coverImage: true,
 			author: true,
+			publishedAt: true,
 			createdAt: true,
 			updatedAt: true,
 		},
 		depth: 2,
+		where: {
+			_status: {
+				equals: draft ? "draft" : "published",
+			},
+		},
 		locale: "ja-JP",
-		sort: ["-createdAt"],
+		sort: ["-publishedAt"],
 		limit: 50,
 		draft,
 	});
+
+	logger.info(
+		{
+			draft,
+			"result.docs": result.docs.map((doc) => ({
+				slug: doc.slug,
+				updatedAt: doc.updatedAt,
+			})),
+		},
+		"Fetched posts.",
+	);
 
 	const posts: BlogPostSummary[] = [];
 

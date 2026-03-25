@@ -21,7 +21,7 @@ export type BlogPostDetail = z.infer<typeof BlogPostDetail>;
 
 export async function getPost({
 	slug,
-	draft,
+	draft = false,
 }: {
 	slug: string;
 	draft?: boolean;
@@ -38,6 +38,7 @@ export async function getPost({
 			tags: true,
 			coverImage: true,
 			author: true,
+			publishedAt: true,
 			createdAt: true,
 			updatedAt: true,
 		},
@@ -45,6 +46,9 @@ export async function getPost({
 		where: {
 			slug: {
 				equals: slug,
+			},
+			_status: {
+				equals: draft ? "draft" : "published",
 			},
 		},
 		locale: "ja-JP",

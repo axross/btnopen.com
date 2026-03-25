@@ -11,7 +11,7 @@ const logger = rootLogger.child({ module: "📥" });
 
 export async function getPostMarkdown({
 	slug,
-	draft,
+	draft = false,
 }: {
 	slug: string;
 	draft?: boolean;
@@ -28,6 +28,9 @@ export async function getPostMarkdown({
 		where: {
 			slug: {
 				equals: slug,
+			},
+			_status: {
+				equals: draft ? "draft" : "published",
 			},
 		},
 		locale: "ja-JP",

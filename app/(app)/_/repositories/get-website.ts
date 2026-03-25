@@ -24,7 +24,7 @@ const Website = PayloadWebsite.transform((website) => ({
 export type Website = z.infer<typeof Website>;
 
 export async function getWebsite({
-	draft,
+	draft = false,
 }: {
 	draft?: boolean;
 } = {}): Promise<Website | null> {

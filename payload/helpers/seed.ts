@@ -150,8 +150,6 @@ async function seedWebsite({
 }) {
 	let website = await payload.findGlobal({ slug: "website" });
 
-	logger.info(website, "WEBSITE");
-
 	if (typeof website.updatedAt !== "string") {
 		logger.info("The website isn't initialized. Started seeding the website.");
 
