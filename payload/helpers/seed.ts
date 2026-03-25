@@ -320,7 +320,7 @@ async function seedExampleBlogPost({
 				author,
 				publishedAt: "2026-03-22T17:00:00Z",
 			},
-			draft: false,
+			draft: true,
 		});
 
 		logger.info(
