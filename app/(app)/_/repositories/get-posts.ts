@@ -50,17 +50,6 @@ export async function getPosts({
 		draft,
 	});
 
-	logger.info(
-		{
-			draft,
-			"result.docs": result.docs.map((doc) => ({
-				slug: doc.slug,
-				updatedAt: doc.updatedAt,
-			})),
-		},
-		"Fetched posts.",
-	);
-
 	const posts: BlogPostSummary[] = [];
 
 	for (const doc of result.docs) {

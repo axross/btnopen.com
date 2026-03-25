@@ -10,9 +10,12 @@ import { BrushGrunge } from "./_components/brush-grunge";
 import { PostList } from "./_components/post-list";
 import { SocialLinkList } from "./_components/social-link-list";
 import css from "./page.module.css";
+import type { PageProps } from "./page-props";
 
-async function IndexPage() {
-	const website = await getWebsite();
+async function IndexPage({ searchParams }: PageProps) {
+	const { draft } = await searchParams;
+	const isDraft = draft === "true";
+	const website = await getWebsite({ draft: isDraft });
 
 	if (!website) {
 		notFound();
@@ -21,7 +24,7 @@ async function IndexPage() {
 	return (
 		<>
 			<div className={css.indexPage}>
-				<IndexPageMain website={website} />
+				<IndexPageMain website={website} draft={isDraft} />
 			</div>
 
 			<BlogJsonLd website={website} />
@@ -29,7 +32,13 @@ async function IndexPage() {
 	);
 }
 
-function IndexPageMain({ website }: { website: Website }): JSX.Element {
+function IndexPageMain({
+	website,
+	draft,
+}: {
+	website: Website;
+	draft: boolean;
+}): JSX.Element {
 	return (
 		<main className={css.main}>
 			<section className={css.intro}>
@@ -69,7 +78,7 @@ function IndexPageMain({ website }: { website: Website }): JSX.Element {
 			<section className={css.section}>
 				<h1 className={css.sectionHeading}>{"Posts"}</h1>
 
-				<PostList className={css.posts} />
+				<PostList draft={draft} className={css.posts} />
 			</section>
 		</main>
 	);
@@ -94,6 +103,7 @@ export async function generateMetadata(): Promise<Metadata> {
 		creator: website.creator.name,
 		publisher: website.creator.name,
 		openGraph: {
+			url: `${urlOrigin}/`,
 			title: website.name,
 			description: website.description,
 			siteName: website.name,

@@ -7,16 +7,21 @@ import { getPosts } from "@/repositories/get-posts";
 import css from "./post-list.module.css";
 
 export async function PostList({
+	draft = false,
 	className,
 	children,
 	...props
-}: ComponentProps<"ul">): Promise<JSX.Element> {
-	const posts = await getPosts();
+}: ComponentProps<"ul"> & { draft?: boolean }): Promise<JSX.Element> {
+	const posts = await getPosts({ draft });
 
 	return (
 		<ul className={clsx(css.postList, className)} {...props}>
 			{posts.map((post) => (
-				<Link href={`/posts/${post.slug}`} className={css.link} key={post.slug}>
+				<Link
+					href={`/posts/${post.slug}`}
+					className={css.link}
+					key={post.slug}
+				>
 					<PostListItem
 						slug={post.slug}
 						title={post.title}
