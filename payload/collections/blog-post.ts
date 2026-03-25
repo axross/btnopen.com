@@ -86,6 +86,11 @@ export const blogPostCollection: CollectionConfig = {
 	hooks: {
 		afterOperation: [
 			async ({ operation, result }) => {
+				// skip the invalidation for the example post creation
+				if (operation === "create" && result.slug === "markdown-example") {
+					return;
+				}
+
 				if (
 					operation === "update" ||
 					operation === "create" ||

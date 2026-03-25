@@ -9,7 +9,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev | pino-pretty",
-    "build": "next build",
+    "build": "next build | pino-pretty",
     "start": "next start | pino-pretty",
     "migrate:status": "payload migrate:status | pino-pretty",
     "migrate:create": "payload migrate:create | pino-pretty",

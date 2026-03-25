@@ -13,17 +13,20 @@ import { userCollection } from "./payload/collections/user";
 import { websiteGlobal } from "./payload/globals/website";
 import { editor } from "./payload/helpers/editor";
 import { logger } from "./payload/helpers/logger";
+import { seed } from "./payload/helpers/seed";
 
 // biome-ignore-start lint/style/noProcessEnv: only place accessing env vars in payload realm
 const payloadSecret = process.env.PAYLOAD_SECRET ?? "local";
 const libsqlUrl = process.env.LIBSQL_PAYLOAD_TURSO_DATABASE_URL;
 const libsqlToken = process.env.LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN;
 const vercelBlobToken = process.env.BLOB_PAYLOAD_READ_WRITE_TOKEN;
+const testUserEmail = process.env.PAYLOAD_TEST_USER_EMAIL;
+const testUserPassword = process.env.PAYLOAD_TEST_USER_PASSWORD;
 // biome-ignore-end lint/style/noProcessEnv: only place accessing env vars in payload realm
 
 const selfDirname = dirname(new URL(import.meta.url).pathname);
 
-export default buildConfig({
+const config = buildConfig({
 	secret: payloadSecret,
 	globals: [websiteGlobal],
 	collections: [
@@ -104,4 +107,16 @@ export default buildConfig({
 				]
 			: []),
 	],
+	onInit: async (payload) => {
+		if (testUserEmail && testUserPassword) {
+			await seed({
+				payload,
+				config,
+				testUserEmail,
+				testUserPassword,
+			});
+		}
+	},
 });
+
+export default config;
