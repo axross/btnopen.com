@@ -1,13 +1,11 @@
 import nextEnv from "@next/env";
 import { defineConfig, devices } from "@playwright/test";
+import { urlOrigin } from "@/e2e/helpers/constants";
 
 nextEnv.loadEnvConfig(process.cwd());
 
 // biome-ignore-start lint/style/noProcessEnv: config needs to access env-vars
 const isCI = !!process.env.CI;
-const vercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL
-	? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-	: null;
 // biome-ignore-end lint/style/noProcessEnv: config needs to access env-vars
 
 export default defineConfig({
@@ -18,7 +16,7 @@ export default defineConfig({
 	workers: isCI ? 1 : undefined,
 	reporter: isCI ? "github" : "line",
 	use: {
-		baseURL: vercelUrl ?? "http://localhost:3000",
+		baseURL: urlOrigin,
 		trace: {
 			mode: "retain-on-failure",
 			screenshots: true,
@@ -62,10 +60,10 @@ export default defineConfig({
 		// },
 	],
 	webServer:
-		isCI && vercelUrl
+		isCI && !urlOrigin.includes("localhost")
 			? {
-					command: `echo 'Using the Vercel URL: ${vercelUrl}'`,
-					url: vercelUrl,
+					command: `echo 'Using the Vercel URL: ${urlOrigin}'`,
+					url: urlOrigin,
 				}
 			: {
 					command: "npm run start",
