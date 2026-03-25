@@ -64,6 +64,7 @@ export default defineConfig({
 			? {
 					command: `echo 'Using the Vercel URL: ${urlOrigin}'`,
 					url: urlOrigin,
+					reuseExistingServer: true,
 				}
 			: {
 					command: "npm run start",
