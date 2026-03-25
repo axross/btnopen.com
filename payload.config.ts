@@ -42,7 +42,6 @@ export default buildConfig({
 		migrationDir: resolve(selfDirname, "./payload/migrations"),
 		push: false,
 	}),
-	// biome-ignore lint/style/useNamingConvention: to follow the spec
 	graphQL: {
 		disable: true,
 	},

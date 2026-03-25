@@ -238,7 +238,9 @@
 				"useGroupedAccessorPairs": "error",
 				"useNamingConvention": {
 					"level": "error",
-					"options": {}
+					"options": {
+						"strictCase": false
+					}
 				},
 				"useNodeAssertStrict": "error",
 				"useNumberNamespace": "error",
