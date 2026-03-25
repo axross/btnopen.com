@@ -11,7 +11,7 @@ export const mediaCollection: CollectionConfig = {
 			fit: "cover",
 			withoutEnlargement: true,
 			width: 2560,
-			height: 1344,
+			height: 1600,
 		},
 	},
 	fields: [
