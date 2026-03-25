@@ -24,8 +24,8 @@ export default async function PostPage({ params, searchParams }: PageProps) {
 
 	return (
 		<>
-			<article className={css.postPage}>
-				<header className={css.header}>
+			<article className={css.postPage} data-testid="page">
+				<header className={css.header} data-testid="header">
 					<ViewTransition name={`post-${post.slug}-image`}>
 						<Image
 							alt={post.title}
@@ -33,34 +33,40 @@ export default async function PostPage({ params, searchParams }: PageProps) {
 							width={post.thumbnailImage.width}
 							height={post.thumbnailImage.height}
 							className={css.coverImage}
+							data-testid="cover-image"
 						/>
 					</ViewTransition>
 
 					<ViewTransition name={`post-${post.slug}-timestamp`}>
-						<div className={css.timestamp}>
+						<div className={css.timestamp} data-testid="timestamp">
 							{format(post.publishedAt, "PPP")}
 						</div>
 					</ViewTransition>
 
 					<ViewTransition name={`post-${post.slug}-title`}>
-						<h1 className={css.title}>{post.title}</h1>
+						<h1 className={css.title} data-testid="title">
+							{post.title}
+						</h1>
 					</ViewTransition>
 
-					<div className={css.author}>
+					<div className={css.author} data-testid="author">
 						<Image
 							alt={post.author.name}
 							src={post.author.avatarImage.url}
 							width={post.author.avatarImage.width}
 							height={post.author.avatarImage.height}
 							className={css.authorImage}
+							data-testid="avatar-image"
 						/>
 
-						<span className={css.authorName}>{post.author.name}</span>
+						<span className={css.authorName} data-testid="name">
+							{post.author.name}
+						</span>
 					</div>
 
-					<ul className={css.tags}>
+					<ul className={css.tags} data-testid="tags">
 						{post.tags?.map((tag) => (
-							<li className={css.tag} key={tag.slug}>
+							<li className={css.tag} key={tag.slug} data-testid="tag">
 								{tag.name}
 							</li>
 						))}
@@ -68,7 +74,7 @@ export default async function PostPage({ params, searchParams }: PageProps) {
 				</header>
 
 				<ViewTransition name={`post-${slug}-content`}>
-					<main className={css.content}>
+					<main className={css.content} data-testid="content">
 						<PostContent slug={slug} draft={isDraft} />
 					</main>
 				</ViewTransition>

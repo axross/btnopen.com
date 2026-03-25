@@ -23,7 +23,7 @@ async function IndexPage({ searchParams }: PageProps) {
 
 	return (
 		<>
-			<div className={css.indexPage}>
+			<div className={css.indexPage} data-testid="page">
 				<IndexPageMain website={website} draft={isDraft} />
 			</div>
 
@@ -41,7 +41,7 @@ function IndexPageMain({
 }): JSX.Element {
 	return (
 		<main className={css.main}>
-			<section className={css.intro}>
+			<section className={css.intro} data-testid="intro">
 				<div className={css.portrait}>
 					<Image
 						src="/images/bio.webp"
@@ -67,18 +67,22 @@ function IndexPageMain({
 				</div>
 
 				<div className={css.bio}>
-					<div className={css.bioContent}>
+					<div className={css.bioContent} data-testid="bio">
 						<Markdown markdown={website.creator.bioMarkdown} />
 					</div>
 
-					<SocialLinkList />
+					<SocialLinkList data-testid="social-links" />
 				</div>
 			</section>
 
 			<section className={css.section}>
 				<h1 className={css.sectionHeading}>{"Posts"}</h1>
 
-				<PostList draft={draft} className={css.posts} />
+				<PostList
+					draft={draft}
+					className={css.posts}
+					data-testid="blog-posts"
+				/>
 			</section>
 		</main>
 	);

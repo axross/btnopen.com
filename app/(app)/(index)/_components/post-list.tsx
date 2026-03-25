@@ -21,6 +21,8 @@ export async function PostList({
 					href={`/posts/${post.slug}`}
 					className={css.link}
 					key={post.slug}
+					data-testid="blog-post"
+					data-slug={post.slug}
 				>
 					<PostListItem
 						slug={post.slug}
@@ -65,21 +67,26 @@ function PostListItem({
 					width={thumbnailImageWidth}
 					height={thumbnailImageHeight}
 					className={css.image}
+					data-testid="thumbnail-image"
 				/>
 			</ViewTransition>
 
 			<ViewTransition name={`post-${slug}-timestamp`}>
-				<div className={css.timestamp}>
+				<div className={css.timestamp} data-testid="timestamp">
 					{formatDistanceToNow(publishedAt, { addSuffix: true })}
 				</div>
 			</ViewTransition>
 
 			<ViewTransition name={`post-${slug}-title`}>
-				<div className={css.title}>{title}</div>
+				<div className={css.title} data-testid="title">
+					{title}
+				</div>
 			</ViewTransition>
 
 			<ViewTransition name={`post-${slug}-content`}>
-				<div className={css.brief}>{brief}</div>
+				<div className={css.brief} data-testid="brief">
+					{brief}
+				</div>
 			</ViewTransition>
 		</li>
 	);

@@ -9,6 +9,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev | pino-pretty",
+    "test:e2e": "playwright test",
     "build": "next build | pino-pretty",
     "start": "next start | pino-pretty",
     "migrate:status": "payload migrate:status | pino-pretty",
@@ -64,7 +65,9 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.4",
+    "@next/env": "^16.2.1",
     "@parcel/watcher": "^2.5.6",
+    "@playwright/test": "^1.58.2",
     "@types/hast": "^3.0.4",
     "@types/mdast": "^4.0.4",
     "@types/node": "^20",

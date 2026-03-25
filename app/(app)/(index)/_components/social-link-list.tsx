@@ -30,6 +30,7 @@ export function SocialLinkList({
 				rel="noopener noreferrer"
 				onClick={onGitHubLinkClick}
 				className={css.item}
+				data-testid="github"
 			>
 				<GitHubIcon />
 			</a>
@@ -40,6 +41,7 @@ export function SocialLinkList({
 				rel="noopener noreferrer"
 				onClick={onXcomLinkClick}
 				className={css.item}
+				data-testid="xcom"
 			>
 				<XcomIcon />
 			</a>
@@ -50,6 +52,7 @@ export function SocialLinkList({
 				rel="noopener noreferrer"
 				onClick={onLinkedInLinkClick}
 				className={css.item}
+				data-testid="linkedin"
 			>
 				<LinkedInIcon />
 			</a>

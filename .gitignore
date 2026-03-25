@@ -46,3 +46,13 @@ next-env.d.ts
 
 .data/*
 !.data/.gitkeep
+e2e/.data/*
+!.e2e/.data/.gitkeep
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
