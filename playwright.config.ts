@@ -35,6 +35,7 @@ export default defineConfig({
 		screenshot: "on-first-failure",
 		video: "retain-on-failure",
 	},
+	outputDir: ".playwright-results",
 	snapshotPathTemplate:
 		"e2e/{testFileDir}/__snapshots__/{testFileName}{/projectName}/{arg}{ext}",
 	projects: [
