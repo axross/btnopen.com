@@ -5,7 +5,7 @@ import {
 } from "@sentry/nextjs";
 import Mixpanel from "mixpanel-browser";
 import { configure as configureOds } from "onedollarstats";
-import { isProduction, mixpanelToken, sentryDsn } from "@/runtime";
+import { isDevelopment, mixpanelToken, sentryDsn } from "@/runtime";
 
 if (sentryDsn) {
 	initializeSentry({
@@ -42,7 +42,7 @@ if (mixpanelToken) {
 configureOds({
 	hostname: "btnopen.com",
 	autocollect: false,
-	devmode: !isProduction,
+	devmode: isDevelopment,
 });
 
 export const onRouterTransitionStart = captureRouterTransitionStart;

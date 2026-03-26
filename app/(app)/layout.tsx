@@ -10,7 +10,7 @@ import {
 } from "next/font/google";
 import { type ReactNode, Suspense } from "react";
 import { getWebsite } from "@/repositories/get-website";
-import { urlOrigin } from "@/runtime";
+import { urlOrigin, vercelEnvironment } from "@/runtime";
 import { Header } from "./_components/header";
 import { PageViewTracking } from "./_components/page-view-tracking";
 
@@ -51,6 +51,9 @@ export async function generateMetadata(): Promise<Metadata> {
 			index: true,
 			follow: true,
 			noimageindex: false,
+		},
+		other: {
+			venv: vercelEnvironment,
 		},
 	};
 }

@@ -11,7 +11,9 @@ if (typeof globalThis.window !== "undefined") {
 }
 
 export const runtimeType = resolvedRuntimeType;
-export const isProduction = process.env.NODE_ENV === "production";
+export const isDevelopment = process.env.NODE_ENV !== "production";
+export const vercelEnvironment =
+	process.env.NEXT_PUBLIC_VERCEL_ENV ?? "unknown";
 
 const vercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
 let maybeUrlOrigin = "http://localhost:3000";
