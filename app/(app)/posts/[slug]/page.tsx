@@ -4,6 +4,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ViewTransition } from "react";
 import { getPost } from "@/repositories/get-post";
+import { getPosts } from "@/repositories/get-posts";
 import { getWebsite } from "@/repositories/get-website";
 import { urlOrigin } from "@/runtime";
 import { BlogPostingJsonLd } from "./_components/blog-posting-json-ld";
@@ -11,6 +12,12 @@ import { PayloadLivePreview } from "./_components/payload-live-preview/payload-l
 import { PostContent } from "./_components/post-content";
 import css from "./page.module.css";
 import type { PageProps } from "./page-props";
+
+export async function generateStaticParams() {
+	const posts = await getPosts();
+
+	return posts.map((post) => ({ slug: post.slug }));
+}
 
 export default async function PostPage({ params, searchParams }: PageProps) {
 	const { slug } = await params;
