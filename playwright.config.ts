@@ -37,34 +37,34 @@ export default defineConfig({
 	},
 	projects: [
 		{
-			name: "Setup",
-			testMatch: /.*\.setup\.test\.ts$/,
+			name: "setup",
+			testMatch: "**/setup.test.ts",
 		},
 		{
-			name: "Pixel",
-			use: { ...devices["Pixel 7"] },
-			dependencies: ["Setup"],
+			name: "pixel",
+			use: devices["Pixel 7"],
+			dependencies: ["setup"],
 		},
 		// disabled these per-browser projects for now to reduce CI costs
 		// {
-		// 	name: "iPhone",
+		// 	name: "iphone",
 		// 	use: { ...devices["iPhone 15"] },
-		// 	dependencies: ["Setup"],
+		// 	dependencies: ["setup"],
 		// },
 		// {
-		// 	name: "iPad",
+		// 	name: "ipad",
 		// 	use: { ...devices["iPad (gen 11)"] },
-		// 	dependencies: ["Setup"],
+		// 	dependencies: ["setup"],
 		// },
 		// {
-		// 	name: "Desktop Chrome",
+		// 	name: "desktop-chrome",
 		// 	use: { ...devices["Desktop Chrome"] },
-		// 	dependencies: ["Setup"],
+		// 	dependencies: ["setup"],
 		// },
 		// {
-		// 	name: "Desktop Edge",
+		// 	name: "desktop-edge",
 		// 	use: { ...devices["Desktop Edge"] },
-		// 	dependencies: ["Setup"],
+		// 	dependencies: ["setup"],
 		// },
 	],
 	webServer:
