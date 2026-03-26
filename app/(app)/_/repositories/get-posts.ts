@@ -39,11 +39,13 @@ export async function getPosts({
 			updatedAt: true,
 		},
 		depth: 2,
-		where: {
-			_status: {
-				equals: draft ? "draft" : "published",
-			},
-		},
+		where: draft
+			? undefined
+			: {
+					_status: {
+						equals: "published",
+					},
+				},
 		locale: "ja-JP",
 		sort: ["-publishedAt"],
 		limit: 50,

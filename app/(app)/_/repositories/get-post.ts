@@ -47,9 +47,13 @@ export async function getPost({
 			slug: {
 				equals: slug,
 			},
-			_status: {
-				equals: draft ? "draft" : "published",
-			},
+			...(draft
+				? {}
+				: {
+						_status: {
+							equals: "published",
+						},
+					}),
 		},
 		locale: "ja-JP",
 		limit: 1,
