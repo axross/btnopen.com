@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { format } from "date-fns";
 import { authenticatedStorageState } from "@/e2e/helpers/api/auth";
 import { getExampleBlogPost } from "@/e2e/helpers/api/blog-post";
 
@@ -31,7 +32,7 @@ test("Blog post header", async ({ page }, testInfo) => {
 
 	await test.step("Verify the blog post timestamp", async () => {
 		await expect(header.getByTestId("timestamp")).toHaveText(
-			"March 22nd, 2026",
+			format(blogPost.publishedAt ?? "", "PPP"),
 		);
 	});
 
