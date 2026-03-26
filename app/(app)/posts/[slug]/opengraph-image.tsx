@@ -2,8 +2,8 @@ import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { notFound } from "next/navigation";
 import { ImageResponse } from "next/og";
+import { resolveUrlOrigin } from "@/helpers/request";
 import { getPost } from "@/repositories/get-post";
-import { urlOrigin } from "@/runtime";
 import type { PageProps } from "./page-props";
 
 export const size = {
@@ -16,6 +16,7 @@ export const contentType = "image/png";
 const selfDirname = dirname(new URL(import.meta.url).pathname);
 
 export default async function Image({ params }: Pick<PageProps, "params">) {
+	const urlOrigin = await resolveUrlOrigin();
 	const { slug } = await params;
 	const [post, ibmPlexSansJpBold] = await Promise.all([
 		getPost({ slug, draft: true }),

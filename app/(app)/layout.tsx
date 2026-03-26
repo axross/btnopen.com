@@ -9,8 +9,9 @@ import {
 	JetBrains_Mono,
 } from "next/font/google";
 import { type ReactNode, Suspense } from "react";
+import { resolveUrlOrigin } from "@/helpers/request";
 import { getWebsite } from "@/repositories/get-website";
-import { sha, urlOrigin, vercelEnvironment } from "@/runtime";
+import { sha, vercelEnvironment } from "@/runtime";
 import { Header } from "./_components/header";
 import { PageViewTracking } from "./_components/page-view-tracking";
 
@@ -35,6 +36,7 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
+	const urlOrigin = await resolveUrlOrigin();
 	const website = await getWebsite();
 
 	return {
@@ -53,12 +55,9 @@ export async function generateMetadata(): Promise<Metadata> {
 			noimageindex: false,
 		},
 		other: {
-			sha,
-			venv: vercelEnvironment,
-			// biome-ignore lint/style/noProcessEnv: for debug reason
-			vurl: process.env.NEXT_PUBLIC_VERCEL_URL ?? "unknown",
-			// biome-ignore lint/style/noProcessEnv: for debug reason
-			vpurl: process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL ?? "unknown",
+			"btn-sha": sha,
+			"btn-env": vercelEnvironment,
+			"btn-url": urlOrigin,
 		},
 	};
 }

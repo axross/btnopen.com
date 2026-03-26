@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
+import { resolveUrlOrigin } from "@/helpers/request";
 import { getPosts } from "@/repositories/get-posts";
-import { urlOrigin } from "@/runtime";
 
 // biome-ignore lint/style/noDefaultExport: sitemap needs default export
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+	const urlOrigin = await resolveUrlOrigin();
 	const posts = await getPosts();
 
 	return [

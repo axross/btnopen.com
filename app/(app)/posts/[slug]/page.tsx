@@ -3,10 +3,10 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ViewTransition } from "react";
+import { resolveUrlOrigin } from "@/helpers/request";
 import { getPost } from "@/repositories/get-post";
 import { getPosts } from "@/repositories/get-posts";
 import { getWebsite } from "@/repositories/get-website";
-import { urlOrigin } from "@/runtime";
 import { BlogPostingJsonLd } from "./_components/blog-posting-json-ld";
 import { PayloadLivePreview } from "./_components/payload-live-preview/payload-live-preview";
 import { PostContent } from "./_components/post-content";
@@ -20,6 +20,7 @@ export async function generateStaticParams() {
 }
 
 export default async function PostPage({ params, searchParams }: PageProps) {
+	const urlOrigin = await resolveUrlOrigin();
 	const { slug } = await params;
 	const { draft, preview } = await searchParams;
 	const isDraft = draft === "true";
@@ -90,7 +91,10 @@ export default async function PostPage({ params, searchParams }: PageProps) {
 			<BlogPostingJsonLd post={post} draft={isDraft} />
 
 			{preview === "true" && (
-				<PayloadLivePreview path={`/posts/${slug}?preview=true&draft=true`} />
+				<PayloadLivePreview
+					path={`/posts/${slug}?preview=true&draft=true`}
+					serverURL={urlOrigin}
+				/>
 			)}
 		</>
 	);
@@ -100,6 +104,7 @@ export async function generateMetadata({
 	params,
 	searchParams,
 }: PageProps): Promise<Metadata> {
+	const urlOrigin = await resolveUrlOrigin();
 	const { slug } = await params;
 	const { draft } = await searchParams;
 	const isDraft = draft === "true";

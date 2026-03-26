@@ -3,8 +3,8 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { JSX } from "react";
 import { Markdown } from "@/components/markdown";
+import { resolveUrlOrigin } from "@/helpers/request";
 import { getWebsite, type Website } from "@/repositories/get-website";
-import { urlOrigin } from "@/runtime";
 import { BlogJsonLd } from "./_components/blog-json-jd";
 import { BrushGrunge } from "./_components/brush-grunge";
 import { PostList } from "./_components/post-list";
@@ -89,6 +89,7 @@ function IndexPageMain({
 }
 
 export async function generateMetadata(): Promise<Metadata> {
+	const urlOrigin = await resolveUrlOrigin();
 	const website = await getWebsite();
 
 	if (!website) {

@@ -17,18 +17,30 @@ export const vercelEnvironment =
 
 export const sha = process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? "unknown";
 
-const vercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
-let maybeUrlOrigin = "http://localhost:3000";
+export const allowedHosts = new Set<string>();
 
-if (typeof vercelUrl === "string" && vercelUrl.length > 0) {
-	if (URL.canParse(vercelUrl)) {
-		maybeUrlOrigin = vercelUrl;
-	} else {
-		maybeUrlOrigin = `https://${vercelUrl}`;
-	}
+if (process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL) {
+	allowedHosts.add(
+		new URL(`https://${process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL}`)
+			.hostname,
+	);
 }
 
-export const urlOrigin = maybeUrlOrigin;
+if (process.env.NEXT_PUBLIC_VERCEL_URL) {
+	allowedHosts.add(
+		new URL(`https://${process.env.NEXT_PUBLIC_VERCEL_URL}`).hostname,
+	);
+}
+
+if (isDevelopment) {
+	allowedHosts.add("localhost:3000");
+}
+
+if (allowedHosts.size === 0) {
+	throw new Error(
+		'No allowed hosts available. When NODE_ENV is "production", either NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL or NEXT_PUBLIC_VERCEL_URL environment variables need to be set.',
+	);
+}
 
 export const sentryDsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
 export const isSentryEnabled = !!sentryDsn;

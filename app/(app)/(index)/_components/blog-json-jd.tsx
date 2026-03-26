@@ -1,13 +1,15 @@
 import type { JSX } from "react";
 import type { Blog, WithContext } from "schema-dts";
+import { resolveUrlOrigin } from "@/helpers/request";
 import type { Website } from "@/repositories/get-website";
-import { urlOrigin } from "@/runtime";
 
 export async function BlogJsonLd({
 	website,
 }: {
 	website: Website;
 }): Promise<JSX.Element | null> {
+	const urlOrigin = await resolveUrlOrigin();
+
 	return (
 		<script
 			type="application/ld+json"

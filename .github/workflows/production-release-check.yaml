@@ -45,7 +45,7 @@ jobs:
       actions: read
       statuses: write
     env:
-      NEXT_PUBLIC_VERCEL_URL: ${{ github.event.client_payload.url }}
+      PLAYWRIGHT_BASE_URL: ${{ github.event.client_payload.url }}
       VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
       PAYLOAD_TEST_USER_EMAIL: ${{ secrets.PAYLOAD_TEST_USER_EMAIL }}
       PAYLOAD_TEST_USER_PASSWORD: ${{ secrets.PAYLOAD_TEST_USER_PASSWORD }}

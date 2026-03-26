@@ -1,11 +1,11 @@
 import nextEnv from "@next/env";
 import { defineConfig, devices } from "@playwright/test";
-import { urlOrigin } from "@/e2e/helpers/constants";
 
 nextEnv.loadEnvConfig(process.cwd());
 
 // biome-ignore-start lint/style/noProcessEnv: config needs to access env-vars
 const isCI = !!process.env.CI;
+const baseUrl = process.env.PLAYWRIGHT_BASE_URL;
 const vercelAutomationBypassSecret =
 	process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
 // biome-ignore-end lint/style/noProcessEnv: config needs to access env-vars
@@ -18,7 +18,7 @@ export default defineConfig({
 	workers: isCI ? 1 : undefined,
 	reporter: isCI ? "github" : "line",
 	use: {
-		baseURL: urlOrigin,
+		baseURL: baseUrl ?? "http://localhost:3000",
 		extraHTTPHeaders: vercelAutomationBypassSecret
 			? {
 					"x-vercel-protection-bypass": vercelAutomationBypassSecret,
@@ -71,14 +71,14 @@ export default defineConfig({
 		// },
 	],
 	webServer:
-		isCI && !urlOrigin.includes("localhost")
+		isCI && baseUrl
 			? {
-					command: `echo 'Using the Vercel URL: ${urlOrigin}'`,
-					url: urlOrigin,
+					command: `echo 'Using the Vercel URL: ${baseUrl}'`,
+					url: baseUrl,
 					reuseExistingServer: true,
 				}
 			: {
-					command: "npm run start",
+					command: "npm run dev",
 					url: "http://localhost:3000",
 					reuseExistingServer: true,
 				},
