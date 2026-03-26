@@ -72,7 +72,7 @@ jobs:
       - uses: actions/upload-artifact@v6
         if: ${{ !cancelled() }}
         with:
-          name: playwright-results
+          name: Playwright Results
           path: .playwright-results/
           include-hidden-files: true
           retention-days: 14

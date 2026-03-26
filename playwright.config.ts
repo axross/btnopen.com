@@ -26,14 +26,13 @@ export default defineConfig({
 				}
 			: {},
 		trace: {
-			mode: "retain-on-failure",
+			mode: "retain-on-first-failure",
 			screenshots: true,
 			snapshots: true,
 			sources: true,
 			attachments: true,
 		},
-		screenshot: "on-first-failure",
-		video: "retain-on-failure",
+		video: "on-first-retry",
 	},
 	outputDir: ".playwright-results",
 	snapshotPathTemplate:
