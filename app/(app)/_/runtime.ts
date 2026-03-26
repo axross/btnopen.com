@@ -15,6 +15,8 @@ export const isDevelopment = process.env.NODE_ENV !== "production";
 export const vercelEnvironment =
 	process.env.NEXT_PUBLIC_VERCEL_ENV ?? "unknown";
 
+export const sha = process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? "unknown";
+
 const vercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
 let maybeUrlOrigin = "http://localhost:3000";
 

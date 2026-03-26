@@ -10,7 +10,7 @@ import {
 } from "next/font/google";
 import { type ReactNode, Suspense } from "react";
 import { getWebsite } from "@/repositories/get-website";
-import { urlOrigin, vercelEnvironment } from "@/runtime";
+import { sha, urlOrigin, vercelEnvironment } from "@/runtime";
 import { Header } from "./_components/header";
 import { PageViewTracking } from "./_components/page-view-tracking";
 
@@ -53,7 +53,12 @@ export async function generateMetadata(): Promise<Metadata> {
 			noimageindex: false,
 		},
 		other: {
+			sha,
 			venv: vercelEnvironment,
+			// biome-ignore lint/style/noProcessEnv: for debug reason
+			vurl: process.env.NEXT_PUBLIC_VERCEL_URL ?? "unknown",
+			// biome-ignore lint/style/noProcessEnv: for debug reason
+			vpurl: process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL ?? "unknown",
 		},
 	};
 }
