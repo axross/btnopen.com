@@ -1,4 +1,7 @@
 // biome-ignore-all lint/style/noProcessEnv: only place accessing env vars in public realm
+import { rootLogger } from "./logger";
+
+const logger = rootLogger.child({ module: "🥾" });
 
 let resolvedRuntimeType: "client" | "node" | "edge" | "unknown" = "unknown";
 
@@ -32,14 +35,12 @@ if (process.env.NEXT_PUBLIC_VERCEL_URL) {
 	);
 }
 
-if (isDevelopment) {
-	allowedHosts.add("localhost:3000");
-}
-
 if (allowedHosts.size === 0) {
-	throw new Error(
-		'No allowed hosts available. When NODE_ENV is "production", either NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL or NEXT_PUBLIC_VERCEL_URL environment variables need to be set.',
+	logger.warn(
+		'Added "localhost:3000" as an allowed host because no other allowed hosts are available.',
 	);
+
+	allowedHosts.add("localhost:3000");
 }
 
 export const sentryDsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
