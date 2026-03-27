@@ -12,10 +12,12 @@ const vercelAutomationBypassSecret =
 
 export default defineConfig({
 	testDir: "./e2e",
+	workers: isCI ? 1 : undefined,
 	fullyParallel: true,
 	forbidOnly: isCI,
+	repeatEach: 5,
+	failOnFlakyTests: true,
 	retries: isCI ? 1 : 0,
-	workers: isCI ? 1 : undefined,
 	reporter: isCI ? "github" : "line",
 	use: {
 		baseURL: baseUrl ?? "http://localhost:3000",
@@ -41,6 +43,7 @@ export default defineConfig({
 		{
 			name: "setup",
 			testMatch: "**/setup.test.ts",
+			repeatEach: 1,
 		},
 		{
 			name: "pixel",

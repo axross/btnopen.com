@@ -18,7 +18,10 @@ export async function PostList({
 		<ul className={clsx(css.postList, className)} {...props}>
 			{posts.map((post) => (
 				<Link
-					href={`/posts/${post.slug}`}
+					href={{
+						pathname: `/posts/${post.slug}`,
+						search: draft ? "draft=true" : undefined,
+					}}
 					className={css.link}
 					key={post.slug}
 					data-testid="blog-post"

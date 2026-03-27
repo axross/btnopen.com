@@ -85,9 +85,9 @@ test("Blog post list", async ({ page }, testInfo) => {
 	});
 
 	await test.step("Verify navigated to the example blog post page", async () => {
-		await page.waitForURL(`/posts/${slug}`);
+		await page.waitForURL(`/posts/${slug}?draft=true`);
 
-		expect(page).toHaveURL(`/posts/${slug}`);
+		expect(page).toHaveURL(`/posts/${slug}?draft=true`);
 	});
 });
 
