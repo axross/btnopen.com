@@ -1,13 +1,11 @@
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
+import { captureException } from "@sentry/nextjs";
 import { notFound } from "next/navigation";
 import { ImageResponse } from "next/og";
 import { resolveUrlOrigin } from "@/helpers/request";
-import { rootLogger } from "@/logger";
 import { getPost } from "@/repositories/get-post";
 import type { PageProps } from "./page-props";
-
-const logger = rootLogger.child({ module: "🚪" });
 
 const selfDirname = dirname(new URL(import.meta.url).pathname);
 
@@ -30,10 +28,17 @@ export default async function Image({ params }: Pick<PageProps, "params">) {
 		notFound();
 	}
 
-	const imageDataUri = await fetchImageAsDataUri({
-		url: `${new URL(post.thumbnailImage.url, urlOrigin)}`,
-		mimeType: post.thumbnailImage.mimeType,
-	});
+	let imageBuffer: ArrayBuffer;
+	try {
+		const imageResponse = await fetch(
+			new URL(post.thumbnailImage.url, urlOrigin),
+		);
+		imageBuffer = await imageResponse.arrayBuffer();
+	} catch (error) {
+		captureException(error);
+
+		notFound();
+	}
 
 	return new ImageResponse(
 		<div
@@ -49,15 +54,19 @@ export default async function Image({ params }: Pick<PageProps, "params">) {
 				gap: 32,
 			}}
 		>
-			<div
+			{/** biome-ignore lint/a11y/useAltText: this is just within the image generation. alt will be omitted in the rendered result. */}
+			{/** biome-ignore lint/performance/noImgElement: this is just within the image generation. Next <Image> dosen't fit in the image generation. */}
+			<img
+				src={imageBuffer as never}
+				width={post.thumbnailImage.width}
+				height={post.thumbnailImage.height}
 				style={{
 					position: "absolute",
 					top: 0,
 					left: 0,
 					right: 0,
 					bottom: 0,
-					backgroundImage: `url(${imageDataUri})`,
-					backgroundSize: "cover",
+					objectFit: "cover",
 					filter: "sepia(1) saturate(1.5) hue-rotate(215deg) brightness(0.333)",
 				}}
 			/>
@@ -117,31 +126,4 @@ export default async function Image({ params }: Pick<PageProps, "params">) {
 			],
 		},
 	);
-}
-
-async function fetchImageAsDataUri({
-	url,
-	mimeType,
-}: {
-	url: string;
-	mimeType: string;
-}) {
-	const response = await fetch(url);
-	const buffer = await response.arrayBuffer();
-
-	const bytes = new Uint8Array(buffer);
-
-	// 32kb chunks
-	const chunkSize = 0x80_00;
-	let binaryString = "";
-
-	for (let i = 0; i < bytes.length; i += chunkSize) {
-		const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
-
-		binaryString += String.fromCharCode(...chunk);
-	}
-
-	const base64 = btoa(binaryString);
-
-	return `data:${mimeType};base64,${base64}`;
 }
