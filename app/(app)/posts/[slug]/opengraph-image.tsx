@@ -3,8 +3,13 @@ import { dirname, resolve } from "node:path";
 import { notFound } from "next/navigation";
 import { ImageResponse } from "next/og";
 import { resolveUrlOrigin } from "@/helpers/request";
+import { rootLogger } from "@/logger";
 import { getPost } from "@/repositories/get-post";
 import type { PageProps } from "./page-props";
+
+const logger = rootLogger.child({ module: "🚪" });
+
+const selfDirname = dirname(new URL(import.meta.url).pathname);
 
 export const size = {
 	width: 1200,
@@ -12,8 +17,6 @@ export const size = {
 };
 
 export const contentType = "image/png";
-
-const selfDirname = dirname(new URL(import.meta.url).pathname);
 
 export default async function Image({ params }: Pick<PageProps, "params">) {
 	const urlOrigin = await resolveUrlOrigin();
@@ -26,6 +29,10 @@ export default async function Image({ params }: Pick<PageProps, "params">) {
 	if (!post) {
 		notFound();
 	}
+
+	const backgroundImageUrl = new URL(post.thumbnailImage.url, urlOrigin);
+
+	logger.info({ slug, backgroundImageUrl }, "Generating an open graph image.");
 
 	return new ImageResponse(
 		<div
@@ -48,7 +55,7 @@ export default async function Image({ params }: Pick<PageProps, "params">) {
 					left: 0,
 					right: 0,
 					bottom: 0,
-					backgroundImage: `url(${new URL(post.thumbnailImage.url, urlOrigin)})`,
+					backgroundImage: `url(${backgroundImageUrl})`,
 					backgroundSize: "cover",
 					filter: "sepia(1) saturate(1.5) hue-rotate(215deg) brightness(0.333)",
 				}}
