@@ -30,9 +30,10 @@ export default async function Image({ params }: Pick<PageProps, "params">) {
 		notFound();
 	}
 
-	const backgroundImageUrl = new URL(post.thumbnailImage.url, urlOrigin);
-
-	logger.info({ slug, backgroundImageUrl }, "Generating an open graph image.");
+	const imageDataUri = await fetchImageAsDataUri({
+		url: `${new URL(post.thumbnailImage.url, urlOrigin)}`,
+		mimeType: post.thumbnailImage.mimeType,
+	});
 
 	return new ImageResponse(
 		<div
@@ -55,7 +56,7 @@ export default async function Image({ params }: Pick<PageProps, "params">) {
 					left: 0,
 					right: 0,
 					bottom: 0,
-					backgroundImage: `url(${backgroundImageUrl})`,
+					backgroundImage: `url(${imageDataUri})`,
 					backgroundSize: "cover",
 					filter: "sepia(1) saturate(1.5) hue-rotate(215deg) brightness(0.333)",
 				}}
@@ -116,4 +117,31 @@ export default async function Image({ params }: Pick<PageProps, "params">) {
 			],
 		},
 	);
+}
+
+async function fetchImageAsDataUri({
+	url,
+	mimeType,
+}: {
+	url: string;
+	mimeType: string;
+}) {
+	const response = await fetch(url);
+	const buffer = await response.arrayBuffer();
+
+	const bytes = new Uint8Array(buffer);
+
+	// 32kb chunks
+	const chunkSize = 0x80_00;
+	let binaryString = "";
+
+	for (let i = 0; i < bytes.length; i += chunkSize) {
+		const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
+
+		binaryString += String.fromCharCode(...chunk);
+	}
+
+	const base64 = btoa(binaryString);
+
+	return `data:${mimeType};base64,${base64}`;
 }
