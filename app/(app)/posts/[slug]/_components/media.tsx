@@ -35,6 +35,7 @@ export async function Media({
 					<Image
 						src={src}
 						alt={alt ?? fileAlt ?? ""}
+						loading="lazy"
 						className={clsx(css.media, className)}
 						{...optimizations}
 					/>

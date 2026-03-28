@@ -69,6 +69,7 @@ function PostListItem({
 					alt={title}
 					width={thumbnailImageWidth}
 					height={thumbnailImageHeight}
+					loading="eager"
 					className={css.image}
 					data-testid="thumbnail-image"
 				/>

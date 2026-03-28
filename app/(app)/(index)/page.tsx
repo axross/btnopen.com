@@ -48,6 +48,7 @@ function IndexPageMain({
 						alt={website.creator.name}
 						width={1057}
 						height={1080}
+						loading="eager"
 						className={css.portraitForeground}
 					/>
 

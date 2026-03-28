@@ -40,6 +40,7 @@ export default async function PostPage({ params, searchParams }: PageProps) {
 							src={post.thumbnailImage.url}
 							width={post.thumbnailImage.width}
 							height={post.thumbnailImage.height}
+							loading="eager"
 							className={css.coverImage}
 							data-testid="cover-image"
 						/>
