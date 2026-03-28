@@ -8,6 +8,6 @@ test("Redirect to index page", async ({ page }) => {
 	await test.step("Verify that it redirects to the index route", async () => {
 		await page.waitForURL("/");
 
-		expect(page).toHaveURL("/");
+		await expect(page).toHaveURL("/");
 	});
 });
