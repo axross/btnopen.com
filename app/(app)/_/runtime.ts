@@ -14,7 +14,6 @@ if (typeof globalThis.window !== "undefined") {
 }
 
 export const runtimeType = resolvedRuntimeType;
-export const isDevelopment = process.env.NODE_ENV !== "production";
 export const vercelEnvironment =
 	process.env.NEXT_PUBLIC_VERCEL_ENV ?? "unknown";
 

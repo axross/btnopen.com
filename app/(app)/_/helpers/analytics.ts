@@ -1,6 +1,5 @@
 import { snakeCase } from "change-case";
 import Mixpanel from "mixpanel-browser";
-import { event as odsEvent, view as odsView } from "onedollarstats";
 import { isMixpanelEnabled } from "@/runtime";
 
 interface Actions {
@@ -26,9 +25,6 @@ export function trackAction<Name extends keyof Actions>(
 				: undefined,
 		);
 	}
-
-	// biome-ignore lint/nursery/noFloatingPromises: it doesn't need to be awaited
-	odsEvent(name, params);
 }
 
 export function trackPageView({
@@ -44,7 +40,4 @@ export function trackPageView({
 			query: searchParams,
 		});
 	}
-
-	// biome-ignore lint/nursery/noFloatingPromises: it doesn't need to be awaited
-	odsView(pathname, Object.fromEntries(searchParams.entries()));
 }

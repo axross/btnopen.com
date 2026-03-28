@@ -4,8 +4,7 @@ import {
 	replayIntegration,
 } from "@sentry/nextjs";
 import Mixpanel from "mixpanel-browser";
-import { configure as configureOds } from "onedollarstats";
-import { isDevelopment, mixpanelToken, sentryDsn } from "@/runtime";
+import { mixpanelToken, sentryDsn } from "@/runtime";
 
 if (sentryDsn) {
 	initializeSentry({
@@ -38,11 +37,5 @@ if (mixpanelToken) {
 		// biome-ignore-end lint/style/useNamingConvention: Mixpanel prefers snake_case
 	});
 }
-
-configureOds({
-	hostname: "btnopen.com",
-	autocollect: false,
-	devmode: isDevelopment,
-});
 
 export const onRouterTransitionStart = captureRouterTransitionStart;
