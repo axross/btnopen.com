@@ -380,7 +380,7 @@
 			}
 		},
 		{
-			"includes": ["package.json", "package-lock.json"],
+			"includes": ["package.json", "package-lock.json", "skills-lock.json"],
 			"formatter": {
 				"enabled": false
 			}
