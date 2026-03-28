@@ -3,10 +3,13 @@ import { dirname, resolve } from "node:path";
 import { captureException } from "@sentry/nextjs";
 import { notFound } from "next/navigation";
 import { ImageResponse } from "next/og";
+import type { ImageResponseOptions } from "next/server";
 import { resolveUrlOrigin } from "@/helpers/request";
+import { rootLogger } from "@/logger";
 import { getPost } from "@/repositories/get-post";
 import type { PageProps } from "./page-props";
 
+const logger = rootLogger.child({ name: "👽" });
 const selfDirname = dirname(new URL(import.meta.url).pathname);
 
 export const size = {
@@ -18,9 +21,9 @@ export const contentType = "image/png";
 
 export default async function Image({ params }: Pick<PageProps, "params">) {
 	const [urlOrigin, { slug }] = await Promise.all([resolveUrlOrigin(), params]);
-	const [post, ibmPlexSansJpBold] = await Promise.all([
+	const [post, fonts] = await Promise.all([
 		getPost({ slug, draft: true }),
-		readFile(resolve(selfDirname, "./_assets/ibm-plex-sans-jp-700.ttf")),
+		loadFonts(),
 	]);
 
 	if (!post) {
@@ -29,10 +32,9 @@ export default async function Image({ params }: Pick<PageProps, "params">) {
 
 	let imageBuffer: ArrayBuffer;
 	try {
-		const imageResponse = await fetch(
-			new URL(post.thumbnailImage.url, urlOrigin),
+		imageBuffer = await fetchImageBuffer(
+			`${new URL(post.thumbnailImage.url, urlOrigin)}`,
 		);
-		imageBuffer = await imageResponse.arrayBuffer();
 	} catch (error) {
 		captureException(error);
 
@@ -115,14 +117,42 @@ export default async function Image({ params }: Pick<PageProps, "params">) {
 		</div>,
 		{
 			...size,
-			fonts: [
-				{
-					name: "IBM Plex Sans JP",
-					data: ibmPlexSansJpBold,
-					style: "normal",
-					weight: 700,
-				},
-			],
+			fonts,
 		},
 	);
+}
+
+type FontOptions = NonNullable<ImageResponseOptions["fonts"]>[number];
+
+async function loadFonts(): Promise<FontOptions[]> {
+	logger.info("Started loading fonts.");
+
+	const fontFilePath = resolve(
+		selfDirname,
+		"./_assets/ibm-plex-sans-jp-700.ttf",
+	);
+	const fontBuffer = await readFile(fontFilePath);
+
+	logger.info("Finished loading fonts.");
+
+	return [
+		{
+			name: "IBM Plex Sans JP",
+			data: fontBuffer,
+			style: "normal",
+			weight: 700,
+		},
+	];
+}
+
+async function fetchImageBuffer(url: string) {
+	logger.info({ url }, "Started fetching image.");
+
+	const imageResponse = await fetch(url);
+
+	const imageBuffer = await imageResponse.arrayBuffer();
+
+	logger.info({ url }, "Finished fetching image.");
+
+	return imageBuffer;
 }
