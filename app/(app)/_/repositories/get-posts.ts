@@ -61,7 +61,7 @@ export async function getPosts({
 			posts.push(parseResult.data);
 		}
 
-		if (parseResult.error) {
+		if (!draft && parseResult.error) {
 			logger.warn(
 				{ slug: doc.slug, error: z.flattenError(parseResult.error) },
 				"Skipped a post due to parse error.",
