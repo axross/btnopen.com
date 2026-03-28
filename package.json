@@ -35,6 +35,7 @@
     "@sentry/nextjs": "^10.43.0",
     "@shikijs/langs": "^3.22.0",
     "@shikijs/rehype": "^3.22.0",
+    "@vercel/blob": "^2.3.2",
     "change-case": "^5.4.4",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",

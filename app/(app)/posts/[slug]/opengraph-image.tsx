@@ -1,15 +1,17 @@
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { captureException } from "@sentry/nextjs";
+import { get as getBlob } from "@vercel/blob";
 import { notFound } from "next/navigation";
 import { ImageResponse } from "next/og";
 import type { ImageResponseOptions } from "next/server";
 import { resolveUrlOrigin } from "@/helpers/request";
 import { rootLogger } from "@/logger";
 import { getPost } from "@/repositories/get-post";
+import { vercelBlobToken } from "@/runtime";
 import type { PageProps } from "./page-props";
 
-const logger = rootLogger.child({ name: "👽" });
+const logger = rootLogger.child({ module: "👽" });
 const selfDirname = dirname(new URL(import.meta.url).pathname);
 
 export const size = {
@@ -20,7 +22,7 @@ export const size = {
 export const contentType = "image/png";
 
 export default async function Image({ params }: Pick<PageProps, "params">) {
-	const [urlOrigin, { slug }] = await Promise.all([resolveUrlOrigin(), params]);
+	const { slug } = await params;
 	const [post, fonts] = await Promise.all([
 		getPost({ slug, draft: true }),
 		loadFonts(),
@@ -32,9 +34,15 @@ export default async function Image({ params }: Pick<PageProps, "params">) {
 
 	let imageBuffer: ArrayBuffer;
 	try {
-		imageBuffer = await fetchImageBuffer(
-			`${new URL(post.thumbnailImage.url, urlOrigin)}`,
-		);
+		if (vercelBlobToken) {
+			imageBuffer = await retrieveImageBufferFromVercelBlob(
+				post.thumbnailImage.filename,
+			);
+		} else {
+			imageBuffer = await retrieveImageBufferViaAPI(
+				post.thumbnailImage.filename,
+			);
+		}
 	} catch (error) {
 		captureException(error);
 
@@ -145,14 +153,71 @@ async function loadFonts(): Promise<FontOptions[]> {
 	];
 }
 
-async function fetchImageBuffer(url: string) {
-	logger.info({ url }, "Started fetching image.");
+async function retrieveImageBufferFromVercelBlob(
+	filename: string,
+): Promise<ArrayBuffer> {
+	if (!vercelBlobToken) {
+		throw new Error(
+			"retrieveImageBufferFromVercelBlob() was called but Vercel Blob token is null.",
+		);
+	}
+
+	logger.info({ filename }, "Started fetching image from Vercel Blob.");
+
+	const blobResult = await getBlob(filename, {
+		access: "public",
+		token: vercelBlobToken,
+	});
+
+	if (!blobResult) {
+		throw new Error(`Blob (filename: "${filename}") was not found.`);
+	}
+
+	if (!blobResult.stream) {
+		throw new Error(
+			`Blob (filename: "${filename}") was found but no stream was provided.`,
+		);
+	}
+
+	const imageBuffer = new ArrayBuffer(blobResult.blob.size);
+	const view = new Uint8Array(imageBuffer);
+	let offset = 0;
+
+	await blobResult.stream.pipeTo(
+		new WritableStream({
+			write: (chunk) => {
+				view.set(chunk, offset);
+
+				offset += chunk.length;
+			},
+		}),
+	);
+
+	logger.info(
+		{
+			filename,
+			contentLength: blobResult.blob.size,
+			bufferLength: offset,
+		},
+		"Completed fetching image from Vercel Blob.",
+	);
+
+	return imageBuffer;
+}
+
+async function retrieveImageBufferViaAPI(
+	pathname: string,
+): Promise<ArrayBuffer> {
+	logger.info({ pathname }, "Started fetching image via API.");
+
+	const urlOrigin = await resolveUrlOrigin();
+	const url = new URL(pathname, urlOrigin);
 
 	const imageResponse = await fetch(url);
 
 	const imageBuffer = await imageResponse.arrayBuffer();
 
-	logger.info({ url }, "Finished fetching image.");
+	logger.info({ url }, "Finished fetching image via API.");
 
 	return imageBuffer;
 }

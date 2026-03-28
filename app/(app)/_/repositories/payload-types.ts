@@ -2,6 +2,7 @@ import z from "zod";
 
 export const PayloadUploadSize = z.object({
 	url: z.string().nonempty(),
+	filename: z.string().nonempty(),
 	mimeType: z.string(),
 	width: z.number().nonnegative(),
 	height: z.number().nonnegative(),
@@ -11,6 +12,7 @@ export type PayloadUploadSize = z.infer<typeof PayloadUploadSize>;
 
 export const PayloadUpload = z.object({
 	url: z.string().nonempty(),
+	filename: z.string().nonempty(),
 	mimeType: z.string(),
 	width: z.number().nonnegative(),
 	height: z.number().nonnegative(),

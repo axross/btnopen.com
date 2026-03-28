@@ -42,6 +42,9 @@ if (allowedHosts.size === 0) {
 	allowedHosts.add("localhost:3000");
 }
 
+export const vercelBlobToken =
+	process.env.BLOB_PAYLOAD_READ_WRITE_TOKEN || null;
+
 export const sentryDsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
 export const isSentryEnabled = !!sentryDsn;
 
