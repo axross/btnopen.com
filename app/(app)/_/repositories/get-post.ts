@@ -61,9 +61,11 @@ export async function getPost({
 	});
 
 	if (result.docs.length > 0) {
+		const blogPost = BlogPostDetail.parse(result.docs[0]);
+
 		logger.info({ slug }, "Successfully fetched post.");
 
-		return BlogPostDetail.parse(result.docs[0]);
+		return blogPost;
 	}
 
 	logger.info({ slug }, "Failed to fetch post because it was not found.");
