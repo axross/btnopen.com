@@ -12,21 +12,25 @@ const vercelAutomationBypassSecret =
 
 export default defineConfig({
 	testDir: "./e2e",
+	reporter: isCI ? "github" : "list",
+	outputDir: ".playwright-results",
+
+	// restrict workers to 1 on GitHub Actions to reduce costs
 	workers: isCI ? 1 : undefined,
-	fullyParallel: true,
-	forbidOnly: isCI,
-	repeatEach: 5,
+
+	// repeat 2 times to detect potential flakiness
+	repeatEach: 2,
 	failOnFlakyTests: true,
-	retries: isCI ? 1 : 0,
-	reporter: isCI ? "github" : "line",
+
+	// disallow .skip() or .only() tests on CI
+	forbidOnly: isCI,
+
+	// place snapshots closer to the test files
+	snapshotPathTemplate:
+		"e2e/{testFileDir}/__snapshots__/{testFileName}{/projectName}/{arg}{ext}",
+
 	use: {
 		baseURL: baseUrl ?? "http://localhost:3000",
-		extraHTTPHeaders: vercelAutomationBypassSecret
-			? {
-					"x-vercel-protection-bypass": vercelAutomationBypassSecret,
-					"x-vercel-set-bypass-cookie": "true",
-				}
-			: {},
 		trace: {
 			mode: "retain-on-first-failure",
 			screenshots: true,
@@ -35,10 +39,15 @@ export default defineConfig({
 			attachments: true,
 		},
 		video: "on-first-retry",
+
+		// set vercel-specific http headers for bypassing access protection
+		extraHTTPHeaders: vercelAutomationBypassSecret
+			? {
+					"x-vercel-protection-bypass": vercelAutomationBypassSecret,
+					"x-vercel-set-bypass-cookie": "true",
+				}
+			: {},
 	},
-	outputDir: ".playwright-results",
-	snapshotPathTemplate:
-		"e2e/{testFileDir}/__snapshots__/{testFileName}{/projectName}/{arg}{ext}",
 	projects: [
 		{
 			name: "setup",
