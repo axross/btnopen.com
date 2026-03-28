@@ -4,8 +4,10 @@ import { getPosts } from "@/repositories/get-posts";
 
 // biome-ignore lint/style/noDefaultExport: sitemap needs default export
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-	const urlOrigin = await resolveUrlOrigin();
-	const posts = await getPosts();
+	const [urlOrigin, posts] = await Promise.all([
+		resolveUrlOrigin(),
+		getPosts(),
+	]);
 
 	return [
 		{

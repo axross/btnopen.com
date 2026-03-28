@@ -36,8 +36,10 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-	const urlOrigin = await resolveUrlOrigin();
-	const website = await getWebsite();
+	const [urlOrigin, website] = await Promise.all([
+		resolveUrlOrigin(),
+		getWebsite(),
+	]);
 
 	return {
 		metadataBase: new URL(urlOrigin),

@@ -12,8 +12,10 @@ export async function BlogPostingJsonLd({
 	post: BlogPostDetail;
 	draft?: boolean;
 }): Promise<JSX.Element> {
-	const urlOrigin = await resolveUrlOrigin();
-	const website = await getWebsite({ draft });
+	const [urlOrigin, website] = await Promise.all([
+		resolveUrlOrigin(),
+		getWebsite({ draft }),
+	]);
 
 	return (
 		<script

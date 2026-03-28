@@ -17,8 +17,7 @@ export const size = {
 export const contentType = "image/png";
 
 export default async function Image({ params }: Pick<PageProps, "params">) {
-	const urlOrigin = await resolveUrlOrigin();
-	const { slug } = await params;
+	const [urlOrigin, { slug }] = await Promise.all([resolveUrlOrigin(), params]);
 	const [post, ibmPlexSansJpBold] = await Promise.all([
 		getPost({ slug, draft: true }),
 		readFile(resolve(selfDirname, "./_assets/ibm-plex-sans-jp-700.ttf")),

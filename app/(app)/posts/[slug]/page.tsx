@@ -20,9 +20,11 @@ export async function generateStaticParams() {
 }
 
 export default async function PostPage({ params, searchParams }: PageProps) {
-	const urlOrigin = await resolveUrlOrigin();
-	const { slug } = await params;
-	const { draft, preview } = await searchParams;
+	const [urlOrigin, { slug }, { draft, preview }] = await Promise.all([
+		resolveUrlOrigin(),
+		params,
+		searchParams,
+	]);
 	const isDraft = draft === "true";
 	const post = await getPost({ slug, draft: isDraft });
 
@@ -105,9 +107,11 @@ export async function generateMetadata({
 	params,
 	searchParams,
 }: PageProps): Promise<Metadata> {
-	const urlOrigin = await resolveUrlOrigin();
-	const { slug } = await params;
-	const { draft } = await searchParams;
+	const [urlOrigin, { slug }, { draft }] = await Promise.all([
+		resolveUrlOrigin(),
+		params,
+		searchParams,
+	]);
 	const isDraft = draft === "true";
 	const [website, post] = await Promise.all([
 		getWebsite({ draft: isDraft }),
