@@ -20,7 +20,7 @@
 		],
 		"paths": {
 			"@/*": ["./app/(app)/_/*"],
-			"@/payload-config": ["./payload.config.ts"],
+			"@/payload/config": ["./payload/config.ts"],
 			"@/payload/editor": ["./payload/helpers/editor.ts"],
 			"@/e2e/*": ["./e2e/*"]
 		}

@@ -3,7 +3,7 @@ import Image from "next/image";
 import { getPayload } from "payload";
 import type { ComponentProps, JSX } from "react";
 import { rootLogger } from "@/logger";
-import config from "@/payload-config";
+import { config } from "@/payload/config";
 import css from "./snippet.module.css";
 
 const logger = rootLogger.child({ module: "🖼️" });

@@ -4,8 +4,8 @@ import {
 } from "@payloadcms/richtext-lexical";
 import { getPayload } from "payload";
 import { rootLogger } from "@/logger";
+import { config } from "@/payload/config";
 import { editor } from "@/payload/editor";
-import config from "@/payload-config";
 
 const logger = rootLogger.child({ module: "📥" });
 

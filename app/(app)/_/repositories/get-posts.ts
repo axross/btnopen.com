@@ -1,7 +1,7 @@
 import { getPayload } from "payload";
 import z from "zod";
 import { rootLogger } from "@/logger";
-import config from "@/payload-config";
+import { config } from "@/payload/config";
 import { PayloadBlogPost } from "./payload-types";
 
 const logger = rootLogger.child({ module: "📥" });

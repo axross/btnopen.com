@@ -5,8 +5,8 @@ import {
 import { getPayload } from "payload";
 import type z from "zod";
 import { rootLogger } from "@/logger";
+import { config } from "@/payload/config";
 import { editor } from "@/payload/editor";
-import config from "@/payload-config";
 import { PayloadWebsite } from "./payload-types";
 
 const logger = rootLogger.child({ module: "📥" });
