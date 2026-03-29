@@ -198,9 +198,7 @@ async function retrieveImageBufferFromVercelBlob(
 			filename,
 			contentLength: blobResult.blob.size,
 			bufferLength: offset,
-			firstBytes: `[${[...view.subarray(0, 12)]
-				.map((b) => `0x${b.toString(16).padStart(2, "0")}`)
-				.join(", ")}]`,
+			firstBytes: formatBytes(view),
 		},
 		"Completed fetching image from Vercel Blob.",
 	);
@@ -223,4 +221,16 @@ async function retrieveImageBufferViaAPI(
 	logger.info({ url }, "Finished fetching image via API.");
 
 	return imageBuffer;
+}
+
+const FIRST_BYTES_LENGTH = 12;
+const HEX = 16;
+
+function formatBytes(bytes: Uint8Array): string {
+	const firstBytes = [...bytes.subarray(0, FIRST_BYTES_LENGTH)];
+	const formattedBytes = firstBytes.map(
+		(b) => `0x${b.toString(HEX).padStart(2, "0")}`,
+	);
+
+	return `[${formattedBytes.join(", ")}]`;
 }
