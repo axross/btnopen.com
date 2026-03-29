@@ -45,6 +45,7 @@ jobs:
       actions: read
       statuses: write
       contents: write
+      pull-requests: write
     env:
       PLAYWRIGHT_BASE_URL: ${{ github.event.client_payload.url }}
       VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
@@ -69,13 +70,25 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright Tests
-        run: npx playwright test
-      - name: Commit Snapshot Updates
+        run: npx playwright test --update-snapshots
+      - name: Create Pull Request for Snapshot Updates
         if: ${{ !cancelled() }}
-        uses: stefanzweifel/git-auto-commit-action@v7
+        uses: peter-evans/create-pull-request@v8
         with:
-          commit_message: "chore: update playwright test snapshots"
-          file_pattern: e2e/**/__snapshots__/**
+          add-paths: e2e/**/__snapshots__/**
+          commit-message: "chore: update playwright test snapshots"
+          commit-message-body: |
+            GitHub Actions Run: [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            Original Changes: [${{ github.event.client_payload.git.shortSha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.client_payload.git.sha }})
+          title: "chore: update playwright test snapshots"
+          body: |
+            Updates Playwright test snapshot files changed in a GitHub Actions run.
+
+            GitHub Actions Run: [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            Original Changes: [${{ github.event.client_payload.git.shortSha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.client_payload.git.sha }})
+
+            *This pull request is automatically created by GitHub Actions.*
+          branch: snapshot-updates/${{ github.event.client_payload.git.ref }}
       - uses: actions/upload-artifact@v6
         if: ${{ !cancelled() }}
         with:
