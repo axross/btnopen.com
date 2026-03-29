@@ -44,6 +44,7 @@ jobs:
     permissions:
       actions: read
       statuses: write
+      contents: write
     env:
       PLAYWRIGHT_BASE_URL: ${{ github.event.client_payload.url }}
       VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
@@ -69,6 +70,11 @@ jobs:
         run: npx playwright install --with-deps
       - name: Run Playwright Tests
         run: npx playwright test
+      - name: Commit Snapshot Updates
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "chore: update playwright test snapshots"
+          file_pattern: e2e/**/__snapshots__/**
       - uses: actions/upload-artifact@v6
         if: ${{ !cancelled() }}
         with:
