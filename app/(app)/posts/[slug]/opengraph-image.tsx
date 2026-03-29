@@ -198,6 +198,9 @@ async function retrieveImageBufferFromVercelBlob(
 			filename,
 			contentLength: blobResult.blob.size,
 			bufferLength: offset,
+			firstBytes: `[${[...view.subarray(0, 12)]
+				.map((b) => `0x${b.toString(16).padStart(2, "0")}`)
+				.join(", ")}]`,
 		},
 		"Completed fetching image from Vercel Blob.",
 	);
