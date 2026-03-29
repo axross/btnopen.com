@@ -27,7 +27,7 @@ export default defineConfig({
 
 	// place snapshots closer to the test files
 	snapshotPathTemplate:
-		"e2e/{testFileDir}/__snapshots__/{testFileName}{/projectName}/{arg}{ext}",
+		"e2e/{testFileDir}/__snapshots__/{testFileName}{/platform}/{projectName}-{arg}{ext}",
 
 	use: {
 		baseURL: baseUrl ?? "http://localhost:3000",
