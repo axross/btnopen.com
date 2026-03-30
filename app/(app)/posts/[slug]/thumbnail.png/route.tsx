@@ -1,27 +1,31 @@
+// biome-ignore-start lint/correctness/noNodejsModules: this is running on nodejs runtime
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
+// biome-ignore-end lint/correctness/noNodejsModules: this is running on nodejs runtime
 import { captureException } from "@sentry/nextjs";
 import { get as getBlob } from "@vercel/blob";
 import { notFound } from "next/navigation";
 import { ImageResponse } from "next/og";
-import type { ImageResponseOptions } from "next/server";
+import type { ImageResponseOptions, NextRequest } from "next/server";
 import { resolveUrlOrigin } from "@/helpers/request";
 import { rootLogger } from "@/logger";
 import { getPost } from "@/repositories/get-post";
 import { vercelBlobToken } from "@/runtime";
-import type { PageProps } from "./page-props";
 
 const logger = rootLogger.child({ module: "👽" });
 const selfDirname = dirname(new URL(import.meta.url).pathname);
 
-export const size = {
-	width: 1200,
-	height: 630,
-};
+export const runtime = "nodejs";
 
-export const contentType = "image/png";
+export const maxDuration = 60;
 
-export default async function Image({ params }: Pick<PageProps, "params">) {
+// this is an equivalent endpoint of opengraph-image.ts. the reason why i don't
+// use opengraph-image.ts is that its url isn't consistent because of a hash
+// suffix automatically added on build.
+export async function GET(
+	_: NextRequest,
+	{ params }: { params: Promise<{ slug: string }> },
+): Promise<Response> {
 	const { slug } = await params;
 	const [post, fonts] = await Promise.all([
 		getPost({ slug, draft: true }),
@@ -124,7 +128,8 @@ export default async function Image({ params }: Pick<PageProps, "params">) {
 			</svg>
 		</div>,
 		{
-			...size,
+			width: 1200,
+			height: 630,
 			fonts,
 		},
 	);

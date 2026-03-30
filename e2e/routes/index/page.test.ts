@@ -1,9 +1,7 @@
 import { expect, type Locator, test } from "@playwright/test";
 import { authenticatedStorageState } from "@/e2e/helpers/api/auth";
 import { getExampleBlogPost } from "@/e2e/helpers/api/blog-post";
-
-const urlRegex = /^https?:\/\//;
-const avatarImagePathnameRegex = /^\/api\/avatar-images\/file\//;
+import { getWebsite } from "@/e2e/helpers/api/website";
 
 test.use({ storageState: authenticatedStorageState });
 
@@ -91,37 +89,87 @@ test("Blog post list", async ({ page }, testInfo) => {
 	});
 });
 
-test("JSON-LD metadata", async ({ page }) => {
-	const ldJson = page.locator('script[type="application/ld+json"]');
+test("JSON-LD metadata", async ({ page }, testInfo) => {
+	let website: Awaited<ReturnType<typeof getWebsite>>;
 
-	await expect(ldJson).toBeAttached();
+	await test.step("Retrieve the website record", async () => {
+		website = await getWebsite({ page, testInfo });
+	});
 
-	const ldJsonContent = await ldJson.textContent();
+	let ldJson: Locator;
 
-	expect(JSON.parse(ldJsonContent ?? "{}")).toEqual(
-		expect.objectContaining({
-			"@context": "https://schema.org",
-			"@type": "Blog",
-			"@id": expect.stringMatching(urlRegex),
-			name: "<btn open />",
-			url: expect.stringMatching(urlRegex),
-			author: {
-				"@type": "Person",
-				"@id": expect.stringMatching(urlRegex),
-				name: expect.stringContaining(""),
-				image: expect.stringMatching(avatarImagePathnameRegex),
-			},
-		}),
-	);
+	await test.step("Verify the JSON LD element exists", async () => {
+		ldJson = page.locator('script[type="application/ld+json"]');
+
+		await expect(ldJson).toBeAttached();
+	});
+
+	await test.step("Verify the JSON LD element content", async () => {
+		const ldJsonContent = await ldJson.textContent();
+
+		expect(JSON.parse(ldJsonContent ?? "{}")).toEqual(
+			expect.objectContaining({
+				"@context": "https://schema.org",
+				"@type": "Blog",
+				"@id": `${testInfo.project.use.baseURL}/`,
+				name: website.name,
+				url: `${testInfo.project.use.baseURL}/`,
+				author: {
+					"@type": "Person",
+					"@id": `${testInfo.project.use.baseURL}/`,
+					name: website.creator.name,
+					image: `${testInfo.project.use.baseURL}${website.creator.avatarImage.url}`,
+				},
+			}),
+		);
+	});
 });
 
-test("Open Graph metadata", async ({ page }) => {
-	await expect(page.locator('meta[property="og:site_name"]')).toContainText("");
-	await expect(page.locator('meta[property="og:title"]')).toContainText("");
-	await expect(page.locator('meta[property="og:description"]')).toContainText(
-		"",
-	);
-	await expect(page.locator('meta[property="og:type"]')).toContainText("");
-	await expect(page.locator('meta[property="og:locale"]')).toContainText("");
-	await expect(page.locator('meta[property="og:url"]')).toContainText("");
+test("Open Graph metadata", async ({ page }, testInfo) => {
+	let website: Awaited<ReturnType<typeof getWebsite>>;
+
+	await test.step("Retrieve the website record", async () => {
+		website = await getWebsite({ page, testInfo });
+	});
+
+	await test.step("Verify og:site_name", async () => {
+		await expect(page.locator('meta[property="og:site_name"]')).toHaveAttribute(
+			"content",
+			website.name,
+		);
+	});
+
+	await test.step("Verify og:title", async () => {
+		await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+			"content",
+			website.name,
+		);
+	});
+
+	await test.step("Verify og:description", async () => {
+		await expect(
+			page.locator('meta[property="og:description"]'),
+		).toHaveAttribute("content", website.description);
+	});
+
+	await test.step("Verify og:type", async () => {
+		await expect(page.locator('meta[property="og:type"]')).toHaveAttribute(
+			"content",
+			"website",
+		);
+	});
+
+	await test.step("Verify og:locale", async () => {
+		await expect(page.locator('meta[property="og:locale"]')).toHaveAttribute(
+			"content",
+			"ja_JP",
+		);
+	});
+
+	await test.step("Verify og:url", async () => {
+		await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
+			"content",
+			`${testInfo.project.use.baseURL}`,
+		);
+	});
 });

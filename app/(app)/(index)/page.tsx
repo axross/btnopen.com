@@ -111,7 +111,7 @@ export async function generateMetadata(): Promise<Metadata> {
 		creator: website.creator.name,
 		publisher: website.creator.name,
 		openGraph: {
-			url: `${urlOrigin}/`,
+			url: urlOrigin,
 			title: website.name,
 			description: website.description,
 			siteName: website.name,

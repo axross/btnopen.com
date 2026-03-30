@@ -30,24 +30,23 @@ export async function BlogPostingJsonLd({
 					description: post.brief,
 					datePublished: formatDate(post.publishedAt, "yyyy-MM-dd"),
 					dateModified: formatDate(post.updatedAt, "yyyy-MM-dd"),
-					author: website
-						? {
-								"@type": "Person",
-								"@id": "https://github.com/axross",
-								name: website.creator.name,
-								image: website.creator.avatarImage.url,
-							}
-						: undefined,
+					author: {
+						"@type": "Person",
+						"@id": `${urlOrigin}/`,
+						name: post.author.name,
+						image: `${urlOrigin}${post.author.avatarImage.url}`,
+					},
 					image: {
 						"@type": "ImageObject",
-						"@id": `${urlOrigin}/posts/${post.slug}/opengraph-image`,
-						url: `${urlOrigin}/posts/${post.slug}/opengraph-image`,
+						"@id": `${urlOrigin}/posts/${post.slug}/thumbnail.png`,
+						url: `${urlOrigin}/posts/${post.slug}/thumbnail.png`,
 						height: "1200",
 						width: "630",
 					},
 					url: `${urlOrigin}/posts/${post.slug}`,
 					isPartOf: {
 						"@type": "Blog",
+						"@id": `${urlOrigin}/`,
 						name: website?.name,
 						url: `${urlOrigin}/`,
 					},

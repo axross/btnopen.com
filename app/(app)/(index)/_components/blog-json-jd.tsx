@@ -18,14 +18,14 @@ export async function BlogJsonLd({
 				__html: JSON.stringify({
 					"@context": "https://schema.org",
 					"@type": "Blog",
-					"@id": `${urlOrigin}`,
+					"@id": `${urlOrigin}/`,
 					name: website.name,
 					url: `${urlOrigin}/`,
 					author: {
 						"@type": "Person",
 						"@id": `${urlOrigin}/`,
 						name: website.creator.name,
-						image: website.creator.avatarImage.url,
+						image: `${urlOrigin}${website.creator.avatarImage.url}`,
 					},
 				} as WithContext<Blog>),
 			}}

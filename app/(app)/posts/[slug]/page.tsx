@@ -139,6 +139,13 @@ export async function generateMetadata({
 			description: post.brief,
 			siteName: website.name,
 			url: `${urlOrigin}/posts/${post.slug}`,
+			images: [
+				{
+					url: `${urlOrigin}/posts/${post.slug}/thumbnail.png`,
+					width: 1200,
+					height: 630,
+				},
+			],
 			type: "article",
 			publishedTime: post.publishedAt,
 			modifiedTime: post.updatedAt,

@@ -15,29 +15,29 @@ test.beforeEach(async ({ page }, testInfo) => {
 		await page.goto(`/posts/${slug}?draft=true`);
 	});
 
-	let ogImageUrl: string;
+	let thumbnailUrl: string;
 
-	await test.step("Retrieve the Open Graph image URL from the meta tag", async () => {
+	await test.step("Retrieve the thumbnail URL from the meta tag", async () => {
 		const ogImageMeta = page.locator('meta[property="og:image"]');
 
-		expect(ogImageMeta).toBeAttached();
+		await expect(ogImageMeta).toBeAttached();
 
 		const ogImageContent = await ogImageMeta.getAttribute("content");
 
 		expect(ogImageContent).toContain(slug);
-		expect(ogImageContent).toContain("opengraph-image");
+		expect(ogImageContent).toContain("thumbnail");
 
 		// biome-ignore lint/style/noNonNullAssertion: asserted above
-		ogImageUrl = ogImageContent!;
+		thumbnailUrl = ogImageContent!;
 	});
 
-	await test.step("Navigate to the Open Graph image", async () => {
-		await page.goto(ogImageUrl);
+	await test.step("Navigate to the thumbnail image", async () => {
+		await page.goto(thumbnailUrl);
 	});
 });
 
-test("Open Graph image", async ({ page }) => {
-	await test.step("Verify the Open Graph image", async () => {
-		await expect(page).toHaveScreenshot("opengraph-image.png");
+test("Thumbnail image", async ({ page }) => {
+	await test.step("Verify the thumbnail image", async () => {
+		await expect(page).toHaveScreenshot("thumbnail.png");
 	});
 });

@@ -1,7 +1,8 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Locator, test } from "@playwright/test";
 import { format } from "date-fns";
 import { authenticatedStorageState } from "@/e2e/helpers/api/auth";
 import { getExampleBlogPost } from "@/e2e/helpers/api/blog-post";
+import { getWebsite } from "@/e2e/helpers/api/website";
 
 test.use({ storageState: authenticatedStorageState });
 
@@ -59,5 +60,120 @@ test("Blog post content", async ({ page }) => {
 
 	await test.step("Verify the blog post content", async () => {
 		await expect(content).toHaveScreenshot("content.png");
+	});
+});
+
+test("JSON-LD metadata", async ({ page }, testInfo) => {
+	let website: Awaited<ReturnType<typeof getWebsite>>;
+
+	await test.step("Retrieve the website record", async () => {
+		website = await getWebsite({ page, testInfo });
+	});
+
+	let blogPost: Awaited<ReturnType<typeof getExampleBlogPost>>;
+
+	await test.step("Retrieve the example blog post record", async () => {
+		blogPost = await getExampleBlogPost({ page, testInfo });
+	});
+
+	let ldJson: Locator;
+
+	await test.step("Verify the JSON LD element exists", async () => {
+		ldJson = page.locator('script[type="application/ld+json"]');
+
+		await expect(ldJson).toBeAttached();
+	});
+
+	await test.step("Verify the JSON LD element content", async () => {
+		const ldJsonContent = await ldJson.textContent();
+		const url = new URL(
+			`/posts/${blogPost.slug}`,
+			testInfo.project.use.baseURL,
+		);
+
+		expect(JSON.parse(ldJsonContent ?? "{}")).toEqual(
+			expect.objectContaining({
+				"@context": "https://schema.org",
+				"@type": "BlogPosting",
+				"@id": `${url}`,
+				name: blogPost.title,
+				url: `${url}`,
+				description: blogPost.brief,
+				author: expect.objectContaining({
+					"@type": "Person",
+					"@id": `${testInfo.project.use.baseURL}/`,
+					name: blogPost.author.name,
+					image: `${testInfo.project.use.baseURL}${blogPost.author.avatarImage.url}`,
+				}),
+				image: expect.objectContaining({
+					"@type": "ImageObject",
+					"@id": `${testInfo.project.use.baseURL}/posts/${blogPost.slug}/thumbnail.png`,
+					url: `${testInfo.project.use.baseURL}/posts/${blogPost.slug}/thumbnail.png`,
+					height: "1200",
+					width: "630",
+				}),
+				isPartOf: expect.objectContaining({
+					"@type": "Blog",
+					"@id": `${testInfo.project.use.baseURL}/`,
+					name: website.name,
+					url: `${testInfo.project.use.baseURL}/`,
+				}),
+			}),
+		);
+	});
+});
+
+test("Open Graph metadata", async ({ page }, testInfo) => {
+	let website: Awaited<ReturnType<typeof getWebsite>>;
+
+	await test.step("Retrieve the website record", async () => {
+		website = await getWebsite({ page, testInfo });
+	});
+
+	let blogPost: Awaited<ReturnType<typeof getExampleBlogPost>>;
+
+	await test.step("Retrieve the example blog post record", async () => {
+		blogPost = await getExampleBlogPost({ page, testInfo });
+	});
+
+	await test.step("Verify og:site_name", async () => {
+		await expect(page.locator('meta[property="og:site_name"]')).toHaveAttribute(
+			"content",
+			website.name,
+		);
+	});
+
+	await test.step("Verify og:title", async () => {
+		await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+			"content",
+			blogPost.title,
+		);
+	});
+
+	await test.step("Verify og:description", async () => {
+		await expect(
+			page.locator('meta[property="og:description"]'),
+		).toHaveAttribute("content", blogPost.brief);
+	});
+
+	await test.step("Verify og:type", async () => {
+		await expect(page.locator('meta[property="og:type"]')).toHaveAttribute(
+			"content",
+			"article",
+		);
+	});
+
+	await test.step("Verify og:locale", async () => {
+		await expect(page.locator('meta[property="og:locale"]')).toHaveAttribute(
+			"content",
+			"ja_JP",
+		);
+	});
+
+	await test.step("Verify og:url", async () => {
+		await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
+			"content",
+			`${testInfo.project.use.baseURL}/posts/${blogPost.slug}`,
+		);
 	});
 });
