@@ -75,11 +75,8 @@ jobs:
         if: ${{ !cancelled() }}
         uses: peter-evans/create-pull-request@v8
         with:
+          branch: snapshot-updates/${{ github.event.client_payload.git.ref }}
           add-paths: e2e/**/__snapshots__/**
-          commit-message: "chore: update playwright test snapshots"
-          commit-message-body: |
-            GitHub Actions Run: [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-            Original Changes: [${{ github.event.client_payload.git.shortSha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.client_payload.git.sha }})
           title: "chore: update playwright test snapshots"
           body: |
             Updates Playwright test snapshot files changed in a GitHub Actions run.
@@ -88,7 +85,11 @@ jobs:
             Original Changes: [${{ github.event.client_payload.git.shortSha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.client_payload.git.sha }})
 
             *This pull request is automatically created by GitHub Actions.*
-          branch: snapshot-updates/${{ github.event.client_payload.git.ref }}
+          commit-message: |
+            chore: update playwright test snapshots
+
+            GitHub Actions Run: [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            Original Changes: [${{ github.event.client_payload.git.shortSha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.client_payload.git.sha }})
       - uses: actions/upload-artifact@v6
         if: ${{ !cancelled() }}
         with:
