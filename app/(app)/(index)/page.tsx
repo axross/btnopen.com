@@ -114,6 +114,13 @@ export async function generateMetadata(): Promise<Metadata> {
 			url: urlOrigin,
 			title: website.name,
 			description: website.description,
+			images: [
+				{
+					url: `${urlOrigin}/thumbnail.png`,
+					width: 1200,
+					height: 630,
+				},
+			],
 			siteName: website.name,
 			type: "website",
 			locale: "ja_JP",

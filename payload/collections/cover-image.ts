@@ -1,10 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { v7 as uuidV7 } from "uuid";
-import {
-	createPngImageSize,
-	getStaticDir,
-	webpFormatOptions,
-} from "../helpers/image";
+import { getStaticDir, webpFormatOptions } from "../helpers/image";
 
 export const coverImageCollection: CollectionConfig = {
 	slug: "cover-images",
@@ -18,7 +14,27 @@ export const coverImageCollection: CollectionConfig = {
 			width: 2560,
 			height: 1344,
 		},
-		imageSizes: [createPngImageSize({ name: "og", width: 1200, height: 630 })],
+		imageSizes: [
+			{
+				name: "og",
+				width: 1200,
+				height: 630,
+				fit: "cover",
+				position: "center",
+				withoutEnlargement: false,
+				formatOptions: {
+					format: "jpeg",
+					options: {
+						quality: 90,
+						smartSubsample: true,
+						smartDeblock: true,
+						effort: 4,
+					},
+				},
+				generateImageName: ({ originalName, sizeName, extension }) =>
+					`${originalName}-${sizeName}.${extension}`,
+			},
+		],
 	},
 	fields: [
 		{

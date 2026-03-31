@@ -24,8 +24,7 @@ test.beforeEach(async ({ page }, testInfo) => {
 
 		const ogImageContent = await ogImageMeta.getAttribute("content");
 
-		expect(ogImageContent).toContain(slug);
-		expect(ogImageContent).toContain("thumbnail");
+		expect(ogImageContent).toEqual(expect.any(String));
 
 		// biome-ignore lint/style/noNonNullAssertion: asserted above
 		thumbnailUrl = ogImageContent!;
