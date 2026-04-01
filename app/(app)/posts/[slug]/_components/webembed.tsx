@@ -6,7 +6,10 @@ import metascraperTitle from "metascraper-title";
 import metascraperUrl from "metascraper-url";
 import Image from "next/image";
 import type { ComponentProps, JSX } from "react";
+import { rootLogger } from "@/logger";
 import css from "./webembed.module.css";
+
+const logger = rootLogger.child({ module: "🌏" });
 
 async function WebEmbed({
 	href,
@@ -43,9 +46,9 @@ async function WebEmbed({
 
 			<span className={css.title}>{title ?? embedMetadata.title ?? href}</span>
 
-			{embedMetadata.description === null ? (
+			{embedMetadata.description === null ? null : (
 				<span className={css.description}>{embedMetadata.description}</span>
-			) : null}
+			)}
 
 			<span className={css.url}>
 				{new URL(embedMetadata.urlSource ?? href).host}
@@ -123,6 +126,8 @@ async function fetchEmbedMetadata({
 }): Promise<EmbedMetadata> {
 	"use server";
 
+	logger.info({ url }, "Started fetching web embed metadata.");
+
 	const htmlResponse = await fetch(url, {
 		headers: {
 			accept: "application/json",
@@ -142,6 +147,16 @@ async function fetchEmbedMetadata({
 	]);
 
 	const metadata = await metascraper({ url, html });
+
+	logger.info(
+		{
+			url,
+			title: metadata.title ?? null,
+			description: metadata.description ?? null,
+			imageUrl: metadata.image ?? null,
+		},
+		"Completed fetching web embed metadata.",
+	);
 
 	return {
 		url,
