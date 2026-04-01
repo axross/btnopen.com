@@ -96,7 +96,6 @@ export async function GET(
 					padding: 96,
 					paddingTop: 64,
 					rowGap: 64,
-					// backgroundColor: "#b016ff3f",
 				}}
 			>
 				<Logo
