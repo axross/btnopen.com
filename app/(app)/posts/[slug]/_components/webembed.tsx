@@ -1,15 +1,8 @@
 import { clsx } from "clsx";
-import createMetascraper from "metascraper";
-import metascraperDescription from "metascraper-description";
-import metascraperImage from "metascraper-image";
-import metascraperTitle from "metascraper-title";
-import metascraperUrl from "metascraper-url";
 import Image from "next/image";
 import type { ComponentProps, JSX } from "react";
-import { rootLogger } from "@/logger";
+import { fetchWebEmbedMetadata } from "../_repositories/webembed";
 import css from "./webembed.module.css";
-
-const logger = rootLogger.child({ module: "🌏" });
 
 async function WebEmbed({
 	href,
@@ -19,7 +12,7 @@ async function WebEmbed({
 }: Omit<ComponentProps<"a">, "href"> & {
 	href: string;
 }): Promise<JSX.Element> {
-	const embedMetadata = await fetchEmbedMetadata({ url: href });
+	const embedMetadata = await fetchWebEmbedMetadata({ url: href });
 
 	return (
 		<a
@@ -109,62 +102,6 @@ function FallbackIllustration({
 			/>
 		</svg>
 	);
-}
-
-interface EmbedMetadata {
-	url: string;
-	urlSource: string | null;
-	title: string | null;
-	description: string | null;
-	imageUrl: string | null;
-}
-
-async function fetchEmbedMetadata({
-	url,
-}: {
-	url: string;
-}): Promise<EmbedMetadata> {
-	"use server";
-
-	logger.info({ url }, "Started fetching web embed metadata.");
-
-	const htmlResponse = await fetch(url, {
-		headers: {
-			accept: "application/json",
-			"content-type": "application/json",
-			credentials: "same-origin",
-		},
-	});
-
-	const html = await htmlResponse.text();
-
-	const metascraper = createMetascraper([
-		metascraperUrl(),
-		metascraperTitle(),
-		metascraperDescription(),
-		metascraperImage(),
-		metascraperUrl(),
-	]);
-
-	const metadata = await metascraper({ url, html });
-
-	logger.info(
-		{
-			url,
-			title: metadata.title ?? null,
-			description: metadata.description ?? null,
-			imageUrl: metadata.image ?? null,
-		},
-		"Completed fetching web embed metadata.",
-	);
-
-	return {
-		url,
-		urlSource: metadata.url ?? null,
-		title: metadata.title ?? null,
-		description: metadata.description ?? null,
-		imageUrl: metadata.image ?? null,
-	};
 }
 
 export { WebEmbed };

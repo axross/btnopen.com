@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
 			new URL("https://cdn.hashnode.com/res/hashnode/**"),
 		],
 	},
-	serverExternalPackages: ["re2", "pino", "pino-pretty"],
+	serverExternalPackages: ["browserless", "re2", "pino", "pino-pretty"],
 	// logging: false,
 	experimental: {
 		viewTransition: true,
