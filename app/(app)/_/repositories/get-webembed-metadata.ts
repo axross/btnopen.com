@@ -7,6 +7,7 @@ import metascraperDescription from "metascraper-description";
 import metascraperImage from "metascraper-image";
 import metascraperTitle from "metascraper-title";
 import metascraperUrl from "metascraper-url";
+import { cacheLife } from "next/cache";
 import { rootLogger } from "@/logger";
 
 const logger = rootLogger.child({ module: "🌏" });
@@ -19,11 +20,15 @@ interface WebEmbedMetadata {
 	imageUrl: string | null;
 }
 
-export async function fetchWebEmbedMetadata({
+export async function getWebEmbedMetadata({
 	url,
 }: {
 	url: string;
 }): Promise<WebEmbedMetadata> {
+	"use cache";
+
+	cacheLife("hours");
+
 	logger.info({ url }, "Started fetching web embed metadata.");
 
 	const browserless = await createBrowserless();

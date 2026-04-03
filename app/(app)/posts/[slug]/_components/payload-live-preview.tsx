@@ -3,7 +3,7 @@
 import { RefreshRouteOnSave } from "@payloadcms/live-preview-react";
 import { captureException } from "@sentry/nextjs";
 import { type JSX, useCallback } from "react";
-import { refresh } from "./refresh";
+import { refresh } from "./payload-live-preview/refresh";
 
 export function PayloadLivePreview({
 	path,

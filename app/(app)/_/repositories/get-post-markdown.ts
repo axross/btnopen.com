@@ -1,7 +1,10 @@
+"use server";
+
 import {
 	convertLexicalToMarkdown,
 	editorConfigFactory,
 } from "@payloadcms/richtext-lexical";
+import { cacheLife } from "next/cache";
 import { getPayload } from "payload";
 import { rootLogger } from "@/logger";
 import { config } from "@/payload/config";
@@ -16,7 +19,13 @@ export async function getPostMarkdown({
 	slug: string;
 	draft?: boolean;
 }) {
+	"use cache";
+
+	cacheLife("hours");
+
 	logger.info({ slug, draft }, "Started fetching post markdown.");
+
+	const processStartedAt = performance.now();
 
 	const payload = await getPayload({ config });
 	const result = await payload.find({
@@ -52,7 +61,10 @@ export async function getPostMarkdown({
 			}),
 		});
 
-		logger.info({ slug }, "Finished fetching post markdown.");
+		logger.info(
+			{ slug, duration: performance.now() - processStartedAt },
+			"Finished fetching post markdown.",
+		);
 
 		return markdown;
 	}

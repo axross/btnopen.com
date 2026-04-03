@@ -1,3 +1,5 @@
+"use server";
+
 import { createOnigurumaEngine, type HighlighterCore } from "shiki";
 import { createCssVariablesTheme, createHighlighterCore } from "shiki/core";
 

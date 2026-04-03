@@ -1,8 +1,7 @@
+import { cacheLife } from "next/cache";
 import { ImageResponse } from "next/og";
 import type { NextRequest } from "next/server";
 import { Logo } from "@/components/logo";
-
-export const runtime = "nodejs";
 
 export const maxDuration = 30;
 
@@ -10,6 +9,10 @@ export const maxDuration = 30;
 // use opengraph-image.ts is that its url isn't consistent because of a hash
 // suffix automatically added on build.
 export async function GET(_: NextRequest): Promise<Response> {
+	"use cache";
+
+	cacheLife("hours");
+
 	return new ImageResponse(
 		<div
 			style={{

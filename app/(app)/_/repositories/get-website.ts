@@ -1,7 +1,10 @@
+"use server";
+
 import {
 	convertLexicalToMarkdown,
 	editorConfigFactory,
 } from "@payloadcms/richtext-lexical";
+import { cacheLife } from "next/cache";
 import { getPayload } from "payload";
 import type z from "zod";
 import { rootLogger } from "@/logger";
@@ -28,6 +31,10 @@ export async function getWebsite({
 }: {
 	draft?: boolean;
 } = {}): Promise<Website | null> {
+	"use cache";
+
+	cacheLife("hours");
+
 	logger.info("Started fetching website record.");
 
 	const payload = await getPayload({ config });

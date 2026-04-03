@@ -1,4 +1,5 @@
 import { clsx } from "clsx";
+import { cacheLife } from "next/cache";
 import Image from "next/image";
 import { getPayload } from "payload";
 import type { ComponentProps, JSX } from "react";
@@ -16,6 +17,10 @@ export async function Media({
 	alt,
 	className,
 }: ComponentProps<"img">): Promise<JSX.Element | null> {
+	"use cache";
+
+	cacheLife("hours");
+
 	if (typeof src === "string") {
 		const match = src.match(mediaSrcRegex);
 

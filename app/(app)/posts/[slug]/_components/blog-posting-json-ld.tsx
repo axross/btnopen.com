@@ -6,16 +6,21 @@ import type { BlogPostDetail } from "@/repositories/get-post";
 import { getWebsite } from "@/repositories/get-website";
 
 export async function BlogPostingJsonLd({
-	post,
-	draft,
+	blogPost: blogPostPromise,
+	draft: draftPromise,
 }: {
-	post: BlogPostDetail;
-	draft?: boolean;
-}): Promise<JSX.Element> {
-	const [urlOrigin, website] = await Promise.all([
+	blogPost: Promise<BlogPostDetail | null>;
+	draft?: Promise<boolean>;
+}): Promise<JSX.Element | null> {
+	const [urlOrigin, website, blogPost] = await Promise.all([
 		resolveUrlOrigin(),
-		getWebsite({ draft }),
+		getWebsite({ draft: await draftPromise }),
+		blogPostPromise,
 	]);
+
+	if (!blogPost) {
+		return null;
+	}
 
 	return (
 		<script
@@ -25,25 +30,25 @@ export async function BlogPostingJsonLd({
 				__html: JSON.stringify({
 					"@context": "https://schema.org",
 					"@type": "BlogPosting",
-					"@id": `${urlOrigin}/posts/${post.slug}`,
-					name: post.title,
-					description: post.brief,
-					datePublished: formatDate(post.publishedAt, "yyyy-MM-dd"),
-					dateModified: formatDate(post.updatedAt, "yyyy-MM-dd"),
+					"@id": `${urlOrigin}/posts/${blogPost.slug}`,
+					name: blogPost.title,
+					description: blogPost.brief,
+					datePublished: formatDate(blogPost.publishedAt, "yyyy-MM-dd"),
+					dateModified: formatDate(blogPost.updatedAt, "yyyy-MM-dd"),
 					author: {
 						"@type": "Person",
 						"@id": `${urlOrigin}/`,
-						name: post.author.name,
-						image: `${urlOrigin}${post.author.avatarImage.url}`,
+						name: blogPost.author.name,
+						image: `${urlOrigin}${blogPost.author.avatarImage.url}`,
 					},
 					image: {
 						"@type": "ImageObject",
-						"@id": `${urlOrigin}/posts/${post.slug}/thumbnail.png`,
-						url: `${urlOrigin}/posts/${post.slug}/thumbnail.png`,
+						"@id": `${urlOrigin}/posts/${blogPost.slug}/thumbnail.png`,
+						url: `${urlOrigin}/posts/${blogPost.slug}/thumbnail.png`,
 						height: "1200",
 						width: "630",
 					},
-					url: `${urlOrigin}/posts/${post.slug}`,
+					url: `${urlOrigin}/posts/${blogPost.slug}`,
 					isPartOf: {
 						"@type": "Blog",
 						"@id": `${urlOrigin}/`,

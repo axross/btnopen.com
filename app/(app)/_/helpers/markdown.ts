@@ -1,3 +1,5 @@
+"use server";
+
 import { captureException } from "@sentry/nextjs";
 import rehypeShikiFromHighlighter from "@shikijs/rehype/core";
 import type { Root as HastRoot } from "hast";
@@ -30,8 +32,6 @@ async function renderMarkdown({
 	markdown: string;
 	rehypeReactOptions: RehypeReactOptions;
 }): Promise<JSX.Element> {
-	"use server";
-
 	const highlighter = await getSingletonHighlighter();
 	const file = await unified()
 		.use(remarkParse, { allowDangerousProtocol: true })

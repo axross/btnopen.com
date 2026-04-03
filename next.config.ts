@@ -10,6 +10,7 @@ const sentryProject = process.env.SENTRY_PROJECT;
 
 const nextConfig: NextConfig = {
 	reactCompiler: true,
+	cacheComponents: true,
 	images: {
 		remotePatterns: [
 			new URL("http://localhost:3000/api/**"),
@@ -17,7 +18,6 @@ const nextConfig: NextConfig = {
 		],
 	},
 	serverExternalPackages: ["browserless", "re2", "pino", "pino-pretty"],
-	// logging: false,
 	experimental: {
 		viewTransition: true,
 	},

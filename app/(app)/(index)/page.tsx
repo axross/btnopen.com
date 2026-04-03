@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import type { JSX } from "react";
+import { type JSX, Suspense } from "react";
 import { Markdown } from "@/components/markdown";
 import { resolveUrlOrigin } from "@/helpers/request";
 import { getWebsite, type Website } from "@/repositories/get-website";
@@ -12,33 +12,38 @@ import { SocialLinkList } from "./_components/social-link-list";
 import css from "./page.module.css";
 import type { PageProps } from "./page-props";
 
-async function IndexPage({ searchParams }: PageProps) {
-	const { draft } = await searchParams;
-	const isDraft = draft === "true";
-	const website = await getWebsite({ draft: isDraft });
+async function IndexPage({ searchParams }: PageProps): Promise<JSX.Element> {
+	const draft = searchParams.then((params) => params.draft === "true");
+	const website = draft.then((isDraft) => getWebsite({ draft: isDraft }));
+
+	return (
+		<>
+			<div className={css.indexPage} data-testid="page">
+				<Suspense>
+					<IndexPageMain website={website} draft={draft} />
+				</Suspense>
+			</div>
+
+			<Suspense>
+				<BlogJsonLd website={website} />
+			</Suspense>
+		</>
+	);
+}
+
+async function IndexPageMain({
+	website: websitePromise,
+	draft,
+}: {
+	website: Promise<Website | null>;
+	draft?: Promise<boolean>;
+}): Promise<JSX.Element> {
+	const website = await websitePromise;
 
 	if (!website) {
 		notFound();
 	}
 
-	return (
-		<>
-			<div className={css.indexPage} data-testid="page">
-				<IndexPageMain website={website} draft={isDraft} />
-			</div>
-
-			<BlogJsonLd website={website} />
-		</>
-	);
-}
-
-function IndexPageMain({
-	website,
-	draft,
-}: {
-	website: Website;
-	draft: boolean;
-}): JSX.Element {
 	return (
 		<main className={css.main}>
 			<section className={css.intro} data-testid="intro">
@@ -79,11 +84,13 @@ function IndexPageMain({
 			<section className={css.section}>
 				<h1 className={css.sectionHeading}>{"Posts"}</h1>
 
-				<PostList
-					draft={draft}
-					className={css.posts}
-					data-testid="blog-posts"
-				/>
+				<Suspense>
+					<PostList
+						draft={draft}
+						className={css.posts}
+						data-testid="blog-posts"
+					/>
+				</Suspense>
 			</section>
 		</main>
 	);

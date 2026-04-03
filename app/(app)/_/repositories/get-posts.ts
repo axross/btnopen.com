@@ -1,3 +1,6 @@
+"use server";
+
+import { cacheLife } from "next/cache";
 import { getPayload } from "payload";
 import z from "zod";
 import { rootLogger } from "@/logger";
@@ -22,6 +25,10 @@ export async function getPosts({
 }: {
 	draft?: boolean;
 } = {}): Promise<BlogPostSummary[]> {
+	"use cache";
+
+	cacheLife("hours");
+
 	logger.info("Started fetching posts.");
 
 	const payload = await getPayload({ config });

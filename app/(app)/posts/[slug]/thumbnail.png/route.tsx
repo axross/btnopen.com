@@ -4,6 +4,7 @@ import { dirname, resolve } from "node:path";
 // biome-ignore-end lint/correctness/noNodejsModules: this is running on nodejs runtime
 import { captureException } from "@sentry/nextjs";
 import { get as getBlob } from "@vercel/blob";
+import { cacheLife } from "next/cache";
 import { notFound } from "next/navigation";
 import { ImageResponse } from "next/og";
 import type { ImageResponseOptions, NextRequest } from "next/server";
@@ -17,8 +18,6 @@ import { vercelBlobToken } from "@/runtime";
 const logger = rootLogger.child({ module: "👽" });
 const selfDirname = dirname(new URL(import.meta.url).pathname);
 
-export const runtime = "nodejs";
-
 export const maxDuration = 60;
 
 // this is an equivalent endpoint of opengraph-image.ts. the reason why i don't
@@ -28,6 +27,10 @@ export async function GET(
 	_: NextRequest,
 	{ params }: { params: Promise<{ slug: string }> },
 ): Promise<Response> {
+	"use cache";
+
+	cacheLife("hours");
+
 	const { slug } = await params;
 	const [post, fonts] = await Promise.all([
 		getPost({ slug, draft: true }),

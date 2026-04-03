@@ -7,12 +7,13 @@ import { getPosts } from "@/repositories/get-posts";
 import css from "./post-list.module.css";
 
 export async function PostList({
-	draft = false,
+	draft,
 	className,
 	children,
 	...props
-}: ComponentProps<"ul"> & { draft?: boolean }): Promise<JSX.Element> {
-	const posts = await getPosts({ draft });
+}: ComponentProps<"ul"> & { draft?: Promise<boolean> }): Promise<JSX.Element> {
+	const isDraft = await draft;
+	const posts = await getPosts({ draft: isDraft });
 
 	return (
 		<ul className={clsx(css.postList, className)} {...props}>
@@ -20,7 +21,7 @@ export async function PostList({
 				<Link
 					href={{
 						pathname: `/posts/${post.slug}`,
-						search: draft ? "draft=true" : undefined,
+						search: isDraft ? "draft=true" : undefined,
 					}}
 					className={css.link}
 					key={post.slug}

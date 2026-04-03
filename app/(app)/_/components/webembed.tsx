@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
 import Image from "next/image";
 import type { ComponentProps, JSX } from "react";
-import { fetchWebEmbedMetadata } from "../_repositories/webembed";
+import { getWebEmbedMetadata } from "@/repositories/get-webembed-metadata";
 import css from "./webembed.module.css";
 
 async function WebEmbed({
@@ -12,7 +12,7 @@ async function WebEmbed({
 }: Omit<ComponentProps<"a">, "href"> & {
 	href: string;
 }): Promise<JSX.Element> {
-	const embedMetadata = await fetchWebEmbedMetadata({ url: href });
+	const embedMetadata = await getWebEmbedMetadata({ url: href });
 
 	return (
 		<a
