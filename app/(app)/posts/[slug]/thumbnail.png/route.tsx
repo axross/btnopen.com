@@ -4,7 +4,6 @@ import { dirname, resolve } from "node:path";
 // biome-ignore-end lint/correctness/noNodejsModules: this is running on nodejs runtime
 import { captureException } from "@sentry/nextjs";
 import { get as getBlob } from "@vercel/blob";
-import { cacheLife } from "next/cache";
 import { notFound } from "next/navigation";
 import { ImageResponse } from "next/og";
 import type { ImageResponseOptions, NextRequest } from "next/server";
@@ -27,10 +26,6 @@ export async function GET(
 	_: NextRequest,
 	{ params }: { params: Promise<{ slug: string }> },
 ): Promise<Response> {
-	"use cache";
-
-	cacheLife("hours");
-
 	const { slug } = await params;
 	const [post, fonts] = await Promise.all([
 		getPost({ slug, draft: true }),
@@ -73,9 +68,9 @@ export async function GET(
 			{/** biome-ignore lint/a11y/useAltText: this is just within the image generation. alt will be omitted in the rendered result. */}
 			{/** biome-ignore lint/performance/noImgElement: this is just within the image generation. Next <Image> dosen't fit in the image generation. */}
 			<img
-				src={(await manipulateImage(imageBuffer)) as never}
 				width={post.thumbnailImage.width}
 				height={post.thumbnailImage.height}
+				src={toDataUrl(await manipulateImage(imageBuffer))}
 				style={{
 					position: "absolute",
 					top: 0,
@@ -269,4 +264,10 @@ function formatBytes(bytes: Uint8Array): string {
 	);
 
 	return `[${formattedBytes.join(", ")}]`;
+}
+
+function toDataUrl(image: ArrayBuffer): string {
+	const base64 = Buffer.from(image).toString("base64");
+
+	return `data:image/jpeg;base64,${base64}`;
 }

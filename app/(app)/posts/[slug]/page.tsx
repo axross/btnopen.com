@@ -50,7 +50,9 @@ export default async function PostPage({
 				</ViewTransition>
 			</article>
 
-			<BlogPostingJsonLd blogPost={blogPost} draft={draft} />
+			<Suspense>
+				<BlogPostingJsonLd blogPost={blogPost} draft={draft} />
+			</Suspense>
 
 			<Suspense>
 				<MaybePayloadLivePreview slug={slug} preview={preview} />
