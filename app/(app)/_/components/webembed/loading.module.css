@@ -1,0 +1,81 @@
+@layer components {
+	@scope (.webembedLoading) {
+		:where(:scope) {
+			display: flex;
+			container: webembed-loading / inline-size;
+			width: stretch;
+			flex-direction: column;
+			padding-block-end: var(--size-16);
+
+			--variant: "mobile";
+
+			@container (width > 30rem) {
+				display: grid;
+				grid-template-columns: auto 1fr;
+				grid-template-rows: auto auto 1fr;
+				grid-template-areas:
+					"image title"
+					"image description"
+					"image url";
+				row-gap: var(--size-16);
+				column-gap: var(--size-16);
+				padding-block-end: unset;
+
+				--variant: "desktop";
+			}
+		}
+
+		.image {
+			grid-area: image;
+			width: 100cqw;
+			height: auto;
+			aspect-ratio: 1200 / 630;
+			border-radius: var(--radius-md);
+
+			@container webembed-loading style(--variant: "desktop") {
+				width: 42.5cqw;
+			}
+		}
+
+		.title {
+			margin-block-start: var(--size-16);
+			padding-inline: var(--size-16);
+			font-size: var(--text-lg);
+
+			@container webembed-loading style(--variant: "desktop") {
+				grid-area: title;
+				margin-block-start: unset;
+				padding-block-start: var(--size-16);
+				padding-inline-start: unset;
+			}
+		}
+
+		.description {
+			margin-block-start: var(--size-16);
+			padding-inline: var(--size-16);
+			font-size: var(--text-sm);
+			line-height: var(--leading-lg);
+
+			@container webembed-loading style(--variant: "desktop") {
+				grid-area: description;
+				margin-block-start: unset;
+				padding-inline-start: unset;
+			}
+		}
+
+		.url {
+			margin-block-start: var(--size-16);
+			padding-inline: var(--size-16);
+			font-size: var(--text-sm);
+			line-height: var(--leading-lg);
+
+			@container webembed-loading style(--variant: "desktop") {
+				grid-area: url;
+				align-self: flex-end;
+				margin-block-start: unset;
+				padding-block-end: var(--size-16);
+				padding-inline-start: unset;
+			}
+		}
+	}
+}

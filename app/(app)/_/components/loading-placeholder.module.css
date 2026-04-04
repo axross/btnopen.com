@@ -1,0 +1,47 @@
+@layer components {
+	@scope (.loadingPlaceholderRect) {
+		:where(:scope) {
+			display: block;
+			width: stretch;
+			height: auto;
+			aspect-ratio: 1;
+			border-radius: var(--radius-md);
+			background-color: var(--neutral-2);
+			animation: pulse 500ms linear infinite alternate;
+		}
+	}
+
+	@scope (.loadingPlaceholderText) {
+		:where(:scope) {
+			container: loading-placeholder-text / inline-size;
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			/* width: stretch; */
+			max-height: calc(attr(data-max-lines number, 9999) * 1lh);
+			padding-block: calc((1lh - 1em) / 2);
+			row-gap: calc((1lh - 1em));
+			column-gap: 0.75ch;
+			overflow-y: hidden;
+		}
+	}
+
+	.span {
+		display: block;
+		width: attr(data-length ch);
+		height: 1em;
+		border-radius: var(--radius-sm);
+		background-color: var(--neutral-2);
+		animation: pulse 500ms linear infinite alternate;
+	}
+
+	@keyframes pulse {
+		0% {
+			background-color: var(--neutral-2);
+		}
+
+		100% {
+			background-color: var(--neutral-3);
+		}
+	}
+}

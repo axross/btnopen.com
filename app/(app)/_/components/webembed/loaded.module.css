@@ -1,0 +1,178 @@
+@layer components {
+	@scope (.webembedLoaded) {
+		:where(:scope) {
+			display: flex;
+			container: webembed-loaded / inline-size;
+			width: stretch;
+			flex-direction: column;
+			padding-block-end: var(--size-16);
+			background-color: var(--accent-3);
+			border-radius: var(--radius-md);
+			text-decoration: inherit;
+			color: inherit;
+
+			--variant: "mobile";
+
+			&:hover {
+				background-color: var(--accent-4);
+			}
+
+			@container (width > 30rem) {
+				display: grid;
+				grid-template-columns: auto 1fr;
+				grid-template-rows: auto auto 1fr;
+				grid-template-areas:
+					"image title"
+					"image description"
+					"image url";
+				row-gap: var(--size-16);
+				column-gap: var(--size-16);
+				padding-block-end: unset;
+
+				--variant: "desktop";
+			}
+		}
+
+		.image,
+		.fallbackImage {
+			grid-area: image;
+			width: 100cqw;
+			height: auto;
+			aspect-ratio: 1200 / 630;
+			border-top-left-radius: var(--radius-md);
+			border-top-right-radius: var(--radius-md);
+
+			@container webembed-loaded style(--variant: "desktop") {
+				width: 42.5cqw;
+				border-top-right-radius: unset;
+				border-bottom-left-radius: var(--radius-md);
+			}
+		}
+
+		.image {
+			object-fit: cover;
+			filter: sepia(1) saturate(var(--saturation))
+				hue-rotate(calc(var(--accent-hue) - 92deg))
+				brightness(var(--brightness));
+
+			--saturation: 1.75;
+			--brightness: 1;
+
+			@container style(--theme: dark) {
+				--saturation: 1.5;
+				--brightness: 0.9;
+			}
+
+			:where(:scope):hover & {
+				--brightness: 1.1;
+
+				@container style(--theme: dark) {
+					--brightness: 1;
+				}
+			}
+		}
+
+		.fallbackImage {
+			display: flex;
+			container: fallback-image / inline-size;
+			justify-content: center;
+			align-items: center;
+			background-color: oklch(from var(--accent-11) l c h / 0.5);
+
+			:where(:scope):hover & {
+				background-color: oklch(from var(--accent-11) l c h / 0.6);
+			}
+		}
+
+		.fallbackImageIllustration {
+			width: 66.6cqw;
+			height: auto;
+		}
+
+		.title {
+			margin-block-start: var(--size-16);
+			padding-inline: var(--size-16);
+			color: var(--accent-11);
+			font-size: var(--text-lg);
+			font-weight: bold;
+			text-decoration: underline;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			overflow: hidden;
+
+			@container webembed-loaded style(--variant: "desktop") {
+				grid-area: title;
+				margin-block-start: unset;
+				padding-block-start: var(--size-16);
+				padding-inline-start: unset;
+			}
+		}
+
+		.description {
+			margin-block-start: var(--size-16);
+			padding-inline: var(--size-16);
+			font-size: var(--text-sm);
+			font-style: italic;
+			line-height: var(--leading-lg);
+			overflow: hidden;
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+			-webkit-line-clamp: 2;
+
+			@container webembed-loaded style(--variant: "desktop") {
+				grid-area: description;
+				margin-block-start: unset;
+				padding-inline-start: unset;
+			}
+		}
+
+		.url {
+			margin-block-start: var(--size-16);
+			padding-inline: var(--size-16);
+			font-size: var(--text-sm);
+			font-family: var(--font-mono);
+			overflow: hidden;
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+			-webkit-line-clamp: 1;
+
+			@container webembed-loaded style(--variant: "desktop") {
+				grid-area: url;
+				align-self: flex-end;
+				margin-block-start: unset;
+				padding-block-end: var(--size-16);
+				padding-inline-start: unset;
+			}
+		}
+	}
+
+	@scope (.fallbackIllustration) {
+		:where(:scope) {
+			aspect-ratio: 800 / 553;
+		}
+
+		.illustrationWindowSurface {
+			fill: var(--neutral-3);
+		}
+
+		.illustrationWindowShadow {
+			fill: var(--accent-1);
+		}
+
+		.illustrationForegroundRectangle {
+			fill: var(--neutral-7);
+		}
+
+		.illustrationForegroundBorder {
+			fill: var(--neutral-7);
+		}
+
+		.illustrationPseudoPressable {
+			fill: var(--neutral-7);
+		}
+
+		.illustrationAccentPseudoPressable {
+			fill: var(--accent-7);
+		}
+	}
+}
