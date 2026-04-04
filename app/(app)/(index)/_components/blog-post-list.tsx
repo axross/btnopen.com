@@ -88,11 +88,9 @@ function BlogPostListItem({
 				</div>
 			</ViewTransition>
 
-			<ViewTransition name={`blog-post-${slug}-content`}>
-				<div className={css.brief} data-testid="brief">
-					{brief}
-				</div>
-			</ViewTransition>
+			<div className={css.brief} data-testid="brief">
+				{brief}
+			</div>
 		</li>
 	);
 }

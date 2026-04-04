@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { JSX } from "react";
-import { Suspense, ViewTransition } from "react";
+import { Suspense } from "react";
 import { resolveUrlOrigin } from "@/helpers/request";
 import { getBlogPost } from "@/repositories/get-blog-post";
 import { getBlogPosts } from "@/repositories/get-blog-posts";
@@ -41,13 +41,11 @@ export default async function BlogPostPage({
 					/>
 				</Suspense>
 
-				<ViewTransition name={`blog-post-${slug}-content`}>
-					<main className={css.content} data-testid="content">
-						<Suspense>
-							<BlogPostContent slug={slug} draft={draft} />
-						</Suspense>
-					</main>
-				</ViewTransition>
+				<main className={css.content} data-testid="content">
+					<Suspense>
+						<BlogPostContent slug={slug} draft={draft} />
+					</Suspense>
+				</main>
 			</article>
 
 			<Suspense>
