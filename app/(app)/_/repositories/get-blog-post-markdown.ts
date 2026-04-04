@@ -12,7 +12,7 @@ import { editor } from "@/payload/editor";
 
 const logger = rootLogger.child({ module: "📥" });
 
-export async function getPostMarkdown({
+export async function getBlogPostMarkdown({
 	slug,
 	draft = false,
 }: {
@@ -63,15 +63,15 @@ export async function getPostMarkdown({
 
 		logger.info(
 			{ slug, duration: performance.now() - processStartedAt },
-			"Finished fetching post markdown.",
+			"Finished fetching blog post markdown.",
 		);
 
 		return markdown;
 	}
 
-	// throw an error when the post was not found. because this function is
-	// expected to be called only when the post exists.
+	// throw an error when the blog post was not found. because this function is
+	// expected to be called only when the blog post exists.
 	throw new Error(
-		`Failed to resolve post markdown (slug: ${slug}) because the post was not found.`,
+		`Failed to resolve blog post markdown (slug: ${slug}) because the blog post was not found.`,
 	);
 }

@@ -1,8 +1,8 @@
 @layer components {
-	@scope (.postList) {
+	@scope (.blogPostList) {
 		:where(:scope) {
 			display: flex;
-			container: post-list / inline-size;
+			container: blog-post-list / inline-size;
 			width: stretch;
 			flex-direction: column;
 			row-gap: var(--size-24);
@@ -26,10 +26,10 @@
 }
 
 @layer components {
-	@scope (.postListItem) {
+	@scope (.blogPostListItem) {
 		:where(:scope) {
 			display: flex;
-			container: post-list-item / inline-size;
+			container: blog-post-list-item / inline-size;
 			width: stretch;
 			flex-direction: column;
 			padding-block-end: var(--size-16);
@@ -40,7 +40,7 @@
 
 			--variant: "mobile";
 
-			@container post-list style(--variant: "desktop") {
+			@container blog-post-list style(--variant: "desktop") {
 				display: grid;
 				padding-block-end: unset;
 				grid-template-columns: auto 1fr;
@@ -83,7 +83,7 @@
 				--brightness: 0.9;
 			}
 
-			@container post-list-item style(--variant: "desktop") {
+			@container blog-post-list-item style(--variant: "desktop") {
 				width: 35cqw;
 				aspect-ratio: 1600 / 1200;
 				border-top-right-radius: unset;
@@ -108,7 +108,7 @@
 			-webkit-box-orient: vertical;
 			-webkit-line-clamp: 1;
 
-			@container post-list-item style(--variant: "desktop") {
+			@container blog-post-list-item style(--variant: "desktop") {
 				grid-area: timestamp;
 				margin-block-start: unset;
 				padding-block-start: var(--size-16);
@@ -127,7 +127,7 @@
 			white-space: nowrap;
 			overflow: hidden;
 
-			@container post-list-item style(--variant: "desktop") {
+			@container blog-post-list-item style(--variant: "desktop") {
 				grid-area: title;
 				margin-block-start: unset;
 				padding-inline-start: unset;
@@ -144,7 +144,7 @@
 			-webkit-box-orient: vertical;
 			-webkit-line-clamp: 2;
 
-			@container post-list-item style(--variant: "desktop") {
+			@container blog-post-list-item style(--variant: "desktop") {
 				grid-area: brief;
 				margin-block-start: unset;
 				padding-inline-start: unset;

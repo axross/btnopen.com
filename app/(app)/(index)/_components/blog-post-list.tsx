@@ -3,39 +3,39 @@ import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
 import { type ComponentProps, type JSX, ViewTransition } from "react";
-import { getPosts } from "@/repositories/get-posts";
-import css from "./post-list.module.css";
+import { getBlogPosts } from "@/repositories/get-blog-posts";
+import css from "./blog-post-list.module.css";
 
-export async function PostList({
+export async function BlogPostList({
 	draft,
 	className,
 	children,
 	...props
 }: ComponentProps<"ul"> & { draft?: Promise<boolean> }): Promise<JSX.Element> {
 	const isDraft = await draft;
-	const posts = await getPosts({ draft: isDraft });
+	const blogPosts = await getBlogPosts({ draft: isDraft });
 
 	return (
-		<ul className={clsx(css.postList, className)} {...props}>
-			{posts.map((post) => (
+		<ul className={clsx(css.blogPostList, className)} {...props}>
+			{blogPosts.map((blogPost) => (
 				<Link
 					href={{
-						pathname: `/posts/${post.slug}`,
+						pathname: `/posts/${blogPost.slug}`,
 						search: isDraft ? "draft=true" : undefined,
 					}}
 					className={css.link}
-					key={post.slug}
+					key={blogPost.slug}
 					data-testid="blog-post"
-					data-slug={post.slug}
+					data-slug={blogPost.slug}
 				>
-					<PostListItem
-						slug={post.slug}
-						title={post.title}
-						brief={post.brief}
-						thumbnailImageUrl={post.thumbnailImage.url}
-						thumbnailImageWidth={post.thumbnailImage.width}
-						thumbnailImageHeight={post.thumbnailImage.height}
-						publishedAt={post.publishedAt}
+					<BlogPostListItem
+						slug={blogPost.slug}
+						title={blogPost.title}
+						brief={blogPost.brief}
+						thumbnailImageUrl={blogPost.thumbnailImage.url}
+						thumbnailImageWidth={blogPost.thumbnailImage.width}
+						thumbnailImageHeight={blogPost.thumbnailImage.height}
+						publishedAt={blogPost.publishedAt}
 					/>
 				</Link>
 			))}
@@ -43,7 +43,7 @@ export async function PostList({
 	);
 }
 
-function PostListItem({
+function BlogPostListItem({
 	slug,
 	title,
 	brief,
@@ -63,8 +63,8 @@ function PostListItem({
 	publishedAt: string;
 }): JSX.Element {
 	return (
-		<li className={clsx(css.postListItem, className)} {...props}>
-			<ViewTransition name={`post-${slug}-image`}>
+		<li className={clsx(css.blogPostListItem, className)} {...props}>
+			<ViewTransition name={`blog-post-${slug}-image`}>
 				<Image
 					src={thumbnailImageUrl}
 					alt={title}
@@ -76,19 +76,19 @@ function PostListItem({
 				/>
 			</ViewTransition>
 
-			<ViewTransition name={`post-${slug}-timestamp`}>
+			<ViewTransition name={`blog-post-${slug}-timestamp`}>
 				<div className={css.timestamp} data-testid="timestamp">
 					{formatDistanceToNow(publishedAt, { addSuffix: true })}
 				</div>
 			</ViewTransition>
 
-			<ViewTransition name={`post-${slug}-title`}>
+			<ViewTransition name={`blog-post-${slug}-title`}>
 				<div className={css.title} data-testid="title">
 					{title}
 				</div>
 			</ViewTransition>
 
-			<ViewTransition name={`post-${slug}-content`}>
+			<ViewTransition name={`blog-post-${slug}-content`}>
 				<div className={css.brief} data-testid="brief">
 					{brief}
 				</div>

@@ -9,20 +9,20 @@ import { PayloadBlogPost } from "./payload-types";
 
 const logger = rootLogger.child({ module: "📥" });
 
-const BlogPostDetail = PayloadBlogPost.transform((post) => ({
-	slug: post.slug,
-	title: post.title,
-	brief: post.brief,
-	tags: post.tags,
-	thumbnailImage: post.coverImage.sizes.og,
-	author: post.author,
-	publishedAt: post.publishedAt ?? post.createdAt,
-	updatedAt: post.updatedAt,
+const BlogPostDetail = PayloadBlogPost.transform((blogPost) => ({
+	slug: blogPost.slug,
+	title: blogPost.title,
+	brief: blogPost.brief,
+	tags: blogPost.tags,
+	thumbnailImage: blogPost.coverImage.sizes.og,
+	author: blogPost.author,
+	publishedAt: blogPost.publishedAt ?? blogPost.createdAt,
+	updatedAt: blogPost.updatedAt,
 }));
 
 export type BlogPostDetail = z.infer<typeof BlogPostDetail>;
 
-export async function getPost({
+export async function getBlogPost({
 	slug,
 	draft = false,
 }: {
@@ -70,12 +70,12 @@ export async function getPost({
 	if (result.docs.length > 0) {
 		const blogPost = BlogPostDetail.parse(result.docs[0]);
 
-		logger.info({ slug }, "Successfully fetched post.");
+		logger.info({ slug }, "Successfully fetched blog post.");
 
 		return blogPost;
 	}
 
-	logger.info({ slug }, "Failed to fetch post because it was not found.");
+	logger.info({ slug }, "Failed to fetch blog post because it was not found.");
 
 	return null;
 }

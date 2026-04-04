@@ -1,12 +1,12 @@
 import type { MetadataRoute } from "next";
 import { resolveUrlOrigin } from "@/helpers/request";
-import { getPosts } from "@/repositories/get-posts";
+import { getBlogPosts } from "@/repositories/get-blog-posts";
 
 // biome-ignore lint/style/noDefaultExport: sitemap needs default export
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-	const [urlOrigin, posts] = await Promise.all([
+	const [urlOrigin, blogPosts] = await Promise.all([
 		resolveUrlOrigin(),
-		getPosts(),
+		getBlogPosts(),
 	]);
 
 	return [
@@ -16,11 +16,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			changeFrequency: "yearly",
 			priority: 1,
 		},
-		...posts.map(
-			(post) =>
+		...blogPosts.map(
+			(blogPost) =>
 				({
-					url: `${urlOrigin}/posts/${post.slug}`,
-					lastModified: new Date(post.updatedAt),
+					url: `${urlOrigin}/posts/${blogPost.slug}`,
+					lastModified: new Date(blogPost.updatedAt),
 					changeFrequency: "weekly",
 					priority: 0.8,
 				}) satisfies MetadataRoute.Sitemap[number],

@@ -6,8 +6,8 @@ import { Markdown } from "@/components/markdown";
 import { resolveUrlOrigin } from "@/helpers/request";
 import { getWebsite, type Website } from "@/repositories/get-website";
 import { BlogJsonLd } from "./_components/blog-json-jd";
+import { BlogPostList } from "./_components/blog-post-list";
 import { BrushGrunge } from "./_components/brush-grunge";
-import { PostList } from "./_components/post-list";
 import { SocialLinkList } from "./_components/social-link-list";
 import css from "./page.module.css";
 import type { PageProps } from "./page-props";
@@ -85,9 +85,9 @@ async function IndexPageMain({
 				<h1 className={css.sectionHeading}>{"Posts"}</h1>
 
 				<Suspense>
-					<PostList
+					<BlogPostList
 						draft={draft}
-						className={css.posts}
+						className={css.blogPosts}
 						data-testid="blog-posts"
 					/>
 				</Suspense>

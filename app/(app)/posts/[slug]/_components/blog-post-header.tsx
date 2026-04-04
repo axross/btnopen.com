@@ -4,8 +4,8 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { ComponentProps, JSX } from "react";
 import { ViewTransition } from "react";
-import type { BlogPostDetail } from "@/repositories/get-post";
-import css from "./post-header.module.css";
+import type { BlogPostDetail } from "@/repositories/get-blog-post";
+import css from "./blog-post-header.module.css";
 
 export async function BlogPostHeader({
 	blogPost: blogPostPromise,
@@ -22,7 +22,7 @@ export async function BlogPostHeader({
 
 	return (
 		<header className={clsx(css.blogPostHeader, className)} {...props}>
-			<ViewTransition name={`post-${blogPost.slug}-image`}>
+			<ViewTransition name={`blog-post-${blogPost.slug}-image`}>
 				<Image
 					alt={blogPost.title}
 					src={blogPost.thumbnailImage.url}
@@ -34,13 +34,13 @@ export async function BlogPostHeader({
 				/>
 			</ViewTransition>
 
-			<ViewTransition name={`post-${blogPost.slug}-timestamp`}>
+			<ViewTransition name={`blog-post-${blogPost.slug}-timestamp`}>
 				<div className={css.timestamp} data-testid="timestamp">
 					{format(blogPost.publishedAt, "PPP")}
 				</div>
 			</ViewTransition>
 
-			<ViewTransition name={`post-${blogPost.slug}-title`}>
+			<ViewTransition name={`blog-post-${blogPost.slug}-title`}>
 				<h1 className={css.title} data-testid="title">
 					{blogPost.title}
 				</h1>

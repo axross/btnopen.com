@@ -9,18 +9,18 @@ import { PayloadBlogPost } from "./payload-types";
 
 const logger = rootLogger.child({ module: "📥" });
 
-const BlogPostSummary = PayloadBlogPost.transform((post) => ({
-	slug: post.slug,
-	title: post.title,
-	brief: post.brief,
-	thumbnailImage: post.coverImage.sizes.og,
-	publishedAt: post.publishedAt ?? post.createdAt,
-	updatedAt: post.updatedAt,
+const BlogPostSummary = PayloadBlogPost.transform((blogPost) => ({
+	slug: blogPost.slug,
+	title: blogPost.title,
+	brief: blogPost.brief,
+	thumbnailImage: blogPost.coverImage.sizes.og,
+	publishedAt: blogPost.publishedAt ?? blogPost.createdAt,
+	updatedAt: blogPost.updatedAt,
 }));
 
 export type BlogPostSummary = z.infer<typeof BlogPostSummary>;
 
-export async function getPosts({
+export async function getBlogPosts({
 	draft = false,
 }: {
 	draft?: boolean;
@@ -29,7 +29,7 @@ export async function getPosts({
 
 	cacheLife("hours");
 
-	logger.info("Started fetching posts.");
+	logger.info("Started fetching blog posts.");
 
 	const payload = await getPayload({ config });
 	const result = await payload.find({
@@ -59,24 +59,24 @@ export async function getPosts({
 		draft,
 	});
 
-	const posts: BlogPostSummary[] = [];
+	const blogPosts: BlogPostSummary[] = [];
 
 	for (const doc of result.docs) {
 		const parseResult = BlogPostSummary.safeParse(doc);
 
 		if (parseResult.success) {
-			posts.push(parseResult.data);
+			blogPosts.push(parseResult.data);
 		}
 
 		if (!draft && parseResult.error) {
 			logger.warn(
 				{ slug: doc.slug, error: z.flattenError(parseResult.error) },
-				"Skipped a post due to parse error.",
+				"Skipped a blog post due to parse error.",
 			);
 		}
 	}
 
-	logger.info("Finished fetching posts.");
+	logger.info("Finished fetching blog posts.");
 
-	return posts;
+	return blogPosts;
 }

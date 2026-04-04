@@ -1,7 +1,7 @@
 @layer components {
-	@scope (.postContent) {
+	@scope (.blogPostContent) {
 		:where(:scope) {
-			container: post-content / inline-size;
+			container: blog-post-content / inline-size;
 
 			--paragraph-block-margin: var(--size-16);
 			--chunk-block-margin: calc(var(--paragraph-block-margin) * 1.5);
@@ -316,9 +316,9 @@
 
 	.snippet {
 		margin-block: var(--chunk-block-margin);
-		margin-inline: calc(var(--post-content-negative-margin) * -1);
+		margin-inline: calc(var(--blog-post-content-negative-margin) * -1);
 
-		@container post-content style(--variant: "desktop") {
+		@container blog-post-content style(--variant: "desktop") {
 			border-radius: var(--radius-md);
 		}
 	}

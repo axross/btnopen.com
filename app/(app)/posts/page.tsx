@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
-export default async function PostPage() {
+export default async function BlogPostListPage() {
 	redirect("/");
 }

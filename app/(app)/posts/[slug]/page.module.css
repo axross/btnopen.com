@@ -1,5 +1,5 @@
 @layer components {
-	@scope (.postPage) {
+	@scope (.blogPostPage) {
 		:where(:scope) {
 			display: flex;
 			width: stretch;
@@ -7,12 +7,12 @@
 			flex-direction: column;
 			align-items: center;
 
-			--post-content-negative-margin: var(--size-16);
+			--blog-post-content-negative-margin: var(--size-16);
 
 			@container (width > 30rem) {
 				--page-variant: "desktop";
 				--max-width: calc(30rem - var(--size-16) * 2);
-				--post-content-negative-margin: 0;
+				--blog-post-content-negative-margin: 0;
 			}
 
 			@container (width > 50rem) {

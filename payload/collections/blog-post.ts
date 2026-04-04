@@ -86,7 +86,7 @@ export const blogPostCollection: CollectionConfig = {
 	hooks: {
 		afterOperation: [
 			async ({ operation, result, req }) => {
-				// skip the invalidation for the example post creation
+				// skip the invalidation for the example blog post creation
 				if (operation === "create" && result.slug === "markdown-example") {
 					return;
 				}
@@ -110,7 +110,7 @@ export const blogPostCollection: CollectionConfig = {
 					if (!urlOrigin) {
 						logger.warn(
 							{ operation, url: req.url },
-							"Skipped requesting to clear all post caches due to invalid request URL.",
+							"Skipped requesting to clear all blog post caches due to invalid request URL.",
 						);
 
 						return;
@@ -118,7 +118,7 @@ export const blogPostCollection: CollectionConfig = {
 
 					logger.info(
 						{ operation },
-						"Started requesting to clear all post caches.",
+						"Started requesting to clear all blog post caches.",
 					);
 
 					await fetch(`${urlOrigin}/posts/caches`, {
@@ -127,7 +127,7 @@ export const blogPostCollection: CollectionConfig = {
 
 					logger.info(
 						{ operation },
-						"Finished requesting to clear all post caches.",
+						"Finished requesting to clear all blog post caches.",
 					);
 
 					let docs: { slug?: string | null }[] = [];
@@ -143,7 +143,7 @@ export const blogPostCollection: CollectionConfig = {
 							if (doc.slug) {
 								logger.info(
 									{ operation, slug: doc.slug },
-									"Started requesting to clear post cache.",
+									"Started requesting to clear blog post cache.",
 								);
 
 								await fetch(`${urlOrigin}/posts/${doc.slug}/caches`, {
@@ -152,7 +152,7 @@ export const blogPostCollection: CollectionConfig = {
 
 								logger.info(
 									{ operation, slug: doc.slug },
-									"Finished requesting to clear post cache.",
+									"Finished requesting to clear blog post cache.",
 								);
 							}
 						}),

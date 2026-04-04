@@ -16,7 +16,7 @@ export async function DELETE(
 
 	revalidatePath(`/posts/${slug}`, "page");
 
-	logger.info({ slug }, "Revalidated the post cache.");
+	logger.info({ slug }, "Revalidated the blog post cache.");
 
 	return new Response(null, { status: 204 });
 }

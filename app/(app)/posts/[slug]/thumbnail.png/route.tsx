@@ -11,7 +11,7 @@ import sharp from "sharp";
 import { Logo } from "@/components/logo";
 import { resolveUrlOrigin } from "@/helpers/request";
 import { rootLogger } from "@/logger";
-import { getPost } from "@/repositories/get-post";
+import { getBlogPost } from "@/repositories/get-blog-post";
 import { vercelBlobToken } from "@/runtime";
 
 const logger = rootLogger.child({ module: "👽" });
@@ -27,12 +27,12 @@ export async function GET(
 	{ params }: { params: Promise<{ slug: string }> },
 ): Promise<Response> {
 	const { slug } = await params;
-	const [post, fonts] = await Promise.all([
-		getPost({ slug, draft: true }),
+	const [blogPost, fonts] = await Promise.all([
+		getBlogPost({ slug, draft: true }),
 		loadFonts(),
 	]);
 
-	if (!post) {
+	if (!blogPost) {
 		notFound();
 	}
 
@@ -40,10 +40,10 @@ export async function GET(
 	try {
 		if (vercelBlobToken) {
 			imageBuffer = await retrieveImageFromVercelBlob(
-				post.thumbnailImage.filename,
+				blogPost.thumbnailImage.filename,
 			);
 		} else {
-			imageBuffer = await retrieveImageViaAPI(post.thumbnailImage.url);
+			imageBuffer = await retrieveImageViaAPI(blogPost.thumbnailImage.url);
 		}
 	} catch (error) {
 		captureException(error);
@@ -68,9 +68,9 @@ export async function GET(
 			{/** biome-ignore lint/a11y/useAltText: this is just within the image generation. alt will be omitted in the rendered result. */}
 			{/** biome-ignore lint/performance/noImgElement: this is just within the image generation. Next <Image> dosen't fit in the image generation. */}
 			<img
-				width={post.thumbnailImage.width}
-				height={post.thumbnailImage.height}
 				src={toDataUrl(await manipulateImage(imageBuffer))}
+				width={blogPost.thumbnailImage.width}
+				height={blogPost.thumbnailImage.height}
 				style={{
 					position: "absolute",
 					top: 0,
@@ -117,7 +117,7 @@ export async function GET(
 						lineClamp: 3,
 					}}
 				>
-					{post.title}
+					{blogPost.title}
 				</div>
 			</div>
 		</div>,

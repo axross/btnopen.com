@@ -3,23 +3,23 @@ import { notFound } from "next/navigation";
 import type { JSX } from "react";
 import { Suspense, ViewTransition } from "react";
 import { resolveUrlOrigin } from "@/helpers/request";
-import { getPost } from "@/repositories/get-post";
-import { getPosts } from "@/repositories/get-posts";
+import { getBlogPost } from "@/repositories/get-blog-post";
+import { getBlogPosts } from "@/repositories/get-blog-posts";
 import { getWebsite } from "@/repositories/get-website";
+import { BlogPostContent } from "./_components/blog-post-content";
+import { BlogPostHeader } from "./_components/blog-post-header";
 import { BlogPostingJsonLd } from "./_components/blog-posting-json-ld";
 import { PayloadLivePreview } from "./_components/payload-live-preview";
-import { PostContent } from "./_components/post-content";
-import { BlogPostHeader } from "./_components/post-header";
 import css from "./page.module.css";
 import type { PageProps } from "./page-props";
 
 export async function generateStaticParams() {
-	const posts = await getPosts();
+	const blogPosts = await getBlogPosts();
 
-	return posts.map((post) => ({ slug: post.slug }));
+	return blogPosts.map((blogPost) => ({ slug: blogPost.slug }));
 }
 
-export default async function PostPage({
+export default async function BlogPostPage({
 	params,
 	searchParams,
 }: PageProps): Promise<JSX.Element> {
@@ -27,12 +27,12 @@ export default async function PostPage({
 	const draft = searchParams.then((p) => p.draft === "true");
 	const preview = searchParams.then((p) => p.preview === "true");
 	const blogPost = Promise.all([slug, draft]).then(([s, d]) =>
-		getPost({ slug: s, draft: d }),
+		getBlogPost({ slug: s, draft: d }),
 	);
 
 	return (
 		<>
-			<article className={css.postPage} data-testid="page">
+			<article className={css.blogPostPage} data-testid="page">
 				<Suspense>
 					<BlogPostHeader
 						blogPost={blogPost}
@@ -41,10 +41,10 @@ export default async function PostPage({
 					/>
 				</Suspense>
 
-				<ViewTransition name={`post-${slug}-content`}>
+				<ViewTransition name={`blog-post-${slug}-content`}>
 					<main className={css.content} data-testid="content">
 						<Suspense>
-							<PostContent slug={slug} draft={draft} />
+							<BlogPostContent slug={slug} draft={draft} />
 						</Suspense>
 					</main>
 				</ViewTransition>
@@ -96,44 +96,44 @@ export async function generateMetadata({
 		searchParams,
 	]);
 	const isDraft = draft === "true";
-	const [website, post] = await Promise.all([
+	const [website, blogPost] = await Promise.all([
 		getWebsite({ draft: isDraft }),
-		getPost({ slug, draft: isDraft }),
+		getBlogPost({ slug, draft: isDraft }),
 	]);
 
-	if (!website || !post) {
+	if (!website || !blogPost) {
 		notFound();
 	}
 
 	return {
-		title: post.title,
-		description: post.brief,
-		keywords: post.tags.map((tag) => tag.name),
+		title: blogPost.title,
+		description: blogPost.brief,
+		keywords: blogPost.tags.map((tag) => tag.name),
 		authors: [
 			{
-				name: post.author?.name,
+				name: blogPost.author?.name,
 				url: `${urlOrigin}/`,
 			},
 		],
 		creator: website.creator.name,
 		publisher: website.creator.name,
 		openGraph: {
-			title: post.title,
-			description: post.brief,
+			title: blogPost.title,
+			description: blogPost.brief,
 			siteName: website.name,
-			url: `${urlOrigin}/posts/${post.slug}`,
+			url: `${urlOrigin}/posts/${blogPost.slug}`,
 			images: [
 				{
-					url: `${urlOrigin}/posts/${post.slug}/thumbnail.png`,
+					url: `${urlOrigin}/posts/${blogPost.slug}/thumbnail.png`,
 					width: 1200,
 					height: 630,
 				},
 			],
 			type: "article",
-			publishedTime: post.publishedAt,
-			modifiedTime: post.updatedAt,
+			publishedTime: blogPost.publishedAt,
+			modifiedTime: blogPost.updatedAt,
 			section: "Technology",
-			tags: post.tags.map((tag) => tag.name),
+			tags: blogPost.tags.map((tag) => tag.name),
 			locale: "ja_JP",
 		},
 	};
