@@ -1,0 +1,103 @@
+@layer components {
+	@scope (.blogPostListLoading) {
+		:where(:scope) {
+			display: flex;
+			container: blog-post-list-loading / inline-size;
+			width: stretch;
+			flex-direction: column;
+			row-gap: var(--size-24);
+			list-style: none;
+
+			--variant: "mobile";
+
+			@container (min-width: 50rem) {
+				row-gap: var(--size-24);
+
+				--variant: "desktop";
+			}
+		}
+	}
+
+	@scope (.blogPostListLoadingItem) {
+		:where(:scope) {
+			display: flex;
+			container: blog-post-list-loading-item / inline-size;
+			width: stretch;
+			flex-direction: column;
+			padding-block-end: var(--size-16);
+
+			--variant: "mobile";
+
+			@container blog-post-list-loading style(--variant: "desktop") {
+				display: grid;
+				padding-block-end: unset;
+				grid-template-columns: auto 1fr;
+				grid-template-rows: auto auto auto 1fr;
+				grid-template-areas:
+					"image timestamp"
+					"image title"
+					"image brief"
+					"image .";
+				column-gap: var(--size-16);
+				row-gap: var(--size-16);
+
+				/* biome-ignore lint/suspicious/noDuplicateCustomProperties: biome doesn't understand @scope */
+				--variant: "desktop";
+			}
+		}
+
+		.image {
+			grid-area: image;
+			width: 100cqw;
+			height: auto;
+			aspect-ratio: 1600 / 600;
+			border-top-left-radius: var(--radius-md);
+			border-top-right-radius: var(--radius-md);
+
+			@container blog-post-list-loading-item style(--variant: "desktop") {
+				width: 35cqw;
+				aspect-ratio: 1600 / 1200;
+				border-bottom-left-radius: var(--radius-md);
+				border-bottom-right-radius: var(--radius-md);
+			}
+		}
+
+		.timestamp {
+			margin-block-start: var(--size-16);
+			padding-inline: var(--size-16);
+			font-size: var(--text-sm);
+
+			@container blog-post-list-loading-item style(--variant: "desktop") {
+				grid-area: timestamp;
+				margin-block-start: unset;
+				padding-block-start: var(--size-16);
+				padding-inline-start: unset;
+			}
+		}
+
+		.title {
+			margin-block-start: var(--size-16);
+			padding-inline: var(--size-16);
+			color: var(--accent-11);
+			font-size: var(--text-lg);
+
+			@container blog-post-list-loading-item style(--variant: "desktop") {
+				grid-area: title;
+				margin-block-start: unset;
+				padding-inline-start: unset;
+			}
+		}
+
+		.brief {
+			margin-block-start: var(--size-16);
+			padding-inline: var(--size-16);
+			font-size: var(--text-sm);
+
+			@container blog-post-list-loading-item style(--variant: "desktop") {
+				grid-area: brief;
+				margin-block-start: unset;
+				padding-inline-start: unset;
+			}
+		}
+	}
+}

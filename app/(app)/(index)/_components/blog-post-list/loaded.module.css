@@ -1,5 +1,5 @@
 @layer components {
-	@scope (.blogPostList) {
+	@scope (.blogPostListLoaded) {
 		:where(:scope) {
 			display: flex;
 			container: blog-post-list / inline-size;
@@ -23,9 +23,7 @@
 			border-radius: var(--radius-md);
 		}
 	}
-}
 
-@layer components {
 	@scope (.blogPostListItem) {
 		:where(:scope) {
 			display: flex;
@@ -53,6 +51,7 @@
 				column-gap: var(--size-16);
 				row-gap: var(--size-16);
 				background-color: unset;
+				transition: background-color var(--duration-md) ease-in-out;
 
 				/* biome-ignore lint/suspicious/noDuplicateCustomProperties: biome doesn't understand @scope */
 				--variant: "desktop";
@@ -74,6 +73,7 @@
 			filter: sepia(1) saturate(var(--saturation))
 				hue-rotate(calc(var(--accent-hue) - 92deg))
 				brightness(var(--brightness));
+			transition: filter var(--duration-md) ease-in-out;
 
 			--saturation: 1.75;
 			--brightness: 1;
@@ -86,8 +86,8 @@
 			@container blog-post-list-item style(--variant: "desktop") {
 				width: 35cqw;
 				aspect-ratio: 1600 / 1200;
-				border-top-right-radius: unset;
 				border-bottom-left-radius: var(--radius-md);
+				border-bottom-right-radius: var(--radius-md);
 			}
 
 			:where(:scope):hover & {

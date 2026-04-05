@@ -84,13 +84,11 @@ async function IndexPageMain({
 			<section className={css.section}>
 				<h1 className={css.sectionHeading}>{"Posts"}</h1>
 
-				<Suspense>
-					<BlogPostList
-						draft={draft}
-						className={css.blogPosts}
-						data-testid="blog-posts"
-					/>
-				</Suspense>
+				<BlogPostList
+					draft={draft}
+					className={css.blogPosts}
+					data-testid="blog-posts"
+				/>
 			</section>
 		</main>
 	);
