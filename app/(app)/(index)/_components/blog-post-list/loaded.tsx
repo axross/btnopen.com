@@ -17,8 +17,6 @@ export async function BlogPostListLoaded({
 	const isDraft = await draft;
 	const blogPosts = await getBlogPosts({ draft: isDraft });
 
-	await new Promise((resolve) => setTimeout(resolve, 1000));
-
 	return (
 		<ul className={clsx(css.blogPostListLoaded, className)} {...props}>
 			{blogPosts.map((blogPost) => (
