@@ -29,7 +29,6 @@ export const blogPostCollection: CollectionConfig = {
 				position: "sidebar",
 			},
 		},
-
 		{
 			name: "brief",
 			type: "textarea",
@@ -166,6 +165,8 @@ export const blogPostCollection: CollectionConfig = {
 		defaultColumns: ["title", "slug", "brief", "createdAt", "updatedAt"],
 		livePreview: {
 			url: ({ data, req }) => {
+				console.log({ data, req });
+
 				let urlOrigin: string | null = null;
 
 				if (req.url && URL.canParse(req.url)) {
