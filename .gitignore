@@ -15,8 +15,9 @@
 # local env files
 /.env*.local
 
-# local data
-.data/*
-!.data/.gitkeep
-e2e/.data/*
-!.e2e/.data/.gitkeep
+# local-only data
+public/chromium-pack.tar
+/.data/*
+!/.data/.gitkeep
+/e2e/.data/*
+!/e2e/.data/.gitkeep
