@@ -5,14 +5,29 @@ import { BlogPostListLoading } from "./blog-post-list/loading";
 export async function BlogPostList({
 	draft,
 	className,
+	"data-testid": dataTestId,
 	children,
 	...props
-}: ComponentProps<"ul"> & { draft?: Promise<boolean> }): Promise<JSX.Element> {
+}: ComponentProps<"ul"> & {
+	draft?: Promise<boolean>;
+	"data-testid"?: string;
+}): Promise<JSX.Element> {
 	return (
 		<Suspense
-			fallback={<BlogPostListLoading className={className} {...props} />}
+			fallback={
+				<BlogPostListLoading
+					className={className}
+					data-testid={dataTestId ? `${dataTestId}-loading` : undefined}
+					{...props}
+				/>
+			}
 		>
-			<BlogPostListLoaded draft={draft} className={className} {...props} />
+			<BlogPostListLoaded
+				draft={draft}
+				className={className}
+				data-testid={dataTestId}
+				{...props}
+			/>
 		</Suspense>
 	);
 }

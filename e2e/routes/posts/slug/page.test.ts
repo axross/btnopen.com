@@ -58,6 +58,50 @@ test("Blog post header", async ({ page }, testInfo) => {
 test("Blog post content", async ({ page }) => {
 	const content = page.getByTestId("page").getByTestId("content");
 
+	await test.step("Hide Next.js DevTools indicator", async () => {
+		const indicator = page.locator("#devtools-indicator");
+
+		let isIndicatorVisible = false;
+
+		await test.step("Check whether the DevTools indicator exists", async () => {
+			isIndicatorVisible = await indicator.isVisible();
+		});
+
+		if (isIndicatorVisible) {
+			await test.step("Open the DevTools menu", async () => {
+				const button = indicator.locator(
+					'button[data-nextjs-dev-tools-button="true"]',
+				);
+
+				await button.click();
+			});
+
+			await test.step("Open the DevTools preferences", async () => {
+				const menu = page.locator("#nextjs-dev-tools-menu");
+
+				await menu.waitFor();
+
+				const preferencesButton = menu.getByText("Preferences");
+
+				await preferencesButton.click();
+			});
+
+			await test.step("Click the Hide DevTools button", async () => {
+				const button = page.locator(
+					'button[aria-describedby="hide-dev-tools"]',
+				);
+
+				await button.waitFor();
+
+				await button.click();
+			});
+
+			await test.step("Verify the DevTools indicator is hidden", async () => {
+				await expect(indicator).not.toBeVisible();
+			});
+		}
+	});
+
 	await test.step("Verify the blog post content", async () => {
 		await expect(content).toHaveScreenshot("content.png");
 	});

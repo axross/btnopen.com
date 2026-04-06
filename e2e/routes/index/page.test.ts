@@ -53,6 +53,8 @@ test("Blog post list", async ({ page }, testInfo) => {
 	await test.step("Verify whether the blog post list is visible", async () => {
 		blogPostList = indexPage.getByTestId("blog-posts");
 
+		await blogPostList.waitFor();
+
 		await expect(blogPostList).toBeVisible();
 	});
 
