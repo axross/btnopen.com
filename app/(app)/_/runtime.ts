@@ -1,7 +1,4 @@
 // biome-ignore-all lint/style/noProcessEnv: only place accessing env vars in public realm
-import { rootLogger } from "./logger";
-
-const logger = rootLogger.child({ module: "🥾" });
 
 let resolvedRuntimeType: "client" | "node" | "edge" | "unknown" = "unknown";
 
@@ -19,28 +16,15 @@ export const vercelEnvironment =
 
 export const sha = process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? "unknown";
 
-export const allowedHosts = new Set<string>();
+export let urlOrigin: string;
 
-if (process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL) {
-	allowedHosts.add(
-		new URL(`https://${process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL}`)
-			.hostname,
-	);
+if (vercelEnvironment === "production") {
+	urlOrigin = `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+} else {
+	urlOrigin = "http://localhost:3000";
 }
 
-if (process.env.NEXT_PUBLIC_VERCEL_URL) {
-	allowedHosts.add(
-		new URL(`https://${process.env.NEXT_PUBLIC_VERCEL_URL}`).hostname,
-	);
-}
-
-if (allowedHosts.size === 0) {
-	logger.warn(
-		'Added "localhost:3000" as an allowed host because no other allowed hosts are available.',
-	);
-
-	allowedHosts.add("localhost:3000");
-}
+export const isLocalhost = urlOrigin.includes("localhost");
 
 export const vercelBlobToken =
 	process.env.BLOB_PAYLOAD_READ_WRITE_TOKEN || null;

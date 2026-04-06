@@ -1,13 +1,10 @@
 import type { MetadataRoute } from "next";
-import { resolveUrlOrigin } from "@/helpers/request";
 import { getBlogPosts } from "@/repositories/get-blog-posts";
+import { urlOrigin } from "@/runtime";
 
 // biome-ignore lint/style/noDefaultExport: sitemap needs default export
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-	const [urlOrigin, blogPosts] = await Promise.all([
-		resolveUrlOrigin(),
-		getBlogPosts(),
-	]);
+	const blogPosts = await getBlogPosts();
 
 	return [
 		{

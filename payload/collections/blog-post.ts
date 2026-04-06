@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { allowedHosts } from "@/runtime";
+import { urlOrigin } from "@/runtime";
 import { logger } from "../helpers/logger";
 
 export const blogPostCollection: CollectionConfig = {
@@ -84,7 +84,7 @@ export const blogPostCollection: CollectionConfig = {
 	trash: true,
 	hooks: {
 		afterOperation: [
-			async ({ operation, result, req }) => {
+			async ({ operation, result }) => {
 				// skip the invalidation for the example blog post creation
 				if (operation === "create" && result.slug === "markdown-example") {
 					return;
@@ -96,25 +96,6 @@ export const blogPostCollection: CollectionConfig = {
 					operation === "delete" ||
 					operation === "updateByID"
 				) {
-					let urlOrigin: string | null = null;
-
-					if (req.url && URL.canParse(req.url)) {
-						const url = new URL(req.url);
-
-						if (allowedHosts.has(url.hostname)) {
-							urlOrigin = url.origin;
-						}
-					}
-
-					if (!urlOrigin) {
-						logger.warn(
-							{ operation, url: req.url },
-							"Skipped requesting to clear all blog post caches due to invalid request URL.",
-						);
-
-						return;
-					}
-
 					logger.info(
 						{ operation },
 						"Started requesting to clear all blog post caches.",
@@ -164,28 +145,8 @@ export const blogPostCollection: CollectionConfig = {
 		useAsTitle: "title",
 		defaultColumns: ["title", "slug", "brief", "createdAt", "updatedAt"],
 		livePreview: {
-			url: ({ data, req }) => {
-				let urlOrigin: string | null = null;
-
-				if (req.url && URL.canParse(req.url)) {
-					const url = new URL(req.url);
-
-					if (allowedHosts.has(url.hostname)) {
-						urlOrigin = url.origin;
-					}
-				}
-
-				if (!urlOrigin) {
-					logger.warn(
-						{ url: req.url },
-						"Failed to resolve the live preview URL due to invalid request URL.",
-					);
-
-					return;
-				}
-
-				return `${urlOrigin}/posts/${data.slug}?preview=true&draft=true`;
-			},
+			url: ({ data }) =>
+				`${urlOrigin}/posts/${data.slug}?preview=true&draft=true`,
 		},
 	},
 };

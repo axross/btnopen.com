@@ -9,10 +9,9 @@ import { ImageResponse } from "next/og";
 import type { ImageResponseOptions, NextRequest } from "next/server";
 import sharp from "sharp";
 import { Logo } from "@/components/logo";
-import { resolveUrlOrigin } from "@/helpers/request";
 import { rootLogger } from "@/logger";
 import { getBlogPost } from "@/repositories/get-blog-post";
-import { vercelBlobToken } from "@/runtime";
+import { urlOrigin, vercelBlobToken } from "@/runtime";
 
 const logger = rootLogger.child({ module: "👽" });
 const selfDirname = dirname(new URL(import.meta.url).pathname);
@@ -208,7 +207,6 @@ async function retrieveImageFromVercelBlob(
 async function retrieveImageViaAPI(pathname: string): Promise<ArrayBuffer> {
 	logger.info({ pathname }, "Started fetching image via API.");
 
-	const urlOrigin = await resolveUrlOrigin();
 	const url = new URL(pathname, urlOrigin);
 
 	const imageResponse = await fetch(url);

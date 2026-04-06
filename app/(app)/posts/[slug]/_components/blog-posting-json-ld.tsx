@@ -1,9 +1,9 @@
 import { formatDate } from "date-fns";
 import type { JSX } from "react";
 import type { BlogPosting, WithContext } from "schema-dts";
-import { resolveUrlOrigin } from "@/helpers/request";
 import type { BlogPostDetail } from "@/repositories/get-blog-post";
 import { getWebsite } from "@/repositories/get-website";
+import { urlOrigin } from "@/runtime";
 
 export async function BlogPostingJsonLd({
 	blogPost: blogPostPromise,
@@ -12,8 +12,7 @@ export async function BlogPostingJsonLd({
 	blogPost: Promise<BlogPostDetail | null>;
 	draft?: Promise<boolean>;
 }): Promise<JSX.Element | null> {
-	const [urlOrigin, website, blogPost] = await Promise.all([
-		resolveUrlOrigin(),
+	const [website, blogPost] = await Promise.all([
 		getWebsite({ draft: await draftPromise }),
 		blogPostPromise,
 	]);

@@ -1,18 +1,15 @@
 import { notFound } from "next/navigation";
 import type { JSX } from "react";
 import type { Blog, WithContext } from "schema-dts";
-import { resolveUrlOrigin } from "@/helpers/request";
 import type { Website } from "@/repositories/get-website";
+import { urlOrigin } from "@/runtime";
 
 export async function BlogJsonLd({
 	website: websitePromise,
 }: {
 	website: Promise<Website | null>;
 }): Promise<JSX.Element | null> {
-	const [urlOrigin, website] = await Promise.all([
-		resolveUrlOrigin(),
-		websitePromise,
-	]);
+	const website = await websitePromise;
 
 	if (!website) {
 		return notFound();

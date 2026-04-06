@@ -3,8 +3,8 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { type JSX, Suspense } from "react";
 import { Markdown } from "@/components/markdown";
-import { resolveUrlOrigin } from "@/helpers/request";
 import { getWebsite, type Website } from "@/repositories/get-website";
+import { urlOrigin } from "@/runtime";
 import { BlogJsonLd } from "./_components/blog-json-jd";
 import { BlogPostList } from "./_components/blog-post-list";
 import { BrushGrunge } from "./_components/brush-grunge";
@@ -95,10 +95,7 @@ async function IndexPageMain({
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const [urlOrigin, website] = await Promise.all([
-		resolveUrlOrigin(),
-		getWebsite(),
-	]);
+	const website = await getWebsite();
 
 	if (!website) {
 		notFound();

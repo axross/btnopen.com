@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { JSX } from "react";
 import { Suspense } from "react";
-import { resolveUrlOrigin } from "@/helpers/request";
 import { getBlogPost } from "@/repositories/get-blog-post";
 import { getWebsite } from "@/repositories/get-website";
+import { urlOrigin } from "@/runtime";
 import { BlogPostContent } from "./_components/blog-post-content";
 import { BlogPostHeader } from "./_components/blog-post-header";
 import { BlogPostingJsonLd } from "./_components/blog-posting-json-ld";
@@ -59,11 +59,7 @@ async function MaybePayloadLivePreview({
 	slug: Promise<string>;
 	preview?: Promise<boolean>;
 }): Promise<JSX.Element | null> {
-	const [urlOrigin, slug, preview] = await Promise.all([
-		resolveUrlOrigin(),
-		slugPromise,
-		previewPromise,
-	]);
+	const [slug, preview] = await Promise.all([slugPromise, previewPromise]);
 
 	if (preview) {
 		return (
@@ -81,11 +77,7 @@ export async function generateMetadata({
 	params,
 	searchParams,
 }: PageProps): Promise<Metadata> {
-	const [urlOrigin, { slug }, { draft }] = await Promise.all([
-		resolveUrlOrigin(),
-		params,
-		searchParams,
-	]);
+	const [{ slug }, { draft }] = await Promise.all([params, searchParams]);
 	const isDraft = draft === "true";
 	const [website, blogPost] = await Promise.all([
 		getWebsite({ draft: isDraft }),

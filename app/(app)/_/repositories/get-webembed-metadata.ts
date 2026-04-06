@@ -9,7 +9,7 @@ import metascraperTitle from "metascraper-title";
 import metascraperUrl from "metascraper-url";
 import { cacheLife } from "next/cache";
 import { rootLogger } from "@/logger";
-import { vercelEnvironment } from "@/runtime";
+import { urlOrigin, vercelEnvironment } from "@/runtime";
 
 const logger = rootLogger.child({ module: "🌏" });
 
@@ -23,10 +23,8 @@ interface WebEmbedMetadata {
 
 export async function getWebEmbedMetadata({
 	url,
-	selfUrlOrigin,
 }: {
 	url: string;
-	selfUrlOrigin: string;
 }): Promise<WebEmbedMetadata> {
 	"use cache";
 
@@ -42,7 +40,7 @@ export async function getWebEmbedMetadata({
 
 		logger.info({ url }, "Started resolving chromium executable path.");
 
-		const chromiumPackUrl = new URL("/chromium-pack.tar", selfUrlOrigin).href;
+		const chromiumPackUrl = new URL("/chromium-pack.tar", urlOrigin).href;
 
 		chromiumExecutablePath = await chromium.executablePath(chromiumPackUrl);
 		chromiumArgs = [...chromium.args];

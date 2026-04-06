@@ -9,9 +9,8 @@ import {
 	JetBrains_Mono,
 } from "next/font/google";
 import { type ReactNode, Suspense } from "react";
-import { resolveUrlOrigin } from "@/helpers/request";
 import { getWebsite } from "@/repositories/get-website";
-import { sha, vercelEnvironment } from "@/runtime";
+import { sha, urlOrigin, vercelEnvironment } from "@/runtime";
 import { Header } from "./_components/header";
 import { PageViewTracking } from "./_components/page-view-tracking";
 
@@ -36,10 +35,7 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-	const [urlOrigin, website] = await Promise.all([
-		resolveUrlOrigin(),
-		getWebsite(),
-	]);
+	const website = await getWebsite();
 
 	return {
 		metadataBase: new URL(urlOrigin),
