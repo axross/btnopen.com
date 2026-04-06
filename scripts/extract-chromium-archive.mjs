@@ -6,25 +6,17 @@ import { dirname, resolve } from "node:path";
 
 const rootDir = resolve(dirname(new URL(import.meta.url).pathname), "../");
 
-// ref. https://github.com/gabenunez/puppeteer-on-vercel/tree/main
-function extractChromiumArchive() {
-	try {
-		console.log("Extracting chromium archive...");
+// ref. https://github.com/gabenunez/puppeteer-on-vercel
+try {
+	console.log("Extracting chromium archive...");
 
-		const chromiumUri = import.meta.resolve("@sparticuz/chromium");
-		const chromiumPath = new URL(chromiumUri).pathname;
-		const chromiumDir = resolve(chromiumPath, "../../../");
-		const chromiumBinDir = resolve(chromiumDir, "./bin");
-		const chromiumBinDirStat = statSync(chromiumBinDir);
+	const chromiumUri = import.meta.resolve("@sparticuz/chromium");
+	const chromiumPath = new URL(chromiumUri).pathname;
+	const chromiumDir = resolve(chromiumPath, "../../../");
+	const chromiumBinDir = resolve(chromiumDir, "./bin");
+	const chromiumBinDirStat = statSync(chromiumBinDir);
 
-		if (!chromiumBinDirStat.isDirectory()) {
-			console.error(
-				"Chromium bin directory is not found. Skipping archive creation.",
-			);
-
-			return;
-		}
-
+	if (chromiumBinDirStat.isDirectory()) {
 		const publicDir = resolve(rootDir, "./public");
 		const outputPath = resolve(publicDir, "./chromium-pack.tar");
 
@@ -41,10 +33,12 @@ function extractChromiumArchive() {
 		);
 
 		console.log("Successfully created chromium archive!");
-	} catch (error) {
-		console.error("Failed to create chromium archive.");
-		console.error(error);
+	} else {
+		console.error(
+			"Chromium bin directory is not found. Skipping archive creation.",
+		);
 	}
+} catch (error) {
+	console.error("Failed to create chromium archive.");
+	console.error(error);
 }
-
-extractChromiumArchive();

@@ -1,6 +1,5 @@
 "use server";
 
-import chromium from "@sparticuz/chromium-min";
 import createBrowserless from "browserless";
 import htmlGet from "html-get";
 import createMetascraper from "metascraper";
@@ -10,6 +9,7 @@ import metascraperTitle from "metascraper-title";
 import metascraperUrl from "metascraper-url";
 import { cacheLife } from "next/cache";
 import { rootLogger } from "@/logger";
+import { vercelEnvironment } from "@/runtime";
 
 const logger = rootLogger.child({ module: "🌏" });
 
@@ -34,22 +34,39 @@ export async function getWebEmbedMetadata({
 
 	logger.info({ url }, "Started fetching web embed metadata.");
 
-	logger.info({ url }, "Started resolving chromium executable path.");
+	let chromiumExecutablePath: string;
+	let chromiumArgs: string[];
 
-	const chromiumExecutablePath = await chromium.executablePath(
-		new URL("/chromium-pack.tar", selfUrlOrigin).href,
-	);
+	if (vercelEnvironment === "production") {
+		const { default: chromium } = await import("@sparticuz/chromium-min");
 
-	logger.info(
-		{ executablePath: chromiumExecutablePath, url },
-		"Completed resolving chromium executable path.",
-	);
+		logger.info({ url }, "Started resolving chromium executable path.");
+
+		const chromiumPackUrl = new URL("/chromium-pack.tar", selfUrlOrigin).href;
+
+		chromiumExecutablePath = await chromium.executablePath(chromiumPackUrl);
+		chromiumArgs = [...chromium.args];
+
+		logger.info(
+			{
+				executablePath: chromiumExecutablePath,
+				tarballUrl: chromiumPackUrl,
+				url,
+			},
+			"Completed resolving chromium executable path.",
+		);
+	} else {
+		const { default: chromium } = await import("@sparticuz/chromium");
+
+		chromiumExecutablePath = await chromium.executablePath();
+		chromiumArgs = [...chromium.args];
+	}
 
 	logger.info({ url }, "Started creating browserless.");
 
 	const browserless = await createBrowserless({
 		launchOpts: {
-			args: chromium.args,
+			args: chromiumArgs,
 			executablePath: chromiumExecutablePath,
 		},
 	});
