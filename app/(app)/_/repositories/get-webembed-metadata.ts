@@ -1,5 +1,6 @@
 "use server";
 
+import chromium from "@sparticuz/chromium-min";
 import createBrowserless from "browserless";
 import htmlGet from "html-get";
 import createMetascraper from "metascraper";
@@ -22,8 +23,10 @@ interface WebEmbedMetadata {
 
 export async function getWebEmbedMetadata({
 	url,
+	selfUrlOrigin,
 }: {
 	url: string;
+	selfUrlOrigin: string;
 }): Promise<WebEmbedMetadata> {
 	"use cache";
 
@@ -31,14 +34,46 @@ export async function getWebEmbedMetadata({
 
 	logger.info({ url }, "Started fetching web embed metadata.");
 
-	const browserless = await createBrowserless();
+	logger.info({ url }, "Started resolving chromium executable path.");
+
+	const chromiumExecutablePath = await chromium.executablePath(
+		new URL("/chromium-pack.tar", selfUrlOrigin).href,
+	);
+
+	logger.info(
+		{ executablePath: chromiumExecutablePath, url },
+		"Completed resolving chromium executable path.",
+	);
+
+	logger.info({ url }, "Started creating browserless.");
+
+	const browserless = await createBrowserless({
+		launchOpts: {
+			args: chromium.args,
+			executablePath: chromiumExecutablePath,
+		},
+	});
 	const browserlessContext = await browserless.createContext();
+
+	logger.info({ url }, "Completed creating browserless.");
+
+	logger.info({ url }, "Started fetching HTML.");
+
 	const result = await htmlGet(url, {
 		getBrowserless: () => Promise.resolve(browserlessContext),
 	});
 
+	logger.info(
+		{ url, statusCode: result.statusCode, redirects: result.redirects },
+		"Completed fetching HTML.",
+	);
+
+	logger.info({ url }, "Started teardown the browserless.");
+
 	await browserlessContext.destroyContext();
 	await browserless.close();
+
+	logger.info({ url }, "Completed teardown the browserless.");
 
 	const metascraper = createMetascraper([
 		metascraperUrl(),

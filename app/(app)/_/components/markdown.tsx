@@ -1,7 +1,6 @@
 "use server";
 
 import clsx from "clsx";
-import { cacheLife } from "next/cache";
 import { createElement, type ElementType, Fragment, memo } from "react";
 import jsxRuntime from "react/jsx-runtime";
 import type { Options as RehypeReactOptions } from "rehype-react";
@@ -42,9 +41,9 @@ export async function Markdown({
 	markdown: string;
 	classNames?: Partial<Record<keyof typeof defaultComponents, string>>;
 }) {
-	"use cache";
+	// "use cache";
 
-	cacheLife("hours");
+	// cacheLife("hours");
 
 	const components: Record<string, ElementType> = {};
 
