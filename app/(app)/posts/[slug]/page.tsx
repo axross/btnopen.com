@@ -4,7 +4,6 @@ import type { JSX } from "react";
 import { Suspense } from "react";
 import { resolveUrlOrigin } from "@/helpers/request";
 import { getBlogPost } from "@/repositories/get-blog-post";
-import { getBlogPosts } from "@/repositories/get-blog-posts";
 import { getWebsite } from "@/repositories/get-website";
 import { BlogPostContent } from "./_components/blog-post-content";
 import { BlogPostHeader } from "./_components/blog-post-header";
@@ -12,12 +11,6 @@ import { BlogPostingJsonLd } from "./_components/blog-posting-json-ld";
 import { PayloadLivePreview } from "./_components/payload-live-preview";
 import css from "./page.module.css";
 import type { PageProps } from "./page-props";
-
-export async function generateStaticParams() {
-	const blogPosts = await getBlogPosts();
-
-	return blogPosts.map((blogPost) => ({ slug: blogPost.slug }));
-}
 
 export default async function BlogPostPage({
 	params,

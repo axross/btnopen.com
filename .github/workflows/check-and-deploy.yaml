@@ -1,30 +1,20 @@
-name: Production Release Check
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+name: Check and Deploy
 on:
-  repository_dispatch:
-    types:
-      - "vercel.deployment.ready"
+  push:
+    branches:
+      - main
 concurrency:
-  group: ${{ github.workflow }}
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
-  db-migration:
-    name: DB Migration
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
-    environment: Production
-    timeout-minutes: 30
+    timeout-minutes: 15
     permissions:
       actions: read
       statuses: write
-    env:
-      LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN: ${{ secrets.LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN }}
-      LIBSQL_PAYLOAD_TURSO_DATABASE_URL: ${{ secrets.LIBSQL_PAYLOAD_TURSO_DATABASE_URL }}
     steps:
-      - name: Notify Vercel
-        uses: vercel/repository-dispatch/actions/status@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Checkout
         uses: actions/checkout@v6
       - name: Setup Node
@@ -34,12 +24,11 @@ jobs:
           cache: npm
       - name: Install Dependencies
         run: npm ci
-      - name: Push Database Migrations
-        run: npx payload migrate | npx pino-pretty
+      - name: Lint
+        run: npm run lint
   e2e-tests:
     name: E2E Tests
     runs-on: ubuntu-latest
-    environment: Production
     timeout-minutes: 30
     permissions:
       actions: read
@@ -47,17 +36,11 @@ jobs:
       contents: write
       pull-requests: write
     env:
-      PLAYWRIGHT_BASE_URL: ${{ github.event.client_payload.url }}
-      VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
       PAYLOAD_TEST_USER_EMAIL: ${{ secrets.PAYLOAD_TEST_USER_EMAIL }}
       PAYLOAD_TEST_USER_PASSWORD: ${{ secrets.PAYLOAD_TEST_USER_PASSWORD }}
     needs:
-      - db-migration
+      - lint
     steps:
-      - name: Notify Vercel
-        uses: vercel/repository-dispatch/actions/status@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Checkout
         uses: actions/checkout@v6
       - name: Setup Node
@@ -69,6 +52,8 @@ jobs:
         run: npm ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+      - name: Push Database Migrations
+        run: npm run migrate:up
       - name: Run Playwright Tests
         run: npx playwright test --update-snapshots
       - name: Create Pull Request for Snapshot Updates
@@ -97,3 +82,32 @@ jobs:
           path: .playwright-results/
           include-hidden-files: true
           retention-days: 14
+  deployment:
+    name: Production Deployment
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs:
+      - e2e-tests
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: package.json
+          cache: npm
+      - name: Install Dependencies
+        run: npm ci
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Push Database Migrations
+        run: npm run migrate:up
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
