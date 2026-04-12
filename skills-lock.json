@@ -1,11 +1,6 @@
 {
   "version": 1,
   "skills": {
-    "building-components": {
-      "source": "vercel/components.build",
-      "sourceType": "github",
-      "computedHash": "ca96444b70257eb3f4f4c76dfdd4a32312c835fe3c8755d2e3d75ac78d384bfd"
-    },
     "next-best-practices": {
       "source": "vercel-labs/next-skills",
       "sourceType": "github",

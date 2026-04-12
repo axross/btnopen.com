@@ -11,7 +11,7 @@ const vercelAutomationBypassSecret =
 // biome-ignore-end lint/style/noProcessEnv: config needs to access env-vars
 
 export default defineConfig({
-	testDir: "./e2e",
+	testDir: "./e2e/tests",
 	reporter: isCI ? "github" : "list",
 	outputDir: ".playwright-results",
 
@@ -27,7 +27,7 @@ export default defineConfig({
 
 	// place snapshots closer to the test files
 	snapshotPathTemplate:
-		"e2e/{testFileDir}/__snapshots__/{testFileName}{/platform}/{projectName}-{arg}{ext}",
+		"e2e/tests/{testFileDir}/__snapshots__/{testFileName}{/platform}/{projectName}-{arg}{ext}",
 
 	use: {
 		baseURL: baseUrl ?? "http://localhost:3000",

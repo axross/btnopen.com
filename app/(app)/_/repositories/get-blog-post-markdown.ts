@@ -18,7 +18,7 @@ export async function getBlogPostMarkdown({
 }: {
 	slug: string;
 	draft?: boolean;
-}) {
+}): Promise<string | null> {
 	"use cache";
 
 	cacheLife("hours");
@@ -69,9 +69,5 @@ export async function getBlogPostMarkdown({
 		return markdown;
 	}
 
-	// throw an error when the blog post was not found. because this function is
-	// expected to be called only when the blog post exists.
-	throw new Error(
-		`Failed to resolve blog post markdown (slug: ${slug}) because the blog post was not found.`,
-	);
+	return null;
 }

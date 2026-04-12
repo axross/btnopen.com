@@ -23,6 +23,12 @@ export default async function BlogPostPage({
 		getBlogPost({ slug: s, draft: d }),
 	);
 
+	const resolvedBlogPost = await blogPost;
+
+	if (!resolvedBlogPost) {
+		notFound();
+	}
+
 	return (
 		<>
 			<article className={css.blogPostPage} data-testid="page">
