@@ -74,7 +74,7 @@ Strikethrough uses two tildes. ~~Scratch this.~~
 
 [https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color\_value/oklch](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/oklch)
 
-[https://zenn.dev/uma002/articles/architecture-abstraction-patterns](https://zenn.dev/uma002/articles/architecture-abstraction-patterns)
+::webembed{href=https://zenn.dev/uma002/articles/architecture-abstraction-patterns}
 
 # Images
 

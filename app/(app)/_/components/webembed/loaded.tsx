@@ -29,7 +29,7 @@ export async function WebEmbedLoaded({
 			) : (
 				<Image
 					src={embedMetadata.imageUrl}
-					alt={title ?? embedMetadata.title ?? href}
+					alt={embedMetadata.title ?? title ?? href}
 					width={1200}
 					height={630}
 					unoptimized
@@ -37,7 +37,7 @@ export async function WebEmbedLoaded({
 				/>
 			)}
 
-			<span className={css.title}>{title ?? embedMetadata.title ?? href}</span>
+			<span className={css.title}>{embedMetadata.title ?? title ?? href}</span>
 
 			{embedMetadata.description === null ? null : (
 				<span className={css.description}>{embedMetadata.description}</span>
