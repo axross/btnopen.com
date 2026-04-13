@@ -75,48 +75,33 @@ Example:
 
 ## Development Guidelines
 
-### Formatting
+- MUST see the following agent skills for detailed guidelines for the corresponding topics.
 
-- MUST run `npm run format` after changes, before committing.
-- MUST run `npm run lint` to verify the code quality after changes, before committing.
+### General Development Workflow
+
+- MUST follow [Development Workflow Convention](/.agents/skills/development-workflow-convention/SKILL.md).
 
 ### Routing
 
-- SHOULD follow the common RESTful API design principles regarding the path structure.
-  - The path structure always SHOULD be repeating the type of resource and the resource identifier.
-    - For example, `posts/[id]` instead of `[id]`.
-    - For example, `posts/[id]/comments/[id]` instead of `[id]/[id]`.
-  - The path elements SHOULD be lowercased and kebab-cased.
-  - SHOULD use search params for any optional inputs.
-    - For example, use search params for pagination, filtering, and sorting.
-    - For example, use search params for language, draft/preview status, etc.
+- MUST follow [Routing Guidelines](/.agents/skills/routing-guidelines/SKILL.md).
 
 ### React Components
 
-See [React Component Guidelines](/.agents/skills/react-component-guidelines/SKILL.md) and [React Best Practices](/.agents/skills/react-best-practices/SKILL.md). If there is a conflict between the two, the first one takes precedence.
+- MUST follow [Vercel React Component Guidelines](/.agents/skills/react-component-guidelines/SKILL.md).
+- MUST follow [React Best Practices](/.agents/skills/react-best-practices/SKILL.md). This guideline takes precedence over the former one.
 
 ### Next.js
 
-See [Next.js Best Practices](/.agents/skills/nextjs-best-practices/SKILL.md).
+- MUST follow [Next.js Best Practices](/.agents/skills/nextjs-best-practices/SKILL.md).
 
 ### Error Handling
 
-- MUST use `try-catch` blocks at the root call sites.
-- MUST let the error propagate to the root call site when it was caught in a nested call site.
-- MUST rethrow the caught error when it was caught just for logging so that the error can be caught at the root call site.
-- MUST call `captureException()` from `@sentry/nextjs` to send the error to Sentry.
+- MUST follow [Error Handling Guidelines](/.agents/skills/error-handling-guidelines/SKILL.md).
 
 ### Logging
 
-- SHOULD extend the `rootLogger` from `@/helpers/logger` and use it for logging.
-- SHOULD set the appropriate scope identifier at the `module` field when extending the `rootLogger` (e.g. `rootLogger.child({ module: "🪝" })`).
-- MUST use `logger.info()` for informational messages.
-- MUST use `logger.warn()` for warning messages.
-- SHOULD NOT use `logger.error()` for error messages.
-  - Instead, SHOULD use `captureException()` from `@sentry/nextjs` to send the error to Sentry.
+- MUST follow [Logging Guidelines](/.agents/skills/logging-guidelines/SKILL.md).
 
 ### End-to-End Testing
 
-See [E2E Testing Guidelines](/.agents/skills/e2e-testing-guidelines/SKILL.md).
-
-## Security Considerations
+- MUST follow [E2E Testing Guidelines](/.agents/skills/e2e-testing-guidelines/SKILL.md).

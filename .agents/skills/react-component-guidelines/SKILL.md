@@ -10,7 +10,7 @@ Apply these rules when writing, reviewing, or refactoring React components in th
 
 ## Component Conventions
 
-See [conventions.md](./conventions.md) for:
+See [React Component Conventions](./conventions.md) for:
 
 - Overall React component guidelines
 - Props and return type declarations
@@ -18,14 +18,14 @@ See [conventions.md](./conventions.md) for:
 
 ## React Client Components vs Server Components
 
-See [client-vs-server-components.md](./client-vs-server-components.md) for:
+See [React Client Components vs Server Components](./client-vs-server-components.md) for:
 
 - When to determine whether to use React Client Components or Server Components
 - How to split components into Client and Server Components
 
 ## CSS and Styling
 
-See [styling.md](./styling.md) for:
+See [React Component Styling](./styling.md) for:
 
 - CSS Modules usage
 - CSS variables and theme tokens
@@ -34,7 +34,7 @@ See [styling.md](./styling.md) for:
 
 ## Testable Components
 
-See [testable-components.md](./testable-components.md) for:
+See [Testable Components](./testable-components.md) for:
 
 - `data-testid` attribute conventions
 - `data-testid` nesting patterns and how E2E and unit tests traverse the component tree
