@@ -1,10 +1,14 @@
 # AGENTS.md
 
+## Instruction Keywords
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt).
+
 ## Project Overview
 
-- It is a personal blogging website built with [Next.js](https://nextjs.org/).
+- This is a personal blogging website built with [Next.js](https://nextjs.org/).
 
-## NPM Run-scripts
+### NPM Run-scripts
 
 - `npm run dev` - Starts the development server.
 - `npm run test:e2e` - Runs the end-to-end tests.
@@ -18,21 +22,17 @@
 
 ### Tech Stack
 
-- **[Payload CMS](https://payloadcms.com/)** for the admin dashboard and content management.
+- **[Next.js](https://nextjs.org/)** as the web framework.
+- **[Payload CMS](https://payloadcms.com/)** as the admin dashboard and content management system.
 - **[Remark](https://remark.js.org/)** for markdown processing and **[Shiki](https://shiki.style/)** for syntax highlighting.
-- **[Sentry](https://sentry.io/)** for error tracking.
-- **[Mixpanel](https://mixpanel.com/)** for analytics.
 - **[Playwright](https://playwright.dev/)** for end-to-end testing.
 - **[Biome](https://biomejs.dev/)** for linting and formatting.
 - **[Vercel](https://vercel.com/)** as the hosting/running environment.
 
-## Testing
+### Third-Party Services
 
-- It uses [Playwright](https://playwright.dev/) for end-to-end testing.
-  - Run `npm run test:e2e` to run the end-to-end tests.
-  - Recommended to run `npm run build && npm run start` before running `npm run test:e2e` because it runs the tests against the production build, which is more performant and reliable.
-
-## Coding Style
+- **[Sentry](https://sentry.io/)** for error tracking.
+- **[Mixpanel](https://mixpanel.com/)** for analytics.
 
 ### Directory Structure
 
@@ -82,7 +82,7 @@ Example:
 
 - MUST use TypeScript.
 - MUST not use `any` type.
-- CAN use `never` or `unknown` type only when it is impossible to determine the type and it won't affect the type safety.
+- SHALL use `never` or `unknown` type only when it is impossible to determine the type and it won't affect the type safety.
 - SHOULD clearly declare the input and output types.
 - SHOULD prefer to use `interface` over `type` for object types.
 

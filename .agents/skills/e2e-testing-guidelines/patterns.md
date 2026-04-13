@@ -117,10 +117,10 @@ test("Blog post header", async ({ page }, testInfo) => {
 ### API Call Function Definitions
 
 - API call functions MUST be defined in `@/e2e/helpers/api/`.
-- It SHOULD use kebab-case for file names.
-- It SHOULD named-export the function.
-- It SHOULD take `page` and `testInfo` as arguments.
-- It MUST use `page.request` to make API calls.
+- SHOULD use kebab-case for file names.
+- SHOULD named-export the function.
+- SHOULD take `page` and `testInfo` as arguments.
+- MUST use `page.request` to make API calls.
 
 Example:
 
