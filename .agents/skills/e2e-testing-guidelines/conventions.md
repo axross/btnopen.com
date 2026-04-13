@@ -1,4 +1,4 @@
-# E2E Test Patterns
+# E2E Test Conventions
 
 ## Locator Usage
 

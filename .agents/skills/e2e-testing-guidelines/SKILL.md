@@ -23,9 +23,9 @@ See [E2E Test Structure](./structure.md) for:
 - Reviewing end-to-end tests
 - Refactoring end-to-end tests
 
-## End-to-End Test Patterns
+## End-to-End Test Conventions
 
-See [E2E Test Patterns](./patterns.md) for:
+See [E2E Test Conventions](./conventions.md) for:
 
 - Writing end-to-end tests
 - Reviewing end-to-end tests

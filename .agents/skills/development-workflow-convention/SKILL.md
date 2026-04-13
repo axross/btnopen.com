@@ -1,6 +1,6 @@
 ---
 name: development-workflow-convention
-description: General development workflow convention in this project.
+description: General development workflow in this project.
 user-invocable: false
 ---
 
