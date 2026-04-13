@@ -93,7 +93,11 @@ Example:
 
 ### React Components
 
-See [React Component Guidelines](/.agents/skills/react-component-guidelines/SKILL.md).
+See [React Component Guidelines](/.agents/skills/react-component-guidelines/SKILL.md) and [React Best Practices](/.agents/skills/react-best-practices/SKILL.md). If there is a conflict between the two, the first one takes precedence.
+
+### Next.js
+
+See [Next.js Best Practices](/.agents/skills/nextjs-best-practices/SKILL.md).
 
 ### Error Handling
 
