@@ -1,73 +1,33 @@
-import { clsx } from "clsx";
-import { format } from "date-fns";
-import Image from "next/image";
-import { notFound } from "next/navigation";
-import type { ComponentProps, JSX } from "react";
-import { ViewTransition } from "react";
+import { type ComponentProps, type JSX, Suspense } from "react";
 import type { BlogPostDetail } from "@/repositories/get-blog-post";
-import css from "./blog-post-header.module.css";
+import { BlogPostHeaderLoaded } from "./blog-post-header/loaded";
+import { BlogPostHeaderLoading } from "./blog-post-header/loading";
 
-export async function BlogPostHeader({
-	blogPost: blogPostPromise,
+export function BlogPostHeader({
+	blogPost,
 	className,
+	"data-testid": dataTestId,
 	...props
 }: ComponentProps<"header"> & {
 	blogPost: Promise<BlogPostDetail | null>;
-}): Promise<JSX.Element> {
-	const blogPost = await blogPostPromise;
-
-	if (!blogPost) {
-		notFound();
-	}
-
+	"data-testid"?: string;
+}): JSX.Element {
 	return (
-		<header className={clsx(css.blogPostHeader, className)} {...props}>
-			<ViewTransition name={`blog-post-${blogPost.slug}-image`}>
-				<Image
-					alt={blogPost.title}
-					src={blogPost.thumbnailImage.url}
-					width={blogPost.thumbnailImage.width}
-					height={blogPost.thumbnailImage.height}
-					loading="eager"
-					className={css.coverImage}
-					data-testid="cover-image"
+		<Suspense
+			fallback={
+				<BlogPostHeaderLoading
+					className={className}
+					data-testid={dataTestId ? `${dataTestId}-loading` : undefined}
+					{...props}
 				/>
-			</ViewTransition>
-
-			<ViewTransition name={`blog-post-${blogPost.slug}-timestamp`}>
-				<div className={css.timestamp} data-testid="timestamp">
-					{format(blogPost.publishedAt, "PPP")}
-				</div>
-			</ViewTransition>
-
-			<ViewTransition name={`blog-post-${blogPost.slug}-title`}>
-				<h1 className={css.title} data-testid="title">
-					{blogPost.title}
-				</h1>
-			</ViewTransition>
-
-			<div className={css.author} data-testid="author">
-				<Image
-					alt={blogPost.author.name}
-					src={blogPost.author.avatarImage.url}
-					width={blogPost.author.avatarImage.width}
-					height={blogPost.author.avatarImage.height}
-					className={css.authorImage}
-					data-testid="avatar-image"
-				/>
-
-				<span className={css.authorName} data-testid="name">
-					{blogPost.author.name}
-				</span>
-			</div>
-
-			<ul className={css.tags} data-testid="tags">
-				{blogPost.tags?.map((tag) => (
-					<li className={css.tag} key={tag.slug} data-testid="tag">
-						{tag.name}
-					</li>
-				))}
-			</ul>
-		</header>
+			}
+		>
+			<BlogPostHeaderLoaded
+				blogPost={blogPost}
+				className={className}
+				data-testid={dataTestId}
+				{...props}
+			/>
+		</Suspense>
 	);
 }

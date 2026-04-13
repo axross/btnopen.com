@@ -32,13 +32,11 @@ export default async function BlogPostPage({
 	return (
 		<>
 			<article className={css.blogPostPage} data-testid="page">
-				<Suspense>
-					<BlogPostHeader
-						blogPost={blogPost}
-						className={css.header}
-						data-testid="header"
-					/>
-				</Suspense>
+				<BlogPostHeader
+					blogPost={blogPost}
+					className={css.header}
+					data-testid="header"
+				/>
 
 				<main className={css.content} data-testid="content">
 					<Suspense>

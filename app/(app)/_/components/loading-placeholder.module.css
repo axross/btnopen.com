@@ -13,7 +13,6 @@
 
 	@scope (.loadingPlaceholderText) {
 		:where(:scope) {
-			container: loading-placeholder-text / inline-size;
 			display: flex;
 			flex-direction: row;
 			flex-wrap: wrap;
@@ -24,15 +23,15 @@
 			column-gap: 0.75ch;
 			overflow-y: hidden;
 		}
-	}
 
-	.span {
-		display: block;
-		width: attr(data-length ch);
-		height: 1em;
-		border-radius: var(--radius-sm);
-		background-color: var(--neutral-2);
-		animation: pulse 500ms linear infinite alternate;
+		.span {
+			display: block;
+			width: attr(data-length ch);
+			height: 1em;
+			border-radius: var(--radius-sm);
+			background-color: var(--neutral-2);
+			animation: pulse 500ms linear infinite alternate;
+		}
 	}
 
 	@keyframes pulse {

@@ -1,6 +1,9 @@
 @layer components {
-	@scope (.blogPostHeader) {
+	@scope (.blogPostHeaderLoaded) {
 		:where(:scope) {
+			width: stretch;
+			container: blog-post-header / inline-size;
+
 			@container (width > 30rem) {
 				--page-variant: "desktop";
 				--max-width: calc(30rem - var(--size-16) * 2);
@@ -63,6 +66,10 @@
 			width: 24px;
 			height: 24px;
 			border-radius: 50%;
+		}
+
+		.authorName {
+			font-size: var(--text-md);
 		}
 
 		.tags {

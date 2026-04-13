@@ -77,8 +77,8 @@ Example:
 
 ### Formatting
 
-- MUST run `npm run format` before committing.
-- MUST run `npm run lint` to verify the code quality before committing.
+- MUST run `npm run format` after changes, before committing.
+- MUST run `npm run lint` to verify the code quality after changes, before committing.
 
 ### Routing
 
