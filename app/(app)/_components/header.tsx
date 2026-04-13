@@ -1,9 +1,11 @@
 import Link from "next/link";
 import css from "./header.module.css";
+import { ComponentProps } from "react";
+import clsx from "clsx";
 
-export function Header() {
+export function Header({ className, ...props }: ComponentProps<"header">) {
 	return (
-		<header className={css.header}>
+		<header className={clsx(css.header, className)} {...props}>
 			<Link href="/" className={css.link}>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"

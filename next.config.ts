@@ -20,6 +20,7 @@ const nextConfig: NextConfig = {
 	serverExternalPackages: ["re2", "pino", "pino-pretty"],
 	experimental: {
 		viewTransition: true,
+		globalNotFound: true,
 	},
 	headers: () => [
 		{
