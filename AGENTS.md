@@ -10,15 +10,15 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 ### NPM Run-scripts
 
-- `npm run dev` - Starts the development server.
-- `npm run test:e2e` - Runs the end-to-end tests.
-- `npm run build` - Builds the production bundle.
-- `npm run start` - Starts the production server that built by `npm run build`.
-- `npm run migrate:status` - Shows the DB migration status.
-- `npm run migrate:create` - Creates a new DB migration entry.
-- `npm run migrate:up` - Runs the DB migrations against the DB. The target DB is determined by the environment variables.
-- `npm run lint` - Runs the linter (Biome).
-- `npm run format` - Formats the code with Biome.
+- `npm run dev` — Starts the development server.
+- `npm run test:e2e` — Runs the end-to-end tests.
+- `npm run build` — Builds the production bundle.
+- `npm run start` — Starts the production server that built by `npm run build`.
+- `npm run migrate:status` — Shows the DB migration status.
+- `npm run migrate:create` — Creates a new DB migration entry.
+- `npm run migrate:up` — Runs the DB migrations against the DB. The target DB is determined by the environment variables.
+- `npm run lint` — Runs the linter (Biome).
+- `npm run format` — Formats the code with Biome.
 
 ### Tech Stack
 
@@ -73,18 +73,12 @@ Example:
 └── ...
 ```
 
+## Development Guidelines
+
 ### Formatting
 
 - MUST run `npm run format` before committing.
 - MUST run `npm run lint` to verify the code quality before committing.
-
-### TypeScript
-
-- MUST use TypeScript.
-- MUST not use `any` type.
-- SHALL use `never` or `unknown` type only when it is impossible to determine the type and it won't affect the type safety.
-- SHOULD clearly declare the input and output types.
-- SHOULD prefer to use `interface` over `type` for object types.
 
 ### Routing
 
@@ -97,27 +91,9 @@ Example:
     - For example, use search params for pagination, filtering, and sorting.
     - For example, use search params for language, draft/preview status, etc.
 
-### Components
+### React Components
 
-- MUST be written in TypeScript.
-- MUST declare the props type.
-  - SHOULD use `ComponentProps<T>` following to the root rendered element type.
-    - For example, if the component renders a `div` HTML element at the root, it SHOULD use `ComponentProps<"div">`.
-    - For example, if the component renders a `Media` component at the root, it SHOULD use `ComponentProps<typeof Media>`.
-- MUST declare the return type of the component.
-- MUST use React Server Components when it needs some async data access.
-  - SHOULD use `"use cache"` with appropriate `cacheLife()`.
-- MUST use React Client Components when it needs some interactive features.
-  - MUST use `"use client";` directive at the top of the file.
-
-### CSS
-
-- MUST use CSS Modules for component-scoped styles.
-- MUST use CSS variables for theme-related styles.
-- MUST be written in appropriate CSS layers for the style target.
-  - Components MUST use `@layer components` layer.
-- MUST use `variables.css` for the theme-related styles.
-- MUST use `globals.css` for the global/base styles.
+See [React Component Guidelines](/.agents/skills/react-component-guidelines/SKILL.md).
 
 ### Error Handling
 
