@@ -16,7 +16,7 @@ export default defineConfig({
 	outputDir: ".playwright-results",
 
 	// restrict workers to 1 on GitHub Actions to reduce costs
-	workers: isCI ? 1 : undefined,
+	workers: isCI || !baseUrl ? 1 : undefined,
 
 	// repeat 2 times to detect potential flakiness
 	repeatEach: 2,

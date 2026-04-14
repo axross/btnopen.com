@@ -1,7 +1,7 @@
-import Link from "next/link";
-import css from "./header.module.css";
-import { ComponentProps } from "react";
 import clsx from "clsx";
+import Link from "next/link";
+import type { ComponentProps } from "react";
+import css from "./header.module.css";
 
 export function Header({ className, ...props }: ComponentProps<"header">) {
 	return (
