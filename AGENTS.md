@@ -110,6 +110,10 @@ Example:
 
 - MUST follow [Logging Guidelines](/.agents/skills/logging-guidelines/SKILL.md).
 
+### Markdown Processing
+
+- MUST follow [Markdown Processing Guidelines](/.agents/skills/markdown-processing-guidelines/SKILL.md).
+
 ### End-to-End Testing
 
 - MUST follow [E2E Testing Guidelines](/.agents/skills/e2e-testing-guidelines/SKILL.md).
