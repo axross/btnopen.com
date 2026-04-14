@@ -17,3 +17,30 @@ Apply these rules when writing, reviewing, or refactoring routes in this project
   - SHOULD use search params for any optional inputs.
     - For example, use search params for pagination, filtering, and sorting.
     - For example, use search params for language, draft/preview status, etc.
+  - Dynamic route segments SHOULD use semantic names that describe the resource identifier.
+    - For example, `posts/[slug]` rather than `posts/[id]` when the identifier is a slug.
+
+## Directory Conventions
+
+- SHOULD use route groups (`(group-name)` directories) to organize routes logically without affecting the URL structure.
+  - For example, `(app)/` wraps all main application routes, `(index)/` groups the index route's files.
+- MUST prefix non-route directories with `_` to exclude them from routing.
+  - Use `_/` for feature-agnostic shared modules (e.g., components, helpers, repositories) scoped to a layout level.
+  - Use `_components/` for UI components that are specific to the nearest layout or page.
+
+## File Conventions
+
+- SHOULD define a `page-props.ts` file co-located with each `page.tsx` to export a `PageProps` interface.
+  - `params` and `searchParams` MUST be typed as `Promise<...>` to comply with Next.js 15+ async APIs.
+  - For example:
+    ```app/(app)/posts/[slug]/page-props.ts#L1-5
+    export interface PageProps {
+      params: Promise<{ slug: string }>;
+      searchParams: Promise<{ draft?: "true"; preview?: "true" }>;
+    }
+    ```
+- MAY co-locate a `not-found.tsx` file with any route segment that requires a custom 404 UI.
+- SHOULD co-locate OG image files (e.g., `thumbnail.png`) with the route segment they belong to, using Next.js file-based metadata conventions.
+- Route handlers (`route.ts`) MUST NOT be placed in the same directory as a `page.tsx`.
+  - SHOULD place route handlers in a dedicated sub-directory named after the resource they manage.
+  - For example, `posts/[slug]/caches/route.ts` rather than `posts/[slug]/route.ts`.

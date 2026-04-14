@@ -1,24 +1,20 @@
 # AGENTS.md
 
-## Instruction Keywords
+## Requirement Level Keywords
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt).
+Here is the list of keywords to signify the requirements. Apply the following rules for each keyword in this document and the documents linked from this document.
+
+1. MUST — This word, or the terms "REQUIRED", mean that the definition is an absolute requirement of the specification.
+2. MUST NOT — This word mean that the definition is an absolute prohibition of the specification.
+3. SHOULD — This word, or the adjective "RECOMMENDED", mean that there may exist valid reasons in particular circumstances to ignore a particular item, but the full implications must be understood and carefully weighed before choosing a different course.
+4. SHOULD NOT — This phrase, or the phrase "NOT RECOMMENDED" mean that there may exist valid reasons in particular circumstances when the particular behavior is acceptable or even useful, but the full implications should be understood and the case carefully weighed before making any behavior described with this label.
+5. MAY — This word, or the adjective "OPTIONAL", mean that an item is truly optional.
 
 ## Project Overview
 
-- This is a personal blogging website built with [Next.js](https://nextjs.org/).
-
-### NPM Run-scripts
-
-- `npm run dev` — Starts the development server.
-- `npm run test:e2e` — Runs the end-to-end tests.
-- `npm run build` — Builds the production bundle.
-- `npm run start` — Starts the production server that built by `npm run build`.
-- `npm run migrate:status` — Shows the DB migration status.
-- `npm run migrate:create` — Creates a new DB migration entry.
-- `npm run migrate:up` — Runs the DB migrations against the DB. The target DB is determined by the environment variables.
-- `npm run lint` — Runs the linter (Biome).
-- `npm run format` — Formats the code with Biome.
+- This is a personal blogging website. It displays a portrait, a bio, and links to the author's social media accounts.
+- Blog posts are the primary content type. They support tags, cover images, and rich Markdown including syntax-highlighted code blocks and embedded web content previews.
+- Content is written primarily in Japanese, with English provided as a fallback for readers in other locales.
 
 ### Tech Stack
 
@@ -72,6 +68,18 @@ Example:
 │   └── ...
 └── ...
 ```
+
+### NPM Run-scripts
+
+- `npm run dev` — Starts the development server.
+- `npm run test:e2e` — Runs the end-to-end tests.
+- `npm run build` — Builds the production bundle.
+- `npm run start` — Starts the production server that built by `npm run build`.
+- `npm run migrate:status` — Shows the DB migration status.
+- `npm run migrate:create` — Creates a new DB migration entry.
+- `npm run migrate:up` — Runs the DB migrations against the DB. The target DB is determined by the environment variables.
+- `npm run lint` — Runs the linter (Biome).
+- `npm run format` — Formats the code with Biome.
 
 ## Development Guidelines
 
