@@ -86,3 +86,7 @@ Example:
 ### For Developer
 
 - MUST read [Development Guidelines](/.agents/skills/development-guidelines/SKILL.md).
+
+### For Code Reviewer
+
+- MUST read [Code Review Guideline](/.agents/skills/code-review-guideline/SKILL.md).
