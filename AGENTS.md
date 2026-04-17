@@ -81,13 +81,13 @@ Example:
 - `npm run lint` — Runs the linter (Biome).
 - `npm run format` — Formats the code with Biome.
 
-## Development Guidelines
+## Guidelines
 
 - MUST see the following agent skills for detailed guidelines for the corresponding topics.
 
-### General Development Workflow
+### Development Guidelines
 
-- MUST follow [Development Workflow Convention](/.agents/skills/development-workflow-convention/SKILL.md).
+- MUST follow [Development Guidelines](/.agents/skills/development-guidelines/SKILL.md).
 
 ### Routing
 
@@ -102,13 +102,9 @@ Example:
 
 - MUST follow [Next.js Best Practices](/.agents/skills/nextjs-best-practices/SKILL.md).
 
-### Error Handling
+### Observability
 
-- MUST follow [Error Handling Guidelines](/.agents/skills/error-handling-guidelines/SKILL.md).
-
-### Logging
-
-- MUST follow [Logging Guidelines](/.agents/skills/logging-guidelines/SKILL.md).
+- MUST follow [Observability Guidelines](/.agents/skills/observability-guidelines/SKILL.md).
 
 ### Markdown Processing
 
