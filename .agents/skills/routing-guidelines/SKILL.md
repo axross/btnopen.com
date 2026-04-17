@@ -1,6 +1,6 @@
 ---
 name: routing-guidelines
-description: Guidelines for Next.js App Router routing in this project.
+description: Use this skill when creating, moving, renaming, or reviewing any route in `app/` — RESTful path structure (resource/identifier repetition, kebab-case, search params for optional inputs, semantic dynamic-segment names like `[slug]`), route-group `(group)` and underscore-prefixed (`_/`, `_components/`) directory conventions, co-located `page-props.ts` with `Promise<...>`-typed `params` / `searchParams`, `not-found.tsx` / OG-image file-metadata co-location, and the rule that `route.ts` MUST live in a dedicated sub-directory (e.g., `posts/[slug]/caches/route.ts`) — never next to a `page.tsx`. Use even when the user only says "add a page", "new route", "App Router", "page props", "search params", or "route handler".
 user-invocable: false
 ---
 

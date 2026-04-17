@@ -1,0 +1,2 @@
+- [Project skill layout](project_skill_layout.md) — Where skills and subagents live, conventions, and why routing-guidelines is intentionally not split.
+- [User role](user_role.md) — Kohei Asai, solo owner/engineer of btnopen.com; values MECE, RFC-2119 tone, concise reference files.

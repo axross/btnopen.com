@@ -9,7 +9,7 @@ Apply these rules whenever you write or modify code in this project.
   2. **Lint** (`npm run lint`) — detects code quality and remaining format issues.
   3. **Fix all reported errors.**
   4. **Re-run lint** — confirm all errors are resolved.
-  5. **Test** (`npm run test:e2e`) — only when the change affects a UI output surface; see [Application Reliability](./application-reliability.md) for which changes require testing.
+  5. **Test** (`npm run test:e2e`) — only when the change affects a UI output surface; see [verification.md](./verification.md) for which changes require testing.
 - MUST NOT skip or reorder these steps.
 - `npm run format` runs `biome format --write`, which applies auto-fixable formatting. `npm run lint` runs `biome check`, which enforces both lint rules and format rules. Some format violations are only caught by `biome check`, so the lint step may still report format issues even after running format.
 

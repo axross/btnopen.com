@@ -1,6 +1,6 @@
 ---
 name: react-component-guidelines
-description: React component guidelines for writing, reviewing, and refactoring components in this project.
+description: Use this skill when writing, reviewing, or refactoring any React component in this project — kebab-case file naming, TypeScript prop types with `ComponentProps<T>`, explicit `JSX.Element` / `Promise<JSX.Element>` return types, deciding Server vs Client components, `"use client"` placement, the loading/loaded split with `<Suspense>`, `"use cache"` + `cacheLife()` caching, passing `Promise<T>` props (never to Client Components), CSS Modules under `@layer components` with `clsx` class merging and variables, style-isolation rules (no position/margin/width/height on root), and the `data-testid` nesting / `-loading` suffix conventions that E2E tests depend on. Use even when the user only says "component", "use client", "RSC", "Suspense", "data-testid", "styling", or "clsx".
 user-invocable: false
 ---
 

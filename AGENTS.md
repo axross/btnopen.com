@@ -83,33 +83,6 @@ Example:
 
 ## Guidelines
 
-- MUST see the following agent skills for detailed guidelines for the corresponding topics.
+### For Developer
 
-### Development Guidelines
-
-- MUST follow [Development Guidelines](/.agents/skills/development-guidelines/SKILL.md).
-
-### Routing
-
-- MUST follow [Routing Guidelines](/.agents/skills/routing-guidelines/SKILL.md).
-
-### React Components
-
-- MUST follow [Vercel React Component Guidelines](/.agents/skills/react-component-guidelines/SKILL.md).
-- MUST follow [React Best Practices](/.agents/skills/react-best-practices/SKILL.md). This guideline takes precedence over the former one.
-
-### Next.js
-
-- MUST follow [Next.js Best Practices](/.agents/skills/nextjs-best-practices/SKILL.md).
-
-### Observability
-
-- MUST follow [Observability Guidelines](/.agents/skills/observability-guidelines/SKILL.md).
-
-### Markdown Processing
-
-- MUST follow [Markdown Processing Guidelines](/.agents/skills/markdown-processing-guidelines/SKILL.md).
-
-### End-to-End Testing
-
-- MUST follow [E2E Testing Guidelines](/.agents/skills/e2e-testing-guidelines/SKILL.md).
+- MUST read [Development Guidelines](/.agents/skills/development-guidelines/SKILL.md).

@@ -1,6 +1,6 @@
 ---
 name: observability-guidelines
-description: Guidelines for error handling and logging in this project. Covers Sentry error reporting, error propagation, Pino logger usage, log levels, and structured logging conventions.
+description: Use this skill whenever writing, reviewing, or modifying code that throws, catches, reports, or logs — including `try`/`catch` placement, Sentry `captureException` calls, route `error.tsx` / `global-error.tsx` boundaries, Pino `rootLogger` usage and module child loggers, log-level choice (`info` / `warn`; never `error`), and "Started / Completed" structured-log messages. Use even when the user only mentions "Sentry", "Pino", "logger", "captureException", error boundaries, log levels, or debugging an unhandled exception in this project.
 user-invocable: false
 ---
 

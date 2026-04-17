@@ -1,6 +1,6 @@
 ---
 name: development-guidelines
-description: Master development guidelines for all work on this project. Covers development workflow, code quality, change management, and application reliability. Read this before any topic-specific skill.
+description: Apply this skill at the start of EVERY task in this project, regardless of the topic. Covers the non-negotiable code quality loop (Biome format → lint → fix → re-lint → test), change-management rules (stay in scope, follow existing patterns, safely add npm deps, handle Payload CMS migrations), and verification requirements (which output surfaces a change puts at risk, manual dev-server checks, running the Playwright e2e suite, responding to flaky/failing tests). Use this even when the user does not explicitly mention formatting, linting, testing, dependencies, or migrations — any code change in this repo is expected to pass through this workflow.
 user-invocable: false
 ---
 
@@ -40,12 +40,8 @@ Consult the appropriate skill for detailed guidance on each area:
 
 | Topic | Skill |
 |---|---|
-| Routing and URL structure | [Routing Guidelines](../routing-guidelines/SKILL.md) |
-| React component conventions, styling, testability | [React Component Guidelines](../react-component-guidelines/SKILL.md) |
-| React composition and component API design | [React Composition Patterns](../vercel-composition-patterns/SKILL.md) |
-| React and Next.js performance optimization | [React Best Practices](../vercel-react-best-practices/SKILL.md) |
-| Next.js file conventions, RSC, data patterns, metadata | [Next.js Best Practices](../next-best-practices/SKILL.md) |
-| Error handling, Sentry reporting, and logging | [Observability Guidelines](../observability-guidelines/SKILL.md) |
+| Routing, URL structure, route directory/file conventions | [Routing Guidelines](../routing-guidelines/SKILL.md) |
+| React component conventions, client-vs-server split, styling, testability | [React Component Guidelines](../react-component-guidelines/SKILL.md) |
+| Error handling, Sentry reporting, and Pino logging | [Observability Guidelines](../observability-guidelines/SKILL.md) |
 | Markdown parsing, plugins, and rendering pipeline | [Markdown Processing Guidelines](../markdown-processing-guidelines/SKILL.md) |
 | End-to-end test structure, conventions, and commands | [E2E Testing Guidelines](../e2e-testing-guidelines/SKILL.md) |
-| UI design review, accessibility, and UX compliance | [Web Design Guidelines](../web-design-guidelines/SKILL.md) |

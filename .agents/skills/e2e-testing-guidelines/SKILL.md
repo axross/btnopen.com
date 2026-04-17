@@ -1,6 +1,6 @@
 ---
 name: e2e-testing-guidelines
-description: E2E testing guidelines for this project.
+description: Use this skill whenever writing, reviewing, refactoring, or running Playwright end-to-end tests in this project, or whenever a change requires verification via the e2e suite. Covers the `e2e/` directory layout, `.test.ts` naming, `test()` / `test.step()` structure, mandatory `getByTestId()` chained locators (never `getByText()`), authenticated `storageState` for API helpers, API-helper conventions in `e2e/helpers/api/`, snapshot update flow, and commands for running tests against dev, local production, and the deployed Vercel URL. Use even when the user only mentions "Playwright", "tests", snapshots, `data-testid`, or a failing test run.
 user-invocable: false
 ---
 
