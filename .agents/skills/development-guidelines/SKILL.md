@@ -51,6 +51,7 @@ Consult the appropriate skill for detailed guidance on each area:
 |---|---|
 | Routing, URL structure, route directory/file conventions | [Routing Guidelines](../routing-guidelines/SKILL.md) |
 | React component conventions, client-vs-server split, styling, testability | [React Component Guidelines](../react-component-guidelines/SKILL.md) |
+| Visual design tone, CSS property usage, UI copy/wording, accessibility | [UI Design Principles](../ui-design-principles/SKILL.md) |
 | Error handling, Sentry reporting, and Pino logging | [Observability Guidelines](../observability-guidelines/SKILL.md) |
 | Markdown parsing, plugins, and rendering pipeline | [Markdown Processing Guidelines](../markdown-processing-guidelines/SKILL.md) |
 | End-to-end test structure, conventions, and commands | [E2E Testing Guidelines](../e2e-testing-guidelines/SKILL.md) |

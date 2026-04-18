@@ -72,6 +72,7 @@ The reviewer MUST defer to these existing developer-facing skills when checking 
 | Biome format/lint loop, change scope discipline, npm dep / migration rules | [Development Guidelines](../development-guidelines/SKILL.md) |
 | Routing, URL structure, route directory/file conventions | [Routing Guidelines](../routing-guidelines/SKILL.md) |
 | React component conventions, client-vs-server split, styling, testability | [React Component Guidelines](../react-component-guidelines/SKILL.md) |
+| Visual design tone, CSS property usage, UI copy/wording, accessibility | [UI Design Principles](../ui-design-principles/SKILL.md) |
 | Sentry / Pino error handling and logging | [Observability Guidelines](../observability-guidelines/SKILL.md) |
 | Markdown parsing pipeline, custom plugins, Shiki highlighting | [Markdown Processing Guidelines](../markdown-processing-guidelines/SKILL.md) |
 | End-to-end test structure, conventions, and commands | [E2E Testing Guidelines](../e2e-testing-guidelines/SKILL.md) |
