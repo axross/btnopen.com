@@ -1,6 +1,6 @@
 # CSS Property Usage
 
-Apply these rules when choosing between CSS properties and values in any component stylesheet. These rules sit on top of the CSS-Modules / `@layer components` / `clsx` mechanics defined in [react-component-guidelines › styling](../react-component-guidelines/styling.md); this document deliberately does not restate those mechanics.
+Apply these rules when choosing between CSS properties and values in any component stylesheet. These rules sit on top of the CSS-Modules / `@layer components` / `clsx` mechanics defined in [styling.md](./styling.md); this document deliberately does not restate those mechanics. The design-decision rationale behind the tokens and tiers referenced here (palette semantics, shape language, motion taste, layout posture) lives in [ui-design-principles › design-tone-and-taste](../ui-design-principles/design-tone-and-taste.md).
 
 ## Logical Properties
 
@@ -21,8 +21,8 @@ Apply these rules when choosing between CSS properties and values in any compone
   - Durations: `--duration-sm` / `--duration-md` / `--duration-lg` / `--duration-xl` / `--duration-2xl` / `--duration-3xl`.
   - Easing: `--ease-in-out` (the only easing token).
   - Fonts: `--font-sans` / `--font-mono`, paired with `--font-sans-features` / `--font-mono-features`.
-  - Color: `--accent-*` / `--neutral-*`. Semantic slot reference is in [design-tone-and-taste.md](./design-tone-and-taste.md).
-- MUST NOT introduce hard-coded color, spacing, radius, or duration literals in component CSS. The general prohibition is in [react-component-guidelines › styling](../react-component-guidelines/styling.md); this skill reinforces that the ban applies to duration / easing / font tokens as well.
+  - Color: `--accent-*` / `--neutral-*`. Semantic slot reference is in [ui-design-principles › design-tone-and-taste](../ui-design-principles/design-tone-and-taste.md).
+- MUST NOT introduce hard-coded color, spacing, radius, or duration literals in component CSS. The general prohibition is in [styling.md](./styling.md); this file reinforces that the ban applies to duration / easing / font tokens as well.
 - MAY introduce component-scoped CSS variables when a value needs to vary by context (see the `--max-width` / `--variant` / `--page-variant` / `--blog-post-content-negative-margin` / `--snippet-token-*` patterns). Component-scoped variables MUST still resolve to one of the root tokens somewhere in the chain — do not terminate a `--my-color: #fff` with a literal.
 
 ## OKLCH and Relative Color
@@ -39,7 +39,7 @@ Apply these rules when choosing between CSS properties and values in any compone
 ## Responsive Layout
 
 - MUST prefer `@container` queries over `@media` queries for layout adaptation. The body element is declared as a container (`container: body / inline-size`), and every major surface opens its own named or anonymous container when it needs internal breakpoints.
-- The canonical project breakpoints for reading surfaces are `width > 30rem` (mobile→compact-desktop) and `width > 50rem` (wide-desktop). SHOULD reuse these thresholds rather than inventing new ones.
+- The canonical project breakpoints for reading surfaces are `width > 30rem` (mobile→tablet) and `width > 50rem` (tablet→desktop). SHOULD reuse these thresholds rather than inventing new ones. The semantic meaning of each tier and the structural transformations expected at each transition are defined in [ui-design-principles › responsive-layout](../ui-design-principles/responsive-layout.md). Note that the CSS `--variant` / `--page-variant` custom property is binary (`"mobile"` vs `"desktop"`) and flips at the 30rem boundary — it does not distinguish tablet from desktop, because no structural transformation fires at the tablet→desktop boundary.
 - SHOULD name containers when a descendant needs to query a specific ancestor (e.g., `container: blog-post-content / inline-size` → `@container blog-post-content style(--variant: "desktop")`). Anonymous `@container` queries are acceptable when the nearest container is unambiguous.
 - The project uses a **`--variant` / `--page-variant` custom-property convention** to propagate responsive state downward:
   ```css
@@ -62,7 +62,7 @@ Apply these rules when choosing between CSS properties and values in any compone
 
 ## Scoping and Specificity
 
-- MUST wrap every component's styles in `@scope (.<componentRoot>) { ... }` to isolate selectors from other components. This is paired with the `@layer components` placement from [react-component-guidelines › styling](../react-component-guidelines/styling.md).
+- MUST wrap every component's styles in `@scope (.<componentRoot>) { ... }` to isolate selectors from other components. This is paired with the `@layer components` placement from [styling.md](./styling.md).
 - MUST use `:where(:scope)` (or `:where(<selector>)`) to declare rules on the scope root or shared wrappers without contributing specificity. The flat-specificity discipline lets the `className` prop override safely via `clsx`.
 - `@scope` blocks MAY be declared per-component-root within the same module file when a file defines multiple exported components (see `loaded.module.css` in `webembed/` and `blog-post-list/` for the two-scope pattern). MUST NOT nest one `@scope` inside another.
 - MUST NOT write descendant selectors that pierce another component's scope (e.g., `.blogPostContent .snippet .viewer`). Cross-component styling MUST go through `className` override or a root-level token.
@@ -83,8 +83,24 @@ Apply these rules when choosing between CSS properties and values in any compone
 - MUST rely on the project's color-scheme plumbing:
   - `:root` declares `color-scheme: var(--theme)` with `--theme: light` by default and `--theme: dark` under `@media (prefers-color-scheme: dark)`.
   - `scrollbar-color` is themed via the accent ramp.
-  - Surfaces that need to branch on theme SHOULD use `@container style(--theme: dark) { ... }` (the project's style-query bridge) rather than a component-local media query.
+  - Surfaces that need to branch on theme SHOULD use `@container style(--theme: dark) { ... }` (the project's style-query bridge) rather than a component-local media query. Before reaching for this branch, confirm the design-side rules in [ui-design-principles › color-theming › legitimate-per-scheme-overrides](../ui-design-principles/color-theming.md#legitimate-per-scheme-overrides) — per-surface dark-mode branches are only legitimate for filtered imagery.
 - MUST use `currentColor` for SVG strokes and fills that track surrounding text color. The logo, social icons, and 404 underline patterns all depend on `color: var(--accent-11); fill: currentColor;`.
+
+## Branded Imagery Filter
+
+Thumbnails and web-embed cover images share a single filter chain so external imagery joins the palette rather than sitting beside it. The design-intent description of the four passes and the four-category imagery taxonomy live in [ui-design-principles › design-tone-and-taste › imagery-treatment](../ui-design-principles/design-tone-and-taste.md#imagery-treatment); the canonical per-scheme saturation / brightness values live in [ui-design-principles › color-theming › imagery-brightness-compensation](../ui-design-principles/color-theming.md#imagery-brightness-compensation).
+
+- The canonical filter expression MUST be used verbatim on any new branded-imagery surface:
+  ```css
+  filter:
+    sepia(1)
+    saturate(var(--saturation))
+    hue-rotate(calc(var(--accent-hue) - 92deg))
+    brightness(var(--brightness));
+  ```
+- `--saturation` and `--brightness` MUST be declared on the imagery's own `@scope` root, with per-scheme values switched via `@container style(--theme: dark) { ... }` and hover values switched via the `:hover` selector on the parent surface. MUST NOT hard-code literal numbers inside the filter expression — keeping the values in scoped custom properties is what makes the per-scheme override declarative.
+- The `-92deg` offset inside the `hue-rotate(calc(...))` expression is a design-side calibration that aligns the sepia'd photo with the brand hue; MUST NOT be retuned per surface. If a re-calibration is ever warranted, it is a global design change.
+- In-content imagery (blog-post `<Media>` and plain `<img>`) MUST NOT use this filter chain. Its only permitted scheme adjustment is `filter: brightness(0.9)` in dark mode to keep light-mode-authored images from overpowering the inverted background.
 
 ## Type Features
 
@@ -95,6 +111,44 @@ Apply these rules when choosing between CSS properties and values in any compone
 
 - SHOULD use `-webkit-box` with `-webkit-line-clamp` + `-webkit-box-orient: vertical` + `overflow: hidden` for multi-line truncation (see `.description` / `.brief` / `.url` in the web-embed and blog-post list). Pair with `text-overflow: ellipsis` + `white-space: nowrap` for single-line truncation (see `.title`).
 - `word-break: break-word` is the default for long-form body copy (`.p`, `.code`). Do not set it on short labels (titles, tags, timestamps).
+
+## Transitions and Hover State
+
+- Interactive hover transitions MUST use the medium duration token paired with `ease-in-out`, as in `transition: background-color var(--duration-md) ease-in-out`. Project convention inlines the `ease-in-out` keyword inside `transition` shorthands for parity with CSS defaults; the `var(--ease-in-out)` token is reserved for standalone `animation-timing-function` / `transition-timing-function` declarations.
+- Image-filter hover transitions (brightness bump on thumbnails) MUST use `transition: filter var(--duration-md) ease-in-out` and MUST toggle only the scoped `--brightness` / `--saturation` custom properties — never rewrite the whole `filter` chain per state. Re-authoring the chain per state detaches the image from the per-scheme compensation recipe defined in [ui-design-principles › color-theming › imagery-brightness-compensation](../ui-design-principles/color-theming.md#imagery-brightness-compensation).
+- Long atmospheric reveals (thumbnail sepia fade on initial load) use a literal `3s ease-in-out` rather than a token, because the 3-second cadence is distinct from interactive motion and does not belong on the `--duration-*` tier. Reuse the 3-second value when introducing additional slow reveals; promote it to a new `--duration-*` token only if the value needs to recur in ≥ 3 places.
+
+## Focus Ring
+
+- Interactive surfaces MUST replace the default browser focus ring with the project's canonical `:focus-visible` pattern, not remove it outright. The design-side requirement is in [ui-design-principles › accessibility › keyboard-focus](../ui-design-principles/accessibility.md#keyboard-focus).
+- The canonical CSS template is:
+  ```css
+  .a {
+    border-radius: var(--radius-sm);
+    outline: none;
+  }
+
+  .a:focus-visible {
+    outline: var(--action-5) solid var(--size-3);
+    outline-offset: var(--size-3);
+  }
+  ```
+- The outline color, width, and offset MUST NOT be retuned per surface. The `--action-5` palette token handles per-scheme contrast automatically; a per-surface override of any of these three properties is a design-level decision, not a component tweak.
+- The focus target's `border-radius` MUST match the surface's resting corner shape so the ring tracks the squircle silhouette rather than revealing a rectangular underlying box.
+
+## Hit-Area Expansion
+
+- Small interactive elements (inline icons, social-link glyphs) MUST expand their hit area beyond the icon's drawn bounds using the project's invisible padding + negative margin pattern, so the visual position does not move while the tap target grows to ~40×40. The design-side requirement is in [ui-design-principles › accessibility › tappable-target-size](../ui-design-principles/accessibility.md#tappable-target-size).
+- The canonical CSS template (from `social-link-list.module.css`):
+  ```css
+  .item {
+    display: flex;
+    padding: var(--size-8);
+    margin: calc(var(--size-8) * -1);
+    border-radius: var(--radius-md);
+  }
+  ```
+- The padding value and its negation MUST match exactly so the surface's visible position is unchanged. The `border-radius` MUST come from the shared radius tier so the pressed-state background reads as on-brand rather than a generic hit-box.
 
 ## Intentional Exceptions
 

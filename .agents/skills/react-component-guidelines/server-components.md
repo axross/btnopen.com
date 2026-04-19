@@ -41,6 +41,8 @@ export default async function BlogPostPage({ params, searchParams }: PageProps) 
   - `[name]/loaded.tsx` — the data-fetching Server Component.
   - `[name]/loading.tsx` — the skeleton/placeholder Client or Server Component.
 - The parent component (`[name].tsx`) SHOULD act as the orchestrator, wrapping `loaded` in `<Suspense fallback={<Loading />}>`.
+- The `loaded` and `loading` siblings MUST share the same CSS-Module selectors and tokens across their paired `loaded.module.css` / `loading.module.css` files so adding a cell on one side does not silently diverge from the other. The design rationale (no layout shift between skeleton and real content) lives in [ui-design-principles › loading-and-empty-states](../ui-design-principles/loading-and-empty-states.md).
+- The `loading` sibling SHOULD accept the same `className` passthrough and a `data-testid` suffixed with `-loading` (see [testable-components.md](./testable-components.md)) so parents swap only the component, not the surrounding markup.
 
 Example (orchestrator component):
 

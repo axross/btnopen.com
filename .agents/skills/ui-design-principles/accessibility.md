@@ -1,110 +1,85 @@
 # Accessibility
 
-Apply these rules when building any user-facing surface. These rules are absolute requirements; accessibility regressions are treated as correctness bugs, not polish items.
+Apply these rules when designing any user-facing surface. These rules are absolute requirements; accessibility regressions are treated as correctness bugs, not polish items.
 
-## Semantic HTML
+## Semantic Regions
 
-- MUST use the semantic landmark and structural element that matches the role of the region:
-  - `<header>` for the page header (wraps the logo link in `app/(app)/_components/header.tsx`).
-  - `<main>` for the primary content region of a page (the index page, `NotFoundContent`).
-  - `<section>` for sibling regions inside a `<main>` (the intro + Posts section pattern on the index page).
-  - `<article>` for self-contained content units (blog-post renderings).
-  - `<header>` inside an article for the post's title/meta block (see `blog-post-header/loaded.tsx`).
-  - `<h1>` for the primary heading of a page; subsequent headings in document order without skipping levels.
-  - `<ul>` / `<li>` for any list of peer items (blog-post list, tags, social-link list). MUST NOT use `<div>`s styled to look like a list.
-  - `<time>` SHOULD be used for machine-readable timestamps in future work; current code renders dates inside plain `<div>`s — MAY migrate opportunistically.
-- MUST NOT use `<div>` or `<span>` when a semantic element exists for the role.
-- MUST NOT wrap interactive content in `<div onClick>` — use `<button>` or `<a>` with an `href` / `onClick`.
+- MUST pick the semantic landmark and structural element that matches the **role** of the region, not its appearance:
+  - **Page header** for the top-of-page region that holds the logo / navigation.
+  - **Main** for the primary content region of a page.
+  - **Section** for sibling regions inside the main region (e.g., the intro region plus the Posts region on the index page).
+  - **Article** for self-contained content units (individual blog-post renderings).
+  - **Header (inside an article)** for the post's title and meta block.
+  - **Top-level heading** for the primary heading of a page; subsequent headings in document order without skipping levels.
+  - **List + list-item** for any group of peer items (blog-post list, tags, social-link list). MUST NOT fake a list out of generic wrappers styled to look like one.
+  - **Time** SHOULD wrap machine-readable timestamps in new work; existing plain-text dates MAY migrate opportunistically.
+- MUST NOT use a generic wrapper when a semantic element exists for the role.
+- MUST NOT wrap an interactive affordance in a non-interactive wrapper and bolt click handling on top — use a real button or link.
 
-## Inline SVG Icons
+## Icon Labeling
 
-- Inline SVG that communicates meaning (logo, social icons, brand illustrations, web-embed fallback) MUST carry both:
-  - `role="img"`
-  - `aria-label="<canonical label>"` — see [ui-labeling-and-wording › aria-label-and-alt-strings](./ui-labeling-and-wording.md#aria-label-and-alt-strings) for the exact string conventions.
-- Inner SVG paths MUST NOT receive their own `aria-label`; the outer `<svg>` is the single accessible-name source.
-- SVG icons that are purely decorative (a graphical flourish behind text, a visual divider) MAY omit `role="img"` and SHOULD be marked `aria-hidden="true"` or (preferred) wrapped in a decorative element that is itself `aria-hidden`.
-- MUST NOT rely on SVG `<title>` alone for the accessible name; use `aria-label` to match the rest of the project.
+- Inline icons that communicate meaning (logo, social icons, brand illustrations, web-embed fallback) MUST carry a single accessible name at the icon's outer boundary. The canonical-label strings are in [ui-labeling-and-wording › aria-label and alt strings](./ui-labeling-and-wording.md#aria-label-and-alt-strings).
+- Inner paths MUST NOT receive their own label; only the outer icon boundary announces the name.
+- Icons that are purely decorative (a graphical flourish behind text, a visual divider) MUST be hidden from assistive tech — either announced as "decorative" or wrapped in a decorative parent that is itself hidden.
+- MUST NOT rely on an icon's hover-tooltip alone as the accessible name — tooltips are supplemental, not primary.
 
 ## Decorative Text
 
-- Purely decorative text content (the giant `404` glyph in `not-found-content.tsx`) MUST carry `aria-hidden="true"` so the accessible name comes from the real `<h1>` heading, not the decorative number.
-- MUST NOT wrap meaningful copy in `aria-hidden` to work around layout issues — if it would confuse the reader when exposed to assistive tech, rework the layout.
+- Purely decorative text content (the giant `404` glyph on the not-found surface) MUST be hidden from assistive tech so the accessible name comes from the real heading, not the decorative number.
+- MUST NOT hide meaningful copy from assistive tech to work around a layout issue — if the copy would confuse a screen-reader user, rework the layout.
 
 ## Images
 
-- Every `<Image>` (from `next/image`) and every `<img>` MUST pass an `alt` attribute.
-- CMS-sourced media via the `<Media>` component in `app/(app)/_/components/media.tsx` MUST fall through `alt ?? fileAlt ?? ""`:
-  - Author-supplied `alt` wins if present.
-  - Otherwise the media upload's `alt` field from Payload.
-  - Finally an empty string — signals "decorative" only when genuinely decorative.
-- Thumbnail / cover images MUST use the post title (`alt={blogPost.title}`). Avatars MUST use the person's display name.
-- MUST NOT leave `alt=""` on images that convey meaning; the empty fallback in `media.tsx` is a last-resort signal, not a default.
+- Every image MUST carry alt text.
+- CMS-sourced media MUST fall through this priority chain: author-supplied alt → the media upload's own alt → empty string (only when the image is genuinely decorative).
+- Thumbnail and cover images MUST describe the depicted subject by using the post title. Avatars MUST use the person's display name.
+- MUST NOT leave alt empty on images that convey meaning; empty alt is a last-resort signal for truly decorative uploads, not a default.
 
 ## External Links
 
-- Every `<a href="…">` pointing at an external origin MUST set:
-  - `target="_blank"`
-  - `rel="noopener noreferrer"`
-- The project's existing external links follow this exactly (`social-link-list.tsx`, `webembed/loaded.tsx`).
-- Internal navigation MUST use `next/link`'s `<Link>` (which does not need `target` / `rel`) so client-side routing kicks in.
+- Every link pointing at an external origin MUST open in a new tab and MUST isolate the new tab from the originating page (no access back to the opener, no referrer leakage). The mechanical pairing of these attributes is in [react-component-guidelines › css-property-usage](../react-component-guidelines/css-property-usage.md).
+- Internal navigation MUST use the project's internal-link primitive so client-side routing kicks in; the external-link attributes MUST NOT be applied to internal links.
 
 ## Keyboard Focus
 
-- MUST NOT set `outline: none` (or any equivalent) without also defining an explicit `:focus-visible` replacement.
-- `:focus-visible` outlines SHOULD use a numbered accent/neutral token and the `--size-3` token for width / offset — the blog-post-content link treatment is the canonical pattern:
-  ```css
-  .a {
-    border-radius: var(--radius-sm);
-    outline: none;
-  }
-
-  .a:focus-visible {
-    outline: var(--action-5) solid var(--size-3);
-    outline-offset: var(--size-3);
-  }
-  ```
-- SHOULD ensure `border-radius` on the focus target matches the outline's corner-shape so squircle rings look correct.
-- MUST preserve keyboard focusability on every clickable surface (`<button>`, `<a>`, `<Link>`) — do not add `tabIndex="-1"` for styling convenience.
+- Every interactive surface MUST show a visible focus indicator when reached by keyboard. Removing the browser's default focus ring without a replacement is prohibited.
+- The replacement ring SHOULD use an accent-ramp step and SHOULD match the surface's corner shape — a squircle card gets a squircle ring, a pill gets a pill ring. The canonical CSS template is in [react-component-guidelines › css-property-usage › focus-ring](../react-component-guidelines/css-property-usage.md#focus-ring).
+- The ring's width, offset, and color MUST NOT be re-tuned per surface — the shared template is what makes focus affordances feel consistent across the site.
+- MUST preserve keyboard focusability on every clickable surface. Removing a surface from the tab order for styling convenience is prohibited.
 
 ## Theme and Color Parity
 
-- MUST rely on the shared `--lightness-*` scale + `prefers-color-scheme` plumbing for dark-mode parity (see [design-tone-and-taste › color-system](./design-tone-and-taste.md#color-system) and [css-property-usage › theme-and-color-scheme](./css-property-usage.md#theme-and-color-scheme)).
-- Content contrast MUST remain legible under both light and dark schemes. The numbered scale's step-11 → step-0 contrast is the baseline; MUST NOT build surfaces that only work in one scheme.
-- MUST NOT convey information through color alone. Interactive hover MUST accompany the color change with a background-fill / underline / border delta so colorblind and low-vision users perceive the state.
-- Links MUST retain an underline (`text-decoration: underline`) with `text-underline-offset: var(--size-2)` — color-only link treatment is not acceptable.
+- Every surface MUST remain legible in both light and dark schemes. A surface that looks correct in one scheme but loses contrast in the other is a design bug, not a polish item. The full theming philosophy (step-role invariance, legitimate per-scheme overrides, imagery compensation) lives in [color-theming.md](./color-theming.md); the step-role meanings are in [design-tone-and-taste › color system](./design-tone-and-taste.md#color-system).
+- The project's baseline for text-on-background contrast is the highest-contrast text step against the page background step. MUST NOT ship a surface whose text falls below this baseline in either scheme.
+- MUST NOT convey state through color alone. Every interactive state change (hover, active, selected, error) MUST also carry a non-color signal — a background fill, an underline, a border, or a shape change.
+- Links MUST retain a visible underline offset from the baseline. Color-only link treatment is not acceptable.
 
-## Hover / Interactive Affordances
+## Hover and Interactive Affordances
 
-- Interactive surfaces MUST have a visible non-color hover affordance:
-  - Text links pick up a background fill swap (`--accent-2` → `--accent-3` depending on density).
-  - Cards swap their background from `--accent-3` → `--accent-4` and may bump the image `--brightness` value.
-  - Icons swap both color and background (`--accent-11` → `--accent-12` text, `--accent-2` → `--accent-3` background).
-- MUST NOT implement hover with color change only.
+- Every interactive surface MUST have a visible non-color hover affordance that reads the same way to colorblind and low-vision users as it does to everyone else:
+  - **Text links** pick up a background-fill swap (one-step-up on the accent ramp).
+  - **Cards** swap their background one step up on their resting ramp and MAY bump the image brightness.
+  - **Icons** swap both the stroke color and a subtle background pill one step up on their resting ramp.
+- MUST NOT implement hover with a color change alone — the hover must be perceivable without the color cue.
+- The hover step deltas MUST remain consistent with the step-role table in [design-tone-and-taste › color system](./design-tone-and-taste.md#color-system); cross-ramp hover (accent → neutral or vice versa) is prohibited because the result looks inconsistent across schemes.
 
 ## Tappable Target Size
 
-- Interactive icons and small inline controls MUST have an effective hit area of at least ~40px regardless of the icon's visual size. The project's idiomatic pattern is to add padding and compensate visually with a negative margin — see `social-link-list.module.css`:
-  ```css
-  .item {
-    display: flex;
-    padding: var(--size-8);
-    margin: calc(var(--size-8) * -1);
-    border-radius: var(--radius-md);
-  }
-  ```
-- MUST NOT rely solely on the visual bounds of a 24×24 SVG as the click target.
+- Every interactive icon and small inline control MUST have an effective tap area of at least ~40×40 regardless of its visual size. The icon's drawn bounds are NOT the tap area.
+- The project's pattern is to expand the hit area invisibly by padding the interactive element and compensating with an outward margin, so the visual position does not move. The canonical CSS template is in [react-component-guidelines › css-property-usage › hit-area-expansion](../react-component-guidelines/css-property-usage.md#hit-area-expansion).
+- SHOULD inherit the shared rounded-corner tier so the pressed-state background reads as on-brand rather than as a generic hit-box.
 
 ## Language Attribute
 
-- The root `<html lang="en">` is currently set on both `app/(app)/layout.tsx` and `app/global-not-found.tsx`. MUST keep both in sync when the root language eventually changes.
-- Inline Japanese content inside English-metadata documents is currently unwrapped. When the site grows a multi-page Japanese surface, SHOULD introduce `lang="ja"` wrappers on the Japanese regions — but do not retrofit that change piecemeal; treat it as a site-wide i18n decision.
+- The root document's language attribute is currently English on every page. MUST keep every root document in sync when the site's primary language eventually changes.
+- Inline Japanese content inside English-root documents is accepted today without per-region language wrappers. When the site grows a multi-page Japanese surface, SHOULD introduce language wrappers on the Japanese regions — but do not retrofit this change piecemeal; treat it as a site-wide decision.
 
 ## Motion Preferences
 
-- The project does not yet honor `prefers-reduced-motion`. When introducing new animations, SHOULD guard them with `@media (prefers-reduced-motion: reduce)` branches that disable or shorten the motion — this is the forward-looking rule for any new work, even though existing animations (sepia fade, glitch layers) do not yet comply.
-- MUST NOT introduce infinite, full-screen flashing animation without a reduced-motion fallback.
+- The project does not yet honor the reduced-motion preference. When introducing any new animation, SHOULD disable or shorten it for users who have requested reduced motion — this is the forward-looking rule for new work, even though existing animations (sepia fade, glitch layers) do not yet comply.
+- MUST NOT introduce infinite or full-screen flashing motion without a reduced-motion fallback.
 
 ## Analytics, Overlays, Modals
 
-- Analytics event handlers (`trackAction(...)`) MUST NOT interfere with the default click behavior of a link (see `social-link-list.tsx`: `onClick={onGitHubLinkClick}` runs alongside native navigation). Never call `preventDefault()` in a tracker.
-- The project does not currently use modals/dialogs. When introducing one, MUST use the `<dialog>` element with `role="dialog"` / `aria-modal="true"` and focus management; do not roll a `<div>`-based modal.
+- Analytics event handlers on links MUST NOT interfere with the link's default navigation — a tracking call runs alongside the native click, not instead of it.
+- The project does not currently use modals or dialogs. When introducing one, MUST use the native dialog element (with its built-in accessible-name, focus-trap, and escape-to-close behavior) rather than rolling a custom overlay out of generic wrappers.
