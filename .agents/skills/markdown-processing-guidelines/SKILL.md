@@ -58,7 +58,8 @@ See [gfm-support.md](./gfm-support.md) for:
 - Why full `remark-gfm` is not used
 - Three-level registration explained (micromark, mdast-util, HTML)
 - Standard MDAST nodes vs custom nodes in the remarkRehype bridge
-- Current table rendering gaps (unmapped components, no CSS)
+- Table rendering wiring (component mapping pointer) and GFM alignment `align` → inline `text-align` propagation
+- Lexical admin caveats: `EXPERIMENTAL_TableFeature` opt-in, no alignment authoring, dropped `colspan` / `rowspan`, upstream API instability
 
 ## Syntax Highlighting
 
@@ -77,9 +78,9 @@ Mapping HTML tags and custom directives to React components.
 See [react-component-mapping.md](./react-component-mapping.md) for:
 
 - `defaultComponents` mapping and `classNames` override mechanism
-- Required component mappings (`img` → Media, `pre` → Snippet, `webembed` → WebEmbed)
+- Required component mappings (`img` → Media, `pre` → Snippet, `webembed` → WebEmbed, `table` → Table, `th` → TableHeaderCell)
 - Fallback behavior for unmapped tags (native HTML, no class names)
-- Currently unmapped elements (table family)
+- Type-only sentinel key pattern (N-channel; `tableWrapper` and `tableScrollArea` are both sentinels on the `Table` component) for multi-element components that need independent class channels per nested element
 - `className` prop requirement for new components
 
 ## Server Components and Caching

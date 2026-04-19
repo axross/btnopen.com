@@ -28,6 +28,13 @@ Apply these rules whenever you write or modify code in this project.
   - When suppression is genuinely necessary, add an inline comment on the same line explaining the reason.
   - Example: `// biome-ignore lint/suspicious/noExplicitAny: external library type is untyped`
 
+## Comments
+
+- MUST start `//`, `/* */`, JSDoc, and each visually-line-starting sentence inside a multi-line comment with a lowercase letter in `.ts` / `.tsx` / `.js` source files. Proper nouns (`Chromium`, `React`, `Next.js`), code identifiers (`Promise.all`, `<Table>`), acronyms (`API`, `JSON`, `GFM`), and deliberate all-caps emphasis keep their natural casing.
+  - Example: `// resolve the draft first, then fall back to the published version`
+- Applies to TS/JS source only. Does NOT apply to CSS `/* */` comments, Markdown prose, or commit messages (see [commit-messages.md](./commit-messages.md)).
+- `biome-ignore` / `eslint-disable` directive comments follow the tool's required casing; the trailing human-readable reason after the colon also starts lowercase (e.g., `// biome-ignore lint/suspicious/noExplicitAny: external library type is untyped`).
+
 ## Import Hygiene
 
 - MUST NOT leave unused imports in modified files. The linter will flag these, but resolve them proactively.

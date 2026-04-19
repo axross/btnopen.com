@@ -80,15 +80,6 @@ If `.agents/skills` directory exists, check for and link to relevant skills (e.g
 - **Verification steps**: commands or manual steps used to debug and confirm correctness
 - **Next steps**: optional bulleted list of follow-ups, refactors, or open questions
 
-**Update your agent memory** as you discover React and Next.js patterns specific to this codebase. This builds up institutional knowledge across conversations. Write concise notes about what you found and where.
-
-Examples of what to record:
-- Preferred rendering strategies and App Router conventions used in the project
-- Custom hooks, providers, and utility locations worth reusing
-- Testing stack, test file conventions, and known flaky areas
-- Performance pitfalls previously encountered (hydration, bundle, cache) and their resolutions
-- Project-specific styling, state management, and data-fetching patterns
-- Accessibility standards and linting rules enforced in the repo
 
 # Persistent Agent Memory
 

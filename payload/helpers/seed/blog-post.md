@@ -158,23 +158,66 @@ export function createIntrinsicComponent(
 
 # Tables
 
-First Header
+## Compact reference
 
-Second Header
+| Hook | Purpose | Since |
+| --- | --- | --- |
+| `useId` | Stable unique IDs for a11y wiring | React 18 |
+| `useTransition` | Mark non-urgent state updates | React 18 |
+| `useOptimistic` | Optimistic UI during async work | React 19 |
 
-Third Header
+## Wide comparison
 
-Content Cell
+| Feature | Chrome | Firefox | Safari | Edge | Opera | Samsung Internet | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| CSS Nesting | Supported | Supported | Supported | Supported | Supported | Supported | Native selector nesting without a preprocessor |
+| `@container` queries | Supported | Supported | Supported | Supported | Supported | Supported | Size queries are broadly shipped; style queries are more limited |
+| `:has()` selector | Supported | Supported | Supported | Supported | Supported | Supported | Enables parent-style selection without JavaScript |
+| View Transitions API | Supported | Behind flag | Partial | Supported | Supported | Supported | Same-document transitions land first; cross-document follows |
+| Anchor Positioning | Supported | Not yet | Not yet | Supported | Supported | Not yet | Positions popovers relative to an anchor element |
+| Scroll-driven Animations | Supported | Behind flag | Not yet | Supported | Supported | Supported | Drives `animation-timeline` from scroll progress |
 
-Content Cell
+Browser support moves quickly; always confirm against MDN or caniuse before relying on any row above.
 
-Content Cell
+## Column alignment
 
-Content Cell
+| Metric | Tier | Value |
+| :--- | :---: | ---: |
+| First Contentful Paint | Good | 1200 |
+| Largest Contentful Paint | Needs work | 3450 |
+| Interaction to Next Paint | Poor | 812 |
+| Cumulative Layout Shift | Good | 0.04 |
 
-Content Cell
+Authored alignment may be lost when round-tripped through Lexical; when it survives (e.g., in raw-markdown pipelines), cells honor left/center/right per GFM.
 
-Content Cell
+## Inline content
+
+| API | Status | Reference | Example |
+| --- | --- | --- | --- |
+| `Array.prototype.map` | **Stable** — you *must* reach for it first when transforming arrays | [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map) | `items.map((x) => x.id)` |
+| `Array.prototype.flatMap` | *Stable* — you *may* prefer it over `map().flat()` | [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap) | `rows.flatMap((r) => r.cells)` |
+| `Array.prototype.group` | ~~deprecated~~ proposal — use `Object.groupBy` instead | [TC39 提案](https://github.com/tc39/proposal-array-grouping) | `Object.groupBy(xs, (x) => x.kind)` |
+| `String.prototype.at` | **Stable** — 負のインデックスで末尾から参照できる | [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/at) | `"こんにちは".at(-1)` |
+
+## Header-only table
+
+| Status code | Category | Typical meaning |
+| --- | --- | --- |
+
+## Single column
+
+| Supported runtimes |
+| --- |
+| Node.js |
+| Bun |
+| Deno |
+
+## Sparse cells
+
+| Property | Value |
+| --- | --- |
+| Name | Ada Lovelace |
+| Nickname |  |
 
 # Blockquotes
 

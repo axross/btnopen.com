@@ -14,6 +14,7 @@ See [code-quality.md](./code-quality.md) for non-negotiable code quality rules:
 
 - Biome formatting and linting workflow
 - TypeScript compliance requirements
+- Comment casing in TS/JS source files
 - Import hygiene
 
 ## Change Management

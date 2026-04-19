@@ -1,3 +1,4 @@
 - [Project skill layout](project_skill_layout.md) — Where skills and subagents live, conventions, and why routing-guidelines is intentionally not split.
 - [User role](user_role.md) — Kohei Asai, solo owner/engineer of btnopen.com; values MECE, RFC-2119 tone, concise reference files.
-- [UI design skill vocabulary](project_designer_vocabulary.md) — Developer-term → designer-phrasing map for ui-design-principles, mechanics relocated to css-property-usage, and the `--action-5` token gotcha.
+- [UI design skill vocabulary](project_designer_vocabulary.md) — Developer-term → designer-phrasing map for ui-design-principles, mechanics relocated to css-property-usage, and the "verify tokens against variables.css, not just call sites" lesson.
+- [Subagent file template](feedback_subagent_template.md) — No "Update your agent memory" preamble block between Output Format and `# Persistent Agent Memory`; follow the nextjs-developer/ui-ux-designer pattern.

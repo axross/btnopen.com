@@ -44,5 +44,13 @@ const markdownClassNames = {
 	strong: css.strong,
 	em: css.em,
 	del: css.del,
+	table: css.table,
+	tableWrapper: css.tableWrapper,
+	tableScrollArea: css.tableScrollArea,
+	thead: css.thead,
+	tbody: css.tbody,
+	tr: css.tr,
+	th: css.th,
+	td: css.td,
 	webembed: css.webembed,
 };

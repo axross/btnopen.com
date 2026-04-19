@@ -42,6 +42,12 @@ test("Introduction section", async ({ page }) => {
 });
 ```
 
+## Assertions
+
+- MUST prefer Playwright's locator-native assertions (`toBeVisible()`, `toBeFocused()`, `toHaveAttribute()`, `toHaveClass()`, `toHaveText()`, `toHaveCount()`) over `locator.evaluate(...)` that pulls DOM state back to the test for manual comparison. Locator-native assertions auto-wait and produce clearer failure messages; e.g., write `await expect(scrollArea).toBeFocused()` instead of `expect(await scrollArea.evaluate((el) => el === document.activeElement)).toBe(true)`.
+- For state that no locator-native assertion covers — scroll position, computed styles, scroll-driven animations, transitions, intersection-observer-driven classes — MUST use `expect.poll(() => ...)` or `page.waitForFunction(...)` to re-sample until the expected value is reached. MUST NOT use `page.waitForTimeout(...)` or fixed sleeps to "let the animation finish" (see [flakiness-tolerance.md](../quality-assurance-guidelines/flakiness-tolerance.md)).
+- To assert visual state on a pseudo-element (`::before` / `::after`), read it inside an `evaluate` on the host locator via `getComputedStyle(element, "::before").opacity` (or the relevant property) and wrap the call in `expect.poll` so scroll-driven or transition-driven changes have time to settle.
+
 ## Hooks Usage
 
 - SHOULD use `test.beforeEach()` for setup that is not dependent on the test case.

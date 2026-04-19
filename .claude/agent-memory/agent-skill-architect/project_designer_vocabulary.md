@@ -37,7 +37,7 @@ Vocabulary mapping (developer term → designer phrasing):
 Mechanics that were moved from `ui-design-principles` into `react-component-guidelines/css-property-usage.md` during this refactor:
 
 - **Transitions and Hover State** — the literal-keyword-`ease-in-out`-in-transition-shorthand convention, the "toggle scoped custom properties, never rewrite the filter chain" rule, the literal `3s` for atmospheric reveals.
-- **Focus Ring** — the canonical `:focus-visible` CSS template using `var(--action-5)` and `var(--size-3)`. Note: `--action-5` is the real codebase token (verified in `app/(app)/posts/[slug]/_components/blog-post-content.module.css`); do not "correct" it to `--accent-5`.
+- **Focus Ring** — the canonical `:focus-visible` CSS template using `var(--accent-5)` and `var(--size-3)`. Lesson: when a codebase token looks suspicious, verify it against `app/(app)/variables.css` (the palette source of truth), not just against call sites — call sites can propagate a typo unchanged, and a real `--accent-*`/`--neutral-*` ramp not matching the referenced name is the signal that it is a typo rather than a missing ramp.
 - **Hit-Area Expansion** — the matching `padding` / negative `margin` template for ~40×40 tap targets.
 
 The "Hover and Filter Transitions" section that used to live in `loading-and-empty-states.md` was deleted outright; its design-decision content duplicated `design-tone-and-taste.md`'s Motion section, and its mechanics moved to the Transitions and Hover State section of `css-property-usage.md`.

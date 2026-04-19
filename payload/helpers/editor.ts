@@ -1,6 +1,7 @@
 import {
 	BlocksFeature,
 	CodeBlock,
+	EXPERIMENTAL_TableFeature,
 	lexicalEditor,
 	UploadFeature,
 } from "@payloadcms/richtext-lexical";
@@ -38,5 +39,6 @@ export const editor = lexicalEditor({
 				}),
 			],
 		}),
+		EXPERIMENTAL_TableFeature(),
 	],
 });

@@ -118,6 +118,14 @@ Thumbnails and web-embed cover images share a single filter chain so external im
 - Image-filter hover transitions (brightness bump on thumbnails) MUST use `transition: filter var(--duration-md) ease-in-out` and MUST toggle only the scoped `--brightness` / `--saturation` custom properties — never rewrite the whole `filter` chain per state. Re-authoring the chain per state detaches the image from the per-scheme compensation recipe defined in [ui-design-principles › color-theming › imagery-brightness-compensation](../ui-design-principles/color-theming.md#imagery-brightness-compensation).
 - Long atmospheric reveals (thumbnail sepia fade on initial load) use a literal `3s ease-in-out` rather than a token, because the 3-second cadence is distinct from interactive motion and does not belong on the `--duration-*` tier. Reuse the 3-second value when introducing additional slow reveals; promote it to a new `--duration-*` token only if the value needs to recur in ≥ 3 places.
 
+## Scroll-Driven Animations
+
+- MUST wrap any use of `animation-timeline: scroll()` (or a named scroll timeline) in `@supports (animation-timeline: scroll())` so browsers that do not implement scroll-driven animations fall back to the non-animated resting state.
+- When the animated visuals (e.g., edge fades, pinned gradients, sticky overlays) are implemented as pseudo-elements or siblings of the scroll container, those elements MUST NOT themselves be the scroll container — the default `animation-timeline: scroll()` resolves to the nearest scrollable ancestor, which will skip a non-scrolling wrapper and fall through to the viewport.
+- In that "animate an outer, non-scrolling ancestor against an inner scroll container" arrangement, MUST use a **named scroll timeline**: declare `scroll-timeline: --<name> inline;` (or `block`) on the actual scroll container, and expose it to the ancestor with `timeline-scope: --<name>;`. Pseudo-elements on the ancestor then reference `animation-timeline: --<name>;` to follow the inner element's scroll progress.
+- SHOULD name the timeline with the component-scoped custom-property convention (project prefix + component + role, e.g., `--bpc-table-scroll`) so the timeline name does not collide with another component that later adopts the same pattern.
+- MUST NOT reach for `animation-timeline: scroll()` without first confirming the element consuming the timeline is structurally related to the intended scroll container. A silent fall-through to the viewport is the failure mode this rule exists to prevent.
+
 ## Focus Ring
 
 - Interactive surfaces MUST replace the default browser focus ring with the project's canonical `:focus-visible` pattern, not remove it outright. The design-side requirement is in [ui-design-principles › accessibility › keyboard-focus](../ui-design-principles/accessibility.md#keyboard-focus).
@@ -129,11 +137,11 @@ Thumbnails and web-embed cover images share a single filter chain so external im
   }
 
   .a:focus-visible {
-    outline: var(--action-5) solid var(--size-3);
+    outline: var(--accent-5) solid var(--size-3);
     outline-offset: var(--size-3);
   }
   ```
-- The outline color, width, and offset MUST NOT be retuned per surface. The `--action-5` palette token handles per-scheme contrast automatically; a per-surface override of any of these three properties is a design-level decision, not a component tweak.
+- The outline color, width, and offset MUST NOT be retuned per surface. The `--accent-5` palette token handles per-scheme contrast automatically; a per-surface override of any of these three properties is a design-level decision, not a component tweak.
 - The focus target's `border-radius` MUST match the surface's resting corner shape so the ring tracks the squircle silhouette rather than revealing a rectangular underlying box.
 
 ## Hit-Area Expansion

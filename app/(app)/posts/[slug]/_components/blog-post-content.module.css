@@ -29,7 +29,8 @@
 						.img,
 					.media,
 					.snippet,
-					.webembed
+					.webembed,
+					.tableWrapper
 				):first-child {
 				margin-block-start: unset;
 			}
@@ -51,7 +52,8 @@
 						.img,
 					.media,
 					.snippet,
-					.webembed
+					.webembed,
+					.tableWrapper
 				):last-child {
 				margin-block-end: unset;
 			}
@@ -278,7 +280,7 @@
 		}
 
 		.a:focus-visible {
-			outline: var(--action-5) solid var(--size-3);
+			outline: var(--accent-5) solid var(--size-3);
 			outline-offset: var(--size-3);
 		}
 
@@ -301,6 +303,56 @@
 		.blockquote .strong,
 		.thead .th .strong {
 			color: inherit;
+		}
+
+		.table {
+			border-collapse: collapse;
+			/* Force the table to its natural content width. `table-layout: auto` on
+			   a `width: auto` table compresses columns to fit the container rather
+			   than overflowing it, which defeats `.tableWrapper`'s horizontal
+			   scroll. `width: max-content` sizes the table to its content: narrow
+			   tables sit at their natural width inside the reading column (they do
+			   not stretch — design spec §8), wide tables exceed the wrapper and
+			   trigger the wrapper's horizontal scroll. Do NOT add `max-width:
+			   100%`; that reinstates the column-compression behavior. */
+			width: max-content;
+			font-size: var(--text-md);
+			line-height: var(--leading-lg);
+		}
+
+		.thead {
+			background-color: var(--neutral-2);
+		}
+
+		.th,
+		.td {
+			padding-block: calc(var(--paragraph-block-margin) * 0.75);
+			padding-inline: var(--size-16);
+			color: var(--neutral-12);
+			/* Default alignment for the reading direction. `mdast-util-to-hast`
+			   + `hast-util-to-jsx-runtime` convert GFM `:---` / `:---:` / `---:`
+			   alignment into an inline `style="text-align: left|center|right"` on
+			   each cell, so the inline style wins on authored alignment without
+			   needing an attribute selector here. */
+			text-align: start;
+			vertical-align: top;
+			word-break: break-word;
+		}
+
+		.th {
+			font-weight: 600;
+		}
+
+		.thead > .tr > .th {
+			border-block-end: var(--size-1) solid var(--neutral-6);
+		}
+
+		.tbody > .tr {
+			border-block-end: var(--size-1) solid var(--neutral-6);
+		}
+
+		.tbody > .tr:last-child {
+			border-block-end: none;
 		}
 	}
 
@@ -325,5 +377,126 @@
 
 	.webembed {
 		margin-block: var(--chunk-block-margin);
+	}
+
+	.tableWrapper {
+		position: relative;
+		margin-block: var(--chunk-block-margin);
+		/* Expose the inner scroll-area's named scroll-timeline to this element's
+		   own pseudo-elements. Without `timeline-scope`, `animation-timeline:
+		   --bpc-table-scroll` on `::before` / `::after` could not see the
+		   timeline declared on a descendant — the timeline's scope is, by
+		   default, the declaring element and its descendants only. */
+		timeline-scope: --bpc-table-scroll;
+	}
+
+	.tableScrollArea {
+		overflow-x: auto;
+		outline: none;
+		/* Declare a named inline scroll-timeline on the actual scroll container.
+		   The outer `.tableWrapper` references this timeline by name so its
+		   edge-fade pseudo-elements react to this element's scroll position
+		   without themselves living inside the scrolling box (which would cause
+		   them to scroll away from the visible edges — the bug this split
+		   fixes). */
+		scroll-timeline: --bpc-table-scroll inline;
+	}
+
+	/* Scroll-reactive edge-fade affordance. Two absolutely-positioned pseudo
+	   elements paint solid-to-transparent gradients against the page background
+	   (--neutral-0) over the leading and trailing edges. They sit above the
+	   opaque `.thead` surface (--neutral-2) via `z-index: 1`, so the fade reads
+	   uniformly across header and body rows. `pointer-events: none` keeps them
+	   clear of keyboard focus and pointer hit-testing; the scroll-area's
+	   `:focus-visible` outline is unaffected because it paints outside the
+	   scroll-area's box (`outline-offset`). Default opacity is 0 so nothing is
+	   visible in browsers without scroll-driven-animation support — a better
+	   fallback than the previous always-on mask.
+
+	   The fades live on the OUTER non-scrolling `.tableWrapper` rather than on
+	   the inner scroll area itself. That is why they now stay pinned to the
+	   visible left/right edges instead of scrolling away with the table
+	   content: absolutely-positioned children of a scroll container are
+	   positioned relative to its padding edge but move WITH the content. */
+	.tableWrapper::before,
+	.tableWrapper::after {
+		content: "";
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: var(--size-24);
+		pointer-events: none;
+		z-index: 1;
+		opacity: 0;
+	}
+
+	.tableWrapper::before {
+		left: 0;
+		background: linear-gradient(to right, var(--neutral-0), transparent);
+	}
+
+	.tableWrapper::after {
+		right: 0;
+		background: linear-gradient(to left, var(--neutral-0), transparent);
+	}
+
+	/* Drive the fades from the inner scroll-area's inline scroll position. The
+	   pseudo-elements reference `--bpc-table-scroll`, a named scroll-timeline
+	   declared on `.tableScrollArea` and re-exposed to this scope via
+	   `timeline-scope` on `.tableWrapper`. A plain `scroll(nearest inline)`
+	   would resolve to the window now that `.tableWrapper` is no longer a
+	   scroll container, which is why the named timeline is necessary.
+
+	   When there is no overflow, the scroll timeline has zero length and
+	   progress resolves to 0, which maps to the `from` keyframe (`opacity: 0`)
+	   — so no fade is visible when the table fits. The right-side fade uses
+	   `animation-direction: reverse` so that it fades IN before the end and
+	   OUT at the end, while still having `opacity: 0` as its no-overflow
+	   default. Minor trade-off: at scroll position 0 with real overflow the
+	   right fade may appear only after ~1px of scroll (acceptable per spec). */
+	@supports (animation-timeline: scroll()) {
+		.tableWrapper::before,
+		.tableWrapper::after {
+			animation-duration: 1ms; /* required; actual progress is scroll-driven */
+			animation-timing-function: linear;
+			animation-fill-mode: both;
+			animation-timeline: --bpc-table-scroll;
+		}
+
+		.tableWrapper::before {
+			animation-name: bpc-table-fade-in;
+			animation-range: 0 var(--size-32);
+		}
+
+		.tableWrapper::after {
+			animation-name: bpc-table-fade-in;
+			animation-direction: reverse;
+			animation-range: calc(100% - var(--size-32)) 100%;
+		}
+	}
+
+	@keyframes bpc-table-fade-in {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	.tableScrollArea:focus-visible {
+		outline: var(--accent-5) solid var(--size-3);
+		outline-offset: var(--size-3);
+	}
+
+	@media print {
+		.tableScrollArea {
+			overflow-x: visible;
+		}
+
+		.tableWrapper::before,
+		.tableWrapper::after {
+			display: none;
+		}
 	}
 }

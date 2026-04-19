@@ -7,6 +7,7 @@ import jsxRuntime from "react/jsx-runtime";
 import type { Options as RehypeReactOptions } from "rehype-react";
 import { Media } from "@/components/media";
 import { Snippet } from "@/components/snippet";
+import { Table, TableHeaderCell } from "@/components/table";
 import { WebEmbed } from "@/components/webembed";
 import { renderMarkdown } from "@/helpers/markdown";
 
@@ -28,6 +29,20 @@ const defaultComponents = {
 	strong: "strong",
 	em: "em",
 	del: "del",
+	table: Table,
+	// type-only sentinel: the markdown pipeline never emits a <tableWrapper> element.
+	// this entry exists so `classNames.tableWrapper` is type-checked via `keyof typeof defaultComponents`;
+	// the actual wrapper <div> is rendered inside the `Table` component (see `table.tsx`).
+	tableWrapper: "div",
+	// type-only sentinel: the markdown pipeline never emits a <tableScrollArea> element.
+	// this entry exists so `classNames.tableScrollArea` is type-checked via `keyof typeof defaultComponents`;
+	// the actual scroll-area <div> is rendered inside the `Table` component (see `table.tsx`).
+	tableScrollArea: "div",
+	thead: "thead",
+	tbody: "tbody",
+	tr: "tr",
+	th: TableHeaderCell,
+	td: "td",
 	img: Media,
 	pre: Snippet,
 	webembed: WebEmbed,
@@ -58,6 +73,17 @@ export async function Markdown({
 				className: classNames[name]
 					? clsx(classNames[name], className)
 					: className,
+				// the <Table> component renders a non-scrolling outer wrapper <div>,
+				// an inner scroll-area <div>, and a <table>. it receives dedicated
+				// class names for the outer wrapper and the inner scroll area via
+				// the `tableWrapper` / `tableScrollArea` sentinel keys in the
+				// classNames map.
+				...(name === "table"
+					? {
+							wrapperClassName: classNames.tableWrapper,
+							scrollAreaClassName: classNames.tableScrollArea,
+						}
+					: {}),
 			}),
 		);
 	}

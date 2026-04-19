@@ -107,6 +107,181 @@ test("Blog post content", async ({ page }) => {
 	});
 });
 
+// seed post (`payload/helpers/seed/blog-post.md`) emits seven GFM tables under
+// `# Tables`, in this authored order: `Compact reference`, `Wide comparison`,
+// `Column alignment`, `Inline content`, `Header-only table`, `Single column`,
+// `Sparse cells`. On the Pixel 7 viewport (~412px wide) the `Wide comparison`
+// and `Inline content` tables overflow, while `Single column` sits well within
+// the reading column.
+const wideTableIndex = 1;
+const narrowTableIndex = 5;
+
+// opacity tolerances for the scroll-driven edge fades. The animation snaps to
+// the keyframe endpoints once the scroll timeline is at the ends, so small
+// tolerances guard against subpixel rounding without masking a regression to
+// the old always-on or static-mask behavior.
+const fadeInvisibleMax = 0.05;
+const fadeVisibleMin = 0.95;
+
+// keyboard scroll nudges per ArrowRight press are implementation-defined by the
+// browser; 20 presses is comfortably above the single-press step on Chromium
+// mobile and tolerant of future changes to that step size.
+const keyboardScrollPressCount = 20;
+
+test("Narrow table fits the reading column", async ({ page }) => {
+	const tables = page
+		.getByTestId("page")
+		.getByTestId("content")
+		.getByTestId("table");
+
+	const scrollArea = tables
+		.nth(narrowTableIndex)
+		.getByTestId("table-scroll-area");
+
+	await test.step("Verify the scroll area has no horizontal overflow", async () => {
+		await expect
+			.poll(async () =>
+				scrollArea.evaluate(
+					(element) => element.scrollWidth === element.clientWidth,
+				),
+			)
+			.toBe(true);
+	});
+});
+
+test("Wide table overflows and scrolls horizontally", async ({ page }) => {
+	const tables = page
+		.getByTestId("page")
+		.getByTestId("content")
+		.getByTestId("table");
+
+	const wrapper = tables.nth(wideTableIndex);
+	const scrollArea = wrapper.getByTestId("table-scroll-area");
+
+	await test.step("Verify the scroll area has horizontal overflow", async () => {
+		await expect
+			.poll(async () =>
+				scrollArea.evaluate(
+					(element) => element.scrollWidth > element.clientWidth,
+				),
+			)
+			.toBe(true);
+	});
+
+	await test.step("Verify the outer wrapper is not a scroll container", async () => {
+		await expect
+			.poll(async () =>
+				wrapper.evaluate(
+					(element) => element.scrollWidth === element.clientWidth,
+				),
+			)
+			.toBe(true);
+	});
+
+	await test.step("Verify the scroll area is keyboard-focusable", async () => {
+		await expect(scrollArea).toHaveAttribute("tabindex", "0");
+	});
+});
+
+test("Wide table is keyboard-scrollable", async ({ page }) => {
+	const tables = page
+		.getByTestId("page")
+		.getByTestId("content")
+		.getByTestId("table");
+
+	const scrollArea = tables
+		.nth(wideTableIndex)
+		.getByTestId("table-scroll-area");
+
+	await test.step("Focus the scroll area", async () => {
+		await scrollArea.focus();
+	});
+
+	await test.step("Verify the scroll area is the active element", async () => {
+		await expect
+			.poll(async () =>
+				scrollArea.evaluate((element) => element === document.activeElement),
+			)
+			.toBe(true);
+	});
+
+	await test.step("Verify ArrowRight presses scroll the area horizontally", async () => {
+		const initialScrollLeft = await scrollArea.evaluate(
+			(element) => element.scrollLeft,
+		);
+
+		expect(initialScrollLeft).toBe(0);
+
+		// sequential keypresses intentional: each press must be dispatched in
+		// order to accumulate scrollLeft; Promise.all would race and Chromium
+		// coalesces duplicate-frame keydowns when dispatched concurrently.
+		for (let i = 0; i < keyboardScrollPressCount; i += 1) {
+			// biome-ignore lint/performance/noAwaitInLoops: sequential keyboard input is required to accumulate scrollLeft
+			await page.keyboard.press("ArrowRight");
+		}
+
+		await expect
+			.poll(async () => scrollArea.evaluate((element) => element.scrollLeft))
+			.toBeGreaterThan(0);
+	});
+});
+
+test("Edge fades track scroll position", async ({ page }) => {
+	const tables = page
+		.getByTestId("page")
+		.getByTestId("content")
+		.getByTestId("table");
+
+	// the fades are pseudo-elements on `.tableWrapper`, so read computed opacity
+	// of `::before` / `::after` on the OUTER wrapper element.
+	const wrapper = tables.nth(wideTableIndex);
+	const scrollArea = wrapper.getByTestId("table-scroll-area");
+
+	const readPseudoOpacity = (pseudo: "::before" | "::after") =>
+		wrapper.evaluate(
+			(element, selector) =>
+				Number.parseFloat(getComputedStyle(element, selector).opacity),
+			pseudo,
+		);
+
+	await test.step("Verify leading-edge fade is invisible at scroll position 0", async () => {
+		await expect
+			.poll(() => readPseudoOpacity("::before"))
+			.toBeLessThan(fadeInvisibleMax);
+	});
+
+	await test.step("Verify trailing-edge fade is visible at scroll position 0", async () => {
+		await expect
+			.poll(() => readPseudoOpacity("::after"))
+			.toBeGreaterThan(fadeVisibleMin);
+	});
+
+	await test.step("Scroll the area to its far-right edge", async () => {
+		await scrollArea.evaluate((element) => {
+			element.scrollTo({ left: element.scrollWidth, behavior: "instant" });
+		});
+
+		// the scroll-driven animation resolves on the next frame; `expect.poll`
+		// re-samples the computed pseudo-element opacity until Chromium settles,
+		// which avoids the fixed `page.waitForTimeout` anti-pattern.
+		await expect
+			.poll(() => readPseudoOpacity("::after"))
+			.toBeLessThan(fadeInvisibleMax);
+	});
+
+	await test.step("Verify leading-edge fade is visible at far-right scroll position", async () => {
+		await expect
+			.poll(() => readPseudoOpacity("::before"))
+			.toBeGreaterThan(fadeVisibleMin);
+	});
+
+	await test.step("Verify trailing-edge fade is invisible at far-right scroll position", async () => {
+		await expect
+			.poll(() => readPseudoOpacity("::after"))
+			.toBeLessThan(fadeInvisibleMax);
+	});
+});
+
 test("JSON-LD metadata", async ({ page }, testInfo) => {
 	let website: Awaited<ReturnType<typeof getWebsite>>;
 
