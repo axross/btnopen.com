@@ -1,7 +1,6 @@
 ---
 name: code-review-guideline
 description: Apply this skill at the start of EVERY code review task in this project, regardless of the topic. Covers the cross-cutting reviewer process — scoping the review against `git diff`/`git status`, severity classification (Critical / Major / Minor / Nit), evidence-based reporting with `file:line` citations and code-snippet fixes, the constructive review tone, the structured review-report output format, and the strict reporting boundary (the reviewer reports back to its caller only — it never mutates the codebase or invokes other subagents). It also routes to the four topic-specific review lenses: maintainability/code design, quality assurance (e2e coverage, snapshots, flakiness), application security (OWASP applied to Next.js + Payload CMS on Vercel), and performance/reliability (Payload queries, RSC/client boundary, `"use cache"`, bundle weight, error handling). Use this even when the user does not name a specific lens — any "review", "look at this PR", "check this change", "audit this code", or post-change verification request goes through this skill first.
-user-invocable: false
 ---
 
 # Code Review Guideline

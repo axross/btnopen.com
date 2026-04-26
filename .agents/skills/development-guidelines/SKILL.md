@@ -1,7 +1,6 @@
 ---
 name: development-guidelines
 description: Apply this skill at the start of EVERY task in this project, regardless of the topic. Covers the non-negotiable code quality loop (Biome format → lint → fix → re-lint → test), change-management rules (stay in scope, follow existing patterns, safely add npm deps, handle Payload CMS migrations), verification requirements (which output surfaces a change puts at risk, manual dev-server checks, running the Playwright e2e suite, responding to flaky/failing tests), and the Conventional Commits v1.0.0 commit-message format used across the repo. Use this even when the user does not explicitly mention formatting, linting, testing, dependencies, migrations, or commit wording — any code change in this repo is expected to pass through this workflow.
-user-invocable: false
 ---
 
 # Development Guidelines

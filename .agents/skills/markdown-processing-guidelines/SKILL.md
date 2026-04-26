@@ -1,7 +1,6 @@
 ---
 name: markdown-processing-guidelines
 description: Use this skill when writing, reviewing, or modifying any code in the markdown rendering pipeline — `app/(app)/_/helpers/markdown.ts`, `app/(app)/_/components/markdown.tsx`, Shiki setup, or the `Markdown`/`renderMarkdown` server components. Covers the unified pipeline (remarkParse → remarkDirective → remarkPartialGfm → remarkEmbeds → remarkRehype → rehypeShiki → rehypeUnnestPre → rehypeReact), plugin-ordering rules, custom-plugin conventions, adding custom MDAST directive nodes (passThrough + handler + React component, all three levels), partial-GFM three-level registration, HAST→React component mapping, Shiki singleton usage, server-only execution with `"use cache"`, Payload-Lexical content source, and Sentry-based unknown-node handling. Use even when the user only mentions "remark", "rehype", "mdast", "syntax highlighting", "blog post rendering", "webembed", or a markdown bug.
-user-invocable: false
 ---
 
 # Markdown Processing Guidelines

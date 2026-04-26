@@ -1,7 +1,6 @@
 ---
 name: maintainable-code-guidelines
 description: Use this skill when reviewing the maintainability and design of changed code in this project — naming and file organization (kebab-case files, the `_components/` vs `_/components/` distinction, page-co-located `page-props.ts`), abstraction boundaries (route-local vs route-group-shared modules under `app/(app)/_/`, where helpers/repositories/components belong), complexity and readability (Biome `noExcessiveCognitiveComplexity` cap of 24, `noExcessiveLinesPerFunction` of 120, magic-number discipline, dead-code removal), scope discipline (changes confined to the stated task per `development-guidelines › change-management`), and the SOLID/DRY/KISS/YAGNI lens applied to RSC trees and Payload repositories. This is the **reviewer's** lens — what to flag — and layers on top of [development-guidelines](../development-guidelines/SKILL.md), [react-component-guidelines](../react-component-guidelines/SKILL.md), and [routing-guidelines](../routing-guidelines/SKILL.md), which the developer follows when writing the code. Use even when the user only says "is this readable", "this function feels too long", or "should this live somewhere else".
-user-invocable: false
 ---
 
 # Maintainable Code Guidelines

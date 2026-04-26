@@ -1,7 +1,6 @@
 ---
 name: application-security-requirements
 description: Use this skill when reviewing security implications of any code change in this Next.js + Payload CMS + Vercel project — secret and environment-variable handling (the `process.env` whitelist of `app/(app)/_/runtime.ts`, `payload/config.ts`, `next.config.ts`, `playwright.config.ts`; never committing `.env.local`; the `NEXT_PUBLIC_*` boundary), input validation at server actions / `route.ts` handlers / Payload `where` clauses (Zod-parsed view types from `app/(app)/_/repositories/payload-types.ts`, search-param coercion, slug bypass), Payload CMS access control (collection-level `access` rules, the draft-aware filter on `_status`, the public-read on `media` / `cover-images` / `avatar-images`), XSS in the markdown rendering pipeline (Shiki / Remark / `rehypeReact` chain, custom `webembed` directive, `allowDangerousProtocol`), SSRF in webembed and OG image fetching (`metascraper` fetching arbitrary URLs from CMS-authored content), Payload session/auth handling (the `users` collection's `lockTime` / `maxLoginAttempts`), the Sentry `sendDefaultPii: true` exposure, and supply-chain risks of newly added npm dependencies. This is the **reviewer's** lens — what to flag for security — and is the OWASP Top 10 framing applied to this specific stack. Use even when the user only says "is this safe", "any security concerns", or "look at this auth/admin/secret code".
-user-invocable: false
 ---
 
 # Application Security Requirements

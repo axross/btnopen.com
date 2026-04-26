@@ -1,7 +1,6 @@
 ---
 name: react-component-guidelines
 description: Use this skill when writing, reviewing, or refactoring any React component in this project — kebab-case file naming, TypeScript prop types with `ComponentProps<T>`, explicit `JSX.Element` / `Promise<JSX.Element>` return types, deciding Server vs Client components, `"use client"` placement, the loading/loaded split with `<Suspense>`, `"use cache"` + `cacheLife()` caching, passing `Promise<T>` props (never to Client Components), CSS Modules under `@layer components` with `clsx` class merging and variables, style-isolation rules (no position/margin/width/height on root), CSS property-choice conventions (logical properties like `margin-block` / `inline-size`, `@container` inline-size + `@container style(--variant: "…")` queries over `@media`, `@scope` + `:where(:scope)` for component isolation, `oklch()` and relative color syntax, modern units `cqw` / `dvh` / `1lh` / `1ch` / `stretch`, `currentColor` in SVGs, `font-feature-settings` pairing, `-webkit-line-clamp` truncation, scroll-driven animations with `animation-timeline` + `timeline-scope` + named `scroll-timeline`), and the `data-testid` nesting / `-loading` suffix conventions that E2E tests depend on. Use even when the user only says "component", "use client", "RSC", "Suspense", "data-testid", "styling", "clsx", "logical property", "container query", "oklch", "@scope", "CSS unit", "animation-timeline", or "scroll-driven".
-user-invocable: false
 ---
 
 # React Component Guidelines

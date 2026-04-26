@@ -1,7 +1,6 @@
 ---
 name: quality-assurance-guidelines
 description: Use this skill when reviewing whether a change has been **adequately verified** in this project — that the lint/format gate has been respected, that the e2e suite under `e2e/tests/routes/...` covers the changed output surface, that new visually distinct UI has the right `data-testid` hooks, that snapshots were regenerated only for intentional visual changes (and the platform-suffix nuance was understood), that flakiness is investigated rather than retried (since `playwright.config.ts` sets `repeatEach: 2` + `failOnFlakyTests: true`), and that draft / preview / not-found states were exercised manually before merge. This is the **reviewer's** verification lens — what to demand evidence of — and layers on top of [development-guidelines › verification](../development-guidelines/verification.md) and [e2e-testing-guidelines](../e2e-testing-guidelines/SKILL.md), which the developer follows when writing the code and tests. Use even when the user only asks "are tests good", "did this break anything", or "should I bump the snapshots".
-user-invocable: false
 ---
 
 # Quality Assurance Guidelines
