@@ -4,6 +4,10 @@ Apply these rules to verify the change keeps the project's error-propagation mod
 
 ## `try`/`catch` Placement
 
+`try`/`catch` Placement review focuses on major-severity cases where a new `try`/`catch` is placed inside a nested helper rather than at the root call site (route handler, RSC, `route.ts`, server action). The project rule per [observability-guidelines › error-handling](../observability-guidelines/error-handling.md) is "let errors propagate to the root call site".
+
+**Guidelines:**
+
 - MUST flag a Major when a new `try`/`catch` is placed inside a nested helper rather than at the root call site (route handler, RSC, `route.ts`, server action). The project rule per [observability-guidelines › error-handling](../observability-guidelines/error-handling.md) is "let errors propagate to the root call site".
 - MUST flag a Critical when a `catch` block does any of:
   - Logs without rethrowing or calling `captureException()` (silent error swallow)
@@ -13,12 +17,20 @@ Apply these rules to verify the change keeps the project's error-propagation mod
 
 ## `captureException` Discipline
 
+`captureException` Discipline review focuses on critical-severity cases where a new caught error is not reported to Sentry via `captureException()` from `@sentry/nextjs`. The only exception is when the error is a known control-flow signal (e.g., `notFound()`'s thrown sentinel).
+
+**Guidelines:**
+
 - MUST flag a Critical when a new caught error is not reported to Sentry via `captureException()` from `@sentry/nextjs`. The only exception is when the error is a known control-flow signal (e.g., `notFound()`'s thrown sentinel).
 - MUST flag a Major when `captureException()` is called **after** an early return / `notFound()` / `redirect()` rather than before. Sentry must receive the report before the function exits along the alternate path.
 - MUST flag a Major when `captureException()` is imported from `@sentry/node`, `@sentry/browser`, or `@sentry/core` instead of `@sentry/nextjs`. The Next.js integration is what wires server / client / edge correctly.
 - MUST flag a Major when an unexpected non-thrown state is silently ignored. The existing pattern in `markdown.ts` `unknownHandler` reports `new Error(\`Handled unknown mdast node (type: ${node.type}).\`)` — use this idiom for new "should-not-happen" branches.
 
 ## Logger Discipline
+
+Logger Discipline review focuses on critical-severity cases where the diff calls `logger.error(…)` — the project bans this in favor of `captureException()` per [observability-guidelines › logging](../observability-guidelines/logging.md).
+
+**Guidelines:**
 
 - MUST flag a Critical when the diff calls `logger.error(…)` — the project bans this in favor of `captureException()` per [observability-guidelines › logging](../observability-guidelines/logging.md).
 - MUST flag a Critical when a new module creates a `pino()` instance directly instead of `rootLogger.child({ module: "<emoji>" })`.
@@ -27,11 +39,19 @@ Apply these rules to verify the change keeps the project's error-propagation mod
 
 ## Log Hygiene
 
+Log Hygiene review focuses on critical-severity cases where a log line interpolates a secret (token, password, session ID, full request body). Cross-reference with [application-security-requirements › secret-handling](../application-security-requirements/secret-handling.md).
+
+**Guidelines:**
+
 - MUST flag a Critical when a log line interpolates a secret (token, password, session ID, full request body). Cross-reference with [application-security-requirements › secret-handling](../application-security-requirements/secret-handling.md).
 - MUST flag a Major when a log message lacks a trailing period — the project convention is "every log message ends with a period".
 - MUST flag a Major when `logger.info(…)` is called for a high-frequency operation (e.g., per-render of a Server Component, per-iteration inside a tight loop). Move to `Started/Completed` at the boundary of the operation, not inside it.
 
 ## Error Boundaries
+
+Error Boundaries review focuses on critical-severity cases where the diff modifies `app/(app)/global-error.tsx` to remove the `useEffect(() => { captureException(error); }, [error])` hook — this is the last-resort Sentry sink.
+
+**Guidelines:**
 
 - MUST flag a Critical when the diff modifies `app/(app)/global-error.tsx` to remove the `useEffect(() => { captureException(error); }, [error])` hook — this is the last-resort Sentry sink.
 - MUST flag a Major when a new `error.tsx` is added to a route segment without the same `captureException(error)` `useEffect` pattern.
@@ -39,10 +59,18 @@ Apply these rules to verify the change keeps the project's error-propagation mod
 
 ## Sentry Replay and Trace Sampling
 
+Sentry Replay and Trace Sampling review focuses on critical-severity cases where the diff modifies `instrumentation-client.ts` to lower `replaysOnErrorSampleRate` below `1.0`. Error-time replay is the most diagnostic signal.
+
+**Guidelines:**
+
 - MUST flag a Critical when the diff modifies `instrumentation-client.ts` to lower `replaysOnErrorSampleRate` below `1.0`. Error-time replay is the most diagnostic signal.
 - SHOULD flag a Minor recommendation to lower `tracesSampleRate` (currently `1` everywhere) when a new high-traffic route is added — full sampling will hit Sentry quotas.
 
 ## Idempotency
+
+Idempotency review focuses on critical-severity cases where a new `route.ts` mutation handler is not idempotent (a retry produces a different result) and the caller (e.g., a Payload `afterOperation` hook) does not handle the partial-failure case. The existing `posts/caches/route.ts` `DELETE` is idempotent — match this design.
+
+**Guidelines:**
 
 - MUST flag a Critical when a new `route.ts` mutation handler is not idempotent (a retry produces a different result) and the caller (e.g., a Payload `afterOperation` hook) does not handle the partial-failure case. The existing `posts/caches/route.ts` `DELETE` is idempotent — match this design.
 - SHOULD flag a Major when a new external `fetch` call inside a server function lacks a timeout (`signal: AbortSignal.timeout(<ms>)`). A hung dependency stalls the entire request.

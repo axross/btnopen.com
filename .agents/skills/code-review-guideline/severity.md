@@ -4,14 +4,19 @@ Apply these rules to label every finding before reporting it. Severity drives bo
 
 ## Severity Definitions
 
-- **Critical** — MUST block merge. The change introduces a defect that will cause data loss, a security breach, a production outage, a broken `main` branch (lint/build/e2e failure), or a violation of a developer-facing MUST rule that any user will hit on the first request.
-- **Major** — SHOULD block merge unless deferred deliberately. The change introduces a defect that will degrade correctness, performance, or reliability in a way users will notice, or violates a developer-facing SHOULD rule with no documented justification.
-- **Minor** — SHOULD be addressed but does not block merge. Readability, naming, or small refactor opportunities; missing-but-non-critical test coverage; non-load-bearing convention drift.
+Severity Definitions captures the project-specific context for the checklist below: **Critical** — MUST block merge. The change introduces a defect that will cause data loss, a security breach, a production outage, a broken `main` branch (lint/build/e2e failure), or a violation of a developer-facing MUST rule that any user will hit on the first request.
+
 - **Nit** — Optional polish. Style preferences, alternative phrasings, micro-optimizations with no measurable benefit.
+
+**Guidelines:**
+
+- MUST classify **Critical** findings as merge-blocking. The change introduces a defect that will cause data loss, a security breach, a production outage, a broken `main` branch (lint/build/e2e failure), or a violation of a developer-facing MUST rule that any user will hit on the first request.
+- SHOULD classify **Major** findings as merge-blocking unless deferred deliberately. The change introduces a defect that will degrade correctness, performance, or reliability in a way users will notice, or violates a developer-facing SHOULD rule with no documented justification.
+- SHOULD classify **Minor** findings as non-blocking but worth addressing. Readability, naming, or small refactor opportunities; missing-but-non-critical test coverage; non-load-bearing convention drift.
 
 ## Required Severity Floors
 
-These categories MUST always be at least the listed severity, regardless of perceived "smallness":
+These categories use fixed minimum severities, regardless of perceived "smallness":
 
 | Category | Minimum severity |
 |---|---|
@@ -33,6 +38,11 @@ These categories MUST always be at least the listed severity, regardless of perc
 | Magic value introduced where a CSS variable or named constant exists | Minor |
 | Inconsistent file/identifier naming (e.g., camelCase file in a kebab-case directory) | Minor |
 
+**Guidelines:**
+
+- MUST classify each listed category at no lower than its minimum severity.
+- MAY raise severity above the floor when the concrete impact is worse than the table's minimum.
+
 ## Verdict Mapping
 
 The reviewer MUST emit one of these three verdicts in the report Summary, derived from the severity counts:
@@ -41,7 +51,15 @@ The reviewer MUST emit one of these three verdicts in the report Summary, derive
 - **Approve with Nits** — zero Critical, at most two Major, and at least one Minor or Nit.
 - **Approve** — zero Critical, zero Major, zero Minor, and at most a few Nits.
 
+**Guidelines:**
+
+- MUST derive the review verdict from the severity counts exactly as mapped above.
+
 ## When in Doubt
+
+When in Doubt describes the preferred project default: escalate uncertain severity upward, not downward. A finding labeled Major that turns out to be Minor wastes the author's attention; a Critical mislabeled as Minor causes a production incident.
+
+**Guidelines:**
 
 - SHOULD escalate uncertain severity upward, not downward. A finding labeled Major that turns out to be Minor wastes the author's attention; a Critical mislabeled as Minor causes a production incident.
 - MUST state the assumption that drove the severity choice when uncertain (e.g., "Critical because I'm assuming this route is public; downgrade to Major if it's behind admin auth").

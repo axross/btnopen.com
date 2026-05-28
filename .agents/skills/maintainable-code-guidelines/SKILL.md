@@ -1,6 +1,6 @@
 ---
 name: maintainable-code-guidelines
-description: Use this skill when reviewing the maintainability and design of changed code in this project — naming and file organization (kebab-case files, the `_components/` vs `_/components/` distinction, page-co-located `page-props.ts`), abstraction boundaries (route-local vs route-group-shared modules under `app/(app)/_/`, where helpers/repositories/components belong), complexity and readability (Biome `noExcessiveCognitiveComplexity` cap of 24, `noExcessiveLinesPerFunction` of 120, magic-number discipline, dead-code removal), scope discipline (changes confined to the stated task per `development-guidelines › change-management`), and the SOLID/DRY/KISS/YAGNI lens applied to RSC trees and Payload repositories. This is the **reviewer's** lens — what to flag — and layers on top of [development-guidelines](../development-guidelines/SKILL.md), [react-component-guidelines](../react-component-guidelines/SKILL.md), and [routing-guidelines](../routing-guidelines/SKILL.md), which the developer follows when writing the code. Use even when the user only says "is this readable", "this function feels too long", or "should this live somewhere else".
+description: Use this skill when reviewing maintainability and design of changed code. Covers naming and file organization, route-local vs shared abstraction boundaries, complexity/readability limits, magic-number and dead-code discipline, scope control, and SOLID/DRY/KISS/YAGNI judgment for RSC trees and Payload repositories. This is the reviewer's lens on top of development, project-structure, React, and routing rules. Use for "readable", "too long", "refactor", "abstraction", or "should this live elsewhere".
 ---
 
 # Maintainable Code Guidelines
@@ -16,14 +16,21 @@ See [naming-and-organization.md](./naming-and-organization.md) for what to verif
 - New routes follow [routing-guidelines](../routing-guidelines/SKILL.md) and co-locate `page-props.ts`, `not-found.tsx`, OG image files
 - Identifier names match in/around the changed file's existing conventions
 
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
+
 ## Abstraction Boundaries
 
 See [abstraction-boundaries.md](./abstraction-boundaries.md) for what to verify:
 
 - New shared logic lives at the lowest tier that has more than one caller (route-local before route-group, route-group before global `_/`)
-- Repository functions own data fetching; components MUST NOT call `getPayload({ config })` directly
 - Server / Client component boundary is split per [react-component-guidelines › client-vs-server-components](../react-component-guidelines/client-vs-server-components.md)
 - Markdown plugins, if any, follow [markdown-processing-guidelines › custom-plugins](../markdown-processing-guidelines/custom-plugins.md)
+
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
 
 ## Complexity and Readability
 
@@ -34,6 +41,10 @@ See [complexity-and-readability.md](./complexity-and-readability.md) for what to
 - Dead code (unused imports, unreachable branches, commented-out blocks) is removed
 - Inline TypeScript types are extracted into `interface` or `type` aliases when reused
 
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
+
 ## Scope Discipline
 
 See [scope-discipline.md](./scope-discipline.md) for what to verify:
@@ -42,3 +53,7 @@ See [scope-discipline.md](./scope-discipline.md) for what to verify:
 - Pre-existing problems are flagged separately, not bundled into this change
 - New abstractions are justified by ≥ 2 concrete call sites (YAGNI)
 - Repeated logic across the diff is consolidated only when the duplication is truly the same concern (DRY without coupling unrelated callers)
+
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.

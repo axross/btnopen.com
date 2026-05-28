@@ -13,8 +13,25 @@ See [Error Handling](./error-handling.md) for:
 
 - Where to place try-catch blocks and how errors propagate
 - Rethrowing errors that are caught only for side effects
-- Reporting errors to Sentry with `captureException()`
+- When caught errors should be reported before alternate control flow
 - Next.js error boundaries and route-level error handling
+
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
+
+## Error Tracking
+
+See [Error Tracking](./error-tracking.md) for:
+
+- Sentry initialization and runtime-specific configuration files
+- `captureException()` import source, context, and privacy boundaries
+- `sendDefaultPii` and safe event context
+- Source map and instrumentation changes
+
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
 
 ## Logging
 
@@ -24,3 +41,7 @@ See [Logging](./logging.md) for:
 - Which log level to use (`info` vs `warn`; never `error`)
 - Creating module-scoped child loggers from `rootLogger`
 - Structuring log calls with context objects and "Started / Completed" messages
+
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.

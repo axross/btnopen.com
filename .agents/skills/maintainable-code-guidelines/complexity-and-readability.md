@@ -4,7 +4,7 @@ Apply these rules to verify that changed code is straightforward to read and wit
 
 ## Biome Thresholds
 
-The project enforces these thresholds in `biome.jsonc`. The reviewer MUST flag changes that approach or breach them:
+The project enforces these thresholds in `biome.jsonc`; use the table as the reviewer's severity map:
 
 | Rule | Project setting | Flag when |
 |---|---|---|
@@ -13,13 +13,26 @@ The project enforces these thresholds in `biome.jsonc`. The reviewer MUST flag c
 | `noMagicNumbers` | `style` warn | A literal number with no semantic meaning appears outside a CSS variable or named constant — Minor, unless the magic value affects security/auth (then Major) |
 | `noExplicitAny` | suspicious | `any` appears in changed code — Critical per [react-component-guidelines › conventions](../react-component-guidelines/conventions.md) |
 
+**Guidelines:**
+
+- MUST flag changed functions that breach the enforced `biome.jsonc` complexity thresholds.
+- MUST use the severity shown in the table when a threshold maps to a project-specific review finding.
+
 ## Magic Values
+
+Magic Values sets the required project default: flag a magic number / string that is not paired with either a CSS variable (`var(--spacing-4)`), a named constant, or a `// biome-ignore lint/style/noMagicNumbers: <reason>` comment that explains the meaning.
+
+**Guidelines:**
 
 - MUST flag a magic number / string that is not paired with either a CSS variable (`var(--spacing-4)`), a named constant, or a `// biome-ignore lint/style/noMagicNumbers: <reason>` comment that explains the meaning.
 - MUST NOT flag durations expressed via `cacheLife("hours")` or `cacheLife("days")` — those are project-approved tokens.
 - SHOULD flag a hard-coded URL or origin (`"https://btnopen.com"`, `"http://localhost:3000"`) that should come from `urlOrigin` exported by `app/(app)/_/runtime.ts`.
 
 ## Dead Code
+
+Dead Code sets the required project default: flag commented-out code blocks introduced by the change. Remove or restore them — do not leave them as TODO breadcrumbs.
+
+**Guidelines:**
 
 - MUST flag commented-out code blocks introduced by the change. Remove or restore them — do not leave them as TODO breadcrumbs.
 - MUST flag an unused import in a changed file (the linter will too, but call it out so it does not slip through).
@@ -28,12 +41,20 @@ The project enforces these thresholds in `biome.jsonc`. The reviewer MUST flag c
 
 ## Type Reuse
 
+Type Reuse sets the required project default: flag an inline object type repeated more than once in the diff — extract into a named `interface` or `type`.
+
+**Guidelines:**
+
 - MUST flag an inline object type repeated more than once in the diff — extract into a named `interface` or `type`.
 - MUST flag a new prop type that does not extend `ComponentProps<…>` for a component rendering a DOM element, per [react-component-guidelines › conventions](../react-component-guidelines/conventions.md).
 - SHOULD flag a `type` alias used where an `interface` would suffice (object-only, no intersection/union) — the project prefers `interface` for those.
 
 ## Control Flow
 
-- SHOULD flag a deeply nested ternary or `if`/`else` chain that could be flattened with early returns — improves the cognitive complexity score.
+Control Flow describes the preferred project default: flag a deeply nested ternary or `if`/`else` chain that could be flattened with early returns — improves the cognitive complexity score.
+
+**Guidelines:**
+
+- SHOULD flag a deeply nested ternary or `if`/`else` chain that can be flattened with early returns — improves the cognitive complexity score.
 - SHOULD flag a `switch` with no `default` branch when the discriminant is a string union — Biome will warn, but call it out so the author considers an exhaustive check.
 - SHOULD flag a `Promise.all([…])` that is awaited and then immediately destructured into independent values — those values may be passable as Promise props per [react-component-guidelines › client-vs-server-components](../react-component-guidelines/client-vs-server-components.md).

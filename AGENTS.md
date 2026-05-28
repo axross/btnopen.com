@@ -2,91 +2,144 @@
 
 ## Requirement Level Keywords
 
-Here is the list of keywords to signify the requirements. Apply the following rules for each keyword in this document and the documents linked from this document.
+Apply these keywords consistently in this document and the documents linked from this document.
 
-1. MUST — This word, or the terms "REQUIRED", mean that the definition is an absolute requirement of the specification.
-2. MUST NOT — This word mean that the definition is an absolute prohibition of the specification.
-3. SHOULD — This word, or the adjective "RECOMMENDED", mean that there may exist valid reasons in particular circumstances to ignore a particular item, but the full implications must be understood and carefully weighed before choosing a different course.
-4. SHOULD NOT — This phrase, or the phrase "NOT RECOMMENDED" mean that there may exist valid reasons in particular circumstances when the particular behavior is acceptable or even useful, but the full implications should be understood and the case carefully weighed before making any behavior described with this label.
-5. MAY — This word, or the adjective "OPTIONAL", mean that an item is truly optional.
+| Keyword | Synonym | Meaning |
+| ------- | ------- | ------- |
+| "MUST" | "REQUIRED" | Non-negotiable requirement; no exceptions. |
+| "MUST NOT" |  | Non-negotiable prohibition; no exceptions. |
+| "SHOULD" | "RECOMMENDED" | Strongly preferred; deviation is allowed only after weighing the implications. |
+| "SHOULD NOT" | "NOT RECOMMENDED" | Strongly discouraged; allowed only after weighing the implications. |
+| "MAY" | "OPTIONAL" | Genuinely optional; no preference implied. |
 
 ## Project Overview
 
 - This is a personal blogging website. It displays a portrait, a bio, and links to the author's social media accounts.
 - Blog posts are the primary content type. They support tags, cover images, and rich Markdown including syntax-highlighted code blocks and embedded web content previews.
 - Content is written primarily in Japanese, with English provided as a fallback for readers in other locales.
+- For tech stack, third-party services, and directory placement, consult [Project Structure](.agents/skills/project-structure/SKILL.md).
+- For npm run-scripts, current-docs lookup rules, and verification commands, consult [Development Guidelines](.agents/skills/development-guidelines/SKILL.md).
 
-### Tech Stack
+## Skill Index
 
-- **[Next.js](https://nextjs.org/)** as the web framework.
-- **[Payload CMS](https://payloadcms.com/)** as the admin dashboard and content management system.
-- **[Remark](https://remark.js.org/)** for markdown processing and **[Shiki](https://shiki.style/)** for syntax highlighting.
-- **[Playwright](https://playwright.dev/)** for end-to-end testing.
-- **[Biome](https://biomejs.dev/)** for linting and formatting.
-- **[Vercel](https://vercel.com/)** as the hosting/running environment.
+`AGENTS.md` is the master routing index for project skills. Consult the relevant skill before acting on matching work.
 
-### Third-Party Services
+| Skill | When to apply |
+| ----- | ------------- |
+| [Agent Skills Best Practices](.agents/skills/agent-skills-best-practices/SKILL.md) | Creating, refining, splitting, renaming, deleting, or auditing project skills or this skill index |
+| [Application Security Requirements](.agents/skills/application-security-requirements/SKILL.md) | Reviewing secrets, environment variables, validation, Payload access control, markdown XSS, SSRF/embed fetching, auth/session behavior, privacy exposure, analytics/error-reporting data, or npm dependency risk |
+| [Code Review Guideline](.agents/skills/code-review-guideline/SKILL.md) | Reviewing a diff, pull request, local change, or post-implementation self-review |
+| [Development Guidelines](.agents/skills/development-guidelines/SKILL.md) | Implementing, refactoring, running commands, preparing commits, adding dependencies, checking current docs, or changing migrations |
+| [E2E Testing Guidelines](.agents/skills/e2e-testing-guidelines/SKILL.md) | Writing, running, reviewing, or maintaining Playwright tests, snapshots, route coverage, or browser assertions |
+| [Maintainable Code Guidelines](.agents/skills/maintainable-code-guidelines/SKILL.md) | Reviewing readability, naming, abstraction boundaries, complexity, dead code, or scope discipline |
+| [Markdown Processing Guidelines](.agents/skills/markdown-processing-guidelines/SKILL.md) | Writing, reviewing, or modifying markdown rendering, Remark/Rehype plugins, Shiki setup, custom nodes, or web embeds |
+| [Observability Guidelines](.agents/skills/observability-guidelines/SKILL.md) | Throwing, catching, reporting, or logging errors with Sentry or Pino |
+| [Performance and Reliability Requirements](.agents/skills/performance-and-reliability-requirements/SKILL.md) | Reviewing Payload query cost, RSC/client boundaries, caching, image optimization, bundle weight, or runtime failure behavior |
+| [Project Structure](.agents/skills/project-structure/SKILL.md) | Navigating the repository, locating files, placing new modules, checking stack/service context, import aliases, or directory conventions |
+| [Quality Assurance Guidelines](.agents/skills/quality-assurance-guidelines/SKILL.md) | Reviewing verification evidence, e2e coverage, snapshots, flakiness, lint/format evidence, or manual checks |
+| [React Component Guidelines](.agents/skills/react-component-guidelines/SKILL.md) | Writing, reviewing, or refactoring React components, Server/Client component boundaries, styling, CSS conventions, or `data-testid` contracts |
+| [Routing Guidelines](.agents/skills/routing-guidelines/SKILL.md) | Creating, moving, renaming, or reviewing App Router routes, route handlers, route groups, dynamic params, or search params |
+| [UI Design Principles](.agents/skills/ui-design-principles/SKILL.md) | Designing, implementing, or reviewing user-facing surfaces, responsive behavior, visual tone, copy, accessibility, loading states, or theme behavior |
 
-- **[Sentry](https://sentry.io/)** for error tracking.
-- **[Mixpanel](https://mixpanel.com/)** for analytics.
+## Response Approach
 
-### Directory Structure
+Use this workflow for single-agent work in this repository. The agent owns planning, implementation, investigation, verification, review, and reporting directly.
 
-- It uses Next.js App Router.
-- It uses nested routes for feature-specific pages.
-- It uses `_` directory under `app/` for feature-agnostic modules.
-- It uses `_` directory under feature-specific routes for feature-specific modules (e.g. `app/(index)/_components/`).
+### Overall Strategy
 
-Example:
+Non-trivial work should move through the same decision sequence even when some steps are brief.
 
-```
-<root>
-├── app/
-│   ├── (app)/                 # main application files
-│   │   ├── _/                 # feature-agnostic modules
-│   │   │   ├── components/    # generic UI components
-│   │   │   ├── helpers/       # generic or core helper functions
-│   │   │   ├── repositories/  # generic data access functions
-│   │   │   └── ...
-│   │   ├── _components/       # root layout sub-components
-│   │   ├── layout.tsx         # root layout
-│   │   ├── (index)/           # index route
-│   │   │   ├── _components/   # index route sub-components
-│   │   │   └── page.tsx       # index page
-│   │   ├── posts/             # posts routes
-│   │   │   └── ...
-│   │   ├── variables.css      # css variables
-│   │   ├── globals.css        # global styles
-│   │   ├── layers.css         # css layers definitions
-│   │   └── ...
-│   └── (payload)/             # Payload CMS routes (do not change)
-├── e2e/                       # end-to-end tests
-│   └── ...
-├── public/                    # public assets
-├── .data/                     # local temporary data files
-├── payload/                   # Payload CMS configurations
-│   └── ...
-└── ...
-```
+1. Classify the request and load the relevant project guidance.
+2. Define success criteria, constraints, affected surface, dependencies, and verification expectations.
+3. Inspect the smallest useful code and documentation context.
+4. Draft an ordered local workflow with acceptance criteria.
+5. Implement, investigate, or review within the narrowest scope that satisfies the request.
+6. Self-review the result as a separate phase.
+7. Run or report the relevant verification.
+8. Update or propose skill guidance when the work exposes reusable project learning.
+9. Summarize outcome, verification status, trade-offs, and open follow-ups.
 
-### NPM Run-scripts
+**Guidelines:**
 
-- `npm run dev` — Starts the development server.
-- `npm run test:e2e` — Runs the end-to-end tests.
-- `npm run build` — Builds the production bundle.
-- `npm run start` — Starts the production server that built by `npm run build`.
-- `npm run migrate:status` — Shows the DB migration status.
-- `npm run migrate:create` — Creates a new DB migration entry.
-- `npm run migrate:up` — Runs the DB migrations against the DB. The target DB is determined by the environment variables.
-- `npm run lint` — Runs the linter (Biome).
-- `npm run format` — Formats the code with Biome.
+- MUST consult [Development Guidelines](.agents/skills/development-guidelines/SKILL.md) at the start of every task.
+- MUST classify non-trivial work as UI-bearing, implementation-only, review-only, skill-maintenance, exploratory, or mixed workflow before editing files.
+- MUST consult every skill whose routing condition matches the changed surface or requested review lens.
+- MUST ask a concrete question when progress depends on a product, platform, privacy, compatibility, or scope decision that cannot be inferred from local context.
+- SHOULD compress the sequence for small answer-only requests without skipping relevant safety checks.
 
-## Guidelines
+### Planning and Execution
 
-### For Developer
+Planning exists to make the work checkable. It should name what changes, what must stay unchanged, and how the result will be verified.
 
-- MUST read [Development Guidelines](/.agents/skills/development-guidelines/SKILL.md).
+**Guidelines:**
 
-### For Code Reviewer
+- MUST restate success criteria, constraints, affected surface, and verification expectations before non-trivial edits.
+- MUST preserve public behavior during refactors unless the requested change intentionally modifies it.
+- MUST keep edits scoped to the smallest surface that satisfies the acceptance criteria.
+- SHOULD inspect independent discovery targets in parallel when their outputs do not depend on each other.
+- SHOULD revise the plan when new evidence changes affected files, risks, or acceptance criteria.
 
-- MUST read [Code Review Guideline](/.agents/skills/code-review-guideline/SKILL.md).
+### UI-Bearing Work
+
+User-facing changes need design intent before implementation mechanics. The single agent owns both, but the phases must stay distinct.
+
+**Guidelines:**
+
+- MUST establish design intent before implementing UI-bearing changes: hierarchy, interaction states, accessibility intent, responsive behavior, and copy constraints.
+- MUST consult [UI Design Principles](.agents/skills/ui-design-principles/SKILL.md) for design decisions and [React Component Guidelines](.agents/skills/react-component-guidelines/SKILL.md) for implementation mechanics.
+- MUST express design intent in user-facing terms before translating it into components, CSS, or tests.
+- MUST verify that text, layout, focus behavior, loading states, and responsive behavior remain coherent across relevant viewports.
+- SHOULD keep design-system rules in design vocabulary and link to implementation-mechanics skills instead of duplicating CSS wiring rules.
+
+### Review Independence Gates
+
+A single agent cannot provide true independent review. This repository compensates with a mandatory separate review phase for ordinary work and external review gates for high-risk work.
+
+**Guidelines:**
+
+- MUST perform a reviewer-mode reset after non-trivial implementation: stop editing, reread the request, inspect `git status` and `git diff`, and review only the produced diff.
+- MUST apply [Code Review Guideline](.agents/skills/code-review-guideline/SKILL.md) during self-review, including severity labels, file-line evidence, concrete fixes, and an explicit verdict when findings exist.
+- MUST load topic-specific review lenses when relevant: maintainability, quality assurance, security, performance/reliability, UI design, routing, markdown, observability, or e2e testing.
+- MUST judge the actual diff and observed behavior, not the implementation intent.
+- MUST fix Critical or Major self-review findings before claiming completion.
+- MUST perform a second-pass re-review after fixing any blocking self-review finding.
+- MUST report verification evidence before completion: commands run, manual checks, failures, skipped checks, and residual risk.
+- MUST escalate high-risk changes to user review, CI/PR review, or an explicitly requested secondary review before calling them merge-ready.
+- SHOULD treat auth, access control, markdown/XSS, SSRF/embed fetching, migrations, public route contracts, production config, data-loss risk, and large refactors as high-risk.
+
+### Verification
+
+Verification should match the changed surface. Documentation-only changes need link and format checks; route, UI, Payload, markdown, and runtime changes need stronger evidence.
+
+**Guidelines:**
+
+- MUST run the relevant verification commands after non-trivial changes, or report why they could not run.
+- MUST run `npm run format` and `npm run lint` after code or documentation edits.
+- MUST run `npm run test:e2e` when a change affects a UI output surface or e2e coverage.
+- MUST run `npm run build` when a change affects Next.js routes, metadata, Payload config, runtime config, dependencies, or TypeScript signatures.
+- SHOULD perform focused manual checks when browser behavior, crawler metadata, custom protocol behavior, responsive layout, or CMS preview behavior changes.
+- MUST report unverified acceptance criteria and residual risk in the final summary.
+
+### Skill Maintenance
+
+Skill maintenance keeps reusable workflow learning close to the project rules. It should happen when a change reveals durable guidance, not after every narrow fix.
+
+**Guidelines:**
+
+- MUST consult [Agent Skills Best Practices](.agents/skills/agent-skills-best-practices/SKILL.md) when adding, renaming, moving, deleting, splitting, or cross-linking skills, changing reference files, or updating this index.
+- MUST keep this skill index synchronized when skills are added, renamed, moved, or removed.
+- MUST make one skill the source of truth for a rule instead of copying detailed guidance across multiple skills.
+- SHOULD propose or implement skill updates when the workflow exposes a reusable convention, outdated guidance, recurring review issue, or missing project rule.
+- SHOULD skip skill maintenance when the workflow produced no generalizable learning, and state that it was skipped.
+
+### Communication
+
+User-facing communication should expose decisions, blockers, verification, and outcomes without narrating every local inspection step.
+
+**Guidelines:**
+
+- MUST keep progress updates concise and focused on decisions, blockers, and outcomes.
+- MUST summarize changed files, verification status, trade-offs, unresolved risks, and deferred follow-ups at completion.
+- MUST state whether skill maintenance was performed, skipped, or blocked when skill guidance governed the work.
+- SHOULD include detailed plans, command logs, or iteration logs only when the user asks for auditability or when the outcome depends on them.
+- MUST ask a concrete question when progress depends on a product, platform, privacy, or scope decision.

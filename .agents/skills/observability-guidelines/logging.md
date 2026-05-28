@@ -4,11 +4,19 @@ Apply these rules when writing, reviewing, or modifying any code that emits log 
 
 ## When to Log
 
-- SHOULD log the start and end of any operation that is slow, depends on an external system, or could fail (e.g., database queries, HTTP fetches, image processing).
+When to Log describes the preferred project default: log the start and end of any operation that is slow, depends on an external system, or could fail (e.g., database queries, HTTP fetches, image processing).
+
+**Guidelines:**
+
+- SHOULD log the start and end of any operation that is slow, depends on an external system, or can fail (e.g., database queries, HTTP fetches, image processing).
 - SHOULD log unexpected-but-recoverable conditions (e.g., a document was skipped due to a parse error).
 - SHOULD NOT log trivial or extremely frequent operations (e.g., individual React renders, synchronous computations).
 
 ## Log Levels
+
+Log Levels describes the preferred project default: use `logger.info()` for informational messages that describe normal progress.
+
+**Guidelines:**
 
 - SHOULD use `logger.info()` for informational messages that describe normal progress.
 - SHOULD use `logger.warn()` for recoverable unexpected conditions — cases where execution continues but something is worth investigating.
@@ -17,6 +25,8 @@ Apply these rules when writing, reviewing, or modifying any code that emits log 
 ## Logger Setup
 
 The project uses [Pino](https://getpino.io/) for structured JSON logging.
+
+**Guidelines:**
 
 - MUST use the `rootLogger` exported from `app/(app)/_/logger.ts` as the base logger. Do not create a new `pino()` instance directly.
 - MUST create a **child logger** scoped to each module, setting a `module` field with an emoji identifier:
@@ -42,9 +52,11 @@ logger.info({ slug, draft }, "Started fetching post.");
 logger.info({ slug, duration: performance.now() - startedAt }, "Completed fetching post.");
 ```
 
+**Guidelines:**
+
 - SHOULD include identifiers (e.g., `slug`, `url`, `filename`) in the context object so log lines are searchable and filterable.
 - SHOULD include timing information (`duration`) in "completed" log lines for operations where latency matters.
-- MUST NOT log values that could contain sensitive user data (passwords, tokens, PII). Log only identifiers and metadata.
+- MUST NOT log values that can contain sensitive user data (passwords, tokens, PII). Log only identifiers and metadata.
 
 ## Message Conventions
 
@@ -72,5 +84,7 @@ logger.warn(
 logger.info("done");
 logger.info("error fetching post");
 ```
+
+**Guidelines:**
 
 - MUST end every log message with a period (`.`) for grammatical consistency.

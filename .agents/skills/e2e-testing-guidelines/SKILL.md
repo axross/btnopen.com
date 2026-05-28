@@ -13,6 +13,10 @@ See [E2E Test Commands](./commands.md) for:
 
 - Running end-to-end tests
 
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
+
 ## End-to-End Test Structure
 
 See [E2E Test Structure](./structure.md) for:
@@ -22,6 +26,10 @@ See [E2E Test Structure](./structure.md) for:
 - Reviewing end-to-end tests
 - Refactoring end-to-end tests
 
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
+
 ## End-to-End Test Conventions
 
 See [E2E Test Conventions](./conventions.md) for:
@@ -29,3 +37,7 @@ See [E2E Test Conventions](./conventions.md) for:
 - Writing end-to-end tests
 - Reviewing end-to-end tests
 - Refactoring end-to-end tests
+
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.

@@ -4,10 +4,18 @@ Apply these rules to verify the author respected the project's mandatory checks.
 
 ## Format
 
+Format sets the required project default: mentally run `npm run format` (Biome) over the diff. Flag any tab/space inconsistency, trailing whitespace, missing trailing newline, or quote-style drift as Critical (lint will fail).
+
+**Guidelines:**
+
 - MUST mentally run `npm run format` (Biome) over the diff. Flag any tab/space inconsistency, trailing whitespace, missing trailing newline, or quote-style drift as Critical (lint will fail).
 - MUST flag a hand-applied formatting change to a file the diff did not otherwise need to touch — that violates [development-guidelines › change-management](../development-guidelines/change-management.md) scope discipline.
 
 ## Lint
+
+Lint sets the required project default: flag a Critical for any introduced lint **error** (not warning). Common categories that show up in this project:
+
+**Guidelines:**
 
 - MUST flag a Critical for any introduced lint **error** (not warning). Common categories that show up in this project:
   - `noExplicitAny`
@@ -21,11 +29,19 @@ Apply these rules to verify the author respected the project's mandatory checks.
 
 ## Suppressions
 
+Suppressions sets the required project default: flag a new `// biome-ignore lint/<rule>:` directive that lacks an inline justification on the same line. The project rule is "explain why, not just what".
+
+**Guidelines:**
+
 - MUST flag a new `// biome-ignore lint/<rule>:` directive that lacks an inline justification on the same line. The project rule is "explain why, not just what".
 - MUST flag a new `// biome-ignore-start` / `// biome-ignore-end` block in any file that is not one of the whitelisted env-access points listed above.
 - SHOULD flag a `@ts-expect-error` or `@ts-ignore` introduced without a comment explaining the upstream type bug it works around.
 
 ## TypeScript Compliance
+
+TypeScript Compliance sets the required project default: flag any introduced `any`, `as any`, `as unknown as <T>`, or `// @ts-expect-error` swallowing a real error per [react-component-guidelines › conventions](../react-component-guidelines/conventions.md).
+
+**Guidelines:**
 
 - MUST flag any introduced `any`, `as any`, `as unknown as <T>`, or `// @ts-expect-error` swallowing a real error per [react-component-guidelines › conventions](../react-component-guidelines/conventions.md).
 - MUST flag a missing return type on a new exported function, especially React components — the rules require explicit `JSX.Element` / `Promise<JSX.Element>` / `null`.

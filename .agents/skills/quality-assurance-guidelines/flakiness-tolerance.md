@@ -4,6 +4,10 @@ Apply these rules to verify the change does not introduce or paper over test fla
 
 ## Flakiness Workarounds to Reject
 
+Flakiness Workarounds to Reject review focuses on critical-severity cases where a new or modified test contains:
+
+**Guidelines:**
+
 - MUST flag a Critical when a new or modified test contains:
   - `await new Promise((resolve) => setTimeout(resolve, <ms>))` or `await page.waitForTimeout(<ms>)` — fixed sleeps are anti-pattern. Use Playwright's auto-waiting, `expect(locator).toBeVisible()`, `page.waitForResponse(…)`, or `page.waitForLoadState(…)` instead.
   - A `try`/`catch` around an `expect(…)` to "make the test pass when it sometimes fails".
@@ -13,20 +17,36 @@ Apply these rules to verify the change does not introduce or paper over test fla
 
 ## Root-Cause Investigation
 
+Root-Cause Investigation sets the required project default: flag when a flake is "fixed" by changing the assertion target rather than fixing the underlying race (e.g., changing `toHaveText("foo")` to `toContainText("f")`).
+
+**Guidelines:**
+
 - MUST flag when a flake is "fixed" by changing the assertion target rather than fixing the underlying race (e.g., changing `toHaveText("foo")` to `toContainText("f")`).
 - SHOULD ask the author to identify the specific race (e.g., "did the response arrive before the assertion ran?", "was a Suspense boundary still loading?") in the PR description.
 
 ## `.only()` and `.skip()`
+
+`.only()` and `.skip()` sets the required project default: flag a Critical for any committed `test.only(…)`, `test.describe.only(…)`, `test.step.only(…)` — CI's `forbidOnly: isCI` will fail the build.
+
+**Guidelines:**
 
 - MUST flag a Critical for any committed `test.only(…)`, `test.describe.only(…)`, `test.step.only(…)` — CI's `forbidOnly: isCI` will fail the build.
 - MUST flag a Major for any committed `test.skip(…)` or `test.fixme(…)` without a tracked-issue comment explaining what's skipped, why, and when it's expected to be re-enabled.
 
 ## Authentication and Storage State
 
+Authentication and Storage State describes the preferred project default: flag a test that hits Payload's draft endpoints without `test.use({ storageState: authenticatedStorageState })` — it will succeed when run locally with a logged-in browser session and fail in CI, which is a flakiness pattern.
+
+**Guidelines:**
+
 - SHOULD flag a test that hits Payload's draft endpoints without `test.use({ storageState: authenticatedStorageState })` — it will succeed when run locally with a logged-in browser session and fail in CI, which is a flakiness pattern.
 - SHOULD flag a test that mutates Payload state (e.g., creates a draft, updates a tag) without a corresponding `test.afterEach` cleanup — the next iteration of `repeatEach: 2` will see the mutation and behave differently.
 
 ## Network and External Dependencies
+
+Network and External Dependencies describes the preferred project default: flag a test that depends on a live external URL (e.g., the webembed pipeline fetching real social media metadata) without a route mock or fixture — external availability flakes the test.
+
+**Guidelines:**
 
 - SHOULD flag a test that depends on a live external URL (e.g., the webembed pipeline fetching real social media metadata) without a route mock or fixture — external availability flakes the test.
 - SHOULD flag a test that asserts on `Date.now()`-derived UI (e.g., "5 minutes ago") without freezing the clock — time-dependent assertions are inherently flaky across `repeatEach`.

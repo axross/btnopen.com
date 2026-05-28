@@ -2,9 +2,13 @@
 
 ## `"use client"` Directive
 
+`"use client"` Directive sets the required project default: place `"use client";` at the very top of the file, before any imports.
+
+**Guidelines:**
+
 - MUST place `"use client";` at the very top of the file, before any imports.
 
-Example:
+**Example:**
 
 ```tsx
 "use client";
@@ -31,9 +35,9 @@ export function SocialLinkList({
 
 ## Side-Effect-Only Components
 
-- Side-effect-only Client Components (e.g., analytics page-view trackers) SHOULD return `null` and declare their return type as `null`.
+Side-Effect-Only Components captures the project-specific context for the checklist below: Side-effect-only Client Components (e.g., analytics page-view trackers) SHOULD return `null` and declare their return type as `null`.
 
-Example:
+**Example:**
 
 ```tsx
 "use client";
@@ -53,3 +57,7 @@ export function PageViewTracking(): null {
   return null;
 }
 ```
+
+**Guidelines:**
+
+- SHOULD make side-effect-only Client Components (e.g., analytics page-view trackers) return `null` and declare their return type as `null`.

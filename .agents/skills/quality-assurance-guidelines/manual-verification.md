@@ -16,15 +16,25 @@ The reviewer MUST ask the author to confirm (in the PR description or the review
 | Markdown processing pipeline (`app/(app)/_/helpers/markdown.ts`, `app/(app)/_/components/markdown.tsx`) | A blog post containing the affected markdown construct was rendered end-to-end |
 | Sentry config or `instrumentation.ts` | Dev server starts without throwing, and a test exception was confirmed to land in Sentry (or the author confirmed the DSN is intentionally null in dev) |
 
+**Guidelines:**
+
 - MUST flag a Major when the diff touches a row in the table above and the author has not confirmed the corresponding check.
 
 ## Dev-Server Output Inspection
+
+Dev-Server Output Inspection review focuses on major-severity cases where the diff introduces new Pino `warn`-level log lines that were not in the dev-server output before the change (or removes existing `warn` lines without explanation). The dev server pipes through `pino-pretty` so these are visible inline.
+
+**Guidelines:**
 
 - MUST flag a Major when the diff introduces new Pino `warn`-level log lines that were not in the dev-server output before the change (or removes existing `warn` lines without explanation). The dev server pipes through `pino-pretty` so these are visible inline.
 - MUST flag a Critical when the diff causes the dev server to throw an uncaught exception during a normal navigation — Sentry will receive it but users will see `global-error.tsx`.
 - SHOULD ask the author to include the dev-server output snippet for the affected route in the PR description when the change adds new repository calls or new logger usage.
 
 ## Local Production Build
+
+Local Production Build describes the preferred project default: ask the author to run `npm run build && npm run start` and reload the affected route when the diff touches:
+
+**Guidelines:**
 
 - SHOULD ask the author to run `npm run build && npm run start` and reload the affected route when the diff touches:
   - `next.config.ts`
@@ -33,6 +43,10 @@ The reviewer MUST ask the author to confirm (in the PR description or the review
   - `next/image` configuration or `images.remotePatterns`
 
 ## What Manual Verification Cannot Replace
+
+What Manual Verification Cannot Replace is a project prohibition: do not accept "I tested it manually" as a substitute for the e2e coverage required by [e2e-coverage.md](./e2e-coverage.md). Manual is the first line; e2e is the second and the one that runs in CI.
+
+**Guidelines:**
 
 - MUST NOT accept "I tested it manually" as a substitute for the e2e coverage required by [e2e-coverage.md](./e2e-coverage.md). Manual is the first line; e2e is the second and the one that runs in CI.
 - MUST NOT accept "the dev server didn't error" as a substitute for the lint gate per [lint-and-format-gate.md](./lint-and-format-gate.md). Lint runs separately.

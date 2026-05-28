@@ -1,6 +1,6 @@
 ---
 name: ui-design-principles
-description: Use this skill whenever designing, writing, or reviewing any user-facing surface of this website from a UI/UX design perspective — picking colors/spacing/radii/duration tokens, deciding the look-and-feel of a new component or page, adapting a surface across mobile / tablet / desktop, verifying a surface in light and dark modes, writing UI copy/labels, designing loading or empty states, or adding ARIA/alt/focus affordances. Covers the developer-flavored visual identity (IBM Plex Sans + JetBrains Mono, angle-bracket logo, code-syntax error headings), the `--accent-*` / `--neutral-*` palette semantics driven by `--accent-hue` and a shared `--lightness-*` scale, the squircle shape language and `--radius-*` role assignments, motion taste (single `--ease-in-out` curve + `--duration-*` tier), imagery treatment (color-grading recipe — sepia wash + saturation boost + hue shift onto brand hue + per-scheme brightness — for branded imagery; unfiltered avatars; natural in-content media), responsive layout (the two canonical breakpoint transitions at `width > 30rem` and `width > 50rem`, the three named tiers mobile / tablet / desktop, shared `--max-width` reading surface, mobile→tablet structural transformations like stacked→grid cards or column→row intro or full-bleed→inset imagery, per-tier image aspect-ratio pairings), light/dark color theming (inverted `--lightness-*` scale keeping step-roles invariant across schemes, per-scheme imagery brightness/saturation compensation, the rule that per-surface `@theme: dark` branches are a design smell unless compensating filtered imagery, chrome/affordance auto-adaptation), `:focus-visible` rings, Japanese-primary / English-fallback copy with code-syntax error headings (`page.found === false`), loading placeholder shapes + `ViewTransition` list→detail continuity, the 404 glitch aesthetic, and the semantic-HTML + `role="img"` + `aria-label` + external-link `rel="noopener noreferrer"` requirements. Use even when the user only says "design", "palette", "look and feel", "theme", "dark mode", "light mode", "color scheme", "theming", "responsive", "breakpoint", "mobile", "tablet", "desktop", "a11y", "accessibility", "aria", "alt text", "copy", "wording", "color", "typography", "squircle", "loading state", "view transition", or "not found".
+description: Use this skill when designing, implementing, or reviewing user-facing UI/UX. Covers visual identity, color tokens, spacing/radii/motion, imagery treatment, responsive mobile/tablet/desktop behavior, light/dark themes, focus states, Japanese-primary copy, loading/empty/not-found states, semantic HTML, ARIA, alt text, and external-link affordances. Use for "design", "palette", "theme", "dark mode", "responsive", "mobile", "a11y", "copy", "typography", "squircle", "loading state", "view transition", or "not found".
 user-invocable: false
 ---
 
@@ -22,6 +22,10 @@ See [design-tone-and-taste.md](./design-tone-and-taste.md) for:
 - Typography scale with named tiers and weight-as-semantic-hierarchy (regular body / medium links / semibold subheads / bold titles / black for emphasis inside headings)
 - Layout posture: centered narrow reading column, shared per-tier column widths, mobile-only gutters, full-bleed as an intentional atmospheric choice
 
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
+
 ## Responsive Layout
 
 See [responsive-layout.md](./responsive-layout.md) for:
@@ -34,6 +38,10 @@ See [responsive-layout.md](./responsive-layout.md) for:
 - When full-bleed is legitimate, and how full-bleed elements transition to inset at tier shifts
 - The rule that layout tiers react to the surface's own container, not the viewport
 
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
+
 ## Color Theming (Light / Dark)
 
 See [color-theming.md](./color-theming.md) for:
@@ -44,6 +52,10 @@ See [color-theming.md](./color-theming.md) for:
 - Chrome / affordance auto-adaptation via palette tokens (scrollbar, selection, focus ring) and the prohibition on per-scheme overrides of these
 - Palette-hue drift discipline and the single-brand-hue rule
 - Dark-mode verification as a merge-gate discipline
+
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
 
 ## UI Labeling and Wording
 
@@ -58,6 +70,10 @@ See [ui-labeling-and-wording.md](./ui-labeling-and-wording.md) for:
 - Loading-placeholder sample text: lorem-style strings sized to match the real content's proportions, never real UI copy
 - Brand wordmark `<btn open />` in browser-tab titles and the rule that metadata copy comes from the CMS, not route code
 
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
+
 ## Loading and Empty States
 
 See [loading-and-empty-states.md](./loading-and-empty-states.md) for:
@@ -68,6 +84,10 @@ See [loading-and-empty-states.md](./loading-and-empty-states.md) for:
 - View-transition usage for list-item → detail-page morphs, the `<entity>-<identifier>-<role>` transition-name pattern, and the pairing of image morph with a slow sepia fade-in
 - The 404 aesthetic: glitched triplet of the big status number with two hue-offset layers and alternating noise masks, code-syntax heading, Japanese subtext, single `Go back home` escape hatch — no secondary actions
 - Empty-state posture: muted message inside the container rather than collapsing the container, code-syntax heading voice where appropriate
+
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
 
 ## Accessibility
 
@@ -82,3 +102,7 @@ See [accessibility.md](./accessibility.md) for:
 - Non-color hover affordances — every interactive state change carries a fill / underline / border delta, not just a color swap
 - Tappable target size — ~40×40 minimum, via the invisible padding + negative-margin pattern (canonical CSS template in `css-property-usage`)
 - Language attribute, reduced-motion rule for new animations, and the native-dialog requirement for any future modal
+
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.

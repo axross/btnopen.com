@@ -6,12 +6,21 @@
 
 **Custom node types** (e.g., directive nodes created by `remark-directive`) are NOT recognized by `remarkRehype` by default. They require explicit registration to survive the MDAST→HAST bridge.
 
+**Guidelines:**
+
+- MUST rely on built-in handlers for standard MDAST nodes unless the project needs custom rendering behavior.
+- MUST register custom MDAST node types explicitly before expecting them to reach the React rendering layer.
+
 ## Existing Custom Nodes
 
 The project defines one custom node type: `leafDirective` with name `"webembed"`.
 
 - It carries `attributes: { href: string; title?: string }` and `children: []`.
 - It is created by the `remarkEmbeds` plugin from paragraphs that contain a single link whose text matches its URL.
+
+**Guidelines:**
+
+- MUST preserve the existing `leafDirective` / `"webembed"` node shape unless the markdown pipeline, React mapping, and tests are updated together.
 
 ## Adding a New Custom Directive
 
@@ -22,3 +31,7 @@ When adding a new custom directive, you MUST complete all three steps:
    - Add a handler that converts it to an HAST element with `type: "element"`, a `tagName` matching the directive name, and `properties` from `node.attributes`.
 2. **Add a React component entry** in `defaultComponents` in `app/(app)/_/components/markdown.tsx`.
 3. **Handle unknown nodes** — the `unknownHandler` already configured in `remarkRehype` reports unrecognized MDAST node types to Sentry. MUST NOT silently drop them.
+
+**Guidelines:**
+
+- MUST complete the pass-through registration, HAST handler, React component mapping, and unknown-node handling path before adding a custom directive.

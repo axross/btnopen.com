@@ -4,6 +4,10 @@ Apply these rules to verify that changed files live in the right place with the 
 
 ## File Naming
 
+File Naming sets the required project default: flag any new `.ts` / `.tsx` / `.module.css` file whose name is not kebab-case (e.g., `BlogPostHeader.tsx` or `blog_post_header.tsx`). The project rule is in [react-component-guidelines › conventions](../react-component-guidelines/conventions.md).
+
+**Guidelines:**
+
 - MUST flag any new `.ts` / `.tsx` / `.module.css` file whose name is not kebab-case (e.g., `BlogPostHeader.tsx` or `blog_post_header.tsx`). The project rule is in [react-component-guidelines › conventions](../react-component-guidelines/conventions.md).
 - MUST flag a new component file that lacks its CSS module sibling when the component renders any DOM (e.g., `blog-post-header.tsx` requires `blog-post-header.module.css` if it has any visual styling).
 - SHOULD flag a CSS module file whose base name does not match its component file (e.g., `blog-post-header.tsx` paired with `header.module.css`).
@@ -17,6 +21,8 @@ The project has three tiers of shared code under `app/(app)/`. The reviewer MUST
 | Route-local | `app/(app)/<route>/_components/`, `app/(app)/<route>/_/` | Used only by `page.tsx` / `layout.tsx` / sibling files of one route |
 | Route-group-shared | `app/(app)/_/components/`, `app/(app)/_/helpers/`, `app/(app)/_/repositories/` | Used by ≥ 2 routes inside `(app)/` |
 | Payload-side | `payload/collections/`, `payload/globals/`, `payload/helpers/` | Runs inside the Payload CMS realm only |
+
+**Guidelines:**
 
 - MUST flag a new file placed in `app/(app)/_/` that is only consumed by one route — it SHOULD live in that route's `_/` or `_components/` instead.
 - MUST flag a new file placed in a route-local `_components/` that is also imported by another route — it SHOULD be promoted to `app/(app)/_/components/`.
@@ -32,7 +38,15 @@ When the diff adds or moves a route, the reviewer MUST verify per [routing-guide
 - OG image files co-located with the route they belong to (e.g., `app/(app)/posts/[slug]/thumbnail.png`).
 - Any `route.ts` lives in its own sub-directory, never next to a `page.tsx` (e.g., `posts/caches/route.ts`, never `posts/route.ts`).
 
+**Guidelines:**
+
+- MUST verify added or moved route files against [routing-guidelines](../routing-guidelines/SKILL.md) before approving their placement.
+
 ## Identifier Naming
+
+Identifier Naming sets the required project default: flag identifier-naming inconsistency within the changed file's neighborhood. Examples to flag:
+
+**Guidelines:**
 
 - MUST flag identifier-naming inconsistency within the changed file's neighborhood. Examples to flag:
   - A new component named in `PascalCase` when its siblings use `camelCase` (or vice versa) — match the existing file.

@@ -2,13 +2,16 @@
 
 ## `data-testid` Attribute
 
+`data-testid` Attribute sets the required project default: add `data-testid` attributes to all meaningful UI elements that need to be identifiable in tests.
+
+**Guidelines:**
+
 - MUST add `data-testid` attributes to all meaningful UI elements that need to be identifiable in tests.
 - MUST use kebab-case for `data-testid` values (e.g., `"blog-post"`, `"cover-image"`).
-
 - SHOULD accept `"data-testid"` as an explicit prop when the component may be used in different contexts so the caller can customise the test ID.
 - MUST spread `...props` onto the root element so that `data-testid` (and other `data-*` attributes) propagate automatically when using the `ComponentProps<T>` pattern.
 
-Example (accepting and forwarding `data-testid`):
+**Example:**
 
 ```tsx
 export async function BlogPostHeader({
@@ -32,10 +35,7 @@ export async function BlogPostHeader({
 
 ## Nesting Pattern
 
-- `data-testid` values MUST be intentionally **short and scope-relative**, not globally unique.
-- E2E and unit tests SHOULD navigate the tree by chaining `.getByTestId()` calls on progressively narrower locators. This mirrors the component hierarchy and keeps IDs readable.
-- The page-level component MUST own the **top scope** IDs (`"page"`, `"header"`, `"content"`) and pass them as props.
-- Each sub-component MUST only use **relative, short IDs** for its internal elements (`"title"`, `"author"`, `"tags"`).
+Nesting Pattern captures the project-specific context for the checklist below: `data-testid` values MUST be intentionally **short and scope-relative**, not globally unique.
 
 Structure overview:
 
@@ -53,7 +53,7 @@ page                  ← set on the top-level page element
   content             ← set on the <main> wrapper
 ```
 
-Example (page sets scope IDs, component uses relative IDs):
+**Example:**
 
 ```tsx
 // posts/[slug]/page.tsx  — sets top-level scope IDs
@@ -98,11 +98,18 @@ const tags = header.getByTestId("tags");
 const firstTag = tags.getByTestId("tag").first();
 ```
 
+**Guidelines:**
+
+- MUST keep `data-testid` values intentionally **short and scope-relative**, not globally unique.
+- SHOULD make E2E and unit tests navigate the tree by chaining `.getByTestId()` calls on progressively narrower locators. This mirrors the component hierarchy and keeps IDs readable.
+- MUST make the page-level component own the **top scope** IDs (`"page"`, `"header"`, `"content"`) and pass them as props.
+- MUST make each sub-component use only **relative, short IDs** for its internal elements (`"title"`, `"author"`, `"tags"`).
+
 ## Loading State IDs
 
-- When a component uses the [Loading / Loaded Split Pattern](./server-components.md), the orchestrator MUST propagate `data-testid` to the `<Loading>` fallback with a `-loading` suffix.
+Loading State IDs captures the project-specific context for the checklist below: When a component uses the [Loading / Loaded Split Pattern](./server-components.md), the orchestrator MUST propagate `data-testid` to the `<Loading>` fallback with a `-loading` suffix.
 
-Example:
+**Example:**
 
 ```tsx
 export async function BlogPostList({
@@ -134,11 +141,19 @@ const loaded = page.getByTestId("blog-posts");
 await expect(loaded).toBeVisible();
 ```
 
+**Guidelines:**
+
+- MUST make the orchestrator propagate `data-testid` to the `<Loading>` fallback with a `-loading` suffix when a component uses the [Loading / Loaded Split Pattern](./server-components.md).
+
 ## Additional `data-*` Attributes
+
+Additional `data-*` Attributes describes an optional project path: use extra `data-*` attributes alongside `data-testid` to expose entity identifiers or state, allowing scoped targeting without requiring globally unique IDs.
+
+**Guidelines:**
 
 - MAY use extra `data-*` attributes alongside `data-testid` to expose entity identifiers or state, allowing scoped targeting without requiring globally unique IDs.
 
-Example:
+**Example:**
 
 ```tsx
 // In the component

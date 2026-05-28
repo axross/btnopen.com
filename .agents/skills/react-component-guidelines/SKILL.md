@@ -1,6 +1,6 @@
 ---
 name: react-component-guidelines
-description: Use this skill when writing, reviewing, or refactoring any React component in this project — kebab-case file naming, TypeScript prop types with `ComponentProps<T>`, explicit `JSX.Element` / `Promise<JSX.Element>` return types, deciding Server vs Client components, `"use client"` placement, the loading/loaded split with `<Suspense>`, `"use cache"` + `cacheLife()` caching, passing `Promise<T>` props (never to Client Components), CSS Modules under `@layer components` with `clsx` class merging and variables, style-isolation rules (no position/margin/width/height on root), CSS property-choice conventions (logical properties like `margin-block` / `inline-size`, `@container` inline-size + `@container style(--variant: "…")` queries over `@media`, `@scope` + `:where(:scope)` for component isolation, `oklch()` and relative color syntax, modern units `cqw` / `dvh` / `1lh` / `1ch` / `stretch`, `currentColor` in SVGs, `font-feature-settings` pairing, `-webkit-line-clamp` truncation, scroll-driven animations with `animation-timeline` + `timeline-scope` + named `scroll-timeline`), and the `data-testid` nesting / `-loading` suffix conventions that E2E tests depend on. Use even when the user only says "component", "use client", "RSC", "Suspense", "data-testid", "styling", "clsx", "logical property", "container query", "oklch", "@scope", "CSS unit", "animation-timeline", or "scroll-driven".
+description: Use this skill when writing, reviewing, or refactoring React components. Covers kebab-case files, prop typing, explicit JSX return types, Server vs Client component boundaries, `"use client"`, Suspense loading/loaded splits, `"use cache"`/`cacheLife()`, `Promise<T>` props, CSS Modules, `clsx`, style isolation, modern CSS properties, and `data-testid` conventions. Use for "component", "use client", "RSC", "Suspense", "styling", "container query", "oklch", "@scope", "animation-timeline", or "data-testid".
 ---
 
 # React Component Guidelines
@@ -15,12 +15,31 @@ See [React Component Conventions](./conventions.md) for:
 - Props and return type declarations
 - Naming and file/module organization
 
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
+
 ## React Client Components vs Server Components
 
 See [React Client Components vs Server Components](./client-vs-server-components.md) for:
 
 - When to determine whether to use React Client Components or Server Components
 - How to split components into Client and Server Components
+
+See [React Client Components](./client-components.md) when implementing a client boundary:
+
+- `"use client"` directive placement
+- Side-effect-only Client Component return types
+
+See [React Server Components](./server-components.md) when implementing server-side rendering or async loading:
+
+- Suspense boundary placement
+- Loading / loaded split pattern
+- `"use cache"` and `cacheLife()` usage
+
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
 
 ## CSS and Styling
 
@@ -30,6 +49,10 @@ See [React Component Styling](./styling.md) for:
 - CSS variables and theme tokens
 - CSS layers
 - Class name merging patterns
+
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
 
 ## CSS Property Usage
 
@@ -49,6 +72,10 @@ See [CSS Property Usage](./css-property-usage.md) for:
 - Canonical `:focus-visible` template (`outline: var(--accent-5) solid var(--size-3); outline-offset: var(--size-3)`) and the rule that width / offset / color are not per-surface knobs
 - Hit-area expansion template: matching `padding: var(--size-8); margin: calc(var(--size-8) * -1)` to grow the tap target without moving the visual position
 
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
+
 ## Testable Components
 
 See [Testable Components](./testable-components.md) for:
@@ -56,3 +83,7 @@ See [Testable Components](./testable-components.md) for:
 - `data-testid` attribute conventions
 - `data-testid` nesting patterns and how E2E and unit tests traverse the component tree
 - Loading-state ID conventions (`-loading` suffix)
+
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.

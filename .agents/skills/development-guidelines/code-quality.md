@@ -4,22 +4,36 @@ Apply these rules whenever you write or modify code in this project.
 
 ## Check Sequence
 
+Check Sequence sets the required project default: always run checks in this order after making any code change:
+
+- `npm run format` runs `biome format --write`, which applies auto-fixable formatting. `npm run lint` runs `biome check`, which enforces both lint rules and format rules. Some format violations are only caught by `biome check`, so the lint step may still report format issues even after running format.
+
+**Guidelines:**
+
 - MUST always run checks in this order after making any code change:
   1. **Format** (`npm run format`) — auto-formats all modified files.
   2. **Lint** (`npm run lint`) — detects code quality and remaining format issues.
   3. **Fix all reported errors.**
   4. **Re-run lint** — confirm all errors are resolved.
   5. **Test** (`npm run test:e2e`) — only when the change affects a UI output surface; see [verification.md](./verification.md) for which changes require testing.
+
 - MUST NOT skip or reorder these steps.
-- `npm run format` runs `biome format --write`, which applies auto-fixable formatting. `npm run lint` runs `biome check`, which enforces both lint rules and format rules. Some format violations are only caught by `biome check`, so the lint step may still report format issues even after running format.
 
 ## Formatting
 
+Formatting sets the required project default: run `npm run format` after every set of code changes, before committing or considering the task done.
+
+**Guidelines:**
+
 - MUST run `npm run format` after every set of code changes, before committing or considering the task done.
-- Formatting is enforced by [Biome](https://biomejs.dev/). MUST NOT manually adjust spacing, indentation, or line endings — let the formatter handle it.
+- MUST NOT manually adjust spacing, indentation, or line endings — let the [Biome](https://biomejs.dev/) formatter handle them.
 - MUST NOT submit code that has not been passed through the formatter.
 
 ## Linting
+
+Linting sets the required project default: run `npm run lint` after formatting to surface code quality issues.
+
+**Guidelines:**
 
 - MUST run `npm run lint` after formatting to surface code quality issues.
 - MUST fix every lint **error** before considering the task complete.
@@ -30,12 +44,21 @@ Apply these rules whenever you write or modify code in this project.
 
 ## Comments
 
-- MUST start `//`, `/* */`, JSDoc, and each visually-line-starting sentence inside a multi-line comment with a lowercase letter in `.ts` / `.tsx` / `.js` source files. Proper nouns (`Chromium`, `React`, `Next.js`), code identifiers (`Promise.all`, `<Table>`), acronyms (`API`, `JSON`, `GFM`), and deliberate all-caps emphasis keep their natural casing.
-  - Example: `// resolve the draft first, then fall back to the published version`
+Comments sets the required project default: start `//`, `/* */`, JSDoc, and each visually-line-starting sentence inside a multi-line comment with a lowercase letter in `.ts` / `.tsx` / `.js` source files. Proper nouns (`Chromium`, `React`, `Next.js`), code identifiers (`Promise.all`, `<Table>`), acronyms (`API`, `JSON`, `GFM`), and deliberate all-caps emphasis keep their natural casing.
+
 - Applies to TS/JS source only. Does NOT apply to CSS `/* */` comments, Markdown prose, or commit messages (see [commit-messages.md](./commit-messages.md)).
 - `biome-ignore` / `eslint-disable` directive comments follow the tool's required casing; the trailing human-readable reason after the colon also starts lowercase (e.g., `// biome-ignore lint/suspicious/noExplicitAny: external library type is untyped`).
 
+**Guidelines:**
+
+- MUST start `//`, `/* */`, JSDoc, and each visually-line-starting sentence inside a multi-line comment with a lowercase letter in `.ts` / `.tsx` / `.js` source files. Proper nouns (`Chromium`, `React`, `Next.js`), code identifiers (`Promise.all`, `<Table>`), acronyms (`API`, `JSON`, `GFM`), and deliberate all-caps emphasis keep their natural casing.
+  - Example: `// resolve the draft first, then fall back to the published version`
+
 ## Import Hygiene
+
+Import Hygiene is a project prohibition: do not leave unused imports in modified files. The linter will flag these, but resolve them proactively.
+
+**Guidelines:**
 
 - MUST NOT leave unused imports in modified files. The linter will flag these, but resolve them proactively.
 - MUST NOT use barrel re-export files (`index.ts` that re-exports everything) as import sources when a direct import path is available. Import directly from the module file.

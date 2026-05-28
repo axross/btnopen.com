@@ -6,10 +6,20 @@
 
 Each component in the map is wrapped with `memo` to inject a `className` prop from the optional `classNames` override. Consumers (e.g., `BlogPostContent`) pass a `classNames` record that maps tag names to CSS module class names, allowing per-context styling.
 
+**Guidelines:**
+
+- MUST keep `defaultComponents` as the source of truth for markdown tag and directive component mapping.
+- MUST preserve the `classNames` override path when adding mapped markdown components.
+
 ## Required Mappings
 
+Required Mappings sets the required project default: map `img` to the `Media` component, `pre` to the `Snippet` component, and `webembed` to the `WebEmbed` component.
+
+**Guidelines:**
+
 - MUST map `img` to the `Media` component, `pre` to the `Snippet` component, and `webembed` to the `WebEmbed` component.
-- When adding a new custom component for a tag or directive, MUST add it to `defaultComponents` and MUST ensure the component accepts `className` as a prop so the `classNames` override mechanism works.
+- MUST add a new tag or directive component to `defaultComponents`.
+- MUST make each mapped component accept `className` as a prop so the `classNames` override mechanism works.
 - MUST NOT use `dangerouslySetInnerHTML` in any markdown-rendered component.
 
 ## Fallback Behavior for Unmapped Tags
@@ -19,6 +29,10 @@ Tags that are NOT in `defaultComponents` fall back to rendering as native HTML e
 - Render correctly as semantic HTML.
 - Do NOT receive CSS module class names from the `classNames` override mechanism.
 - Cannot be targeted by CSS module scoped selectors (e.g., `.thead` in a CSS module won't match a native `<thead>` element since no class is applied).
+
+**Guidelines:**
+
+- MUST account for the fact that unmapped tags lose CSS-module class injection through the `classNames` override mechanism.
 
 ## Table Family and Type-Only Sentinel Keys
 
@@ -30,4 +44,9 @@ When a mapped component renders more than one nested element and each nested ele
 - In the memoization loop that forwards class names, add a narrow special case for the parent tag so every sentinel's class is passed to the component as an extra prop (e.g., when `name === "table"`, forward both `wrapperClassName: classNames.tableWrapper` and `scrollAreaClassName: classNames.tableScrollArea`).
 - The receiving component accepts each extra prop and applies it to the relevant nested element.
 
-MUST document each sentinel's purpose with an inline comment on its entry in `defaultComponents` so the next reader does not mistake it for a mapping bug. MUST NOT introduce a sentinel key for a tag that the pipeline actually emits — sentinels are reserved for synthetic class-name channels.
+Sentinel keys look like real tag mappings, so their entries need inline comments that explain the synthetic class-name channel.
+
+**Guidelines:**
+
+- MUST reserve type-only sentinel keys for synthetic class-name channels and document each sentinel inline in `defaultComponents`.
+- MUST NOT introduce a sentinel key for a tag that the pipeline actually emits.

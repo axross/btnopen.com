@@ -7,19 +7,19 @@ description: Use this skill when creating, moving, renaming, or reviewing any ro
 
 Apply these rules when writing, reviewing, or refactoring routes in this project.
 
+**Guidelines:**
+
 - MUST use Next.js App Router-based routing.
-- SHOULD follow the common RESTful API design principles regarding the path structure.
-  - The path structure always SHOULD be repeating the type of resource and the resource identifier.
-    - For example, `posts/[id]` instead of `[id]`.
-    - For example, `posts/[id]/comments/[id]` instead of `[id]/[id]`.
-  - The path elements SHOULD be lowercased and kebab-cased.
-  - SHOULD use search params for any optional inputs.
-    - For example, use search params for pagination, filtering, and sorting.
-    - For example, use search params for language, draft/preview status, etc.
-  - Dynamic route segments SHOULD use semantic names that describe the resource identifier.
-    - For example, `posts/[slug]` rather than `posts/[id]` when the identifier is a slug.
+- SHOULD repeat the resource type and resource identifier in path structures, such as `posts/[id]` instead of `[id]` and `posts/[id]/comments/[id]` instead of `[id]/[id]`.
+- SHOULD use lowercased, kebab-cased path elements.
+- SHOULD use search params for optional inputs such as pagination, filtering, sorting, language, and draft/preview status.
+- SHOULD use semantic dynamic segment names that describe the resource identifier, such as `posts/[slug]` rather than `posts/[id]` when the identifier is a slug.
 
 ## Directory Conventions
+
+Directory Conventions describes the preferred project default: use route groups (`(group-name)` directories) to organize routes logically without affecting the URL structure.
+
+**Guidelines:**
 
 - SHOULD use route groups (`(group-name)` directories) to organize routes logically without affecting the URL structure.
   - For example, `(app)/` wraps all main application routes, `(index)/` groups the index route's files.
@@ -29,17 +29,22 @@ Apply these rules when writing, reviewing, or refactoring routes in this project
 
 ## File Conventions
 
+Route files should keep page rendering, route props, not-found handling, metadata images, and mutation handlers in predictable places.
+
+**Example:**
+
+```typescript
+export interface PageProps {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ draft?: "true"; preview?: "true" }>;
+}
+```
+
+**Guidelines:**
+
 - SHOULD define a `page-props.ts` file co-located with each `page.tsx` to export a `PageProps` interface.
-  - `params` and `searchParams` MUST be typed as `Promise<...>` to comply with Next.js 15+ async APIs.
-  - For example:
-    ```app/(app)/posts/[slug]/page-props.ts#L1-5
-    export interface PageProps {
-      params: Promise<{ slug: string }>;
-      searchParams: Promise<{ draft?: "true"; preview?: "true" }>;
-    }
-    ```
+- MUST type `params` and `searchParams` as `Promise<...>` to comply with Next.js 15+ async APIs.
 - MAY co-locate a `not-found.tsx` file with any route segment that requires a custom 404 UI.
 - SHOULD co-locate OG image files (e.g., `thumbnail.png`) with the route segment they belong to, using Next.js file-based metadata conventions.
-- Route handlers (`route.ts`) MUST NOT be placed in the same directory as a `page.tsx`.
-  - SHOULD place route handlers in a dedicated sub-directory named after the resource they manage.
-  - For example, `posts/[slug]/caches/route.ts` rather than `posts/[slug]/route.ts`.
+- MUST NOT place route handlers (`route.ts`) in the same directory as a `page.tsx`.
+- SHOULD place route handlers in a dedicated sub-directory named after the resource they manage, such as `posts/[slug]/caches/route.ts` rather than `posts/[slug]/route.ts`.

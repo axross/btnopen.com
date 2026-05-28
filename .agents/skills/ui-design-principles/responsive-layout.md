@@ -12,10 +12,13 @@ The design has two breakpoint transitions and three named tiers. Tiers respond t
 | **Tablet** | ~480–800px | Centered ~448px reading column; gutters removed; side-by-side structural layouts unlock |
 | **Desktop** | above ~800px | Centered ~736px reading column; denser layouts (image-beside-text card grids); more breathing room around the column |
 
-- MUST NOT introduce a new breakpoint to accommodate a specific surface. The two transitions are the project's canonical reading-posture shifts — if a surface needs a different density at some intermediate width, the design SHOULD adapt via proportional sizing (column width, image aspect ratio) rather than a new tier.
 - Tier transitions are referenced by **name** (mobile / tablet / desktop), not raw width, from descendant surfaces. A surface announces its tier once at its root; descendants react to the name.
 - Semantic meaning of each transition: the ~480px transition is the "stop scrolling as a phone column, start reading on a tablet" moment; the ~800px transition is the "treat this like a full desktop reading page" moment. When a surface introduces a structural change, pick the transition that matches this framing.
 - All observed structural transformations (see [Mobile → Tablet Structural Transformations](#mobile--tablet-structural-transformations)) fire at the **mobile→tablet** boundary. The tablet→desktop boundary is reserved for density adjustments (column widens, gutters grow) rather than structural re-layout.
+
+**Guidelines:**
+
+- MUST NOT introduce a new breakpoint to accommodate a specific surface. The two transitions are the project's canonical reading-posture shifts — if a surface needs a different density at some intermediate width, the design SHOULD adapt via proportional sizing (column width, image aspect ratio) rather than a new tier.
 
 ## Reading-Surface Column Width
 
@@ -24,14 +27,20 @@ Every reading surface — blog post body, blog post header, index-page intro, se
 - **Tablet**: ~448px reading column.
 - **Desktop**: ~736px reading column.
 
+**Guidelines:**
+
 - MUST NOT author a per-surface column width. If a surface appears too wide or too narrow at a tier, the fix is to pick a different surface strategy (full-bleed, fixed-width asset, embedded figure that self-constrains) rather than to redefine the column.
-- New reading surfaces MUST inherit the shared column width from the nearest page-level container rather than redeclaring it locally.
+- MUST make new reading surfaces inherit the shared column width from the nearest page-level container rather than redeclaring it locally.
 
 ## Horizontal Gutters
 
-- **Mobile**: reading surfaces MUST carry ~16px horizontal gutters so text never touches the viewport edge.
-- **Tablet and desktop**: gutters MUST be removed because the shared column width already insets the content from the viewport edge; doubling up would narrow the column below the shared value.
-- The visual consequence: a reader scrolling past the ~480px transition feels a single coordinated posture shift — NOT a scatter of per-surface gutter changes. When a new surface is added, it SHOULD join this pattern rather than carry its own gutter strategy.
+Horizontal Gutters captures the project-specific context for the checklist below: **Mobile**: reading surfaces MUST carry ~16px horizontal gutters so text never touches the viewport edge.
+
+**Guidelines:**
+
+- MUST give mobile reading surfaces ~16px horizontal gutters so text never touches the viewport edge.
+- MUST remove tablet and desktop gutters because the shared column width already insets the content from the viewport edge; doubling up would narrow the column below the shared value.
+- SHOULD make a reader scrolling past the ~480px transition feel a single coordinated posture shift, not a scatter of per-surface gutter changes. New surfaces join this pattern rather than carry their own gutter strategy.
 
 ## Mobile → Tablet Structural Transformations
 
@@ -45,6 +54,10 @@ A surface that changes **structure** (not just proportional size) across tiers M
 
 SHOULD NOT invent a new structural variant per surface. When a new surface needs one of the above shifts, it SHOULD re-use the existing pattern rather than introducing a fresh pair of layouts.
 
+**Guidelines:**
+
+- MUST reuse the existing mobile-to-tablet structural transformation patterns before inventing a new per-surface layout variant.
+
 ## Image Aspect-Ratio Across Tiers
 
 An image's aspect ratio MAY change between tiers when the image's role in the composition changes. Observed pairings:
@@ -56,16 +69,28 @@ An image's aspect ratio MAY change between tiers when the image's role in the co
 | Web-embed card image | `1200 / 630` | `1200 / 630` | Stable OG-sized preview; container shape changes around it, the image crop does not |
 | Index-page portrait | `1 / 1` | `1 / 1` | Stable portrait; container sizing changes, ratio does not |
 
-- When an image has distinct per-tier aspect ratios, both crops MUST read as the same asset viewed differently — never as two unrelated images. The `1600/600` ↔ `1600/1200` pairing on list items is an explicit choice to preserve a coherent list→detail morph target; see [loading-and-empty-states › ViewTransition for Visual Continuity](./loading-and-empty-states.md#viewtransition-for-visual-continuity).
+**Guidelines:**
+
+- MUST make both crops read as the same asset viewed differently when an image has distinct per-tier aspect ratios — never as two unrelated images. The `1600/600` ↔ `1600/1200` pairing on list items is an explicit choice to preserve a coherent list→detail morph target; see [loading-and-empty-states › ViewTransition for Visual Continuity](./loading-and-empty-states.md#viewtransition-for-visual-continuity).
 - MUST NOT introduce a third aspect ratio at some intermediate tier for the same image; the design tolerates exactly two crops per image (one for mobile, one for tablet-and-desktop).
 
 ## Full-Bleed vs Inset
 
+Full-Bleed vs Inset captures the project-specific context for the checklist below: At tier transitions, full-bleed elements MUST transition gracefully to inset rather than remain flush — gaining a soft card-corner is the canonical resolution so the element reads as "joined the column" rather than "still trying to be full-bleed at a size where that doesn't make sense".
+
 - **Full-bleed** elements (cover images on mobile, code snippets on mobile) extend to the viewport edge. This is reserved for content that WANTS to read as atmospherically large — not a default.
 - **Inset** elements stay inside the reading column; this is the default for any content that belongs to the prose flow.
-- At tier transitions, full-bleed elements MUST transition gracefully to inset rather than remain flush — gaining a soft card-corner is the canonical resolution so the element reads as "joined the column" rather than "still trying to be full-bleed at a size where that doesn't make sense".
+
+**Guidelines:**
+
+- MUST make full-bleed elements transition gracefully to inset at tier transitions rather than remain flush — gaining a soft card-corner is the canonical resolution so the element reads as "joined the column" rather than "still trying to be full-bleed at a size where that doesn't make sense".
 
 ## Container-Driven, Not Viewport-Driven
 
-- Layout tier decisions MUST be driven by the surface's own container width, not the viewport's. A blog-post component embedded in a narrower shell (e.g., a future sidebar, a preview pane) MUST re-tier against that shell — never against the viewport.
+Container-Driven, Not Viewport-Driven captures the project-specific context for the checklist below: Layout tier decisions MUST be driven by the surface's own container width, not the viewport's. A blog-post component embedded in a narrower shell (e.g., a future sidebar, a preview pane) MUST re-tier against that shell — never against the viewport.
+
 - Viewport-level queries are reserved for genuinely viewport-global concerns: color scheme (see [color-theming](./color-theming.md)), motion preferences, print. These are not layout decisions.
+
+**Guidelines:**
+
+- MUST drive layout tier decisions by the surface's own container width, not the viewport's. A blog-post component embedded in a narrower shell (e.g., a future sidebar, a preview pane) MUST re-tier against that shell — never against the viewport.

@@ -1,6 +1,6 @@
 ---
 name: application-security-requirements
-description: Use this skill when reviewing security implications of any code change in this Next.js + Payload CMS + Vercel project — secret and environment-variable handling (the `process.env` whitelist of `app/(app)/_/runtime.ts`, `payload/config.ts`, `next.config.ts`, `playwright.config.ts`; never committing `.env.local`; the `NEXT_PUBLIC_*` boundary), input validation at server actions / `route.ts` handlers / Payload `where` clauses (Zod-parsed view types from `app/(app)/_/repositories/payload-types.ts`, search-param coercion, slug bypass), Payload CMS access control (collection-level `access` rules, the draft-aware filter on `_status`, the public-read on `media` / `cover-images` / `avatar-images`), XSS in the markdown rendering pipeline (Shiki / Remark / `rehypeReact` chain, custom `webembed` directive, `allowDangerousProtocol`), SSRF in webembed and OG image fetching (`metascraper` fetching arbitrary URLs from CMS-authored content), Payload session/auth handling (the `users` collection's `lockTime` / `maxLoginAttempts`), the Sentry `sendDefaultPii: true` exposure, and supply-chain risks of newly added npm dependencies. This is the **reviewer's** lens — what to flag for security — and is the OWASP Top 10 framing applied to this specific stack. Use even when the user only says "is this safe", "any security concerns", or "look at this auth/admin/secret code".
+description: Use this skill when reviewing security or privacy implications in this Next.js + Payload CMS + Vercel project. Covers secrets/env vars, `NEXT_PUBLIC_*`, input validation, Payload access control and drafts, public exposure, markdown XSS, SSRF/webembed/OG fetching, auth/session settings, Sentry/Mixpanel data capture, and npm supply-chain risk. Use for "is this safe", "security", "auth", "admin", "secret", "privacy", "PII", "XSS", "SSRF", or dependency reviews.
 ---
 
 # Application Security Requirements
@@ -16,6 +16,10 @@ See [secret-handling.md](./secret-handling.md) for what to verify:
 - `NEXT_PUBLIC_*` prefix used only for values intentionally exposed to the browser
 - `.env.local` is gitignored; example only in `.env.example`
 
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
+
 ## Input Validation
 
 See [input-validation.md](./input-validation.md) for what to verify:
@@ -24,6 +28,10 @@ See [input-validation.md](./input-validation.md) for what to verify:
 - All `params` / `searchParams` are treated as untrusted (they reach the server as `Promise<unknown>`-shaped at runtime)
 - Repository `where` clauses receive sanitized values (no array-coercion bypass on `slug`)
 - Repository return values are parsed through the Zod schemas in `app/(app)/_/repositories/payload-types.ts` before reaching components
+
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
 
 ## Access Control
 
@@ -34,6 +42,23 @@ See [access-control.md](./access-control.md) for what to verify:
 - The `users` collection's auth lock settings are not weakened
 - New `route.ts` mutation endpoints (e.g., the `/posts/caches` revalidation route) are protected against unauthenticated abuse
 
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
+
+## Privacy and Exposure Control
+
+See [privacy-and-exposure.md](./privacy-and-exposure.md) for what to verify:
+
+- Draft, preview, admin-only, and unpublished content cannot leak through public routes, metadata, JSON-LD, sitemap, robots, or image routes
+- Public media URLs expose only intentionally public assets and do not reveal private storage tokens or internal identifiers
+- Sentry and Mixpanel changes do not capture unnecessary PII, secrets, draft content, or CMS-authored private fields
+- Client-exposed environment variables, analytics event properties, and error context are intentionally public
+
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
+
 ## XSS in Markdown Rendering
 
 See [xss-in-markdown.md](./xss-in-markdown.md) for what to verify:
@@ -42,6 +67,10 @@ See [xss-in-markdown.md](./xss-in-markdown.md) for what to verify:
 - Custom directive nodes (currently `webembed`) only emit attributes that React will encode
 - New components added to the renderer's `defaultComponents` map encode untrusted children safely
 - `rehypeReact` is not bypassed (no manual HAST-to-string interpolation that skips React's encoding)
+
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
 
 ## SSRF and Embed Fetching
 
@@ -52,6 +81,10 @@ See [ssrf-and-embeds.md](./ssrf-and-embeds.md) for what to verify:
 - New CMS-author-controlled URLs that flow into a `fetch` call go through an allowlist or a hostname check
 - New `images.remotePatterns` entries in `next.config.ts` are tightly scoped
 
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
+
 ## Auth and Session Management
 
 See [auth-and-session.md](./auth-and-session.md) for what to verify:
@@ -59,6 +92,10 @@ See [auth-and-session.md](./auth-and-session.md) for what to verify:
 - Payload's auth lockout settings (`lockTime`, `maxLoginAttempts` on the `users` collection) are not relaxed
 - Live preview / draft state is reachable only through Payload's auth path, not via a query-string bypass
 - Sentry `sendDefaultPii: true` exposure is acknowledged when adding new identifiers/contexts
+
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.
 
 ## Supply Chain
 
@@ -68,3 +105,7 @@ See [supply-chain.md](./supply-chain.md) for what to verify:
 - New dependencies are reasonably popular, maintained, and platform-agnostic
 - Lockfile is updated; transitive additions are inspected for known-vulnerable versions
 - No `postinstall` / `prepare` script in a new dependency runs unexpected code
+
+**Guidelines:**
+
+- SHOULD read the linked reference when work touches this topic.

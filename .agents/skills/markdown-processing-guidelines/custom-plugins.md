@@ -1,5 +1,9 @@
 # Custom Plugins
 
+Custom Plugins sets the required project default: define custom remark/rehype plugins in `app/(app)/_/helpers/markdown.ts` alongside the pipeline.
+
+**Guidelines:**
+
 - MUST define custom remark/rehype plugins in `app/(app)/_/helpers/markdown.ts` alongside the pipeline.
 - MUST NOT create separate files for small, project-specific plugins.
 - SHOULD follow the unified plugin signature: a function that returns a tree transformer `(tree: Root) => void`.

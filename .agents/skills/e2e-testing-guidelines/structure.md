@@ -2,6 +2,8 @@
 
 ## Project Structure
 
+Project Structure shows where Playwright tests, helpers, setup files, and route-specific suites live in this repository.
+
 ```
 <root>
 ├── e2e/
@@ -22,12 +24,26 @@
 └── ...
 ```
 
+**Guidelines:**
+
+- MUST place route-specific e2e tests under `e2e/tests/routes/`.
+- MUST keep reusable e2e helpers under `e2e/helpers/`.
+- SHOULD keep setup and global metadata tests directly under `e2e/tests/` when they are not route-specific.
+
 ## Test File Structure
+
+Test File Structure sets the required project default: use kebab-case for file names.
+
+**Guidelines:**
 
 - MUST use kebab-case for file names.
 - MUST use `.test.ts` extension for test files.
 
 ## Test Case Structure
+
+Test Case Structure sets the required project default: use `test()` for each test case.
+
+**Guidelines:**
 
 - MUST use `test()` for each test case.
 - MUST name test cases concisely.

@@ -2,6 +2,10 @@
 
 ## Locator Usage
 
+Locator Usage sets the required project default: use `getByTestId()` for locators.
+
+**Guidelines:**
+
 - MUST use `getByTestId()` for locators.
 - MUST use kebab-case for test IDs.
 - MUST use chained locators to narrow down the scope of the locator.
@@ -9,7 +13,7 @@
 - SHOULD use `locator()` for locators that are not impossible to implement with `getByTestId()`.
 - MUST NOT use `getByText()` for locators.
 
-Example:
+**Example:**
 
 ```ts
 import { expect, type Locator, test } from "@playwright/test";
@@ -44,16 +48,26 @@ test("Introduction section", async ({ page }) => {
 
 ## Assertions
 
-- MUST prefer Playwright's locator-native assertions (`toBeVisible()`, `toBeFocused()`, `toHaveAttribute()`, `toHaveClass()`, `toHaveText()`, `toHaveCount()`) over `locator.evaluate(...)` that pulls DOM state back to the test for manual comparison. Locator-native assertions auto-wait and produce clearer failure messages; e.g., write `await expect(scrollArea).toBeFocused()` instead of `expect(await scrollArea.evaluate((el) => el === document.activeElement)).toBe(true)`.
-- For state that no locator-native assertion covers — scroll position, computed styles, scroll-driven animations, transitions, intersection-observer-driven classes — MUST use `expect.poll(() => ...)` or `page.waitForFunction(...)` to re-sample until the expected value is reached. MUST NOT use `page.waitForTimeout(...)` or fixed sleeps to "let the animation finish" (see [flakiness-tolerance.md](../quality-assurance-guidelines/flakiness-tolerance.md)).
+Assertions sets the required project default: prefer Playwright's locator-native assertions (`toBeVisible()`, `toBeFocused()`, `toHaveAttribute()`, `toHaveClass()`, `toHaveText()`, `toHaveCount()`) over `locator.evaluate(...)` that pulls DOM state back to the test for manual comparison. Locator-native assertions auto-wait and produce clearer failure messages; e.g., write `await expect(scrollArea).toBeFocused()` instead of `expect(await scrollArea.evaluate((el) => el === document.activeElement)).toBe(true)`.
+
 - To assert visual state on a pseudo-element (`::before` / `::after`), read it inside an `evaluate` on the host locator via `getComputedStyle(element, "::before").opacity` (or the relevant property) and wrap the call in `expect.poll` so scroll-driven or transition-driven changes have time to settle.
 
+**Guidelines:**
+
+- MUST prefer Playwright's locator-native assertions (`toBeVisible()`, `toBeFocused()`, `toHaveAttribute()`, `toHaveClass()`, `toHaveText()`, `toHaveCount()`) over `locator.evaluate(...)` that pulls DOM state back to the test for manual comparison. Locator-native assertions auto-wait and produce clearer failure messages; e.g., write `await expect(scrollArea).toBeFocused()` instead of `expect(await scrollArea.evaluate((el) => el === document.activeElement)).toBe(true)`.
+- MUST NOT use `page.waitForTimeout(...)` or fixed sleeps to "let the animation finish" (see [flakiness-tolerance.md](../quality-assurance-guidelines/flakiness-tolerance.md)).
+- MUST use `expect.poll(() => ...)` or `page.waitForFunction(...)` to re-sample state until the expected value is reached when no locator-native assertion covers it, such as scroll position, computed styles, scroll-driven animations, transitions, or intersection-observer-driven classes.
+
 ## Hooks Usage
+
+Hooks Usage describes the preferred project default: use `test.beforeEach()` for setup that is not dependent on the test case.
+
+**Guidelines:**
 
 - SHOULD use `test.beforeEach()` for setup that is not dependent on the test case.
 - SHOULD use `test.afterEach()` for cleanup that is not dependent on the test case.
 
-Example:
+**Example:**
 
 ```ts
 import { expect, test } from "@playwright/test";
@@ -69,9 +83,13 @@ test.beforeEach(async ({ page }) => {
 
 ### Authentication
 
+Authentication describes the preferred project default: use `test.use({ storageState: authenticatedStorageState })` when using API call functions.
+
+**Guidelines:**
+
 - SHOULD use `test.use({ storageState: authenticatedStorageState })` when using API call functions.
 
-Example:
+**Example:**
 
 ```ts
 import { test } from "@playwright/test";
@@ -88,11 +106,15 @@ test.beforeEach(async ({ page }) => {
 
 ### API Call Usage
 
+API Call Usage describes the preferred project default: use API call functions to retrieve data to compare with the UI.
+
+**Guidelines:**
+
 - SHOULD use API call functions to retrieve data to compare with the UI.
 - SHOULD use API call functions in each test case.
 - SHOULD use API call functions in `test.beforeEach()` instead of within the test case if it is not dependent on the test case.
 
-Example:
+**Example:**
 
 ```ts
 import { expect, test } from "@playwright/test";
@@ -122,13 +144,7 @@ test("Blog post header", async ({ page }, testInfo) => {
 
 ### API Call Function Definitions
 
-- API call functions MUST be defined in `@/e2e/helpers/api/`.
-- SHOULD use kebab-case for file names.
-- SHOULD named-export the function.
-- SHOULD take `page` and `testInfo` as arguments.
-- MUST use `page.request` to make API calls.
-
-Example:
+**Example:**
 
 ```ts
 import type { Page, TestInfo } from "@playwright/test";
@@ -169,3 +185,11 @@ export async function getExampleBlogPost({
 	);
 }
 ```
+
+**Guidelines:**
+
+- MUST define API call functions in `@/e2e/helpers/api/`.
+- SHOULD use kebab-case for file names.
+- SHOULD named-export the function.
+- SHOULD take `page` and `testInfo` as arguments.
+- MUST use `page.request` to make API calls.
