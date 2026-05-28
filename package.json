@@ -30,6 +30,7 @@
     "@payloadcms/db-sqlite": "^3.81.0",
     "@payloadcms/live-preview-react": "^3.81.0",
     "@payloadcms/next": "^3.81.0",
+    "@payloadcms/plugin-mcp": "^3.82.1",
     "@payloadcms/richtext-lexical": "^3.81.0",
     "@payloadcms/storage-vercel-blob": "^3.81.0",
     "@sentry/nextjs": "^10.43.0",

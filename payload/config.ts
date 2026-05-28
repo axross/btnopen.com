@@ -13,6 +13,7 @@ import { userCollection } from "./collections/user";
 import { websiteGlobal } from "./globals/website";
 import { editor } from "./helpers/editor";
 import { logger } from "./helpers/logger";
+import { payloadMcpPlugin } from "./helpers/mcp";
 import { seed } from "./helpers/seed";
 
 // biome-ignore-start lint/style/noProcessEnv: only place accessing env vars in payload realm
@@ -93,6 +94,7 @@ export const config = buildConfig({
 		outputFile: resolve(selfDirname, "./types.ts"),
 	},
 	plugins: [
+		payloadMcpPlugin,
 		...(vercelBlobToken
 			? [
 					vercelBlobStorage({
