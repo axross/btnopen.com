@@ -1,71 +1,80 @@
 ---
 name: agent-skills-best-practices
-description: Apply this skill whenever creating, refining, restructuring, renaming, or auditing an agent skill under the host project's skill root (e.g., `.agents/skills/`) — drafting a `SKILL.md`, splitting a skill into reference files, tightening a `description`, or deciding where a new rule belongs. Covers agentskills.io frontmatter, host-project harness fields, kebab-case naming, description writing for discovery (768-char target / 1024-char spec limit), RFC-2119 keywords, decision-vs-implementation tone, progressive disclosure (~500-line ceiling, one-level-deep references), section-length ceilings, relative-path cross-references that never duplicate content, and keeping the host project's master skill index in sync. Use even when the user says "skill", "SKILL.md", "MECE", or "audit skills".
+description: Apply this skill whenever creating, refining, restructuring, renaming, or auditing an agent skill under the host project's skill root (e.g., `.agents/skills/`) - drafting a `SKILL.md`, splitting a skill into reference files, tightening a `description`, or deciding where a new rule belongs. Covers agentskills.io frontmatter, host-project harness fields, kebab-case naming, description writing for discovery, section anatomy with concise examples plus RFC-2119 guideline bullets, progressive disclosure, relative-path cross-references, audit checks, and keeping the host project's master skill index in sync.
 ---
 
 # Agent Skills Best Practices
 
-Apply these rules whenever creating, refining, splitting, consolidating, renaming, or auditing any agent skill under the host project's *skill root* — the directory the local agent harness scans for skills, commonly `.agents/skills/` for Claude Code / VS Code, or a similar path under another harness.
+Apply this skill whenever creating, refining, splitting, consolidating, renaming, or auditing any agent skill under the host project's skill root.
 
-This skill governs the **authoring discipline** for skills written in the [agentskills.io](https://agentskills.io/) format. For the host project's current skill inventory and topic-to-skill routing, defer to the project's master skill index (commonly `AGENTS.md`, `CLAUDE.md`, or a similar root file) and the directory listing under the skill root — this skill deliberately does not enumerate the active skill set, because that list drifts.
+This skill governs authoring discipline for skills written in the agentskills.io format. For the host project's active skill inventory and topic-to-skill routing, defer to the project's master skill index and the directory listing under the skill root.
 
 ## Scoping and MECE
 
-See [scoping-and-mece.md](./scoping-and-mece.md) for:
+This reference explains how to choose one coherent responsibility per skill, keep neighboring skills mutually exclusive, and decide whether new guidance belongs in an existing skill or a new one.
 
-- Coherent-unit sizing — what one skill covers and what belongs to a neighbor
-- Mutual-exclusivity checks and how to resolve overlaps with adjacent skills
-- Collective-exhaustiveness checks within the declared scope
-- When to split a skill, when to consolidate, and when neither is justified
-- How to name a skill so its scope is legible from the directory name alone
-- Section-length ceilings (~7 items per section, hard max 10) as a split signal
+**Guidelines:**
+
+- SHOULD read [scoping-and-mece.md](./scoping-and-mece.md) when deciding a skill boundary, skill name, split, consolidation, or source-of-truth location.
+- MUST use its MECE checks before adding guidance that overlaps an existing skill.
+- SHOULD use its section-length ceiling as an early signal that a skill or reference needs restructuring.
 
 ## Frontmatter and Naming
 
-See [frontmatter-and-naming.md](./frontmatter-and-naming.md) for:
+This reference covers the discovery-critical metadata in `SKILL.md` and the directory/name rules that let host runtimes find the skill reliably.
 
-- Required fields (`name`, `description`) and their character limits
-- Optional fields (`license`, `compatibility`, `metadata`, `allowed-tools`) and when each applies
-- Host-project harness fields (non-spec frontmatter keys enforced by the local runtime, e.g., `user-invocable: false` for Claude Code) and the rules for preserving, applying, and porting them
-- Kebab-case naming rules (1–64 chars, no leading / trailing / consecutive hyphens) and the parent-directory match
-- Choosing a name that signals scope without leaking implementation detail
+**Guidelines:**
+
+- SHOULD read [frontmatter-and-naming.md](./frontmatter-and-naming.md) when creating or editing frontmatter, choosing a skill directory name, or porting harness-specific fields.
+- MUST keep the `name` frontmatter field synchronized with the parent directory.
+- SHOULD preserve host-project harness fields unless the porting target explicitly uses different runtime metadata.
 
 ## Description Writing
 
-See [description-writing.md](./description-writing.md) for:
+This reference shows how to write the `description` field so the agent can decide when to load the skill from discovery metadata alone.
 
-- Imperative "Apply this skill when…" phrasing over "This skill does…"
-- Covering both *what the skill does* and *when to apply it* in the same field
-- Triggering-keyword discipline — listing user phrasings, including ones that don't name the domain
-- The 768-character working target and 1024-character spec hard limit, plus the trim order when overshooting
-- Common failure modes (too narrow, too broad, vague verbs, missing keywords)
+**Guidelines:**
+
+- SHOULD read [description-writing.md](./description-writing.md) when drafting, trimming, or auditing a skill description.
+- MUST include both what the skill covers and when the agent should apply it.
+- SHOULD include likely user phrasings and symptom-based triggers without broadening beyond the skill's actual scope.
 
 ## Body Content Style
 
-See [body-content-style.md](./body-content-style.md) for:
+This reference defines the required section shape for skill bodies and reference files: explain or demonstrate the topic first, then provide RFC-2119 guideline bullets.
 
-- RFC-2119 keyword definitions (MUST / MUST NOT / SHOULD / SHOULD NOT / MAY / REQUIRED / RECOMMENDED) inlined for portability, plus the application rules for marking requirement levels
-- Decision-language for design skills vs implementation-language for mechanics skills, and how to choose
-- The "add what the agent lacks, omit what it knows" rule and how to spot dead weight
-- Gotchas, defaults-not-menus, and calibrate-specificity-to-fragility patterns
-- Precise verbs over vague ones — "handle", "manage", and "support" without a qualifier are anti-patterns
+**Guidelines:**
+
+- MUST read [body-content-style.md](./body-content-style.md) when writing or revising any `SKILL.md` body or reference file.
+- MUST structure every substantive section with a concise topic description or demonstration before its guideline list.
+- MUST express requirement bullets with RFC-2119 keywords such as MUST, SHOULD, or MAY.
 
 ## Progressive Disclosure
 
-See [progressive-disclosure.md](./progressive-disclosure.md) for:
+This reference describes how to keep `SKILL.md` lean while moving detailed, topic-specific guidance into one-level-deep reference files.
 
-- The two-level structure: a short `SKILL.md` index plus topical `.md` reference files in the same directory
-- The ~500-line / ~5,000-token ceiling on `SKILL.md` and the one-level-deep file-reference rule
-- When a split is legitimately justified and when it is busywork against a small skill
-- The canonical wiring form — `See [file.md](./file.md) for:` followed by a bullet list of topics
-- Stating an explicit triggering condition on every reference link so the agent knows *when* to load it
+**Guidelines:**
+
+- SHOULD read [progressive-disclosure.md](./progressive-disclosure.md) when a skill is getting long, when reference files are proposed, or when an index needs rewiring.
+- MUST keep the parent `SKILL.md` focused on routing when reference files exist.
+- SHOULD avoid splitting small skills for symmetry alone.
 
 ## Cross-Referencing and Index Sync
 
-See [cross-referencing.md](./cross-referencing.md) for:
+This reference covers relative links between skills, avoiding duplicated rules, and keeping the host project's master index synchronized with skill changes.
 
-- Relative-path links between sibling skills (`../other-skill/SKILL.md`) and the no-content-duplication rule
-- Stating the triggering condition on any cross-skill consultation rather than copying the rule across
-- Keeping the host project's master skill index (e.g., `AGENTS.md` or `CLAUDE.md`) up-to-date when skills are added, renamed, moved, or removed
-- Keeping the parent `SKILL.md` index up-to-date when reference files are added, renamed, or removed inside a skill
-- Verifying every relative link resolves before finalizing the change
+**Guidelines:**
+
+- SHOULD read [cross-referencing.md](./cross-referencing.md) when adding, renaming, moving, deleting, or linking skills or reference files.
+- MUST make one skill the source of truth for a rule instead of copying the same rule across multiple skills.
+- MUST verify relative links and master-index links before finalizing skill-tree changes.
+
+## Audit Checklist
+
+This reference provides the repeatable checks for a skill audit: inventory, index sync, section anatomy, RFC-2119 bullets, relative links, and content-level ownership review.
+
+**Guidelines:**
+
+- SHOULD read [audit-checklist.md](./audit-checklist.md) before auditing multiple skills or reporting skill-tree quality.
+- MUST run or manually perform the structural checks when skill files are added, moved, renamed, or broadly rewritten.
+- SHOULD use the content-review checklist to identify overlap, stale project assumptions, and missing source-of-truth links.

@@ -1,36 +1,78 @@
 # Description Writing
 
-Apply these rules whenever authoring or revising the `description` field of a skill. The description is the *only* thing the agent reads at discovery time, so it carries the entire burden of triggering.
+Apply this reference when authoring or revising the `description` field of a skill. The description is the only skill body-adjacent text available during discovery.
 
 ## Imperative Phrasing
 
-- MUST use imperative, agent-facing phrasing: "Apply this skill when…", "Use this skill whenever…".
-- MUST NOT phrase the description as third-person prose ("This skill provides…", "The purpose of this skill is…") — the agent is deciding whether to act, so tell it when to act.
-- SHOULD lead with the verb form that names the trigger condition (`Apply`, `Use`, `Consult`) before listing what the skill covers.
+The description should tell the agent when to load the skill. Imperative phrasing turns the field into a routing instruction instead of passive documentation.
+
+**Example:**
+
+```yaml
+description: Apply this skill when reviewing a diff for validation, tests, or route behavior.
+```
+
+**Guidelines:**
+
+- MUST use agent-facing phrasing such as "Apply this skill when..." or "Use this skill whenever...".
+- MUST NOT phrase the description as third-person prose such as "This skill provides...".
+- SHOULD lead with the trigger condition before listing detailed coverage.
+- SHOULD keep the sentence direct enough to work as routing metadata.
 
 ## What and When in One Field
 
-- The description MUST cover both *what the skill does* and *when to apply it* — either dimension alone fails the discovery check.
-- The "what" SHOULD enumerate the rule categories or topics your skill actually covers — for a domain skill, things like input validation, query construction, or error handling; for this authoring skill, frontmatter, naming, MECE, progressive disclosure — so the agent can match against the specific rule the user is asking about.
-- The "when" SHOULD enumerate the user-visible triggers your skill should fire on — for a domain skill, things like querying a database, deploying a release, or parsing a payload; for this authoring skill, drafting, restructuring, splitting, auditing, renaming — including ones where the user does not name the domain directly.
+A useful description contains both coverage and trigger. "Covers validation and routing" says what but not when; "Use for security work" says when but not what.
+
+**Complete Description Example:**
+
+> Apply this skill when reviewing bridge payload security: covers base64url decoding, source URL validation, Obsidian URI construction, metadata exposure, and npm dependency risk.
+
+**Guidelines:**
+
+- MUST state what the skill covers.
+- MUST state when the agent should apply it.
+- SHOULD list the most important rule categories the skill owns.
+- SHOULD list user-visible task triggers, including prompts that do not name the domain directly.
+- MUST NOT cut either the what or the when dimension to fit the length budget.
 
 ## Triggering Keywords
 
-- SHOULD list user phrasings *your* skill's users would type, especially short or oblique ones (e.g., for a domain skill: `"is this query SQL-injection-safe"`, `"how do I migrate this"`; for this authoring skill: `"split this skill"`, `"is this in scope"`).
-- SHOULD include domain-specific tokens the user is likely to type literally (`MECE`, `SKILL.md`, the host project's master-index filename, the names of neighboring skills) — agents match on lexical surface, not just semantics.
-- MUST include cases where the user describes the *symptom* rather than the *domain* — e.g., "this skill is getting too long" should trigger an authoring skill, not just an explicit "split this skill" command.
-- SHOULD NOT pad the description with keywords unrelated to the skill's actual scope; broad triggers without precise scope cause false positives.
+Agents match surface text as well as semantics. Include the terms users, reviewers, and maintainers are likely to type.
+
+**Guidelines:**
+
+- SHOULD include literal domain tokens such as `SKILL.md`, `MECE`, `AGENTS.md`, `bridge URL`, or the names of neighboring skills when relevant.
+- SHOULD include likely user phrasings, including short prompts like "split this skill" or "audit skills".
+- MUST include symptom-based triggers when users may describe the problem instead of the domain.
+- SHOULD NOT pad descriptions with broad keywords outside the skill's actual scope.
 
 ## Length Discipline
 
-- SHOULD target ~768 characters for the description, leaving headroom under the 1024-character limit defined by the agentskills.io spec. The 768 target is a working budget — large enough to cover *what* + *when*, small enough to compose with many other skill descriptions in the agent's discovery context without crowding it.
-- MUST NOT exceed the 1024-character spec hard limit. Behavior on overflow is not specified by the spec; assume the description may be truncated, ignored, or rejected by the host runtime.
-- When trimming an over-length description, cut in this order: (1) duplicated synonyms, (2) marginal triggering phrases, (3) the third-tier coverage list, (4) the explicit "Use even when…" tail.
-- MUST NOT cut the *what* or the *when* dimension to fit the budget; cut breadth within each instead.
+Descriptions compete for discovery context across the entire skill set. The goal is enough signal for routing without crowding out neighboring skills.
+
+**Guidelines:**
+
+- SHOULD target about 768 characters.
+- MUST NOT exceed the 1024-character hard limit.
+- SHOULD trim duplicated synonyms before trimming meaningful trigger coverage.
+- SHOULD trim marginal phrases before removing core coverage.
+- MUST assume over-limit descriptions may be truncated, ignored, or rejected by a host runtime.
 
 ## Common Failure Modes
 
-- **Too narrow**: The description names only the obvious triggers (`"Use when designing the homepage"`) and misses adjacent ones (`"deciding the look-and-feel of any new component"`). Symptom: skill doesn't fire on prompts it should.
-- **Too broad**: The description triggers on every prompt that mentions a shared keyword (e.g., the word "code"). Symptom: skill fires on prompts it shouldn't, crowding the agent's context.
-- **Vague verbs**: `"Helps with X"`, `"Handles Y"`, `"Manages Z"` — the agent has no concrete trigger to match against. Replace with the specific verbs the user is likely to use.
-- **Missing the "when"**: The description lists what the skill does but never tells the agent the situation that activates it. Add an explicit "Apply this skill when…" clause.
+Most description failures are routing failures. They either prevent the skill from loading when it should or load it for prompts it does not own.
+
+**Failure Examples:**
+
+> Too narrow: Use when designing the homepage.
+
+> Too broad: Use for code.
+
+> Missing when: Covers validation and metadata.
+
+**Guidelines:**
+
+- MUST fix descriptions that trigger only on the obvious happy-path phrasing.
+- MUST narrow descriptions that fire on shared words unrelated to the skill's scope.
+- MUST replace vague verbs such as `helps`, `handles`, or `manages` with concrete trigger verbs.
+- MUST add an explicit trigger when the description lists coverage but not when to apply the skill.

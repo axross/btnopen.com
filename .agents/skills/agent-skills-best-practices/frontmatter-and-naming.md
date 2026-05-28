@@ -1,38 +1,81 @@
 # Frontmatter and Naming
 
-Apply these rules whenever authoring or editing a `SKILL.md` frontmatter block or choosing the directory name for a new skill.
+Apply this reference when authoring or editing a `SKILL.md` frontmatter block or choosing the directory name for a skill.
 
 ## Required Fields
 
-- MUST include a `name` field — 1–64 characters, lowercase letters, digits, and hyphens only, with no leading, trailing, or consecutive hyphens (regex: `^[a-z0-9]+(-[a-z0-9]+)*$`). Valid: `pdf-processing`, `code-review`, `web3-utils`, `oauth2-callback`. Invalid: `PDF-Processing` (uppercase), `-pdf` (leading hyphen), `pdf--processing` (consecutive hyphens), `pdf_processing` (underscore).
-- MUST include a `description` field — 1–1024 characters, non-empty, covering both *what the skill does* and *when to apply it* (see [description-writing.md](./description-writing.md) for the craft).
-- The `name` field MUST exactly match the parent directory name. A mismatch breaks discovery in spec-conformant agents.
+The required frontmatter fields are the discovery contract. The runtime reads `name` and `description` before loading the body, so mistakes here can make a correct skill invisible.
+
+**Example:**
+
+```yaml
+---
+name: code-review-guidelines
+description: Apply this skill when reviewing a pull request or local diff...
+---
+```
+
+**Guidelines:**
+
+- MUST include a `name` field.
+- MUST include a non-empty `description` field.
+- MUST keep `name` 1-64 characters and match `^[a-z0-9]+(-[a-z0-9]+)*$`.
+- MUST make the `name` field exactly match the parent directory name.
+- MUST keep `description` 1-1024 characters.
 
 ## Optional Fields
 
-- MAY include `license` when the skill is licensed differently from the surrounding project. Keep the value short — either an SPDX identifier or a reference to a bundled license file.
-- MAY include `compatibility` (max 500 chars) when the skill has environment requirements (specific runtime, system packages, network access). Most skills do not need it.
-- MAY include `metadata` as a string-to-string map for client-specific extensions. Use reasonably unique key names to avoid conflicts across clients.
-- MAY include `allowed-tools` (experimental) as a space-separated string of pre-approved tools. Support varies between agent implementations — treat as advisory.
+Optional spec fields are useful only when they carry real runtime or distribution meaning. Most project-local skills need no optional fields.
+
+**Guidelines:**
+
+- MAY include `license` when the skill is licensed differently from the surrounding project.
+- MAY include `compatibility` when the skill has concrete environment requirements.
+- MAY include `metadata` as a string-to-string map for client-specific extensions.
+- MAY include `allowed-tools` as advisory metadata only when the host supports it.
+- SHOULD omit optional fields that do not change how the skill is discovered, distributed, or executed.
 
 ## Host-Project Harness Fields
 
-The agentskills.io spec defines a fixed set of frontmatter fields (`name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools`). Host projects MAY layer additional non-spec keys that the local agent runtime enforces — these are *harness fields*, distinct from spec fields. A common example is `user-invocable: false` for the Claude Code harness; other harnesses use other keys, and some use none at all.
+Host projects sometimes add non-spec fields that their local harness enforces. Treat these as runtime configuration, not clutter.
 
-- A skill MUST preserve every harness field already present when the skill is refined — the local runtime depends on it, even if the field looks unfamiliar.
-- A new harness field MUST be applied to every existing skill in the same change, never to one skill in isolation, so the skill set stays uniform.
-- A skill MUST NOT add a harness field unilaterally to support an experimental feature; treat new harness keys as a project-wide policy decision.
-- When porting this skill set to a different host project, MAY remove or replace harness fields that no longer apply; document the substitution in the new project's master skill index.
+**Example:**
+
+```yaml
+---
+name: orchestration-guidelines
+description: Apply this skill when coordinating a multi-step local workflow...
+user-invocable: false
+---
+```
+
+**Guidelines:**
+
+- MUST preserve existing harness fields when refining a skill.
+- MUST NOT add a new harness field to only one skill unless the host project explicitly uses per-skill variation.
+- SHOULD apply new harness fields project-wide when they represent runtime policy.
+- MAY remove or replace harness fields when porting to a host project that does not support them.
+- MUST document harness-field substitutions in the receiving project's master skill index when porting.
 
 ## Naming Rules
 
-- MUST use kebab-case (`code-review`, `pdf-processing`, `web3-utils`).
-- MUST NOT use uppercase, underscores, dots, or spaces in the directory or `name` field.
-- The name SHOULD describe the *responsibility* (`application-security`), not the *actor* (`security-reviewer`) or the *file type* (`security-skill`).
-- The name SHOULD be unambiguous within the existing skill set — avoid names that overlap conceptually with siblings (e.g., adding `pdf-extraction` next to an existing `pdf-processing` invites confusion).
+Kebab-case names are portable and predictable. The name should communicate the durable responsibility, not an incidental implementation detail.
+
+**Guidelines:**
+
+- MUST use kebab-case for skill directories and the `name` field.
+- MUST NOT use uppercase letters, underscores, dots, spaces, leading hyphens, trailing hyphens, or consecutive hyphens.
+- SHOULD describe the responsibility, such as `application-security-requirements`.
+- SHOULD avoid actor names such as `security-reviewer` unless the host's taxonomy is explicitly actor-based.
+- SHOULD avoid names that overlap conceptually with existing siblings.
 
 ## Naming for Discoverability
 
-- A name that already implies its trigger (`e2e-testing`, `error-monitoring`) reduces the work the `description` field has to do during discovery.
-- SHOULD adopt a consistent naming convention across the skill set — same noun form, same suffix shape — so adjacent skills feel like a coherent group. Pick a convention that fits the host project's voice (e.g., noun-form-with-purpose suffixes such as `-guidelines`, `-requirements`, `-principles`, `-best-practices`); the *consistency* is the rule, the specific suffix is a taste call.
-- When uncertain between two candidate names, pick the one that a future contributor unfamiliar with the repo would map to the right skill on the first try.
+Discovery starts with the skill name and description. A name that already implies its trigger leaves the description more room for edge cases and user phrasings.
+
+**Guidelines:**
+
+- SHOULD choose a name that a future contributor can map to the right skill on the first try.
+- SHOULD keep naming conventions consistent across the skill set.
+- SHOULD prefer responsibility suffixes such as `-guidelines`, `-requirements`, `-principles`, or `-best-practices` when they fit the host project's voice.
+- MUST rename a skill when its existing name would misroute likely prompts after a scope change.

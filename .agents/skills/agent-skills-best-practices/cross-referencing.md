@@ -1,43 +1,87 @@
 # Cross-Referencing and Index Sync
 
-Apply these rules whenever a skill cites another skill, whenever a reference file is added or renamed inside a skill, or whenever a skill itself is added, renamed, moved, or removed.
+Apply this reference whenever a skill cites another skill, a reference file is added or renamed, or a skill is added, renamed, moved, or removed.
 
 ## Relative-Path Links
 
-- Cross-skill references MUST use relative paths from the citing file (`../other-skill/SKILL.md`, `../other-skill/topic.md`).
-- Within-skill references MUST use the leading-dot relative form (`./topic.md`), never an absolute or bare name.
-- MUST NOT use absolute paths from the repo root (e.g., `/.agents/skills/other-skill/SKILL.md` under a Claude Code / VS Code skill root) for cross-skill links — they reduce portability when the skill directory is relocated.
-- References to repo-root documents (e.g., the host project's master skill index — commonly `AGENTS.md` or `CLAUDE.md`) are the one exception; link them with a leading-slash absolute path so they resolve from any depth in the skill tree.
+Relative links keep skills portable when the skill root moves. Use links from the file doing the citing, not from the repository root, except for root-level index documents.
+
+**Example:**
+
+```markdown
+Consult [Quality Assurance Guidelines](../quality-assurance-guidelines/SKILL.md) when a review finding depends on test coverage.
+```
+
+**Guidelines:**
+
+- MUST use relative paths for cross-skill links.
+- MUST use leading-dot relative paths for links inside the same skill, such as `./references/topic.md`.
+- MUST NOT use repo-root absolute paths for skill-to-skill links.
+- MAY use root-relative paths for repo-root documents when the host renderer resolves them reliably.
+- MUST verify that every changed relative link resolves on disk.
 
 ## No Content Duplication
 
-- A rule MUST live in exactly one skill. When two skills both seem to need it, pick a source of truth and have the other skill cite it.
-- MUST NOT copy a rule's wording across skills "for convenience" — duplicates rot independently and produce contradictions over time.
-- When a citing skill needs the *gist* of a rule for context, the citing skill SHOULD give a one-line summary plus a link to the source of truth, never the full rule.
+Duplicated rules rot independently. A citing skill may summarize a neighbor's rule, but the detailed requirement should live in one source skill.
+
+**Guidelines:**
+
+- MUST keep each rule's detailed wording in exactly one source skill.
+- MUST NOT copy full rule wording into multiple skills for convenience.
+- SHOULD provide a one-line summary plus a link when another skill needs context.
+- MUST move duplicated guidance back to one owner when overlap appears.
 
 ## Triggering Conditions on Cross-Skill Links
 
-- Every cross-skill link MUST state the condition under which the agent should consult the linked skill (`"Consult X when the change touches the routing layer"`).
-- A bare cross-reference without a triggering condition (`"See X for more"`) forces the agent to guess whether the link is relevant; replace it with a concrete trigger.
-- The triggering condition SHOULD be specific enough that the agent can decide *not* to follow the link when the condition does not apply.
+A cross-skill link should tell the agent when to consult the neighbor. This avoids loading broad doctrine for tasks that do not need it.
+
+**Guidelines:**
+
+- MUST state the condition under which a cross-skill link should be followed.
+- SHOULD make the trigger specific enough that the agent can decide not to follow it.
+- MUST NOT use bare "See also" links without a routing condition.
+- SHOULD put cross-skill links near the section where the adjacent topic arises.
 
 ## Master Skill Index Sync
 
-The host project typically maintains a master index file at the repo root that routes topics to skills (commonly `AGENTS.md`, `CLAUDE.md`, or a similar name). Apply the rules below against whichever file the host project uses.
+The master index is the host project's routing table. If it points to missing skills or omits new ones, discovery fails before skill content can help.
 
-- MUST update the master skill index whenever a skill is added, renamed, moved, or removed. Broken index links are a routine failure mode after a skill rename or deletion.
-- MUST add a new skill to the appropriate role/topic section in the master index (e.g., "For Developer", "For Code Reviewer", or whatever taxonomy the host project uses) when the skill is meant to be invoked from that role.
-- MUST NOT leave the master index pointing at a deleted or renamed skill — verify by following every link the change touches.
-- Adding a new reference file *inside* an existing skill MUST NOT require a master-index edit; the master index links to top-level `SKILL.md` files only, not to reference files within a skill.
+**Guidelines:**
+
+- MUST update the master skill index when a skill is added, renamed, moved, or removed.
+- MUST add a new skill to the appropriate topic or role section when the host index uses those sections.
+- MUST NOT leave the master index pointing at deleted or renamed paths.
+- SHOULD keep index descriptions concise and trigger-focused.
+- MUST verify every master-index link touched by the change.
 
 ## Parent SKILL.md Sync
 
-- When adding or renaming a reference file inside a skill, MUST update the parent `SKILL.md` in the same change — the index MUST reflect every reference file, and every reference file MUST be referenced.
-- When a skill's `description` frontmatter no longer matches its content (e.g., a new reference file adds a topic the description doesn't mention), MUST refresh the description in the same change.
-- An orphan reference file (a `.md` file under the skill directory not linked from `SKILL.md`) MUST be either wired into the index or deleted — orphans are dead weight.
+The parent `SKILL.md` is the routing table for its reference files. Reference-file changes are incomplete until the parent route is accurate.
+
+**Guidelines:**
+
+- MUST update the parent `SKILL.md` when adding, deleting, or renaming a reference file.
+- MUST ensure every reference file is linked from the parent `SKILL.md`.
+- MUST refresh the parent description when new reference content changes the skill's discovery scope.
+- MUST delete or wire in orphan reference files.
 
 ## Link Resolution Check
 
-- Before finalizing a change that touches cross-references, MUST verify every relative link resolves on disk; broken links silently degrade the agent's behavior.
-- Renaming a skill MUST update, in a single change: the directory, the `name` frontmatter field, every relative-path reference inside other skills, the host project's master skill index, and any subagent or role-profile definitions the host harness keeps alongside the skills (e.g., `.claude/agents/` for Claude Code).
-- A rename SHOULD include a list of touched files in the changelog so future audits can confirm completeness.
+Link checks catch quiet skill failures. They are especially important after renames because broken links may not fail tests.
+
+**Example Verification Flow:**
+
+```mermaid
+flowchart LR
+  A[Rename skill] --> B[Update name frontmatter]
+  B --> C[Update cross-skill links]
+  C --> D[Update master index]
+  D --> E[Verify links resolve]
+```
+
+**Guidelines:**
+
+- MUST verify relative links before finalizing a skill-tree change.
+- MUST update directory name, `name` frontmatter, cross-references, master-index entries, and role-profile references together during a rename.
+- SHOULD include touched skill paths in the change summary for rename or consolidation work.
+- MUST NOT finalize a skill move while any old path remains in the index.

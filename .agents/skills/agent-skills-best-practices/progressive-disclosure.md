@@ -1,43 +1,99 @@
 # Progressive Disclosure
 
-Apply these rules when deciding whether to split a `SKILL.md` into reference files, how to wire those files, and when a small skill should remain a single file.
+Apply this reference when deciding whether to split a `SKILL.md` into reference files, how to wire those files, and when a small skill should remain a single file.
 
 ## Two-Level Structure
 
-- A skill MUST consist of either (a) a single `SKILL.md` file, or (b) a short `SKILL.md` index plus topical `.md` reference files in the same directory.
-- Reference files MUST live one level deep under the skill directory (`./topic.md`) — never in a nested subdirectory.
-- The `SKILL.md` index SHOULD contain only an opening rule statement, a short scope/boundary note, and one H2 per reference file with a `See [...] for:` bullet list.
-- Detail content MUST live in reference files, not in the index. The index's job is routing; routing files that also carry detail are doing two jobs poorly.
+Progressive disclosure keeps discovery cheap and detail available. The parent `SKILL.md` routes to topic references; the reference files carry the detailed rules.
+
+```
+skill-name/
+├── SKILL.md
+└── references/
+    ├── topic-one.md
+    └── topic-two.md
+```
+
+**Guidelines:**
+
+- MUST use either a single `SKILL.md` or a short `SKILL.md` plus one-level-deep topic references.
+- MUST keep reference files directly under the referenced folder level the parent links to.
+- SHOULD keep parent `SKILL.md` focused on scope, routing, and when to load each reference.
+- MUST move detailed rule content into reference files once progressive disclosure is introduced.
 
 ## Size Thresholds
 
-- A `SKILL.md` SHOULD stay under ~500 lines and ~5,000 tokens — once it crosses that, the agent loses focus and overhead grows.
-- A skill SHOULD split into reference files when its `SKILL.md` exceeds the size threshold, when a single H2 grows past 10 bullets, or when distinct sub-topics emerge that each merit their own list.
-- A reference file SHOULD itself stay under ~500 lines for the same reason; if a reference file outgrows that, split it into siblings rather than nesting deeper.
+Size thresholds are review signals, not mechanical quotas. When a skill crosses them, the reader is likely paying too much context to find the relevant rule.
 
-## When NOT to Split
+**Guidelines:**
 
-- A skill that fits comfortably in one file under the size threshold MUST NOT be split into reference files for stylistic symmetry with neighboring skills.
-- A skill with only one reference file SHOULD be inlined back into `SKILL.md` — the indirection costs context for no benefit.
-- A skill where the proposed split produces files of < ~30 lines each is over-fragmented; consolidate or pick a coarser axis.
-- Progressive disclosure is a remedy for bloat. Apply it when there is bloat to remedy.
+- SHOULD keep `SKILL.md` under about 500 lines and 5,000 tokens.
+- SHOULD split or subdivide a skill when one substantive section grows past ten guideline bullets.
+- SHOULD split when distinct subtopics emerge that an agent can load independently.
+- SHOULD keep each reference file under about 500 lines.
+- SHOULD split an oversized reference into sibling references instead of nesting deeper.
+
+## When Not to Split
+
+Splitting adds indirection. A small skill that is easy to scan should stay single-file even if neighboring skills use references.
+
+**Guidelines:**
+
+- MUST NOT split a compact skill purely for symmetry with other skills.
+- SHOULD inline a skill that has only one tiny reference file.
+- SHOULD avoid reference files shorter than about 30 lines unless the topic is unusually fragile.
+- MUST treat progressive disclosure as a remedy for bloat or topic separation, not as a mandatory layout.
 
 ## Wiring Reference Files from the Index
 
-- Each H2 in the index MUST correspond to exactly one reference file, and MUST use the canonical wiring form: a one-line `See [file.md](./file.md) for:` followed by a bullet list of the topics covered.
-- The bullet list under each `See [...] for:` MUST enumerate the topics in the reference file precisely enough that the agent can decide whether to load it without guessing.
-- Reference filenames MUST be kebab-case `.md` files matching their topic (`scoping-and-mece.md`, not `mece.md` or `Scoping.md`).
-- The order of H2 sections in the index SHOULD reflect the order in which the agent would consult them on a typical task — most-frequently-needed first.
+The index should let the agent decide what to load without opening every reference. Each link needs a topic description specific enough to route.
+
+**Example:**
+
+```markdown
+## Input Validation
+
+This reference covers how untrusted bridge payload fields become metadata, UI, and links.
+
+**Guidelines:**
+
+- SHOULD read [input-validation.md](./references/input-validation.md) when changing payload schemas or URL decoding.
+```
+
+**Guidelines:**
+
+- MUST link every reference file from the parent `SKILL.md`.
+- MUST use a stable relative link that resolves from the parent file.
+- SHOULD name reference files in kebab-case.
+- SHOULD order parent sections by likely consultation order.
+- MUST NOT leave orphan reference files under a skill directory.
 
 ## Triggering Conditions on Reference Links
 
-- Every `See [...] for:` bullet list SHOULD describe topics in concrete terms (`"the 1024-character limit"`, `"the canonical wiring form"`) rather than abstract ones (`"details"`, `"more information"`).
-- When a reference file is only relevant in specific situations (e.g., "load this when the API returns a non-200 status"), the index MUST state that condition so the agent loads it on demand rather than up front.
-- A reference link without a triggering condition forces the agent to either load it always (wasting context) or never (wasting the file). State the trigger.
+A reference link should say when the reader needs it. Without a trigger, the agent must either load everything or guess.
+
+**Guidelines:**
+
+- MUST state the condition that makes each reference relevant.
+- SHOULD describe covered topics concretely, such as "the 1024-character limit" or "source URL protocol filtering".
+- MUST NOT use empty labels such as "details" or "more information" as the only routing clue.
+- SHOULD make triggers narrow enough that the agent can skip irrelevant references.
 
 ## Anti-Patterns
 
-- **Symmetry split**: Splitting a 60-line skill into five 12-line files because neighboring skills have five files. Cost: indirection without payoff.
-- **Hidden requirement in the index**: Putting a normative `MUST` rule into the index instead of a reference file. Cost: the rule is loaded on every activation but never tagged with the topic that motivates it.
-- **Detail leakage**: Letting the index repeat content that already exists in a reference file. Cost: duplicated content drifts; the agent gets two versions of the same rule.
-- **Deep nesting**: Creating `./subtopic/file.md`. Cost: violates the one-level-deep rule and breaks tools that assume the flat layout.
+Anti-patterns are useful when they name the failure mode and the cost. They should still end in concrete guidelines rather than only warnings.
+
+**Anti-Pattern Examples:**
+
+> Symmetry split: five tiny files created only because another skill has five files.
+
+> Detail leakage: the same MUST rule appears in both SKILL.md and a reference file.
+
+> Deep nesting: references/security/input-validation.md under a skill that expects one level.
+
+**Guidelines:**
+
+- MUST NOT split a skill for visual symmetry alone.
+- MUST NOT put detailed normative rules in both the index and a reference file.
+- MUST NOT create nested reference directories unless the host project has explicitly adopted that structure.
+- SHOULD remove or merge over-fragmented references before adding more.
