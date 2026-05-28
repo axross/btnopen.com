@@ -1,1 +1,0 @@
-- [TS/JS comment casing](feedback_ts_comment_casing.md) — comment lines in TypeScript/JavaScript files must start with a lowercase letter
