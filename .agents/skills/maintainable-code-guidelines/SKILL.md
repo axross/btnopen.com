@@ -9,51 +9,35 @@ Apply these rules when reviewing the maintainability and design of any changed c
 
 ## Naming and Organization
 
-See [naming-and-organization.md](./naming-and-organization.md) for what to verify:
+See [naming-and-organization.md](./references/naming-and-organization.md) for:
 
 - File names match the project's kebab-case convention and CSS module pairing
 - Components, helpers, and repositories live in the correct directory tier (`_components/` vs `_/components/` vs `_/helpers/` vs `_/repositories/`)
 - New routes follow [routing-guidelines](../routing-guidelines/SKILL.md) and co-locate `page-props.ts`, `not-found.tsx`, OG image files
 - Identifier names match in/around the changed file's existing conventions
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## Abstraction Boundaries
 
-See [abstraction-boundaries.md](./abstraction-boundaries.md) for what to verify:
+See [abstraction-boundaries.md](./references/abstraction-boundaries.md) for:
 
 - New shared logic lives at the lowest tier that has more than one caller (route-local before route-group, route-group before global `_/`)
-- Server / Client component boundary is split per [react-component-guidelines › client-vs-server-components](../react-component-guidelines/client-vs-server-components.md)
-- Markdown plugins, if any, follow [markdown-processing-guidelines › custom-plugins](../markdown-processing-guidelines/custom-plugins.md)
-
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
+- Server / Client component boundary is split per [react-component-guidelines › client-vs-server-components](../react-component-guidelines/references/client-vs-server-components.md)
+- Markdown plugins, if any, follow [markdown-processing-guidelines › custom-plugins](../markdown-processing-guidelines/references/custom-plugins.md)
 
 ## Complexity and Readability
 
-See [complexity-and-readability.md](./complexity-and-readability.md) for what to verify:
+See [complexity-and-readability.md](./references/complexity-and-readability.md) for:
 
 - Biome lint thresholds are not silently bypassed (`noExcessiveCognitiveComplexity: 24`, `noExcessiveLinesPerFunction: 120`)
 - Magic numbers and strings have a named constant or CSS variable, with `// biome-ignore lint/style/noMagicNumbers: …` only when justified
 - Dead code (unused imports, unreachable branches, commented-out blocks) is removed
 - Inline TypeScript types are extracted into `interface` or `type` aliases when reused
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## Scope Discipline
 
-See [scope-discipline.md](./scope-discipline.md) for what to verify:
+See [scope-discipline.md](./references/scope-discipline.md) for:
 
-- The diff matches the stated user goal — no drive-by refactors per [development-guidelines › change-management](../development-guidelines/change-management.md)
+- The diff matches the stated user goal — no drive-by refactors per [development-guidelines › change-management](../development-guidelines/references/change-management.md)
 - Pre-existing problems are flagged separately, not bundled into this change
 - New abstractions are justified by ≥ 2 concrete call sites (YAGNI)
 - Repeated logic across the diff is consolidated only when the duplication is truly the same concern (DRY without coupling unrelated callers)
-
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.

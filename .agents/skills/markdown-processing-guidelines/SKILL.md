@@ -11,64 +11,48 @@ Apply these rules when writing, reviewing, or modifying code related to markdown
 
 The unified pipeline converts Payload CMS Lexical content to React elements through MDAST and HAST.
 
-See [architecture.md](./architecture.md) for:
+See [architecture.md](./references/architecture.md) for:
 
 - Processing pipeline stages and ordering
 - MDAST→HAST bridge: standard vs custom node handling
 - HAST→React rendering and component mapping fallback
 - Key files and their responsibilities
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## Pipeline Integrity
 
 Keep the pipeline as a single unified chain with correct plugin ordering.
 
-See [pipeline-integrity.md](./pipeline-integrity.md) for:
+See [pipeline-integrity.md](./references/pipeline-integrity.md) for:
 
 - Single-chain requirement
 - Plugin ordering rules (remark → remarkRehype → rehype → rehypeReact)
-
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
 
 ## Custom Plugins
 
 Rules for writing project-specific remark and rehype plugins.
 
-See [custom-plugins.md](./custom-plugins.md) for:
+See [custom-plugins.md](./references/custom-plugins.md) for:
 
 - Plugin location and colocation rules
 - Plugin signature conventions
 - Tree traversal with `unist-util-visit`
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## Custom MDAST Node Types
 
 How custom directive nodes (e.g., `webembed`) are defined and registered.
 
-See [custom-mdast-node-types.md](./custom-mdast-node-types.md) for:
+See [custom-mdast-node-types.md](./references/custom-mdast-node-types.md) for:
 
 - Standard MDAST nodes (built-in handlers) vs custom nodes (need explicit registration)
 - Existing `leafDirective` / `webembed` node type
 - Three-step process to add a new custom directive (passThrough, handler, React component)
 - Unknown node type handling via Sentry
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## GFM Support
 
 Partial GitHub Flavored Markdown support (strikethrough and tables only).
 
-See [gfm-support.md](./gfm-support.md) for:
+See [gfm-support.md](./references/gfm-support.md) for:
 
 - Why full `remark-gfm` is not used
 - Three-level registration explained (micromark, mdast-util, HTML)
@@ -76,29 +60,21 @@ See [gfm-support.md](./gfm-support.md) for:
 - Table rendering wiring (component mapping pointer) and GFM alignment `align` → inline `text-align` propagation
 - Lexical admin caveats: `EXPERIMENTAL_TableFeature` opt-in, no alignment authoring, dropped `colspan` / `rowspan`, upstream API instability
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## Syntax Highlighting
 
 Shiki-based syntax highlighting with CSS variables theming.
 
-See [syntax-highlighting.md](./syntax-highlighting.md) for:
+See [syntax-highlighting.md](./references/syntax-highlighting.md) for:
 
 - Singleton highlighter pattern
 - CSS variables theme with `--snippet-` prefix
 - Adding new language support
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## React Component Mapping
 
 Mapping HTML tags and custom directives to React components.
 
-See [react-component-mapping.md](./react-component-mapping.md) for:
+See [react-component-mapping.md](./references/react-component-mapping.md) for:
 
 - `defaultComponents` mapping and `classNames` override mechanism
 - Required component mappings (`img` → Media, `pre` → Snippet, `webembed` → WebEmbed, `table` → Table, `th` → TableHeaderCell)
@@ -106,46 +82,30 @@ See [react-component-mapping.md](./react-component-mapping.md) for:
 - Type-only sentinel key pattern (N-channel; `tableWrapper` and `tableScrollArea` are both sentinels on the `Table` component) for multi-element components that need independent class channels per nested element
 - `className` prop requirement for new components
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## Server Components and Caching
 
 The markdown pipeline runs entirely server-side with caching.
 
-See [server-components-and-caching.md](./server-components-and-caching.md) for:
+See [server-components-and-caching.md](./references/server-components-and-caching.md) for:
 
 - `"use server"` and `"use cache"` directives
 - Prohibition on client-side markdown rendering
-
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
 
 ## Content Source
 
 Blog post content comes exclusively from Payload CMS.
 
-See [content-source.md](./content-source.md) for:
+See [content-source.md](./references/content-source.md) for:
 
 - Lexical-to-markdown conversion via `@payloadcms/richtext-lexical`
 - Prohibition on filesystem-based markdown at runtime
-
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
 
 ## Error Handling
 
 Graceful error handling during markdown processing.
 
-See [error-handling.md](./error-handling.md) for:
+See [error-handling.md](./references/error-handling.md) for:
 
 - Sentry reporting for unknown MDAST nodes
 - No-throw policy during processing
 - Media component null-return behavior
-
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.

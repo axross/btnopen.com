@@ -11,70 +11,56 @@ This skill governs authoring discipline for skills written in the agentskills.io
 
 ## Scoping and MECE
 
-This reference explains how to choose one coherent responsibility per skill, keep neighboring skills mutually exclusive, and decide whether new guidance belongs in an existing skill or a new one.
+See [scoping-and-mece.md](./references/scoping-and-mece.md) for:
 
-**Guidelines:**
-
-- SHOULD read [scoping-and-mece.md](./scoping-and-mece.md) when deciding a skill boundary, skill name, split, consolidation, or source-of-truth location.
-- MUST use its MECE checks before adding guidance that overlaps an existing skill.
-- SHOULD use its section-length ceiling as an early signal that a skill or reference needs restructuring.
+- choosing a coherent skill boundary, skill name, split, consolidation, or source-of-truth location
+- checking overlap with neighboring skills before adding new guidance
+- using section length and topic growth as signals for restructuring
 
 ## Frontmatter and Naming
 
-This reference covers the discovery-critical metadata in `SKILL.md` and the directory/name rules that let host runtimes find the skill reliably.
+See [frontmatter-and-naming.md](./references/frontmatter-and-naming.md) for:
 
-**Guidelines:**
-
-- SHOULD read [frontmatter-and-naming.md](./frontmatter-and-naming.md) when creating or editing frontmatter, choosing a skill directory name, or porting harness-specific fields.
-- MUST keep the `name` frontmatter field synchronized with the parent directory.
-- SHOULD preserve host-project harness fields unless the porting target explicitly uses different runtime metadata.
+- creating or editing discovery-critical `SKILL.md` frontmatter
+- choosing the skill directory name and keeping it aligned with the `name` field
+- porting or preserving host-project harness fields
 
 ## Description Writing
 
-This reference shows how to write the `description` field so the agent can decide when to load the skill from discovery metadata alone.
+See [description-writing.md](./references/description-writing.md) for:
 
-**Guidelines:**
-
-- SHOULD read [description-writing.md](./description-writing.md) when drafting, trimming, or auditing a skill description.
-- MUST include both what the skill covers and when the agent should apply it.
-- SHOULD include likely user phrasings and symptom-based triggers without broadening beyond the skill's actual scope.
+- drafting, trimming, or auditing the `description` field
+- making discovery metadata say both what the skill covers and when to apply it
+- adding likely user phrasings and symptom-based triggers without over-broadening the skill
 
 ## Body Content Style
 
-This reference defines the required section shape for skill bodies and reference files: explain or demonstrate the topic first, then provide RFC-2119 guideline bullets.
+See [body-content-style.md](./references/body-content-style.md) for:
 
-**Guidelines:**
-
-- MUST read [body-content-style.md](./body-content-style.md) when writing or revising any `SKILL.md` body or reference file.
-- MUST structure every substantive section with a concise topic description or demonstration before its guideline list.
-- MUST express requirement bullets with RFC-2119 keywords such as MUST, SHOULD, or MAY.
+- writing or revising substantive skill-body or reference-file sections
+- balancing concise topic explanation, examples, and guideline bullets
+- placing normative RFC-2119 requirement bullets in detailed reference content rather than parent routing sections
 
 ## Progressive Disclosure
 
-This reference describes how to keep `SKILL.md` lean while moving detailed, topic-specific guidance into one-level-deep reference files.
+See [progressive-disclosure.md](./references/progressive-disclosure.md) for:
 
-**Guidelines:**
-
-- SHOULD read [progressive-disclosure.md](./progressive-disclosure.md) when a skill is getting long, when reference files are proposed, or when an index needs rewiring.
-- MUST keep the parent `SKILL.md` focused on routing when reference files exist.
-- SHOULD avoid splitting small skills for symmetry alone.
+- deciding when a skill should stay single-file or split into `references/`
+- using the parent routing-section format: `## Topic`, `See [file.md](./references/file.md) for:`, then descriptive situation bullets
+- keeping parent routing bullets free of RFC-2119-style requirement keywords so they remain routing cues, not duplicated rules
 
 ## Cross-Referencing and Index Sync
 
-This reference covers relative links between skills, avoiding duplicated rules, and keeping the host project's master index synchronized with skill changes.
+See [cross-referencing.md](./references/cross-referencing.md) for:
 
-**Guidelines:**
-
-- SHOULD read [cross-referencing.md](./cross-referencing.md) when adding, renaming, moving, deleting, or linking skills or reference files.
-- MUST make one skill the source of truth for a rule instead of copying the same rule across multiple skills.
-- MUST verify relative links and master-index links before finalizing skill-tree changes.
+- adding, renaming, moving, deleting, or linking skills and reference files
+- choosing one source of truth instead of copying detailed rules across skills
+- verifying relative links and keeping the host project's master skill index synchronized
 
 ## Audit Checklist
 
-This reference provides the repeatable checks for a skill audit: inventory, index sync, section anatomy, RFC-2119 bullets, relative links, and content-level ownership review.
+See [audit-checklist.md](./references/audit-checklist.md) for:
 
-**Guidelines:**
-
-- SHOULD read [audit-checklist.md](./audit-checklist.md) before auditing multiple skills or reporting skill-tree quality.
-- MUST run or manually perform the structural checks when skill files are added, moved, renamed, or broadly rewritten.
-- SHOULD use the content-review checklist to identify overlap, stale project assumptions, and missing source-of-truth links.
+- auditing multiple skills or reporting skill-tree quality
+- checking inventory, index sync, section anatomy, RFC-2119 bullets, and relative links
+- identifying overlap, stale assumptions, orphan references, and missing source-of-truth links

@@ -18,72 +18,52 @@ Self-review is not independent review, so this project makes it a separate requi
 - MUST judge only the diff and affected behavior, not the implementation intent.
 - MUST fix Critical or Major findings in a later implementation phase, then perform a second-pass re-review.
 - MUST report verification evidence or skipped verification before completion.
-- SHOULD escalate high-risk changes per [escalation.md](./escalation.md) instead of calling them merge-ready based on self-review alone.
+- SHOULD escalate high-risk changes per [escalation.md](./references/escalation.md) instead of calling them merge-ready based on self-review alone.
 
 ## Review Scoping
 
-See [scoping.md](./scoping.md) for how to bound the review:
+See [scoping.md](./references/scoping.md) for:
 
 - Discovering what changed via `git diff` / `git status` / `gh pr diff`
 - Distinguishing in-scope (the diff) from out-of-scope (pre-existing)
 - Reading surrounding code to understand caller/callee context
 - Handling untracked files and partial diffs
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## Severity Classification
 
-See [severity.md](./severity.md) for how to label each finding:
+See [severity.md](./references/severity.md) for:
 
 - Critical, Major, Minor, Nit definitions with concrete project examples
 - Required severity for each major issue category (security, data loss, broken e2e, etc.)
 - How severity drives the final verdict (Approve / Approve with Nits / Request Changes)
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## Evidence-Based Reporting
 
-See [evidence.md](./evidence.md) for the required reporting format:
+See [evidence.md](./references/evidence.md) for:
 
 - Mandatory `file:line` citations
 - Diff-style fix snippets (`-` removed / `+` added)
 - The full review-report structure (Summary, Strengths, Findings by severity, Recommended Actions)
 - Linking findings to the topic-specific guideline that was violated
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## Review Tone
 
-See [tone.md](./tone.md) for communication norms:
+See [tone.md](./references/tone.md) for:
 
 - Constructive, blame-free language
 - Stating the "why" behind each concern
 - Explicit assumption-flagging when uncertain
 - Acknowledging strengths
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## Escalation
 
-See [escalation.md](./escalation.md) for the reviewer's reporting boundary:
+See [escalation.md](./references/escalation.md) for:
 
 - How to make findings trivially applicable by the caller without requiring another reviewer to reinterpret them
+- Keeping the review phase reporting-only, without mutating the codebase or delegating the review
 - How to surface recurring guideline gaps as a "Guideline gap:" note in the report
 - When a finding requires the caller's decision (framed as a "Decision needed:" entry)
 - When high-risk changes require user review, CI/PR review, or explicit acceptance before being called merge-ready
-
-**Guidelines:**
-
-- MUST keep the review phase reporting-only; it MUST NOT mutate the codebase or delegate the review.
-- SHOULD read the linked reference when work touches this topic.
 
 ## Topic-Specific Guidelines
 

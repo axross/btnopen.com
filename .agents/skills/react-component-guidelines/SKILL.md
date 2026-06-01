@@ -9,54 +9,42 @@ Apply these rules when writing, reviewing, or refactoring React components in th
 
 ## Component Conventions
 
-See [React Component Conventions](./conventions.md) for:
+See [conventions.md](./references/conventions.md) for:
 
 - Overall React component guidelines
 - Props and return type declarations
 - Naming and file/module organization
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## React Client Components vs Server Components
 
-See [React Client Components vs Server Components](./client-vs-server-components.md) for:
+See [client-vs-server-components.md](./references/client-vs-server-components.md) for:
 
 - When to determine whether to use React Client Components or Server Components
 - How to split components into Client and Server Components
 
-See [React Client Components](./client-components.md) when implementing a client boundary:
+See [client-components.md](./references/client-components.md) for:
 
 - `"use client"` directive placement
 - Side-effect-only Client Component return types
 
-See [React Server Components](./server-components.md) when implementing server-side rendering or async loading:
+See [server-components.md](./references/server-components.md) for:
 
 - Suspense boundary placement
 - Loading / loaded split pattern
 - `"use cache"` and `cacheLife()` usage
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## CSS and Styling
 
-See [React Component Styling](./styling.md) for:
+See [styling.md](./references/styling.md) for:
 
 - CSS Modules usage
 - CSS variables and theme tokens
 - CSS layers
 - Class name merging patterns
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## CSS Property Usage
 
-See [CSS Property Usage](./css-property-usage.md) for:
+See [css-property-usage.md](./references/css-property-usage.md) for:
 
 - The logical-property mandate (`margin-block`, `padding-inline`, `border-inline-*`, `inline-size`, `block-size`, `inset-*`)
 - Mandatory design tokens (color / spacing / radius / duration / ease / font) and the prohibition on hard-coded values
@@ -72,18 +60,10 @@ See [CSS Property Usage](./css-property-usage.md) for:
 - Canonical `:focus-visible` template (`outline: var(--accent-5) solid var(--size-3); outline-offset: var(--size-3)`) and the rule that width / offset / color are not per-surface knobs
 - Hit-area expansion template: matching `padding: var(--size-8); margin: calc(var(--size-8) * -1)` to grow the tap target without moving the visual position
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## Testable Components
 
-See [Testable Components](./testable-components.md) for:
+See [testable-components.md](./references/testable-components.md) for:
 
 - `data-testid` attribute conventions
 - `data-testid` nesting patterns and how E2E and unit tests traverse the component tree
 - Loading-state ID conventions (`-loading` suffix)
-
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
