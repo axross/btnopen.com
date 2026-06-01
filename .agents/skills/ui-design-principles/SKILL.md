@@ -8,11 +8,11 @@ user-invocable: false
 
 Apply these rules whenever designing, writing, or reviewing any user-facing surface of this website from a UI/UX design perspective.
 
-This skill governs the **design decisions** that sit on top of the component and styling mechanics defined in [react-component-guidelines](../react-component-guidelines/SKILL.md). For CSS-mechanic conventions — CSS-Module / `@layer components` / `clsx` wiring in [react-component-guidelines › styling](../react-component-guidelines/styling.md), and CSS property-choice rules (logical properties, `@container` / `@scope`, `oklch()` / relative color, modern units, `currentColor`, theme plumbing) in [react-component-guidelines › css-property-usage](../react-component-guidelines/css-property-usage.md) — defer to those files. This skill deliberately does not restate them.
+This skill governs the **design decisions** that sit on top of the component and styling mechanics defined in [react-component-guidelines](../react-component-guidelines/SKILL.md). For CSS-mechanic conventions — CSS-Module / `@layer components` / `clsx` wiring in [react-component-guidelines › styling](../react-component-guidelines/references/styling.md), and CSS property-choice rules (logical properties, `@container` / `@scope`, `oklch()` / relative color, modern units, `currentColor`, theme plumbing) in [react-component-guidelines › css-property-usage](../react-component-guidelines/references/css-property-usage.md) — defer to those files. This skill deliberately does not restate them.
 
 ## Design Tone and Taste
 
-See [design-tone-and-taste.md](./design-tone-and-taste.md) for:
+See [design-tone-and-taste.md](./references/design-tone-and-taste.md) for:
 
 - The developer-flavored visual identity (angle-bracket wordmark, sans + Japanese-sibling + monospace type pairing, code-syntax voice in error and empty states)
 - Color system: accent ramp (brand) vs neutral ramp (chrome), the single shared lightness axis, and the 13-step semantic role table (Step 0 page background → Step 12 high-contrast text)
@@ -22,13 +22,9 @@ See [design-tone-and-taste.md](./design-tone-and-taste.md) for:
 - Typography scale with named tiers and weight-as-semantic-hierarchy (regular body / medium links / semibold subheads / bold titles / black for emphasis inside headings)
 - Layout posture: centered narrow reading column, shared per-tier column widths, mobile-only gutters, full-bleed as an intentional atmospheric choice
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## Responsive Layout
 
-See [responsive-layout.md](./responsive-layout.md) for:
+See [responsive-layout.md](./references/responsive-layout.md) for:
 
 - The two canonical breakpoint transitions (at ~480px and ~800px) and the three named tiers (mobile / tablet / desktop)
 - Shared reading-column widths per tier (~448px tablet, ~736px desktop) for every reading surface
@@ -38,13 +34,9 @@ See [responsive-layout.md](./responsive-layout.md) for:
 - When full-bleed is legitimate, and how full-bleed elements transition to inset at tier shifts
 - The rule that layout tiers react to the surface's own container, not the viewport
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## Color Theming (Light / Dark)
 
-See [color-theming.md](./color-theming.md) for:
+See [color-theming.md](./references/color-theming.md) for:
 
 - The shared lightness scale inverted end-to-end between schemes, so step-roles stay invariant and per-surface dark-mode forks become a design smell
 - The two legitimate per-scheme override categories (filtered imagery; browser-level primitives like the system color-scheme declaration and scrollbar colors)
@@ -53,13 +45,9 @@ See [color-theming.md](./color-theming.md) for:
 - Palette-hue drift discipline and the single-brand-hue rule
 - Dark-mode verification as a merge-gate discipline
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## UI Labeling and Wording
 
-See [ui-labeling-and-wording.md](./ui-labeling-and-wording.md) for:
+See [ui-labeling-and-wording.md](./references/ui-labeling-and-wording.md) for:
 
 - Primary copy language (Japanese) and the English-fallback pattern for readers in other locales
 - Code-syntax voice in error / empty-state headings (`page.found === false`, `post.found === false`) paired with humanized Japanese subtext
@@ -70,13 +58,9 @@ See [ui-labeling-and-wording.md](./ui-labeling-and-wording.md) for:
 - Loading-placeholder sample text: lorem-style strings sized to match the real content's proportions, never real UI copy
 - Brand wordmark `<btn open />` in browser-tab titles and the rule that metadata copy comes from the CMS, not route code
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## Loading and Empty States
 
-See [loading-and-empty-states.md](./loading-and-empty-states.md) for:
+See [loading-and-empty-states.md](./references/loading-and-empty-states.md) for:
 
 - The two placeholder primitives (rectangle for media, word-shaped pills for text) and the rule that sample text mirrors the real content's **shape**, not its meaning
 - Loaded / loading visual parity — same outer dimensions, same spacing, same grid, only the content swaps
@@ -85,13 +69,9 @@ See [loading-and-empty-states.md](./loading-and-empty-states.md) for:
 - The 404 aesthetic: glitched triplet of the big status number with two hue-offset layers and alternating noise masks, code-syntax heading, Japanese subtext, single `Go back home` escape hatch — no secondary actions
 - Empty-state posture: muted message inside the container rather than collapsing the container, code-syntax heading voice where appropriate
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## Accessibility
 
-See [accessibility.md](./accessibility.md) for:
+See [accessibility.md](./references/accessibility.md) for:
 
 - Semantic region roles (page header, main, section, article, top-level heading, list + list-item, time) and the prohibition on faking them with generic wrappers
 - Icon labeling: a single accessible name at the icon's outer boundary, decorative icons hidden from assistive tech
@@ -102,7 +82,3 @@ See [accessibility.md](./accessibility.md) for:
 - Non-color hover affordances — every interactive state change carries a fill / underline / border delta, not just a color swap
 - Tappable target size — ~40×40 minimum, via the invisible padding + negative-margin pattern (canonical CSS template in `css-property-usage`)
 - Language attribute, reduced-motion rule for new animations, and the native-dialog requirement for any future modal
-
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.

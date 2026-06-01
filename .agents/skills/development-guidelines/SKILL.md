@@ -9,81 +9,57 @@ Apply these rules at the start of every task, regardless of the nature of the wo
 
 ## Code Quality
 
-See [code-quality.md](./code-quality.md) for non-negotiable code quality rules:
+See [code-quality.md](./references/code-quality.md) for:
 
 - Biome formatting and linting workflow
 - TypeScript compliance requirements
 - Comment casing in TS/JS source files
 - Import hygiene
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## Change Management
 
-See [change-management.md](./change-management.md) for how to manage changes safely:
+See [change-management.md](./references/change-management.md) for:
 
 - Staying within the scope of the task
 - Making incremental, verifiable changes
 - Following existing patterns before introducing new ones
 - Adding npm dependencies and modifying the database schema
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## Verification
 
-See [verification.md](./verification.md) for how to confirm the application produces correct output:
+See [verification.md](./references/verification.md) for:
 
 - Which output surfaces are put at risk by a given change
 - Manual and automated verification steps
 - How to maintain test coverage and respond to failures
 - CI pipeline behavior
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## Current External Documentation
 
-See [current-docs.md](./current-docs.md) for when implementation must be checked against current official docs:
+See [current-docs.md](./references/current-docs.md) for:
 
 - Next.js App Router, metadata, caching, route handlers, and config behavior
 - Payload CMS collections, fields, access control, admin behavior, and migrations
 - Sentry Next.js initialization, instrumentation, source maps, and event capture
 - Vercel runtime/deployment behavior, Playwright, and Biome behavior when those surfaces change
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## Dev Commands
 
-See [dev-commands.md](./dev-commands.md) for the project's npm run-scripts:
+See [dev-commands.md](./references/dev-commands.md) for:
 
 - Development, build, and production-start commands
 - Playwright e2e command and snapshot update flow
 - Payload migration commands
 - Biome format and lint commands
 
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
-
 ## Commit Messages
 
-See [commit-messages.md](./commit-messages.md) for the Conventional Commits v1.0.0 rules used in this repo:
+See [commit-messages.md](./references/commit-messages.md) for:
 
 - Overall `<type>[scope][!]: <description>` header format
 - Required types (`feat`, `fix`) and allowed additional types (`build`, `chore`, `ci`, `docs`, `style`, `refactor`, `perf`, `test`, `revert`)
 - Scope, description, body, and footer conventions
 - Breaking-change markers (`!` and `BREAKING CHANGE:` footer) and their SemVer correlation
-
-**Guidelines:**
-
-- SHOULD read the linked reference when work touches this topic.
 
 ## Topic-Specific Guidelines
 

@@ -5,46 +5,28 @@ description: Use this skill when creating, moving, renaming, or reviewing any ro
 
 # Routing Guidelines
 
-Apply these rules when writing, reviewing, or refactoring routes in this project.
+Apply this skill when writing, reviewing, or refactoring routes in this project.
 
-**Guidelines:**
+## Path Structure
 
-- MUST use Next.js App Router-based routing.
-- SHOULD repeat the resource type and resource identifier in path structures, such as `posts/[id]` instead of `[id]` and `posts/[id]/comments/[id]` instead of `[id]/[id]`.
-- SHOULD use lowercased, kebab-cased path elements.
-- SHOULD use search params for optional inputs such as pagination, filtering, sorting, language, and draft/preview status.
-- SHOULD use semantic dynamic segment names that describe the resource identifier, such as `posts/[slug]` rather than `posts/[id]` when the identifier is a slug.
+See [path-structure.md](./references/path-structure.md) for:
+
+- Next.js App Router as the routing baseline
+- RESTful resource and identifier path shapes such as `posts/[slug]`
+- kebab-case path elements, semantic dynamic segment names, and search params for optional inputs
 
 ## Directory Conventions
 
-Directory Conventions describes the preferred project default: use route groups (`(group-name)` directories) to organize routes logically without affecting the URL structure.
+See [directory-conventions.md](./references/directory-conventions.md) for:
 
-**Guidelines:**
-
-- SHOULD use route groups (`(group-name)` directories) to organize routes logically without affecting the URL structure.
-  - For example, `(app)/` wraps all main application routes, `(index)/` groups the index route's files.
-- MUST prefix non-route directories with `_` to exclude them from routing.
-  - Use `_/` for feature-agnostic shared modules (e.g., components, helpers, repositories) scoped to a layout level.
-  - Use `_components/` for UI components that are specific to the nearest layout or page.
+- route groups that organize files without affecting URL structure
+- underscore-prefixed non-route directories such as `_/` and `_components/`
+- choosing route-local versus layout-level implementation directories
 
 ## File Conventions
 
-Route files should keep page rendering, route props, not-found handling, metadata images, and mutation handlers in predictable places.
+See [file-conventions.md](./references/file-conventions.md) for:
 
-**Example:**
-
-```typescript
-export interface PageProps {
-  params: Promise<{ slug: string }>;
-  searchParams: Promise<{ draft?: "true"; preview?: "true" }>;
-}
-```
-
-**Guidelines:**
-
-- SHOULD define a `page-props.ts` file co-located with each `page.tsx` to export a `PageProps` interface.
-- MUST type `params` and `searchParams` as `Promise<...>` to comply with Next.js 15+ async APIs.
-- MAY co-locate a `not-found.tsx` file with any route segment that requires a custom 404 UI.
-- SHOULD co-locate OG image files (e.g., `thumbnail.png`) with the route segment they belong to, using Next.js file-based metadata conventions.
-- MUST NOT place route handlers (`route.ts`) in the same directory as a `page.tsx`.
-- SHOULD place route handlers in a dedicated sub-directory named after the resource they manage, such as `posts/[slug]/caches/route.ts` rather than `posts/[slug]/route.ts`.
+- co-located `page-props.ts` files with `Promise<...>` params and search params
+- `not-found.tsx` and OG image file placement
+- dedicated route-handler directories such as `posts/[slug]/caches/route.ts`
