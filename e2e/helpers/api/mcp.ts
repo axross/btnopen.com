@@ -1,8 +1,7 @@
 import type { Page, TestInfo } from "@playwright/test";
 
-export const getBlogPostDraftEditorStateTool = "getBlogPostDraftEditorState";
-export const createBlogPostDraftTool = "createBlogPostDraft";
-export const updateBlogPostDraftTool = "updateBlogPostDraft";
+export const appendNodeInBlogPostBodyTool = "appendNodeInBlogPostBody";
+export const deleteNodeInBlogPostBodyTool = "deleteNodeInBlogPostBody";
 
 export interface McpJsonRpcResponse {
 	error?: {
@@ -65,9 +64,8 @@ export async function createMcpApiKey({
 				find: true,
 			},
 			"payload-mcp-tool": {
-				[getBlogPostDraftEditorStateTool]: true,
-				[createBlogPostDraftTool]: true,
-				[updateBlogPostDraftTool]: true,
+				[appendNodeInBlogPostBodyTool]: true,
+				[deleteNodeInBlogPostBodyTool]: true,
 			},
 		},
 	});

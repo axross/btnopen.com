@@ -34,11 +34,13 @@ Apply these keywords consistently in this document and the documents linked from
 | [Maintainable Code Guidelines](.agents/skills/maintainable-code-guidelines/SKILL.md) | Reviewing readability, naming, abstraction boundaries, complexity, dead code, or scope discipline |
 | [Markdown Processing Guidelines](.agents/skills/markdown-processing-guidelines/SKILL.md) | Writing, reviewing, or modifying markdown rendering, Remark/Rehype plugins, Shiki setup, custom nodes, or web embeds |
 | [Observability Guidelines](.agents/skills/observability-guidelines/SKILL.md) | Throwing, catching, reporting, or logging errors with Sentry or Pino |
+| [Payload MCP Blog Editing](.agents/skills/payload-mcp-blog-editing/SKILL.md) | Using the Payload MCP server to inspect or edit blog posts, including raw Lexical body mutations, media references, draft/published targeting, locales, tags, cover images, or other blog metadata |
 | [Performance and Reliability Requirements](.agents/skills/performance-and-reliability-requirements/SKILL.md) | Reviewing Payload query cost, RSC/client boundaries, caching, image optimization, bundle weight, or runtime failure behavior |
 | [Project Structure](.agents/skills/project-structure/SKILL.md) | Navigating the repository, locating files, placing new modules, checking stack/service context, import aliases, or directory conventions |
 | [Quality Assurance Guidelines](.agents/skills/quality-assurance-guidelines/SKILL.md) | Reviewing verification evidence, e2e coverage, snapshots, flakiness, lint/format evidence, or manual checks |
 | [React Component Guidelines](.agents/skills/react-component-guidelines/SKILL.md) | Writing, reviewing, or refactoring React components, Server/Client component boundaries, styling, CSS conventions, or `data-testid` contracts |
 | [Routing Guidelines](.agents/skills/routing-guidelines/SKILL.md) | Creating, moving, renaming, or reviewing App Router routes, route handlers, route groups, dynamic params, or search params |
+| [Unit Test Guidelines](.agents/skills/unit-test-guidelines/SKILL.md) | Writing, refactoring, reviewing, or running Jest unit tests, including `@jest/globals` imports, mocks/fakes, fixtures, schema tests, and behavior-focused assertions |
 | [UI Design Principles](.agents/skills/ui-design-principles/SKILL.md) | Designing, implementing, or reviewing user-facing surfaces, responsive behavior, visual tone, copy, accessibility, loading states, or theme behavior |
 
 ## Response Approach

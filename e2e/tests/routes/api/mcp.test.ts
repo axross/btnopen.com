@@ -2,15 +2,14 @@ import { expect, type Page, type TestInfo, test } from "@playwright/test";
 import { NIL as uuidNIL, v5 as uuidV5 } from "uuid";
 import { authenticatedStorageState } from "@/e2e/helpers/api/auth";
 import {
+	appendNodeInBlogPostBodyTool,
 	callMcp,
-	createBlogPostDraftTool,
 	createMcpApiKey,
 	deleteBlogPost,
 	deleteMcpApiKey,
-	getBlogPostDraftEditorStateTool,
+	deleteNodeInBlogPostBodyTool,
 	type McpApiKey,
 	type McpJsonRpcResponse,
-	updateBlogPostDraftTool,
 } from "@/e2e/helpers/api/mcp";
 
 test.use({ storageState: authenticatedStorageState });
@@ -38,7 +37,7 @@ test("MCP endpoint rejects requests without an API key", async ({
 	});
 });
 
-test("MCP exposes scoped tools and writes draft posts only", async ({
+test("MCP exposes scoped tools and mutates blog post body nodes", async ({
 	page,
 }, testInfo) => {
 	let createdBlogPostId: number | null = null;
@@ -61,9 +60,9 @@ test("MCP exposes scoped tools and writes draft posts only", async ({
 			verifyToolList(toolsResponse);
 		});
 
-		const draftSlug = `mcp-draft-${testInfo.repeatEachIndex}-${Date.now()}`;
-		const draftTitle = "MCP Draft Title";
-		const updatedTitle = "MCP Draft Updated";
+		const blogPostSlug = `mcp-body-${testInfo.repeatEachIndex}-${Date.now()}`;
+		const blogPostTitle = "MCP Body Mutation";
+		const appendedText = "This paragraph was appended through MCP.";
 		const coverImageId =
 			await test.step("Retrieve an existing cover image ID", async () =>
 				getExampleCoverImageId({ page, testInfo }));
@@ -71,54 +70,73 @@ test("MCP exposes scoped tools and writes draft posts only", async ({
 			getExampleMediaId({ page, testInfo }));
 
 		createdBlogPostId =
-			await test.step("Create a draft blog post through MCP", async () =>
-				createDraftThroughMcp({
-					apiKey,
+			await test.step("Create a published blog post through the API", async () =>
+				createPublishedBlogPost({
 					coverImageId,
-					draftSlug,
-					draftTitle,
 					mediaId,
 					page,
+					slug: blogPostSlug,
 					testInfo,
+					title: blogPostTitle,
 				}));
 
-		await test.step("Update the draft through MCP", async () => {
-			await updateDraftThroughMcp({
+		await test.step("Append a paragraph through MCP", async () => {
+			await appendNodeThroughMcp({
 				apiKey,
-				draftSlug,
+				location: [1],
+				node: createParagraphNode(appendedText),
 				page,
-				testInfo,
-				updatedTitle,
-			});
-		});
-
-		await test.step("Verify sanitized MCP find response", async () => {
-			await verifySanitizedFindResponse({
-				apiKey,
-				draftSlug,
-				page,
+				slug: blogPostSlug,
 				testInfo,
 			});
 		});
 
-		await test.step("Verify editor-state body preserved media references", async () => {
-			await verifyDraftEditorStatePreservesMedia({
+		await test.step("Verify MCP find returns the appended body", async () => {
+			await verifyBlogPostBodyThroughMcpFind({
 				apiKey,
-				draftSlug,
+				expectedText: appendedText,
 				mediaId,
 				page,
+				slug: blogPostSlug,
 				testInfo,
 			});
 		});
 
-		await test.step("Verify the draft page renders only with draft mode", async () => {
-			await verifyDraftRouteVisibility({ draftSlug, page, updatedTitle });
+		await test.step("Delete the paragraph through MCP", async () => {
+			await deleteNodeThroughMcp({
+				apiKey,
+				expectedText: appendedText,
+				location: [1],
+				page,
+				slug: blogPostSlug,
+				testInfo,
+			});
+		});
+
+		await test.step("Verify the deleted paragraph is absent", async () => {
+			await verifyBlogPostBodyThroughMcpFind({
+				apiKey,
+				expectedText: appendedText,
+				mediaId,
+				page,
+				shouldContainText: false,
+				slug: blogPostSlug,
+				testInfo,
+			});
+		});
+
+		await test.step("Verify the published page remains visible", async () => {
+			await verifyPublishedRouteVisibility({
+				page,
+				slug: blogPostSlug,
+				title: blogPostTitle,
+			});
 		});
 	} finally {
 		if (createdBlogPostId !== null) {
 			const blogPostId = createdBlogPostId;
 
-			await test.step("Clean up the draft blog post", async () => {
+			await test.step("Clean up the blog post", async () => {
 				await deleteBlogPost({ id: blogPostId, page, testInfo });
 			});
 		}
@@ -143,121 +161,180 @@ function verifyToolList(toolsResponse: McpJsonRpcResponse): void {
 			"findCoverImages",
 			"findMedia",
 			"findWebsite",
-			getBlogPostDraftEditorStateTool,
-			createBlogPostDraftTool,
-			updateBlogPostDraftTool,
+			appendNodeInBlogPostBodyTool,
+			deleteNodeInBlogPostBodyTool,
 		]),
 	);
 	expect(toolNames).not.toContain("createBlogPosts");
 	expect(toolNames).not.toContain("updateBlogPosts");
 	expect(toolNames).not.toContain("deleteBlogPosts");
 	expect(toolNames).not.toContain("findUsers");
+	expect(toolNames).not.toContain("getBlogPostDraftEditorState");
+	expect(toolNames).not.toContain("createBlogPostDraft");
+	expect(toolNames).not.toContain("updateBlogPostDraft");
 	expect(toolNames).not.toContain("createBlogPostDraftFromMarkdown");
 	expect(toolNames).not.toContain("updateBlogPostDraftFromMarkdown");
 }
 
-async function createDraftThroughMcp({
-	apiKey,
+async function createPublishedBlogPost({
 	coverImageId,
-	draftSlug,
-	draftTitle,
 	mediaId,
 	page,
+	slug,
 	testInfo,
+	title,
 }: {
-	apiKey: string;
 	coverImageId: string;
-	draftSlug: string;
-	draftTitle: string;
 	mediaId: string;
 	page: Page;
+	slug: string;
 	testInfo: TestInfo;
+	title: string;
 }): Promise<number> {
-	const createResponse = await callMcp({
-		apiKey,
-		method: "tools/call",
-		page,
-		params: {
-			name: createBlogPostDraftTool,
-			arguments: {
-				title: draftTitle,
-				slug: draftSlug,
-				brief: "Draft created by the MCP e2e test.",
-				body: createDraftBody({ mediaId }),
-				coverImageId,
-				tagSlugs: ["example"],
-			},
+	const userId = await getCurrentUserId({ page, testInfo });
+	const url = new URL("/api/blog-posts", testInfo.project.use.baseURL);
+	url.searchParams.set("locale", "ja-JP");
+
+	const response = await page.request.post(`${url}`, {
+		headers: {
+			"content-type": "application/json",
 		},
-		testInfo,
+		data: {
+			title,
+			slug,
+			coverImage: coverImageId,
+			brief: "Published post created by the MCP e2e test.",
+			body: createBlogPostBody({ mediaId }),
+			author: userId,
+			publishedAt: new Date().toISOString(),
+			_status: "published",
+		},
 	});
 
-	const createResult = parseToolJsonContent<{
-		blogPost: {
-			id: number;
-			slug: string;
-			status: "draft";
-			title: string;
-		};
-	}>(createResponse);
+	if (!response.ok()) {
+		throw new Error(
+			`Failed to create blog post: ${response.status()} ${await response.text()}`,
+		);
+	}
 
-	expect(createResult.blogPost.slug).toBe(draftSlug);
-	expect(createResult.blogPost.title).toBe(draftTitle);
-	expect(createResult.blogPost.status).toBe("draft");
+	const json: unknown = await response.json();
+	const id = getNumberProperty(json, "id");
 
-	return createResult.blogPost.id;
+	if (id) {
+		return id;
+	}
+
+	if (isRecord(json)) {
+		const docId = getNumberProperty(json.doc, "id");
+
+		if (docId) {
+			return docId;
+		}
+	}
+
+	throw new Error("Failed to create blog post because no ID was returned.");
 }
 
-async function updateDraftThroughMcp({
+async function appendNodeThroughMcp({
 	apiKey,
-	draftSlug,
+	location,
+	node,
 	page,
+	slug,
 	testInfo,
-	updatedTitle,
 }: {
 	apiKey: string;
-	draftSlug: string;
+	location: number[];
+	node: unknown;
 	page: Page;
+	slug: string;
 	testInfo: TestInfo;
-	updatedTitle: string;
 }): Promise<void> {
-	const updateResponse = await callMcp({
+	const appendResponse = await callMcp({
 		apiKey,
 		method: "tools/call",
 		page,
 		params: {
-			name: updateBlogPostDraftTool,
+			name: appendNodeInBlogPostBodyTool,
 			arguments: {
-				slug: draftSlug,
-				title: updatedTitle,
-				brief: "Draft updated by the MCP e2e test.",
-				tagSlugs: ["example"],
+				slug,
+				location,
+				node,
 			},
 		},
 		testInfo,
 	});
 
-	const updateResult = parseToolJsonContent<{
+	const appendResult = parseToolJsonContent<{
 		blogPost: {
 			slug: string;
-			status: "draft";
-			title: string;
+			status: "published";
 		};
-	}>(updateResponse);
+		insertedAt: number[];
+	}>(appendResponse);
 
-	expect(updateResult.blogPost.slug).toBe(draftSlug);
-	expect(updateResult.blogPost.title).toBe(updatedTitle);
-	expect(updateResult.blogPost.status).toBe("draft");
+	expect(appendResult.blogPost.slug).toBe(slug);
+	expect(appendResult.blogPost.status).toBe("published");
+	expect(appendResult.insertedAt).toEqual(location);
 }
 
-async function verifySanitizedFindResponse({
+async function deleteNodeThroughMcp({
 	apiKey,
-	draftSlug,
+	expectedText,
+	location,
 	page,
+	slug,
 	testInfo,
 }: {
 	apiKey: string;
-	draftSlug: string;
+	expectedText: string;
+	location: number[];
 	page: Page;
+	slug: string;
+	testInfo: TestInfo;
+}): Promise<void> {
+	const deleteResponse = await callMcp({
+		apiKey,
+		method: "tools/call",
+		page,
+		params: {
+			name: deleteNodeInBlogPostBodyTool,
+			arguments: {
+				slug,
+				location,
+			},
+		},
+		testInfo,
+	});
+
+	const deleteResult = parseToolJsonContent<{
+		blogPost: {
+			slug: string;
+			status: "published";
+		};
+		deletedNode: unknown;
+	}>(deleteResponse);
+
+	expect(deleteResult.blogPost.slug).toBe(slug);
+	expect(deleteResult.blogPost.status).toBe("published");
+	expect(bodyContainsText([deleteResult.deletedNode], expectedText)).toBe(true);
+}
+
+async function verifyBlogPostBodyThroughMcpFind({
+	apiKey,
+	expectedText,
+	mediaId,
+	page,
+	shouldContainText = true,
+	slug,
+	testInfo,
+}: {
+	apiKey: string;
+	expectedText: string;
+	mediaId: string;
+	page: Page;
+	shouldContainText?: boolean;
+	slug: string;
 	testInfo: TestInfo;
 }): Promise<void> {
 	const findResponse = await callMcp({
@@ -268,11 +345,16 @@ async function verifySanitizedFindResponse({
 			name: "findBlogPosts",
 			arguments: {
 				depth: 2,
-				draft: true,
 				limit: 1,
+				select: JSON.stringify({
+					slug: true,
+					body: true,
+					author: true,
+					_status: true,
+				}),
 				where: JSON.stringify({
 					slug: {
-						equals: draftSlug,
+						equals: slug,
 					},
 				}),
 			},
@@ -289,80 +371,38 @@ async function verifySanitizedFindResponse({
 			};
 			body?: unknown;
 			slug: string;
+			status?: string;
 		}>;
 	}>(findResponse);
 
 	expect(findResult.docs[0]).toEqual(
 		expect.objectContaining({
-			slug: draftSlug,
+			slug,
+			status: "published",
 		}),
 	);
-	expect(findResult.docs[0].body).toBeUndefined();
+	const children = getRootChildren(findResult.docs[0].body);
+
+	expect(bodyContainsText(children, expectedText)).toBe(shouldContainText);
+	expect(findUploadNodeValue(children)).toBe(mediaId);
 	expect(findResult.docs[0].author?.email).toBeUndefined();
 	expect(findResult.docs[0].author?.hash).toBeUndefined();
 }
 
-async function verifyDraftEditorStatePreservesMedia({
-	apiKey,
-	draftSlug,
-	mediaId,
+async function verifyPublishedRouteVisibility({
 	page,
-	testInfo,
+	slug,
+	title,
 }: {
-	apiKey: string;
-	draftSlug: string;
-	mediaId: string;
 	page: Page;
-	testInfo: TestInfo;
+	slug: string;
+	title: string;
 }): Promise<void> {
-	const editorStateResponse = await callMcp({
-		apiKey,
-		method: "tools/call",
-		page,
-		params: {
-			name: getBlogPostDraftEditorStateTool,
-			arguments: {
-				slug: draftSlug,
-			},
-		},
-		testInfo,
-	});
-
-	const editorStateResult = parseToolJsonContent<{
-		blogPost: {
-			body: {
-				root: {
-					children: unknown[];
-				};
-			};
-			slug: string;
-		};
-	}>(editorStateResponse);
-
-	expect(editorStateResult.blogPost.slug).toBe(draftSlug);
-	expect(
-		findUploadNodeValue(editorStateResult.blogPost.body.root.children),
-	).toBe(mediaId);
-}
-
-async function verifyDraftRouteVisibility({
-	draftSlug,
-	page,
-	updatedTitle,
-}: {
-	draftSlug: string;
-	page: Page;
-	updatedTitle: string;
-}): Promise<void> {
-	await page.goto(`/posts/${draftSlug}?draft=true`);
+	await page.goto(`/posts/${slug}`);
 
 	await expect(
 		page.getByTestId("page").getByTestId("header").getByTestId("title"),
-	).toHaveText(updatedTitle);
-
-	await page.goto(`/posts/${draftSlug}`);
-
-	await expect(page.getByTestId("not-found")).toBeVisible();
+	).toHaveText(title);
 }
 
 async function getExampleMediaId({
@@ -435,13 +475,44 @@ async function getExampleCoverImageId({
 	);
 }
 
-function createDraftBody({ mediaId }: { mediaId: string }): unknown {
+async function getCurrentUserId({
+	page,
+	testInfo,
+}: {
+	page: Page;
+	testInfo: TestInfo;
+}): Promise<number> {
+	const url = new URL("/api/users/me", testInfo.project.use.baseURL);
+	const response = await page.request.get(`${url}`);
+
+	if (!response.ok()) {
+		throw new Error(
+			`Failed to get current user: ${response.status()} ${await response.text()}`,
+		);
+	}
+
+	const json: unknown = await response.json();
+
+	if (
+		isRecord(json) &&
+		isRecord(json.user) &&
+		typeof json.user.id === "number"
+	) {
+		return json.user.id;
+	}
+
+	throw new Error(
+		"Failed to get current user because the response was invalid.",
+	);
+}
+
+function createBlogPostBody({ mediaId }: { mediaId: string }): unknown {
 	return {
 		root: {
 			type: "root",
 			children: [
-				createHeadingNode("MCP Draft"),
-				createParagraphNode("This draft was created from editor-state JSON."),
+				createHeadingNode("MCP Body Mutation"),
+				createParagraphNode("This post body starts with one paragraph."),
 				{
 					id: "mcp-media-node",
 					type: "upload",
@@ -521,6 +592,36 @@ function findUploadNodeValue(nodes: unknown[]): string | null {
 	return null;
 }
 
+function getRootChildren(body: unknown): unknown[] {
+	if (
+		isRecord(body) &&
+		isRecord(body.root) &&
+		Array.isArray(body.root.children)
+	) {
+		return body.root.children;
+	}
+
+	throw new Error("Blog post body did not include root children.");
+}
+
+function bodyContainsText(nodes: unknown[], text: string): boolean {
+	for (const node of nodes) {
+		if (!isRecord(node)) {
+			continue;
+		}
+
+		if (node.type === "text" && node.text === text) {
+			return true;
+		}
+
+		if (Array.isArray(node.children) && bodyContainsText(node.children, text)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 function parseToolJsonContent<T>(response: McpJsonRpcResponse): T {
 	expect(response.error).toBeUndefined();
 
@@ -529,6 +630,14 @@ function parseToolJsonContent<T>(response: McpJsonRpcResponse): T {
 	expect(text).toBeTruthy();
 
 	return JSON.parse(text ?? "{}") as T;
+}
+
+function getNumberProperty(value: unknown, key: string): number | null {
+	if (isRecord(value) && typeof value[key] === "number") {
+		return value[key];
+	}
+
+	return null;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

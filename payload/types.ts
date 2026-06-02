@@ -327,24 +327,72 @@ export interface PayloadMcpApiKey {
      * Allow clients to find blog-posts.
      */
     find?: boolean | null;
+    /**
+     * Allow clients to create blog-posts.
+     */
+    create?: boolean | null;
+    /**
+     * Allow clients to update blog-posts.
+     */
+    update?: boolean | null;
+    /**
+     * Allow clients to delete blog-posts.
+     */
+    delete?: boolean | null;
   };
   tags?: {
     /**
      * Allow clients to find tags.
      */
     find?: boolean | null;
+    /**
+     * Allow clients to create tags.
+     */
+    create?: boolean | null;
+    /**
+     * Allow clients to update tags.
+     */
+    update?: boolean | null;
+    /**
+     * Allow clients to delete tags.
+     */
+    delete?: boolean | null;
   };
   coverImages?: {
     /**
      * Allow clients to find cover-images.
      */
     find?: boolean | null;
+    /**
+     * Allow clients to create cover-images.
+     */
+    create?: boolean | null;
+    /**
+     * Allow clients to update cover-images.
+     */
+    update?: boolean | null;
+    /**
+     * Allow clients to delete cover-images.
+     */
+    delete?: boolean | null;
   };
   media?: {
     /**
      * Allow clients to find media.
      */
     find?: boolean | null;
+    /**
+     * Allow clients to create media.
+     */
+    create?: boolean | null;
+    /**
+     * Allow clients to update media.
+     */
+    update?: boolean | null;
+    /**
+     * Allow clients to delete media.
+     */
+    delete?: boolean | null;
   };
   website?: {
     /**
@@ -354,17 +402,13 @@ export interface PayloadMcpApiKey {
   };
   'payload-mcp-tool'?: {
     /**
-     * Read one blog post draft with its Payload Lexical editor state body. Use before body edits so existing upload/media nodes can be preserved.
+     * Insert one serialized Payload Lexical node into a blog post body at the requested nested children-array location.
      */
-    getBlogPostDraftEditorState?: boolean | null;
+    appendNodeInBlogPostBody?: boolean | null;
     /**
-     * Create a draft-only blog post from Payload Lexical editor state JSON. This never publishes content and does not accept Markdown.
+     * Delete one serialized Payload Lexical node from a blog post body at the requested nested children-array location.
      */
-    createBlogPostDraft?: boolean | null;
-    /**
-     * Update an existing blog post as a draft. Omit body to preserve existing rich content; pass Payload Lexical editor state JSON only when replacing the body.
-     */
-    updateBlogPostDraft?: boolean | null;
+    deleteNodeInBlogPostBody?: boolean | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -612,21 +656,33 @@ export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
     | T
     | {
         find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
       };
   tags?:
     | T
     | {
         find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
       };
   coverImages?:
     | T
     | {
         find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
       };
   media?:
     | T
     | {
         find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
       };
   website?:
     | T
@@ -636,9 +692,8 @@ export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
   'payload-mcp-tool'?:
     | T
     | {
-        getBlogPostDraftEditorState?: T;
-        createBlogPostDraft?: T;
-        updateBlogPostDraft?: T;
+        appendNodeInBlogPostBody?: T;
+        deleteNodeInBlogPostBody?: T;
       };
   updatedAt?: T;
   createdAt?: T;
