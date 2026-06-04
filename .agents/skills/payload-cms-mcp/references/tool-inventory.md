@@ -2,6 +2,8 @@
 
 The MCP server is permission-scoped by API key. A tool documented here may still be unavailable in a given session if the key does not grant it. Start every session by listing tools and adapting the workflow to the returned names.
 
+If the agent needs Payload MCP access but does not have an MCP API key, it must ask the user for one. Do not silently fall back to seed fixture edits, direct database writes, or local REST/API calls as substitutes for MCP.
+
 **Example:**
 
 ```json
@@ -13,7 +15,10 @@ The MCP server is permission-scoped by API key. A tool documented here may still
 
 **Guidelines:**
 
-- MUST call `tools/list` before planning mutations.
+- MUST ask the user for an MCP API key when no key or callable MCP connector is available for a required CMS operation.
+- MUST call `tools/list` before any MCP tool use, including read-only find calls.
+- MUST validate that the requested read or mutation tools are present in the returned `tools/list` result before using them.
+- MUST stop and report missing permission when `tools/list` fails, returns an authorization error, or omits a required tool.
 - MUST treat absent tools as unavailable instead of guessing alternate names.
 - MUST use exact tool names from `tools/list`; casing matters.
 - SHOULD keep a note of whether the key has body mutation tools, generic collection update tools, or only find tools.
@@ -52,6 +57,7 @@ The server is currently configured to avoid broad write tools by default. Some w
 
 - MUST NOT claim metadata or asset upload edits are complete unless the needed write tool was present and succeeded.
 - MUST NOT use the body mutation tools to simulate metadata updates.
+- MUST treat generic collection update tools such as `updateBlogPosts` as broad writes that require the full-body safeguards in [body-editing.md](./body-editing.md) before changing rich text.
 - SHOULD explain the missing capability and the exact tool or server change needed when the user asks for an unsupported mutation.
 - MAY continue with a body-only edit when metadata or upload mutation is unavailable and the user agrees to split the task.
 

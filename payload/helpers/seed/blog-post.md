@@ -1,250 +1,169 @@
-# Headings
+# Markdown Example: 実装メモを記事として残す
 
-## Heading 2
+Markdown の確認用記事は、構文を並べるだけだとすぐ読まれなくなる。この記事では、このブログの Markdown レンダラーを点検しながら、実装メモとしても使える形に整える。
 
-## Heading 2 after h2
+前提は単純で、Payload CMS の Lexical エディターに保存した本文を Markdown に戻し、Next.js 側で `remark` / `rehype` のパイプラインに通して表示する。つまり、**書けること**と*表示で意味を持つこと*を分けて見る必要がある。
 
-### Heading 3
+> サンプル記事でも、読者にとって意味のある制約と判断材料を残す。構文の網羅は目的ではなく、記事の副産物として満たす。
 
-### Heading 3 after h3
+## まず確認する範囲
 
-#### Heading 4
+このブログで特に見たいのは、次のような実運用の材料だ。
 
-## Heading 1 after h3
+- 見出しで話題を分ける
+- 箇条書きで確認手順を残す
+    - 子項目は 4 スペースでインデントする
+    - 2 スペースだと Payload の Markdown 変換で平坦化されやすい
+- テーブルで比較や判断を横に並べる
+- コードブロックで再現できる最小例を残す
+- 画像と Web 埋め込みで、文章だけでは伝わりにくい状態を補う
 
-### Heading 3 after h1
+作業順はこのくらいに絞る。
 
-## Heading 2 after h3
+1. Payload の `editor` 設定で有効な Feature を確認する
+2. Markdown から Lexical へ変換したときの落ち方を見る
+3. Lexical から Markdown に戻した出力をレンダラーで読む
+4. 見た目の都合だけでなく、本文として自然かを見直す
 
-#### Heading 4 after h2
+### 変換で落としやすいもの
 
-# Heading 1 after h4
+Payload の既定 Feature にはチェックリストや整列などもある。ただし、このサイトの表示パイプラインでは GFM 全体ではなく、表と `~~取り消し線~~` を中心に扱っている。だから、この記事では「エディターで編集できる」だけのものを無理に本文へ入れない。
 
-# Heading 1 after h1
+#### 本文側で優先する判断
 
-#### Heading 4 after h1
+本文では `Payload`, `Lexical`, `remarkRehype` のような識別子をそのまま出す。**太字**は重要な判断に、*斜体*は補足的なニュアンスに、~~あとで消す予定の断言~~は撤回済みの選択肢に使う。`inline code` は短いファイル名やコマンドだけに限定する。
 
-##### Heading 5
+##### 細かい見出しを使う場面
 
-# Emphasis
+深い見出しは多用しない。付録や細かい条件を分けたいときだけ使う。ここでは、構文としての深い見出しが壊れないかを見るために一段だけ残している。
 
-Emphasis, aka italics, with *asterisks* or _underscores_.
+## 外部情報は本文から離しすぎない
 
-Strong emphasis, aka bold, with **asterisks** or __underscores__.
+Payload 側の Rich Text Feature は公式ドキュメントで確認する。たとえば [Payload の Official Features](https://payloadcms.com/docs/rich-text/official-features) では、見出し、リンク、引用、アップロード、テーブルなどの Feature がどう扱われるかを追える。
 
-Combined emphasis with **asterisks and _underscores_**.
-
-Strikethrough uses two tildes. ~~Scratch this.~~
-
-**This is bold text**
-
-*This is italic text*
-
-~~Strikethrough~~
-
-# Lists
-
-- Unordered list can use asterisks
-- Or minuses
-- Or pluses
-
-1. Make my changes
-    1. Fix bug
-    2. Improve formatting
-        - Make the headings bigger
-2. Push my commits to GitHub
-3. Open a pull request
-    - Describe my changes
-    - Mention all the members of my team
-        - Ask for feedback
-
-- Create a list by starting a line with `+`, `-`, or `*`
-- Sub-lists are made by indenting 2 spaces:
-    - Marker character change forces new list start:
-        - Ac tristique libero volutpat at
-        - Facilisis in pretium nisl aliquet
-        - Nulla volutpat aliquam velit
-- Very easy!
-
----
-
-# Links
-
-[I'm an inline-style link](https://www.google.com)
-
-[https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color\_value/oklch](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/oklch)
+記事の中であとから読み返す価値がある外部記事は、段落内リンクではなく埋め込みにしておくと探しやすい。
 
 ::webembed{href=https://zenn.dev/uma002/articles/architecture-abstraction-patterns}
 
-# Images
+埋め込みは便利だが、本文の主張そのものを外部ページに預けない。リンク先が消えても、この記事だけで最低限の判断ができるようにする。
 
-![019d1223-94d4-754c-8f57-47337be15c9e.webp](/api/media/file/019d1223-94d4-754c-8f57-47337be15c9e.webp)
+## スクリーンショットを置く位置
 
-# Code and Syntax Highlighting
+UI やレンダリングの話では、文章だけより画像が早いことがある。ここではシード用のメディアを置いて、アップロードノードが本文の途中で崩れないことも確認する。
 
-Inline `code` has `back-ticks around` it.
+![media:019d1223-94d4-754c-8f57-47337be15c9e]()
+
+画像の前後には、何を見ればよいかを書いておく。代替テキストも、装飾か説明かを分けて考える。
+
+## コードは小さく、実際の境界を写す
+
+このブログの表示側は、本文を Markdown に戻してから React コンポーネントへ変換している。実装メモとして残すなら、全体を貼るより境界だけを示したほうが読みやすい。
 
 ```ts
-import clsx from "clsx";
-import {
-        createElement,
-        type DetailedHTMLProps,
-        Fragment,
-        type HTMLAttributes,
-        type JSX,
-        memo,
-} from "react";
-import jsxRuntime from "react/jsx-runtime";
-import type { Options as RehypeReactOptions } from "rehype-react";
-import { renderMarkdown } from "@/helpers/markdown";
+type MarkdownRenderInput = {
+	markdown: string;
+	classNames?: Partial<Record<string, string>>;
+};
 
-export async function Markdown({
-        markdown,
-        components,
-}: {
-        markdown: string;
-        components?: RehypeReactOptions["components"];
-}) {
-        const markdownElement = await renderMarkdown({
-                markdown,
-                rehypeReactOptions: await getRehypeReactOptions({ components }),
-        });
+export async function renderPostBody({
+	markdown,
+	classNames = {},
+}: MarkdownRenderInput) {
+	const normalized = markdown.trim();
 
-        return <>{markdownElement}</>;
+	if (normalized.length === 0) {
+		return null;
+	}
+
+	return renderMarkdown({
+		markdown: normalized,
+		rehypeReactOptions: await getRehypeReactOptions({ classNames }),
+	});
 }
-
-async function getRehypeReactOptions({
-        components,
-}: {
-        components?: RehypeReactOptions["components"];
-}): Promise<RehypeReactOptions> {
-        "use server";
-
-        const options: RehypeReactOptions = {
-                jsx: jsxRuntime.jsx,
-                jsxs: jsxRuntime.jsxs,
-                // biome-ignore lint/style/useNamingConvention: follow the API of rehypeReact
-                Fragment,
-                components,
-        };
-
-        // biome-ignore lint/style/noProcessEnv: this is to check if the app is running in development environment
-        if (process.env.NODE_ENV === "development") {
-                const jsxDevRuntime = await import("react/jsx-dev-runtime");
-
-                options.jsxDEV = jsxDevRuntime.jsxDEV;
-        }
-
-        return options;
-}
-
-export function createIntrinsicComponent(
-        tag: keyof JSX.IntrinsicElements,
-        specificClassName?: string,
-) {
-        return memo(
-                ({
-                        className,
-                        ...props
-                }: DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>) =>
-                        createElement(tag, {
-                                ...props,
-                                className: clsx(specificClassName, className),
-                        }),
-        );
-}
-
 ```
 
-# Tables
+`trim()` のような小さな処理でも、空本文をどう扱うかという判断が入る。コードブロックには、そういう判断が読み取れる部分だけを載せる。
 
-## Compact reference
+## 表は判断を圧縮するために使う
 
-| Hook | Purpose | Since |
+表は「列で比べると早い」情報だけに使う。ここでは実装確認でよく見る七つの形を、本文の流れに沿って置いている。
+
+### 小さな対応表
+
+| 確認したい観点 | 使う材料 | 見る場所 |
 | --- | --- | --- |
-| `useId` | Stable unique IDs for a11y wiring | React 18 |
-| `useTransition` | Mark non-urgent state updates | React 18 |
-| `useOptimistic` | Optimistic UI during async work | React 19 |
+| 変換 | Markdown と Lexical の往復 | `payload/helpers/editor.ts` |
+| 表示 | React コンポーネントへの割り当て | `app/(app)/_/components/markdown.tsx` |
+| 見た目 | 余白、横スクロール、コードの色 | `blog-post-content.module.css` |
 
-## Wide comparison
+### 横に長い比較
 
-| Feature | Chrome | Firefox | Safari | Edge | Opera | Samsung Internet | Notes |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| CSS Nesting | Supported | Supported | Supported | Supported | Supported | Supported | Native selector nesting without a preprocessor |
-| `@container` queries | Supported | Supported | Supported | Supported | Supported | Supported | Size queries are broadly shipped; style queries are more limited |
-| `:has()` selector | Supported | Supported | Supported | Supported | Supported | Supported | Enables parent-style selection without JavaScript |
-| View Transitions API | Supported | Behind flag | Partial | Supported | Supported | Supported | Same-document transitions land first; cross-document follows |
-| Anchor Positioning | Supported | Not yet | Not yet | Supported | Supported | Not yet | Positions popovers relative to an anchor element |
-| Scroll-driven Animations | Supported | Behind flag | Not yet | Supported | Supported | Supported | Drives `animation-timeline` from scroll progress |
+| 機能 | Markdown 入力 | Payload Lexical | Markdown 出力 | React 表示 | 注意点 | この記事での使い方 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 見出し | `## 見出し` | heading node | `## 見出し` | `h2` | 階層を飛ばさない | セクション分割 |
+| リスト | `- item` | list node | `- item` | `ul` / `ol` | 子リストは 4 スペース | 手順と判断材料 |
+| 画像 | `![media:id]()` | upload node | `![alt](/api/media/file/...)` | `Media` | URL だけでは upload node にならない | スクリーンショット |
+| コード | fenced block | code block | fenced block | `Snippet` | 言語名は Shiki に渡る | 最小コード例 |
+| 表 | pipe table | table node | pipe table | `Table` | alignment は往復で落ちる | 比較と棚卸し |
+| 埋め込み | directive | paragraph text | directive | `WebEmbed` | 外部取得に失敗する可能性 | 参考リンク |
 
-Browser support moves quickly; always confirm against MDN or caniuse before relying on any row above.
+### 数値を見るための表
 
-## Column alignment
-
-| Metric | Tier | Value |
-| :--- | :---: | ---: |
+| 指標 | 判定 | 値 |
+| --- | --- | --- |
 | First Contentful Paint | Good | 1200 |
 | Largest Contentful Paint | Needs work | 3450 |
 | Interaction to Next Paint | Poor | 812 |
 | Cumulative Layout Shift | Good | 0.04 |
 
-Authored alignment may be lost when round-tripped through Lexical; when it survives (e.g., in raw-markdown pipelines), cells honor left/center/right per GFM.
+表の位置揃えは Markdown では書けるが、Payload の往復では保持されない。見た目を揃えたい場合は、本文データではなく表示コンポーネント側の責務に寄せる。
 
-## Inline content
+### セル内のインライン要素
 
-| API | Status | Reference | Example |
+| API | 判断 | 参照 | 例 |
 | --- | --- | --- | --- |
-| `Array.prototype.map` | **Stable** — you *must* reach for it first when transforming arrays | [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map) | `items.map((x) => x.id)` |
-| `Array.prototype.flatMap` | *Stable* — you *may* prefer it over `map().flat()` | [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap) | `rows.flatMap((r) => r.cells)` |
-| `Array.prototype.group` | ~~deprecated~~ proposal — use `Object.groupBy` instead | [TC39 提案](https://github.com/tc39/proposal-array-grouping) | `Object.groupBy(xs, (x) => x.kind)` |
-| `String.prototype.at` | **Stable** — 負のインデックスで末尾から参照できる | [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/at) | `"こんにちは".at(-1)` |
+| `Array.prototype.map` | **安定**していて、配列変換の第一候補にしやすい | [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map) | `items.map((item) => item.id)` |
+| `Array.prototype.flatMap` | *一段だけ* flatten したいときに読みやすい | [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap) | `rows.flatMap((row) => row.cells)` |
+| `Array.prototype.group` | ~~今すぐ使う~~ ではなく、環境と仕様を確認する | [TC39](https://github.com/tc39/proposal-array-grouping) | `Object.groupBy(items, getKind)` |
+| `String.prototype.at` | 負のインデックスを使う意図が明確なら便利 | [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/at) | `"こんにちは".at(-1)` |
 
-## Header-only table
+### まだ値を入れない表
 
-| Status code | Category | Typical meaning |
+| 未確認の観点 | 担当 | メモ |
 | --- | --- | --- |
 
-## Single column
+この形は、あとで埋める前提のテンプレートとして使う。本文中に置くなら、空である理由も一緒に書く。
 
-| Supported runtimes |
+### 一列だけで足りる表
+
+| 対象ランタイム |
 | --- |
 | Node.js |
 | Bun |
 | Deno |
 
-## Sparse cells
+横に比べるものがないなら、無理に列を増やさない。
 
-| Property | Value |
+### 空セルを含む表
+
+| 項目 | 値 |
 | --- | --- |
-| Name | Ada Lovelace |
-| Nickname |  |
+| タイトル | Markdown Example |
+| 目的 | 実装メモとして読める構文確認 |
+| 未定の担当 |  |
 
-# Blockquotes
+空セルは「未入力」を表すためにだけ使う。読み手が欠落か意図か迷うなら、本文で補足する。
 
-> Blockquotes are very handy in email to emulate reply text.This line is part of the same quote.
+## 最後に見るチェックポイント
 
-Quote break.
+記事として読めるかは、次の順番で見る。
 
-> This is a very long line that will still be quoted properly when it wraps. Oh boy let's keep writing to make sure this is long enough to actually wrap for everyone. Oh, you can *put* **Markdown** into a blockquote.
-
-Quote break again.
-
-> Blockquotes can also be nested......by using additional greater-than signs right next to each other......or with spaces between arrows.
+1. 最初の段落だけで、何を確認する記事か分かるか
+2. 見出しが構文名ではなく、判断の単位になっているか
+3. 表やコードが本文の説明を短くしているか
+4. リンクと埋め込みが、主張の代わりではなく補助になっているか
+5. 画像が装飾ではなく、確認したい状態を示しているか
 
 ---
 
-# Misc
-
-💡
-
-This is a callout
-
-🐱
-
-This is a catt-out
-
-T^{i\_1 i\_2 \\dots i\_p}{j\_1 j\_2 \\dots j\_q} = T(x^{i\_1},\\dots,x^{i\_p},e{j\_1},\\dots,e\_{j\_q})
-
-# YouTube Videos
-
-[https://www.youtube.com/watch?v=3nonXwpbyEY](https://www.youtube.com/watch?v=3nonXwpbyEY)
+構文確認用の記事でも、実装の制約、落とし穴、判断の理由を書けば、あとから読み返せるメモになる。Markdown の機能をすべて目立たせるより、必要な場所で自然に使うほうが、結果としてレンダラーの確認にもなる。

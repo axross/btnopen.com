@@ -28,13 +28,14 @@ Apply these keywords consistently in this document and the documents linked from
 | ----- | ------------- |
 | [Agent Skills Best Practices](.agents/skills/agent-skills-best-practices/SKILL.md) | Creating, refining, splitting, renaming, deleting, or auditing project skills or this skill index |
 | [Application Security Requirements](.agents/skills/application-security-requirements/SKILL.md) | Reviewing secrets, environment variables, validation, Payload access control, markdown XSS, SSRF/embed fetching, auth/session behavior, privacy exposure, analytics/error-reporting data, or npm dependency risk |
+| [Blog Post Authoring Guidelines](.agents/skills/blog-post-authoring-guidelines/SKILL.md) | Drafting, rewriting, refining, translating, or reviewing blog post content, titles, briefs, tags, structure, tone, grammar, and authorial style |
 | [Code Review Guideline](.agents/skills/code-review-guideline/SKILL.md) | Reviewing a diff, pull request, local change, or post-implementation self-review |
 | [Development Guidelines](.agents/skills/development-guidelines/SKILL.md) | Implementing, refactoring, running commands, preparing commits, adding dependencies, checking current docs, or changing migrations |
 | [E2E Testing Guidelines](.agents/skills/e2e-testing-guidelines/SKILL.md) | Writing, running, reviewing, or maintaining Playwright tests, snapshots, route coverage, or browser assertions |
 | [Maintainable Code Guidelines](.agents/skills/maintainable-code-guidelines/SKILL.md) | Reviewing readability, naming, abstraction boundaries, complexity, dead code, or scope discipline |
 | [Markdown Processing Guidelines](.agents/skills/markdown-processing-guidelines/SKILL.md) | Writing, reviewing, or modifying markdown rendering, Remark/Rehype plugins, Shiki setup, custom nodes, or web embeds |
 | [Observability Guidelines](.agents/skills/observability-guidelines/SKILL.md) | Throwing, catching, reporting, or logging errors with Sentry or Pino |
-| [Payload MCP Blog Editing](.agents/skills/payload-mcp-blog-editing/SKILL.md) | Using the Payload MCP server to inspect or edit blog posts, including raw Lexical body mutations, media references, draft/published targeting, locales, tags, cover images, or other blog metadata |
+| [Payload CMS MCP](.agents/skills/payload-cms-mcp/SKILL.md) | Inspecting or mutating existing Payload CMS content through MCP, including blog posts, media, tags, locales, drafts, and metadata; use this for existing blog post edits even when MCP is not mentioned |
 | [Performance and Reliability Requirements](.agents/skills/performance-and-reliability-requirements/SKILL.md) | Reviewing Payload query cost, RSC/client boundaries, caching, image optimization, bundle weight, or runtime failure behavior |
 | [Project Structure](.agents/skills/project-structure/SKILL.md) | Navigating the repository, locating files, placing new modules, checking stack/service context, import aliases, or directory conventions |
 | [Quality Assurance Guidelines](.agents/skills/quality-assurance-guidelines/SKILL.md) | Reviewing verification evidence, e2e coverage, snapshots, flakiness, lint/format evidence, or manual checks |

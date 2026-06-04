@@ -11,7 +11,7 @@ The MCP server distinguishes body media from blog metadata images. Body media us
 
 ## Existing Media In Body
 
-An upload node is valid only when it points at an existing `media` document. The body mutation tool validates upload nodes and rejects nodes whose `relationTo` is not `media` or whose `value` is not an existing media ID.
+An upload node is valid only when it points at an existing `media` document. The body mutation tool validates upload nodes and rejects nodes whose `relationTo` is not `media` or whose `value` is not an existing media ID. A populated media object returned by a read is useful for inspection, but it is not valid Lexical editor-state data for an upload node write.
 
 **Example lookup:**
 
@@ -45,7 +45,10 @@ An upload node is valid only when it points at an existing `media` document. The
 
 - MUST verify the media document exists before inserting an upload node.
 - MUST set `relationTo` to `media` for body upload nodes.
-- MUST set `value` to the existing media document ID, not a URL or filename.
+- MUST set `value` to the existing media document ID, not a URL, filename, or populated media object.
+- MUST normalize a populated upload `value` object to its `id` before reusing a body read as a write payload.
+- MUST verify `typeof node.value === "string"` or `typeof node.value === "number"` when checking upload-node validity.
+- MUST NOT use `node.value.id || node.value` as an upload verification shortcut.
 - SHOULD include caption fields only when the user asked for a caption or the surrounding body uses captions consistently.
 - SHOULD re-read the post body after insertion and confirm the upload node is present at the intended location.
 

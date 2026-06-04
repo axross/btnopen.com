@@ -21,7 +21,7 @@ insert at index 1 under the first child of the first root node => location [0, 0
 
 ## Read Before Mutating
 
-Use `findBlogPosts` to fetch the post and body. Keep the read focused, but include enough metadata to verify that the correct document and locale were selected.
+Use `findBlogPosts` to fetch the post and body. Keep the read focused, but include enough metadata to verify that the correct document and locale were selected. Use `depth: 0` when the returned body may become part of a mutation payload; populated reads are for inspection only because Payload can expand rich-text relationship nodes into objects that are invalid for editor-state writes.
 
 **Example:**
 
@@ -32,7 +32,7 @@ Use `findBlogPosts` to fetch the post and body. Keep the read focused, but inclu
     "locale": "ja-JP",
     "draft": false,
     "limit": 1,
-    "depth": 1,
+    "depth": 0,
     "select": "{\"id\":true,\"slug\":true,\"title\":true,\"body\":true,\"_status\":true,\"updatedAt\":true}",
     "where": "{\"slug\":{\"equals\":\"my-post\"}}"
   }
@@ -42,10 +42,44 @@ Use `findBlogPosts` to fetch the post and body. Keep the read focused, but inclu
 **Guidelines:**
 
 - MUST confirm the returned `slug`, `status`, `locale` intent, and relevant body subtree before mutating.
+- MUST use `depth: 0` for any body read that will be cloned, transformed, or reused as an update payload.
+- MUST NOT reuse a `depth: 1` or deeper body response as a write payload without first normalizing rich-text relationship values.
 - MUST NOT use `fallbackLocale` when reading or mutating `body`; copying from another locale needs an explicit separate workflow.
 - MUST preserve node fields that are not part of the requested change, especially `version`, `format`, `direction`, `indent`, and relationship fields.
 - SHOULD copy the shape of nearby existing nodes when constructing a replacement node.
 - SHOULD re-read the body after each mutation when a later location depends on the changed tree.
+
+## Normalize Rich Text Relationships
+
+Payload can populate relationship-like rich-text nodes on read, but the Lexical editor state stored back to Payload must keep relationship values as document IDs. This matters most for `upload` nodes: the admin editor throws when `value` is a populated media object instead of a string or number ID.
+
+**Invalid populated node:**
+
+```json
+{
+  "type": "upload",
+  "relationTo": "media",
+  "value": { "id": "019d1223-94d4-754c-8f57-47337be15c9e", "filename": "example.webp" }
+}
+```
+
+**Valid write node:**
+
+```json
+{
+  "type": "upload",
+  "relationTo": "media",
+  "value": "019d1223-94d4-754c-8f57-47337be15c9e"
+}
+```
+
+**Guidelines:**
+
+- MUST recursively inspect rich-text relationship nodes before using a full body as an update payload.
+- MUST normalize populated `upload.value` objects to their `id` before writing `body`.
+- MUST assert every upload node uses `relationTo: "media"` and a string or number `value` before mutation.
+- MUST NOT treat `upload.value.id || upload.value` as validation proof because it hides invalid populated objects.
+- SHOULD verify media IDs with `findMedia` or the custom body mutation tools before inserting or restoring upload nodes.
 
 ## Append Semantics
 
@@ -140,13 +174,16 @@ The server has insert and delete body-node operations, not an in-place update op
 
 ## Full Body Replacement
 
-Full body replacement is a metadata-style update to the `body` field, not a custom body-node mutation. It is only possible when `tools/list` exposes a generic blog-post update tool such as `updateBlogPosts`.
+Full body replacement is a metadata-style update to the `body` field, not a custom body-node mutation. It is only possible when `tools/list` exposes a generic blog-post update tool such as `updateBlogPosts`. Generic collection updates can bypass the custom body-node validators, so they need explicit rich-text invariant checks before and after the write.
 
 **Guidelines:**
 
 - MUST NOT attempt full body replacement unless `updateBlogPosts` or another body-capable update tool is listed.
+- MUST treat `updateBlogPosts` as a generic collection update that does not prove rich-text relationship nodes are valid.
+- MUST run the [Normalize Rich Text Relationships](#normalize-rich-text-relationships) checks before submitting a full replacement.
 - MUST preserve all existing media/upload nodes and relationship references unless the user explicitly asks to remove them.
-- MUST validate the full replacement by re-reading the post body and checking representative beginning, middle, end, and media nodes.
+- MUST validate the full replacement by checking the outgoing body and the persisted body for representative beginning, middle, end, and media nodes.
+- MUST verify every persisted upload node has `type: "upload"`, `relationTo: "media"`, and `typeof value` equal to `string` or `number`.
 - SHOULD prefer targeted append/delete replacement over full body replacement for ordinary refinement.
 - SHOULD ask for confirmation before full body replacement on a published post.
 

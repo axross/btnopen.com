@@ -1,6 +1,6 @@
 # Safety And Verification
 
-MCP blog editing changes content in the live CMS. The safest workflow is read, plan, mutate one small piece, re-read, and verify. This is especially important for published posts because `draft: false` edits the published/main document.
+Payload MCP content editing changes content in the live CMS. The safest workflow is read, plan, mutate one small piece, re-read, and verify. This is especially important for published posts because `draft: false` edits the published/main document.
 
 **Guidelines:**
 
@@ -30,7 +30,7 @@ Preflight prevents editing the wrong post or wrong locale. It also confirms that
 
 ## Post-Mutation Verification
 
-A successful tool response is not enough. Re-read the document to verify final persisted state and to catch index-shift mistakes.
+A successful tool response is not enough. Re-read the document to verify final persisted state and to catch index-shift mistakes. For rich-text relationship nodes, verify the stored editor-state shape, not only the human-readable populated read result.
 
 **Verification examples:**
 
@@ -38,11 +38,15 @@ A successful tool response is not enough. Re-read the document to verify final p
 
 > For a tag update, re-read `tags` with enough depth to confirm the expected tag slugs.
 
+> For an upload-node repair, verify the mutation response and a `depth: 0` read show `value` as a string or number. When local SQLite storage is available, inspect the raw JSON path because Payload read hooks can repopulate upload nodes.
+
 **Guidelines:**
 
 - MUST re-read the mutated post after every body edit or metadata update.
 - MUST verify both the intended change and the absence of obvious adjacent damage.
-- SHOULD verify media references by checking `type`, `relationTo`, `value`, and caption fields.
+- MUST verify rich-text upload references by checking `type`, `relationTo`, the exact `value` type, and caption fields.
+- MUST NOT accept a populated object as a valid upload-node `value` even when the object contains the expected media `id`.
+- SHOULD inspect raw local storage when MCP or Payload read responses continue to populate relationship nodes after an upload-node repair.
 - SHOULD verify title, brief, status, slug, tags, cover image, and published date after metadata updates.
 
 ## Destructive Or Broad Edits
