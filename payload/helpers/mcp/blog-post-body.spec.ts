@@ -6,6 +6,7 @@ import {
 	findBlogPostBySlug,
 	formatLocation,
 	getChildrenAtLocation,
+	prepareBlogPostBodyForWrite,
 	updateBlogPostBody,
 	validateRichTextReferences,
 } from "./blog-post-body";
@@ -195,7 +196,7 @@ describe("updateBlogPostBody()", () => {
 		expect(receivedOptions?.collection).toBe("blog-posts");
 		expect(receivedOptions?.draft).toBe(false);
 		expect(receivedOptions?.fallbackLocale).toBe(false);
-		expect(receivedOptions?.data.body).toBe(body);
+		expect(receivedOptions?.data.body).toEqual(body);
 		expect(receivedOptions?.data._status).toBe("published");
 	});
 
@@ -256,6 +257,50 @@ describe("updateBlogPostBody()", () => {
 
 		expect(statuses).toEqual(["draft"]);
 	});
+
+	it("normalizes populated upload node values before updating the post", async () => {
+		const mediaIds: string[] = [];
+		let receivedOptions: PayloadUpdateOptions | undefined;
+		const body = createBody([
+			{
+				type: "upload",
+				relationTo: "media",
+				value: { id: "media-1" },
+			},
+		]);
+		const req = {
+			payload: {
+				findByID: async (options: PayloadFindByIdOptions) => {
+					mediaIds.push(options.id);
+
+					return { id: options.id };
+				},
+				update: async (options: PayloadUpdateOptions) => {
+					receivedOptions = options;
+
+					return {
+						id: options.id,
+						slug: "hello-world",
+						body: options.data.body,
+						_status: options.data._status,
+					};
+				},
+			},
+			user: { id: 1 },
+		} as unknown as PayloadRequest;
+
+		await updateBlogPostBody(
+			req,
+			{ id: 42, slug: "hello-world", _status: "published" } as BlogPost,
+			body,
+			{ draft: false, locale: "ja-JP" },
+		);
+
+		expect(mediaIds).toEqual(["media-1"]);
+		expect(receivedOptions?.data.body?.root.children).toEqual([
+			{ type: "upload", relationTo: "media", value: "media-1" },
+		]);
+	});
 });
 
 describe("validateRichTextReferences()", () => {
@@ -300,5 +345,23 @@ describe("validateRichTextReferences()", () => {
 				]),
 			),
 		).rejects.toThrow("relationTo='media'");
+	});
+});
+
+describe("prepareBlogPostBodyForWrite()", () => {
+	it("rejects upload nodes with populated values that do not include an ID", async () => {
+		const req = {
+			payload: {
+				findByID: async () => ({ id: "unused" }),
+			},
+			user: { id: 1 },
+		} as unknown as PayloadRequest;
+
+		await expect(
+			prepareBlogPostBodyForWrite(
+				req,
+				createBody([{ type: "upload", relationTo: "media", value: {} }]),
+			),
+		).rejects.toThrow();
 	});
 });

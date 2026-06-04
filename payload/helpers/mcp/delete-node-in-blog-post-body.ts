@@ -7,7 +7,6 @@ import {
 	formatLocation,
 	getChildrenAtLocation,
 	updateBlogPostBody,
-	validateRichTextReferences,
 } from "./blog-post-body";
 import { BlogPostBodyMutationParametersBase } from "./blog-post-body-mutation-types";
 import { getErrorMessage } from "./errors";
@@ -105,8 +104,6 @@ export const deleteNodeInBlogPostBodyTool = {
 					`No Lexical node exists at location ${formatLocation(params.location)}.`,
 				);
 			}
-
-			await validateRichTextReferences(req, body);
 
 			const blogPost = await updateBlogPostBody(req, existingBlogPost, body, {
 				draft: params.draft,

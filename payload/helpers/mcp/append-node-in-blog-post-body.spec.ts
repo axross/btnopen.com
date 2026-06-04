@@ -236,7 +236,11 @@ describe("appendNodeInBlogPostBodyTool()", () => {
 				slug: "hello-world",
 				location: [0, 0, 0],
 				draft: true,
-				node: { type: "upload", relationTo: "media", value: "media-1" },
+				node: {
+					type: "upload",
+					relationTo: "media",
+					value: { id: "media-1" },
+				},
 			},
 			req,
 		);

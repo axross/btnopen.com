@@ -1,5 +1,7 @@
 import type { PayloadRequest } from "payload";
+import z from "zod";
 import type { BlogPost } from "../../types";
+import { PayloadRichTextEditorStateCodec } from "./payload-types";
 import { isRecord } from "./records";
 
 export const bodyMutationSelect = {
@@ -55,12 +57,13 @@ export async function updateBlogPostBody(
 ): Promise<BlogPost> {
 	const status =
 		options.draft || blogPost._status !== "published" ? "draft" : "published";
+	const bodyForWrite = await prepareBlogPostBodyForWrite(req, body);
 
 	return (await req.payload.update({
 		id: blogPost.id,
 		collection: "blog-posts",
 		data: {
-			body,
+			body: bodyForWrite,
 			_status: status,
 		},
 		depth: 0,
@@ -73,6 +76,20 @@ export async function updateBlogPostBody(
 		select: bodyMutationSelect,
 		user: req.user,
 	})) as BlogPost;
+}
+
+export async function prepareBlogPostBodyForWrite(
+	req: PayloadRequest,
+	body: BlogPost["body"],
+): Promise<BlogPost["body"]> {
+	const bodyForWrite = z.decode(
+		PayloadRichTextEditorStateCodec,
+		body as z.input<typeof PayloadRichTextEditorStateCodec>,
+	);
+
+	await validateRichTextReferences(req, bodyForWrite as BlogPost["body"]);
+
+	return bodyForWrite as BlogPost["body"];
 }
 
 export function getChildrenAtLocation(

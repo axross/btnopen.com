@@ -21,6 +21,11 @@ interface PayloadUpdateOptions {
 	locale?: "en-US" | "ja-JP";
 }
 
+interface PayloadFindByIdOptions {
+	collection: string;
+	id: string;
+}
+
 function createBody(children: unknown[] = []): BlogPost["body"] {
 	return {
 		root: {
@@ -235,6 +240,52 @@ describe("deleteNodeInBlogPostBodyTool()", () => {
 				}
 			).children[0]?.children,
 		).toEqual([{ type: "text", text: "Keep" }]);
+	});
+
+	it("normalizes populated upload values that remain after deleting a node", async () => {
+		const mediaIds: string[] = [];
+		let updatedBody: BlogPost["body"] | undefined;
+		const deletedNode = {
+			type: "paragraph",
+			children: [{ type: "text", text: "Delete" }],
+		};
+		const body = createBody([
+			deletedNode,
+			{ type: "upload", relationTo: "media", value: { id: "media-1" } },
+		]);
+		const req = {
+			payload: {
+				find: async () => ({
+					docs: [{ id: 1, slug: "hello-world", body, _status: "published" }],
+				}),
+				findByID: async (options: PayloadFindByIdOptions) => {
+					mediaIds.push(options.id);
+
+					return { id: options.id };
+				},
+				update: async (options: PayloadUpdateOptions) => {
+					updatedBody = options.data.body;
+
+					return {
+						id: 1,
+						slug: "hello-world",
+						body: options.data.body,
+						_status: options.data._status,
+					};
+				},
+			},
+			user: { id: 1 },
+		} as unknown as PayloadRequest;
+
+		await deleteNodeInBlogPostBodyTool.handler(
+			{ slug: "hello-world", location: [0] },
+			req,
+		);
+
+		expect(mediaIds).toEqual(["media-1"]);
+		expect(updatedBody?.root.children).toEqual([
+			{ type: "upload", relationTo: "media", value: "media-1" },
+		]);
 	});
 
 	describe("when delete location is invalid", () => {
