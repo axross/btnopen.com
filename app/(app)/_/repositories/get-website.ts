@@ -60,13 +60,15 @@ export async function getWebsite({
 	if (websiteParseResult.success) {
 		const website = websiteParseResult.data;
 
-		website.creator.bioMarkdown = convertLexicalToMarkdown({
-			data: website.creator.bio,
-			editorConfig: await editorConfigFactory.fromEditor({
-				config: await config,
-				editor,
-			}),
-		});
+		if (website.creator.bio) {
+			website.creator.bioMarkdown = convertLexicalToMarkdown({
+				data: website.creator.bio,
+				editorConfig: await editorConfigFactory.fromEditor({
+					config: await config,
+					editor,
+				}),
+			});
+		}
 
 		logger.info("Successfully fetched the website record.");
 

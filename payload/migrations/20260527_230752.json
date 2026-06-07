@@ -1654,7 +1654,7 @@
           "name": "user_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "label": {

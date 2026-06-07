@@ -13,6 +13,9 @@ interface PayloadFindOptions {
 	fallbackLocale?: false;
 	locale?: "en-US" | "ja-JP";
 	where?: {
+		_status?: {
+			equals?: "published";
+		};
 		slug?: {
 			equals?: string;
 		};
@@ -193,6 +196,7 @@ describe("appendNodeInBlogPostBodyTool()", () => {
 		);
 		expect(findOptions?.draft).toBe(false);
 		expect(findOptions?.locale).toBe("ja-JP");
+		expect(findOptions?.where?._status?.equals).toBe("published");
 		expect(updateOptions?.data._status).toBe("published");
 		expect(updatedBody?.root.children[0]?.type).toBe("heading");
 		expect(body.root.children[0]?.type).toBe("paragraph");

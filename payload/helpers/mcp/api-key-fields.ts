@@ -4,8 +4,13 @@ type MutableField = Record<string, unknown> & {
 	defaultValue?: unknown;
 	fields?: MutableField[];
 	name?: string;
+	required?: boolean;
 	type?: string;
 };
+
+export function configureMcpApiKeyField(field: Field): Field {
+	return makeMcpApiKeyUserOptional(disableCustomToolDefault(field));
+}
 
 export function disableCustomToolDefault(field: Field): Field {
 	const mutableField = field as MutableField;
@@ -30,4 +35,17 @@ export function disableCustomToolDefault(field: Field): Field {
 	}
 
 	return nextField as Field;
+}
+
+export function makeMcpApiKeyUserOptional(field: Field): Field {
+	const mutableField = field as MutableField;
+
+	if (mutableField.name !== "user") {
+		return field;
+	}
+
+	return {
+		...mutableField,
+		required: false,
+	} as Field;
 }

@@ -4,11 +4,9 @@ import { authenticatedStorageState } from "@/e2e/helpers/api/auth";
 import {
 	appendNodeInBlogPostBodyTool,
 	callMcp,
-	createMcpApiKey,
 	deleteBlogPost,
-	deleteMcpApiKey,
 	deleteNodeInBlogPostBodyTool,
-	type McpApiKey,
+	getMcpE2eApiKey,
 	type McpJsonRpcResponse,
 } from "@/e2e/helpers/api/mcp";
 
@@ -41,13 +39,11 @@ test("MCP exposes scoped tools and mutates blog post body nodes", async ({
 	page,
 }, testInfo) => {
 	let createdBlogPostId: number | null = null;
-	let mcpApiKey: McpApiKey | null = null;
 
 	try {
-		mcpApiKey =
-			await test.step("Create an MCP API key with scoped permissions", async () =>
-				createMcpApiKey({ page, testInfo }));
-		const { apiKey } = mcpApiKey;
+		const apiKey =
+			await test.step("Load the pre-issued MCP API key", async () =>
+				getMcpE2eApiKey());
 		const toolsResponse = await test.step("List MCP tools", async () =>
 			callMcp({
 				apiKey,
@@ -138,14 +134,6 @@ test("MCP exposes scoped tools and mutates blog post body nodes", async ({
 
 			await test.step("Clean up the blog post", async () => {
 				await deleteBlogPost({ id: blogPostId, page, testInfo });
-			});
-		}
-
-		if (mcpApiKey !== null) {
-			const mcpApiKeyId = mcpApiKey.id;
-
-			await test.step("Clean up the MCP API key", async () => {
-				await deleteMcpApiKey({ id: mcpApiKeyId, page, testInfo });
 			});
 		}
 	}

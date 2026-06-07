@@ -313,7 +313,7 @@ export interface PayloadMcpApiKey {
   /**
    * The user that the API key is associated with.
    */
-  user: number | User;
+  user?: (number | null) | User;
   /**
    * A useful label for the API key.
    */

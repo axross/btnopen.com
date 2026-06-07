@@ -1,7 +1,7 @@
 import { mcpPlugin } from "@payloadcms/plugin-mcp";
 import type { TypedUser } from "payload";
 import z from "zod";
-import { disableCustomToolDefault } from "./mcp/api-key-fields";
+import { configureMcpApiKeyField } from "./mcp/api-key-fields";
 import { appendNodeInBlogPostBodyTool } from "./mcp/append-node-in-blog-post-body";
 import { deleteNodeInBlogPostBodyTool } from "./mcp/delete-node-in-blog-post-body";
 import { mcpLogger } from "./mcp/logger";
@@ -155,7 +155,7 @@ export const payloadMcpPlugin = mcpPlugin({
 	},
 	overrideApiKeyCollection: (collection) => ({
 		...collection,
-		fields: collection.fields.map(disableCustomToolDefault),
+		fields: collection.fields.map(configureMcpApiKeyField),
 	}),
 	overrideAuth: async (req, getDefaultMcpAccessSettings) => {
 		const accessSettings = await getDefaultMcpAccessSettings();

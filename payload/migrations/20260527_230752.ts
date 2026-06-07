@@ -3,7 +3,7 @@ import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-sqlite'
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.run(sql`CREATE TABLE \`payload_mcp_api_keys\` (
   	\`id\` integer PRIMARY KEY NOT NULL,
-  	\`user_id\` integer NOT NULL,
+    \`user_id\` integer,
   	\`label\` text,
   	\`description\` text,
   	\`blog_posts_find\` integer DEFAULT false,
@@ -32,7 +32,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
 }
 
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
-  await db.run(sql`DROP TABLE \`payload_mcp_api_keys\`;`)
   await db.run(sql`PRAGMA foreign_keys=OFF;`)
   await db.run(sql`CREATE TABLE \`__new_payload_locked_documents_rels\` (
   	\`id\` integer PRIMARY KEY NOT NULL,
@@ -84,4 +83,5 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   await db.run(sql`CREATE INDEX \`payload_preferences_rels_parent_idx\` ON \`payload_preferences_rels\` (\`parent_id\`);`)
   await db.run(sql`CREATE INDEX \`payload_preferences_rels_path_idx\` ON \`payload_preferences_rels\` (\`path\`);`)
   await db.run(sql`CREATE INDEX \`payload_preferences_rels_users_id_idx\` ON \`payload_preferences_rels\` (\`users_id\`);`)
+  await db.run(sql`DROP TABLE \`payload_mcp_api_keys\`;`)
 }

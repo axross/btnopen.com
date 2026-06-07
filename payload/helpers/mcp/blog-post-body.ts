@@ -40,6 +40,13 @@ export async function findBlogPostBySlug<
 			slug: {
 				equals: slug,
 			},
+			...(options.draft
+				? {}
+				: {
+						_status: {
+							equals: "published",
+						},
+					}),
 		},
 	});
 

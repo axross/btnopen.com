@@ -17,6 +17,9 @@ interface PayloadFindOptions {
 	fallbackLocale?: false;
 	locale?: "en-US" | "ja-JP";
 	where?: {
+		_status?: {
+			equals?: "published";
+		};
 		slug?: {
 			equals?: string;
 		};
@@ -144,7 +147,31 @@ describe("findBlogPostBySlug()", () => {
 		expect(receivedOptions?.draft).toBe(true);
 		expect(receivedOptions?.fallbackLocale).toBe(false);
 		expect(receivedOptions?.locale).toBe("ja-JP");
+		expect(receivedOptions?.where?._status).toBeUndefined();
 		expect(receivedOptions?.where?.slug?.equals).toBe("hello-world");
+	});
+
+	it("filters to published posts when draft mode is disabled", async () => {
+		let receivedOptions: PayloadFindOptions | undefined;
+		const req = {
+			payload: {
+				find: async (options: PayloadFindOptions) => {
+					receivedOptions = options;
+
+					return { docs: [] };
+				},
+			},
+			user: { id: 1 },
+		} as unknown as PayloadRequest;
+
+		await findBlogPostBySlug(req, "hello-world", {
+			draft: false,
+			locale: "en-US",
+			select: { id: true },
+		});
+
+		expect(receivedOptions?.where?.slug?.equals).toBe("hello-world");
+		expect(receivedOptions?.where?._status?.equals).toBe("published");
 	});
 
 	it("returns null when no document matches the slug", async () => {

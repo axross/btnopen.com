@@ -10,6 +10,11 @@ mcpLogger.level = "silent";
 interface PayloadFindOptions {
 	draft?: boolean;
 	locale?: "en-US" | "ja-JP";
+	where?: {
+		_status?: {
+			equals?: "published";
+		};
+	};
 }
 
 interface PayloadUpdateOptions {
@@ -185,6 +190,7 @@ describe("deleteNodeInBlogPostBodyTool()", () => {
 		);
 		expect(findOptions?.draft).toBe(false);
 		expect(findOptions?.locale).toBe("ja-JP");
+		expect(findOptions?.where?._status?.equals).toBe("published");
 		expect(updateOptions?.data._status).toBe("published");
 		expect(updatedBody?.root.children).toEqual([keptNode]);
 		expect(body.root.children).toEqual([deletedNode, keptNode]);

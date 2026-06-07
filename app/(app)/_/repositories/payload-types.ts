@@ -87,7 +87,9 @@ export const PayloadUser = z
 			"Localized display name for a Payload user.",
 		),
 		avatarImage: PayloadUpload.describe("Avatar image upload for the user."),
-		bio: PayloadRichTextEditorState.describe("Localized user biography."),
+		bio: PayloadRichTextEditorState.optional().describe(
+			"Localized user biography.",
+		),
 	})
 	.describe("Payload user document.");
 

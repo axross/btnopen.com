@@ -22,102 +22,17 @@ export interface McpJsonRpcResponse {
 	};
 }
 
-export interface McpApiKey {
-	apiKey: string;
-	id: number;
-}
+export function getMcpE2eApiKey(): string {
+	// biome-ignore lint/style/noProcessEnv: using the pre-issued MCP e2e API key
+	const apiKey = process.env.PAYLOAD_MCP_E2E_API_KEY;
 
-export async function createMcpApiKey({
-	page,
-	testInfo,
-}: {
-	page: Page;
-	testInfo: TestInfo;
-}): Promise<McpApiKey> {
-	const user = await getCurrentUser({ page, testInfo });
-	const url = new URL(
-		"/api/payload-mcp-api-keys",
-		testInfo.project.use.baseURL,
-	);
-
-	const response = await page.request.post(`${url}`, {
-		headers: {
-			"content-type": "application/json",
-		},
-		data: {
-			user: user.id,
-			label: `Playwright MCP ${testInfo.testId} ${Date.now()}`,
-			description: "Temporary key for MCP endpoint e2e coverage.",
-			blogPosts: {
-				find: true,
-			},
-			tags: {
-				find: true,
-			},
-			coverImages: {
-				find: true,
-			},
-			media: {
-				find: true,
-			},
-			website: {
-				find: true,
-			},
-			"payload-mcp-tool": {
-				[appendNodeInBlogPostBodyTool]: true,
-				[deleteNodeInBlogPostBodyTool]: true,
-			},
-		},
-	});
-
-	if (!response.ok()) {
+	if (!apiKey) {
 		throw new Error(
-			`Failed to create MCP API key: ${response.status()} ${await response.text()}`,
+			"PAYLOAD_MCP_E2E_API_KEY must be set for MCP e2e coverage.",
 		);
 	}
 
-	const json: unknown = await response.json();
-	const apiKey = getStringProperty(json, "apiKey");
-	const id = getNumberProperty(json, "id");
-
-	if (apiKey && id) {
-		return { apiKey, id };
-	}
-
-	if (isRecord(json)) {
-		const docApiKey = getStringProperty(json.doc, "apiKey");
-		const docId = getNumberProperty(json.doc, "id");
-
-		if (docApiKey && docId) {
-			return { apiKey: docApiKey, id: docId };
-		}
-	}
-
-	throw new Error(
-		"Failed to create MCP API key because no API key was returned.",
-	);
-}
-
-export async function deleteMcpApiKey({
-	id,
-	page,
-	testInfo,
-}: {
-	id: number;
-	page: Page;
-	testInfo: TestInfo;
-}): Promise<void> {
-	const url = new URL(
-		`/api/payload-mcp-api-keys/${id}`,
-		testInfo.project.use.baseURL,
-	);
-	const response = await page.request.delete(`${url}`);
-
-	if (!response.ok()) {
-		throw new Error(
-			`Failed to delete MCP API key: ${response.status()} ${await response.text()}`,
-		);
-	}
+	return apiKey;
 }
 
 export async function callMcp({
@@ -188,57 +103,4 @@ function parseMcpJsonRpcResponse(text: string): McpJsonRpcResponse {
 	}
 
 	throw new Error(`Failed to parse MCP response: ${text}`);
-}
-
-async function getCurrentUser({
-	page,
-	testInfo,
-}: {
-	page: Page;
-	testInfo: TestInfo;
-}): Promise<{ id: number }> {
-	const url = new URL("/api/users/me", testInfo.project.use.baseURL);
-	const response = await page.request.get(`${url}`);
-
-	if (!response.ok()) {
-		throw new Error(
-			`Failed to get current user: ${response.status()} ${await response.text()}`,
-		);
-	}
-
-	const json: unknown = await response.json();
-
-	if (
-		isRecord(json) &&
-		isRecord(json.user) &&
-		typeof json.user.id === "number"
-	) {
-		return {
-			id: json.user.id,
-		};
-	}
-
-	throw new Error(
-		"Failed to get current user because the response was invalid.",
-	);
-}
-
-function getStringProperty(value: unknown, key: string): string | null {
-	if (isRecord(value) && typeof value[key] === "string") {
-		return value[key];
-	}
-
-	return null;
-}
-
-function getNumberProperty(value: unknown, key: string): number | null {
-	if (isRecord(value) && typeof value[key] === "number") {
-		return value[key];
-	}
-
-	return null;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-	return typeof value === "object" && value !== null;
 }
