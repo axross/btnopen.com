@@ -107,12 +107,11 @@ test("Blog post content", async ({ page }) => {
 	});
 });
 
-// seed post (`payload/helpers/seed/blog-post.md`) emits seven GFM tables under
-// `# Tables`, in this authored order: `Compact reference`, `Wide comparison`,
-// `Column alignment`, `Inline content`, `Header-only table`, `Single column`,
-// `Sparse cells`. On the Pixel 7 viewport (~412px wide) the `Wide comparison`
-// and `Inline content` tables overflow, while `Single column` sits well within
-// the reading column.
+// seed post (`payload/helpers/seed/blog-post.md`) emits seven GFM tables in
+// this authored order: small reference, wide comparison, metrics, inline
+// content, header-only template, single-column runtimes, sparse cells. On the
+// Pixel 7 viewport (~412px wide), the wide comparison and inline-content tables
+// overflow, while the single-column table sits well within the reading column.
 const wideTableIndex = 1;
 const narrowTableIndex = 5;
 

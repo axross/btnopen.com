@@ -278,6 +278,7 @@ async function seedExampleBlogPost({
 				data: {
 					id: mediaId,
 					filename: `${mediaId}.webp`,
+					alt: "2560 x 1600 のプレースホルダー画像",
 				},
 				filePath: resolve(selfDirname, "./seed/media.webp"),
 			});
@@ -309,10 +310,11 @@ async function seedExampleBlogPost({
 		exampleBlogPost = await payload.create({
 			collection: "blog-posts",
 			data: {
-				title: "Markdown Example",
+				title: "Markdown Example: 実装メモを記事として残す",
 				slug: "markdown-example",
 				coverImage,
-				brief: "This is an example of a blog post written in Markdown.",
+				brief:
+					"Markdown の構文確認を、実装の制約と判断材料が残る実用的なブログ記事として組み直す。",
 				tags: [tag],
 				body,
 				author,
