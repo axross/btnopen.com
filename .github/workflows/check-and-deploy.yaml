@@ -51,7 +51,10 @@ jobs:
       - name: Install Dependencies
         run: npm ci
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        # install only chromium (the active `setup`/`pixel` projects' engine).
+        # a stalled download has no idle timeout, so cap the step to fail fast.
+        timeout-minutes: 10
+        run: npx playwright install --with-deps chromium
       - name: Push Database Migrations
         run: npm run migrate:up
       - name: Run Playwright Tests
