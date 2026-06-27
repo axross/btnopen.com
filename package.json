@@ -78,7 +78,7 @@
     "@jest/globals": "^30.4.1",
     "@next/env": "^16.2.1",
     "@parcel/watcher": "^2.5.6",
-    "@playwright/test": "^1.58.2",
+    "@playwright/test": "^1.61.1",
     "@types/hast": "^3.0.4",
     "@types/jest": "^30.0.0",
     "@types/mdast": "^4.0.4",
