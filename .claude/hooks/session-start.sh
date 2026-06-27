@@ -43,6 +43,14 @@ if [ -f .env.example ] && [ ! -f .env.local ]; then
   cp .env.example .env.local
 fi
 
+# enable the opt-in quality hooks (format on edit, lint + unit tests before
+# completion) for cloud sessions by materializing the gitignored local
+# settings from the committed example. claude code hot-reloads the new hooks
+# for this session. local sessions skip this hook, so opting in stays manual.
+if [ -f .claude/settings.local-example.json ]; then
+  cp -f .claude/settings.local-example.json .claude/settings.local.json
+fi
+
 # install npm dependencies (install, not ci, so the cached container layer
 # can be reused across sessions).
 npm install

@@ -44,9 +44,9 @@ This repository is AI-assistant-aware. Project conventions and workflow rules li
 
 [Claude Code](https://claude.com/claude-code) reads `AGENTS.md` (via [`CLAUDE.md`](CLAUDE.md)) and the configuration under [`.claude/`](.claude/).
 
-- **Cloud / web sessions** automatically run [`.claude/hooks/session-start.sh`](.claude/hooks/session-start.sh) (registered in the committed [`.claude/settings.json`](.claude/settings.json)). It installs mise, provisions the required Node version, copies `.env.example` to `.env.local`, and runs `npm install` so the environment is ready when a session starts. This hook is gated to the remote environment and does nothing locally.
+- **Cloud / web sessions** automatically run [`.claude/hooks/session-start.sh`](.claude/hooks/session-start.sh) (registered in the committed [`.claude/settings.json`](.claude/settings.json)). It installs mise, provisions the required Node version, copies `.env.example` to `.env.local`, and runs `npm install` so the environment is ready when a session starts. It also copies `settings.local-example.json` to `settings.local.json`, so the quality hooks below are **enabled automatically in the cloud**. This hook is gated to the remote environment and does nothing locally.
 
-- **Local quality hooks are opt-in.** They are not enforced on everyone, but they are recommended. To enable them, copy the example into your personal, git-ignored local settings:
+- **Local quality hooks are opt-in.** They are not enforced on everyone, but they are recommended. To enable them locally, copy the example into your personal, git-ignored local settings:
 
   ```bash
   cp .claude/settings.local-example.json .claude/settings.local.json
