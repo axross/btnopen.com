@@ -15,6 +15,9 @@
 # local env files
 /.env*.local
 
+# claude code local settings
+/.claude/settings.local.json
+
 # local-only data
 public/chromium-pack.tar
 /.data/*
