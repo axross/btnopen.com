@@ -52,6 +52,12 @@ export default defineConfig({
 		{
 			name: "setup",
 			testMatch: "**/setup.test.ts",
+			teardown: "cleanup",
+			repeatEach: 1,
+		},
+		{
+			name: "cleanup",
+			testMatch: "**/teardown.test.ts",
 			repeatEach: 1,
 		},
 		{
