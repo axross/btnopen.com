@@ -1,5 +1,7 @@
 # E2E Test Conventions
 
+_Code examples below use Playwright APIs (`getByTestId`, `storageState`, `test.step`, `page.request`) as the concrete shape. Translate them to `{{E2E_TEST_FRAMEWORK}}`'s equivalents during INIT; the conventions in the prose are framework-neutral._
+
 ## Locator Usage
 
 Locator Usage sets the required project default: use the framework's stable test-id locator for locators.

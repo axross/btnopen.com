@@ -46,7 +46,7 @@ This review focuses on major-severity cases where the diff promotes a whole unit
 
 ## Compiler / Memoization Implications
 
-*If this project's toolchain has no auto-memoizing compiler, delete this subsection during INIT.*
+*If this project's toolchain has no auto-memoizing compiler, delete this entire subsection during INIT — heading, prose, and the **Guidelines:** block below (through the end of this section, before "Static / Dynamic Rendering Implications").*
 
 When the framework's compiler auto-memoizes client components, the reviewer SHOULD be aware:
 

@@ -22,7 +22,8 @@ Log Levels describes the preferred project default: use `logger.info()` for info
 
 - SHOULD use `logger.info()` for informational messages that describe normal progress.
 - SHOULD use `logger.warn()` for recoverable unexpected conditions — cases where execution continues but something is worth investigating.
-- MUST NOT use `logger.error()` for errors. Instead, report the error to {{ERROR_TRACKER}} (via its capture call) and let it propagate. See [Error Handling](./error-handling.md).
+- MUST NOT use `logger.error()` for errors **when the project has a dedicated {{ERROR_TRACKER}}**. Report the error to {{ERROR_TRACKER}} (via its capture call) and let it propagate. See [Error Handling](./error-handling.md).
+  - If the project has **no** {{ERROR_TRACKER}}, `logger.error()` is the sanctioned channel for unexpected failures; this rule depends on whether {{ERROR_TRACKER}} survives INIT.
 
 ## Logger Setup
 

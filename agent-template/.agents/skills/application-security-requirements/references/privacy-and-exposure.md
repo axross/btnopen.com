@@ -21,7 +21,7 @@ Values sent to the browser/client are public. The framework's public/client-expo
 
 - MUST flag any newly exposed client-prefixed env value unless it is safe for every visitor to read.
 - MUST flag a Critical when secrets, tokens, DSNs with auth tokens, admin emails, session values, or database URLs can reach client bundles, HTML, metadata, logs, or analytics payloads.
-- MUST verify `process.env.*` access remains limited to the env-access files allowed by [development-guidelines › code-quality](../../development-guidelines/references/code-quality.md).
+- MUST verify `process.env.*` access remains limited to the env-access files allowed by [secret-handling](./secret-handling.md).
 - SHOULD ask for a narrower public value when a client component only needs a derived boolean or public identifier.
 
 ## Analytics and Error Reporting Exposure

@@ -1,6 +1,6 @@
 ---
 name: observability-guidelines
-description: Use this skill whenever writing, reviewing, or modifying code that throws, catches, reports, or logs — including `try`/`catch` placement, error-reporting capture calls, top-level error boundaries, structured-logger usage and module child loggers, log-level choice (`info` / `warn`; never `error`), and "Started / Completed" structured-log messages. Use even when the user only mentions an error tracker, a logger, capturing an exception, error boundaries, log levels, or debugging an unhandled exception in this project.
+description: Use this skill whenever writing, reviewing, or modifying code that throws, catches, reports, or logs — including `try`/`catch` placement, error-reporting capture calls, top-level error boundaries, structured-logger usage and module child loggers, log-level choice (`info` / `warn`; `error` reserved for projects without a dedicated error tracker), and "Started / Completed" structured-log messages. Use even when the user only mentions an error tracker, a logger, capturing an exception, error boundaries, log levels, or debugging an unhandled exception in this project.
 ---
 
 # Observability Guidelines
@@ -30,6 +30,6 @@ See [error-tracking.md](./references/error-tracking.md) for:
 See [logging.md](./references/logging.md) for:
 
 - When operations are worth logging and when they are not
-- Which log level to use (`info` vs `warn`; never `error`)
+- Which log level to use (`info` vs `warn`; `error` only when the project has no dedicated error tracker)
 - Creating module-scoped child loggers from a shared root logger
 - Structuring log calls with context objects and "Started / Completed" messages

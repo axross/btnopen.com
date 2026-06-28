@@ -42,11 +42,11 @@ These commands enforce formatting, linting, and end-to-end behavior.
 
 Data-layer commands alter or inspect the schema migration state. The target store is selected by environment variables. Replace the command names below with the project's actual migration commands during INIT.
 
-| Command | Purpose |
-| ------- | ------- |
-| `{{PACKAGE_MANAGER}} run migrate:status` | Shows the current migration status. |
-| `{{PACKAGE_MANAGER}} run migrate:create` | Creates a new migration entry after schema changes. |
-| `{{PACKAGE_MANAGER}} run migrate:up` | Applies pending migrations to the selected store. |
+| Example command (rename during INIT) | Purpose |
+| ------------------------------------- | ------- |
+| `{{PACKAGE_MANAGER}} run <migrate-status>` | Shows the current migration status. |
+| `{{PACKAGE_MANAGER}} run <migrate-create>` | Creates a new migration entry after schema changes. |
+| `{{PACKAGE_MANAGER}} run <migrate-apply>` | Applies pending migrations to the selected store. |
 
 **Guidelines:**
 

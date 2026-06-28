@@ -81,7 +81,7 @@ project, or follow the same shape for a stack not listed.
 | `{{PROJECT_KIND}}` | Kind of project | `web app` · `mobile app` · `CLI` · `library` · `backend service` · `desktop app` |
 | `{{PRIMARY_LANGUAGE}}` | Main language | `TypeScript` · `Python` · `Go` · `Rust` · `Swift` |
 | `{{APP_FRAMEWORK}}` | App framework / runtime | `Next.js` · `React Native` · `Express` · `FastAPI` · `Gin` · `none (plain runtime)` |
-| `{{PACKAGE_MANAGER}}` | Package manager binary | `npm` · `pnpm` · `yarn` · `bun` · `pip` · `poetry` · `cargo` · `go` |
+| `{{PACKAGE_MANAGER}}` | Package manager binary (single binary only — the hooks call `command -v` on it, so a multiword value like `npx playwright` will not work) | `npm` · `pnpm` · `yarn` · `bun` · `pip` · `poetry` · `cargo` · `go` |
 | `{{LINTER}}` | Linter | `Biome` · `ESLint` · `Ruff` · `golangci-lint` · `Clippy` |
 | `{{FORMATTER}}` | Formatter | `Biome` · `Prettier` · `Ruff` · `gofmt` · `rustfmt` |
 | `{{UNIT_TEST_FRAMEWORK}}` | Unit test framework | `Jest` · `Vitest` · `pytest` · `go test` · `cargo test` |
@@ -136,9 +136,15 @@ isn't told to follow rules for tools the project lacks.
   `.agents/skills/observability-guidelines/` (or trim the sections marked with
   an italic "_delete this section during INIT_" note). Remove its row from the
   `AGENTS.md` skill index and any cross-links to it.
-- **No e2e framework** → delete `.agents/skills/e2e-testing-guidelines/`,
-  remove its index row, and drop e2e references in
-  `quality-assurance-guidelines` and the `AGENTS.md` Verification section.
+- **No e2e framework** → delete `.agents/skills/e2e-testing-guidelines/` and
+  its index row, then remove every inbound link to it:
+  - `quality-assurance-guidelines/references/e2e-coverage.md` (delete the file)
+    and its pointer in `quality-assurance-guidelines/SKILL.md`;
+  - the `../e2e-testing-guidelines/SKILL.md` link in
+    `quality-assurance-guidelines/SKILL.md`;
+  - the `../../e2e-testing-guidelines/SKILL.md` link in
+    `unit-test-guidelines/references/testing-scope.md`;
+  - the `{{E2E_TEST_CMD}}` bullet in the `AGENTS.md` Verification section.
 - **No unit test framework** → delete `.agents/skills/unit-test-guidelines/`
   and its index row.
 - **No data/content layer** → remove the data-layer sections (each is marked
@@ -191,6 +197,11 @@ reads them through its own binding:
     `{{CODE_FILE_REGEX}}`, `{{INSTALL_CMD}}`, command tokens, and adapt the
     toolchain-provisioning block in `session-start.sh` to the project's runtime
     (the example uses `mise` + Node). Delete any hook the project doesn't want.
+  - The session-start hook materializes `settings.local.json` and `.env.local`.
+    The template ships a `.gitignore` that excludes both (the
+    `application-security` skill assumes they are gitignored) — keep those entries
+    and merge the rest of the project's ignores into it. If the project keeps its
+    own `.gitignore` elsewhere, move these entries there instead.
 - **Other agents** (Cursor, Copilot, Aider, etc.) — point them at `AGENTS.md`
   via their own mechanism (e.g. a rules file that imports/links `AGENTS.md`).
   Add that binding file and, if the agent has no hook system, drop `.claude/`.
@@ -214,4 +225,6 @@ Keep only the bindings for the agents named in Step 1.
 - [ ] `AGENTS.md` skill index matches the directories under `.agents/skills/`.
 - [ ] Removed skills have no remaining inbound links.
 - [ ] Harness binding for each Step-1 agent is filled in and runnable.
+- [ ] A `.gitignore` excludes `settings.local.json` and `.env.local` (or the
+      project's equivalent local-state/secret files).
 - [ ] `INIT.md` and template scaffolding notes are deleted.

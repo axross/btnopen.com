@@ -1,5 +1,7 @@
 # E2E Test Structure
 
+_Code examples below use Playwright APIs as the concrete shape. Translate them to `{{E2E_TEST_FRAMEWORK}}`'s equivalents during INIT; the structure conventions in the prose are framework-neutral._
+
 ## Project Structure
 
 Project Structure shows where {{E2E_TEST_FRAMEWORK}} tests, helpers, setup files, and route/feature-specific suites live in this repository.
