@@ -9,14 +9,14 @@ import type { Page, TestInfo } from "@playwright/test";
 export const appendNodeInBlogPostBodyTool = "appendNodeInBlogPostBody";
 export const deleteNodeInBlogPostBodyTool = "deleteNodeInBlogPostBody";
 
-const mcpE2eApiKeyLabel = "MCP e2e coverage";
+const mcpApiKeyLabel = "MCP e2e coverage";
 const selfDirname = dirname(new URL(import.meta.url).pathname);
-const mcpE2eApiKeyStatePath = resolve(
+const mcpApiKeyStatePath = resolve(
 	selfDirname,
 	"../../.data/mcp-e2e-api-key.json",
 );
 
-interface McpE2eApiKeyState {
+interface McpApiKeyState {
 	apiKey: string;
 	id: number;
 }
@@ -40,14 +40,14 @@ export interface McpJsonRpcResponse {
 	};
 }
 
-export function getMcpE2eApiKey(): string {
-	const envApiKey = readEnvMcpE2eApiKey();
+export function getMcpApiKey(): string {
+	const envApiKey = readEnvMcpApiKey();
 
 	if (envApiKey) {
 		return envApiKey;
 	}
 
-	const state = readMcpE2eApiKeyState();
+	const state = readMcpApiKeyState();
 
 	if (state) {
 		return state.apiKey;
@@ -61,15 +61,15 @@ export function getMcpE2eApiKey(): string {
 // Provisions an MCP API key scoped to exactly the surface the MCP e2e test
 // asserts (read-only find access plus the two custom body-mutation tools). When
 // PAYLOAD_MCP_E2E_API_KEY is set it is treated as a pre-issued override and no
-// key is created. Pair every call with cleanupMcpE2eApiKey in teardown.
-export async function provisionMcpE2eApiKey({
+// key is created. Pair every call with cleanupMcpApiKey in teardown.
+export async function provisionMcpApiKey({
 	page,
 	testInfo,
 }: {
 	page: Page;
 	testInfo: TestInfo;
 }): Promise<void> {
-	if (readEnvMcpE2eApiKey()) {
+	if (readEnvMcpApiKey()) {
 		return;
 	}
 
@@ -90,7 +90,7 @@ export async function provisionMcpE2eApiKey({
 			coverImages: { find: true },
 			description: "Provisioned by the MCP e2e setup project.",
 			enableAPIKey: true,
-			label: mcpE2eApiKeyLabel,
+			label: mcpApiKeyLabel,
 			media: { find: true },
 			"payload-mcp-tool": {
 				appendNodeInBlogPostBody: true,
@@ -117,25 +117,25 @@ export async function provisionMcpE2eApiKey({
 	}
 
 	writeFileSync(
-		mcpE2eApiKeyStatePath,
-		JSON.stringify({ apiKey, id } satisfies McpE2eApiKeyState),
+		mcpApiKeyStatePath,
+		JSON.stringify({ apiKey, id } satisfies McpApiKeyState),
 	);
 }
 
-// Deletes the key provisioned by provisionMcpE2eApiKey. Does nothing when the
+// Deletes the key provisioned by provisionMcpApiKey. Does nothing when the
 // key came from PAYLOAD_MCP_E2E_API_KEY or when no key was provisioned.
-export async function cleanupMcpE2eApiKey({
+export async function cleanupMcpApiKey({
 	page,
 	testInfo,
 }: {
 	page: Page;
 	testInfo: TestInfo;
 }): Promise<void> {
-	if (readEnvMcpE2eApiKey()) {
+	if (readEnvMcpApiKey()) {
 		return;
 	}
 
-	const state = readMcpE2eApiKeyState();
+	const state = readMcpApiKeyState();
 
 	if (state === null) {
 		return;
@@ -153,19 +153,19 @@ export async function cleanupMcpE2eApiKey({
 		);
 	}
 
-	rmSync(mcpE2eApiKeyStatePath, { force: true });
+	rmSync(mcpApiKeyStatePath, { force: true });
 }
 
-function readEnvMcpE2eApiKey(): string | undefined {
+function readEnvMcpApiKey(): string | undefined {
 	// biome-ignore lint/style/noProcessEnv: optional pre-issued MCP e2e API key override
 	return process.env.PAYLOAD_MCP_E2E_API_KEY || undefined;
 }
 
-function readMcpE2eApiKeyState(): McpE2eApiKeyState | null {
+function readMcpApiKeyState(): McpApiKeyState | null {
 	try {
 		return JSON.parse(
-			readFileSync(mcpE2eApiKeyStatePath, "utf-8"),
-		) as McpE2eApiKeyState;
+			readFileSync(mcpApiKeyStatePath, "utf-8"),
+		) as McpApiKeyState;
 	} catch {
 		return null;
 	}

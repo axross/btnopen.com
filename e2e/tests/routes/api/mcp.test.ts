@@ -6,7 +6,7 @@ import {
 	callMcp,
 	deleteBlogPost,
 	deleteNodeInBlogPostBodyTool,
-	getMcpE2eApiKey,
+	getMcpApiKey,
 	type McpJsonRpcResponse,
 } from "@/e2e/helpers/api/mcp";
 
@@ -43,7 +43,7 @@ test("MCP exposes scoped tools and mutates blog post body nodes", async ({
 	try {
 		const apiKey =
 			await test.step("Load the pre-issued MCP API key", async () =>
-				getMcpE2eApiKey());
+				getMcpApiKey());
 		const toolsResponse = await test.step("List MCP tools", async () =>
 			callMcp({
 				apiKey,
