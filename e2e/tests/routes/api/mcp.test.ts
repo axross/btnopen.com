@@ -564,8 +564,17 @@ function findUploadNodeValue(nodes: unknown[]): string | null {
 			continue;
 		}
 
-		if (node.type === "upload" && typeof node.value === "string") {
-			return node.value;
+		if (node.type === "upload") {
+			// `findBlogPosts` is called with depth 2, so the upload relation is
+			// populated as a document object; fall back to its id. A depth-0 read
+			// would instead expose the raw string id.
+			if (typeof node.value === "string") {
+				return node.value;
+			}
+
+			if (isRecord(node.value) && typeof node.value.id === "string") {
+				return node.value.id;
+			}
 		}
 
 		if (Array.isArray(node.children)) {
