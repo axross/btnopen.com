@@ -52,10 +52,19 @@ export default defineConfig({
 		{
 			name: "setup",
 			testMatch: "**/setup.test.ts",
+			teardown: "cleanup",
+			repeatEach: 1,
+		},
+		{
+			name: "cleanup",
+			testMatch: "**/teardown.test.ts",
 			repeatEach: 1,
 		},
 		{
 			name: "pixel",
+			// the setup/teardown files belong to the setup/cleanup projects; keep
+			// device projects from re-running them as ordinary tests.
+			testIgnore: ["**/setup.test.ts", "**/teardown.test.ts"],
 			use: devices["Pixel 7"],
 			dependencies: ["setup"],
 		},
