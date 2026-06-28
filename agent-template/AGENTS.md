@@ -56,7 +56,7 @@ Apply these keywords consistently in this document and the documents linked from
 
 ## Response Approach
 
-Use this workflow for single-agent work in this repository. The agent owns planning, implementation, investigation, verification, review, and reporting directly.
+Use this workflow for single-agent work in this project. The agent owns planning, implementation, investigation, verification, review, and reporting directly.
 
 ### Overall Strategy
 
@@ -106,7 +106,7 @@ User-facing changes need design intent before implementation mechanics. The sing
 
 ### Review Independence Gates
 
-A single agent cannot provide true independent review. This repository compensates with a mandatory separate review phase for ordinary work and external review gates for high-risk work.
+A single agent cannot provide true independent review. This project compensates with a mandatory separate review phase for ordinary work and external review gates for high-risk work.
 
 **Guidelines:**
 

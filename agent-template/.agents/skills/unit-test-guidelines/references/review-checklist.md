@@ -11,7 +11,7 @@ A test change is incomplete without proof that the code still passes the local c
 - MUST verify every new or changed spec imports the test framework's APIs explicitly if {{UNIT_TEST_FRAMEWORK}} requires it.
 - MUST verify new or changed specs use the project's chosen test-case function consistently.
 - MUST verify `{{UNIT_TEST_CMD}}` passes or report the exact blocker.
-- MUST run `{{FORMAT_CMD}}`, `{{LINT_CMD}}`, and `{{TYPECHECK_CMD}}` after adding or changing unit tests.
+- MUST run `{{FORMAT_CMD}}` and `{{LINT_CMD}}` after adding or changing unit tests, plus `{{TYPECHECK_CMD}}` when the project has a type-check step.
 - MUST report skipped commands with a concrete reason and residual risk.
 - MUST run e2e tests instead of relying only on unit tests when the change affects UI output, route behavior, metadata, browser behavior, or e2e coverage.
 

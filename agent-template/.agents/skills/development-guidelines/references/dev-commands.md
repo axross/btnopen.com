@@ -15,7 +15,7 @@ These commands run the application locally or as a production build.
 **Guidelines:**
 
 - MUST use `{{DEV_CMD}}` for manual verification of UI, route, metadata, and data-driven output changes.
-- MUST run `{{BUILD_CMD}}` when changes affect routes, metadata, data-layer config, runtime config, dependencies, or public type signatures.
+- MUST run `{{BUILD_CMD}}`, when the project has a build step, after changes affect routes, metadata, data-layer config, runtime config, dependencies, or public type signatures.
 - SHOULD use `{{BUILD_CMD}}` followed by `{{START_CMD}}` when verifying production-only caching, asset, or compiler behavior.
 
 ## Quality Commands
@@ -32,7 +32,7 @@ These commands enforce formatting, linting, and end-to-end behavior.
 **Guidelines:**
 
 - MUST run `{{FORMAT_CMD}}` and `{{LINT_CMD}}` after code or documentation edits.
-- MUST run `{{E2E_TEST_CMD}}` when a change affects a UI output surface or e2e coverage.
+- MUST run `{{E2E_TEST_CMD}}`, when the project has an e2e suite, after a change affects a UI output surface or e2e coverage.
 - MUST NOT use snapshot updates to hide unexpected visual regressions; pair each snapshot update with a reason the visual change is intentional.
 - SHOULD report skipped quality commands, including the reason and residual risk, before completion.
 

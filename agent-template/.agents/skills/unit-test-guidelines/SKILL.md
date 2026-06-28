@@ -73,5 +73,5 @@ These defaults are intentionally short. Follow the linked references for example
 - MUST import the test framework's APIs explicitly if {{UNIT_TEST_FRAMEWORK}} requires it, rather than relying on implicit global-scope symbols.
 - MUST use the project's chosen test-case function consistently and not mix it with an alternative spelling within the same project.
 - MUST run unit tests through `{{UNIT_TEST_CMD}}` unless investigating a targeted failure.
-- MUST run `{{FORMAT_CMD}}`, `{{LINT_CMD}}`, and `{{TYPECHECK_CMD}}` after adding or changing unit tests.
+- MUST run `{{FORMAT_CMD}}` and `{{LINT_CMD}}` after adding or changing unit tests, plus `{{TYPECHECK_CMD}}` when the project has a type-check step.
 - SHOULD prefer integration or e2e tests when confidence depends on framework runtime wiring, the data layer, browser behavior, rendering, routing, or user-facing UI.

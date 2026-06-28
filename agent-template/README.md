@@ -12,6 +12,7 @@ library, or service — and any agent — Claude Code, Cursor, Copilot, and othe
 ```
 .
 ├── INIT.md                  # how to adapt this template (start here)
+├── .gitignore               # ignores settings.local.json + .env.local (see INIT Step 6)
 ├── AGENTS.md                # master routing index + working agreement (universal)
 ├── CLAUDE.md                # @AGENTS.md — Claude Code's binding to AGENTS.md
 ├── .agents/skills/          # the generic, cross-project skill core (10 skills)

@@ -9,8 +9,8 @@ A review should connect each changed surface to the command, manual check, or re
 **Guidelines:**
 
 - MUST require `{{FORMAT_CMD}}` and `{{LINT_CMD}}` evidence after code or documentation edits.
-- MUST require `{{E2E_TEST_CMD}}` evidence when the change affects user-facing output, e2e coverage, snapshots, route behavior, metadata, content rendering, or other observable runtime state.
-- MUST require `{{BUILD_CMD}}` evidence when the change affects routes, metadata, data-layer config, runtime config, dependencies, or type signatures.
+- MUST require `{{E2E_TEST_CMD}}` evidence, when the project has an e2e suite, after the change affects user-facing output, e2e coverage, snapshots, route behavior, metadata, content rendering, or other observable runtime state.
+- MUST require `{{BUILD_CMD}}` evidence, when the project has a build step, after the change affects routes, metadata, data-layer config, runtime config, dependencies, or type signatures.
 - MUST require manual evidence for changed output surfaces listed in [manual-verification.md](./manual-verification.md).
 - MUST map skipped required checks to a concrete reason and residual risk.
 - MUST require a second-pass verification statement after fixing any Critical or Major finding.

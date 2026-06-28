@@ -15,7 +15,7 @@ Check Sequence sets the required project default: always run checks in this orde
   2. **Lint** (`{{LINT_CMD}}`) — detects code quality and remaining format issues.
   3. **Fix all reported errors.**
   4. **Re-run lint** — confirm all errors are resolved.
-  5. **Test** (`{{E2E_TEST_CMD}}`) — only when the change affects a UI output surface; see [verification.md](./verification.md) for which changes require testing.
+  5. **Test** (`{{E2E_TEST_CMD}}`) — only when the project has an e2e suite and the change affects a UI output surface; see [verification.md](./verification.md) for which changes require testing.
 
 - MUST NOT skip or reorder these steps.
 

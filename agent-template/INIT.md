@@ -144,6 +144,8 @@ isn't told to follow rules for tools the project lacks.
     `quality-assurance-guidelines/SKILL.md`;
   - the `../../e2e-testing-guidelines/SKILL.md` link in
     `unit-test-guidelines/references/testing-scope.md`;
+  - the e2e-authoring pointer in
+    `development-guidelines/references/verification.md`;
   - the `{{E2E_TEST_CMD}}` bullet in the `AGENTS.md` Verification section.
 - **No unit test framework** → delete `.agents/skills/unit-test-guidelines/`
   and its index row.

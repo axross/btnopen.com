@@ -37,13 +37,11 @@ Automated Verification sets the required project default: run the full end-to-en
 
 **Guidelines:**
 
-- MUST run the full end-to-end test suite after any change that touches an output surface:
+- MUST run the full end-to-end test suite, when the project has one, after any change that touches an output surface:
   ```bash
   {{E2E_TEST_CMD}}
   ```
-- MUST write an end-to-end test for every new route, visually distinct page/view section, or user-facing feature.
-- MUST add stable, test-targetable identifiers (e.g., a `data-testid` attribute or the platform's equivalent) to all elements that tests need to target.
-- MUST co-locate the test file under `{{TEST_DIR}}`, mirroring the structure of the surface under test.
+- MUST follow the e2e authoring and coverage rules owned by [e2e-testing-guidelines](../../e2e-testing-guidelines/SKILL.md) and [quality-assurance-guidelines › e2e-coverage](../../quality-assurance-guidelines/references/e2e-coverage.md) — new-route/feature coverage, stable test-targetable identifiers, and co-location under `{{TEST_DIR}}` — rather than restating them here.
 
 ## E2E Tests vs Unit Tests
 
@@ -67,7 +65,7 @@ The end-to-end suite should be configured to detect non-deterministic tests (for
 
 Responding to Failures is a project prohibition: do not delete test cases or weaken assertions to make a failure pass.
 
-- Snapshots are typically platform-specific — the snapshot identity often includes a platform segment. Regenerating snapshots on one platform updates only that platform's snapshots, not the ones used on other platforms (such as the CI runner).
+- Snapshots are typically platform-specific; regenerating them on one platform does not update the snapshots used on others (such as the CI runner). See [quality-assurance-guidelines › snapshot-handling](../../quality-assurance-guidelines/references/snapshot-handling.md) for the full snapshot-review discipline.
 
 **Guidelines:**
 
