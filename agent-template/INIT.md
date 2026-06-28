@@ -63,37 +63,64 @@ here. Remove the top-of-file "Template note" blockquote.
 
 Every `{{TOKEN}}` maps to a Step 1 answer. Replace ALL occurrences across
 `AGENTS.md`, `.agents/skills/**`, and `.claude/**`. The table below is the
-complete set used by the template.
+complete set used by the template. Each row gives several example values across
+different stacks so the substitution is unambiguous — pick the one matching the
+project, or follow the same shape for a stack not listed.
 
-| Token | Fill with | Example |
-| ----- | --------- | ------- |
-| `{{PROJECT_NAME}}` | Project / repo name | `acme-web` |
-| `{{PROJECT_OVERVIEW}}` | One-line goal/overview | `Internal dashboard for fleet ops.` |
-| `{{PROJECT_KIND}}` | Kind of project | `web app` |
-| `{{PRIMARY_LANGUAGE}}` | Main language | `TypeScript` |
-| `{{APP_FRAMEWORK}}` | App framework / runtime | `Next.js` |
-| `{{PACKAGE_MANAGER}}` | Package manager binary | `pnpm` |
-| `{{LINTER}}` | Linter name | `ESLint` |
-| `{{FORMATTER}}` | Formatter name | `Prettier` |
-| `{{UNIT_TEST_FRAMEWORK}}` | Unit test framework | `Vitest` |
-| `{{E2E_TEST_FRAMEWORK}}` | E2E test framework | `Playwright` |
-| `{{ERROR_TRACKER}}` | Error-reporting service (optional) | `Sentry` |
-| `{{LOGGER}}` | Structured logger (optional) | `Pino` |
-| `{{CMS_OR_DATA_LAYER}}` | Data/content layer (optional) | `Prisma` |
-| `{{HOSTING_PLATFORM}}` | Hosting/deploy platform (optional) | `Vercel` |
-| `{{INSTALL_CMD}}` | Install dependencies | `pnpm install` |
-| `{{DEV_CMD}}` | Start dev server | `pnpm dev` |
-| `{{BUILD_CMD}}` | Production build | `pnpm build` |
-| `{{START_CMD}}` | Start built app | `pnpm start` |
-| `{{FORMAT_CMD}}` | Run formatter | `pnpm format` |
-| `{{LINT_CMD}}` | Run linter | `pnpm lint` |
-| `{{TYPECHECK_CMD}}` | Type-check | `pnpm typecheck` |
-| `{{UNIT_TEST_CMD}}` | Run unit tests | `pnpm test:unit` |
-| `{{E2E_TEST_CMD}}` | Run e2e tests | `pnpm test:e2e` |
-| `{{SOURCE_DIR}}` | Main source dir | `src/` |
-| `{{TEST_DIR}}` | Test root dir | `e2e/` |
-| `{{CODE_FILE_GLOB}}` | Shell `case` pattern of formatted extensions (`.claude/hooks/format.sh`) | `*.ts \| *.tsx \| *.css` |
-| `{{CODE_FILE_REGEX}}` | Extended-regex of source extensions (`.claude/hooks/check.sh`) | `\.(ts\|tsx\|css)$` |
+> Rule of thumb for command tokens: if the project exposes run-scripts through
+> its package manager, prefer those (`npm run build`, `pnpm test`); otherwise use
+> the direct tool invocation (`tsc --noEmit`, `go test ./...`). Always use the
+> project's *actual* scripts when they exist — the examples are only shapes.
+
+### Identity & stack
+
+| Token | Fill with | Example values (pick the matching stack) |
+| ----- | --------- | ---------------------------------------- |
+| `{{PROJECT_NAME}}` | Project / repo name | `acme-web` · `billing-service` · `dotctl` |
+| `{{PROJECT_OVERVIEW}}` | One-line goal/overview | `Internal dashboard for fleet operations.` · `CLI for managing dotfiles.` |
+| `{{PROJECT_KIND}}` | Kind of project | `web app` · `mobile app` · `CLI` · `library` · `backend service` · `desktop app` |
+| `{{PRIMARY_LANGUAGE}}` | Main language | `TypeScript` · `Python` · `Go` · `Rust` · `Swift` |
+| `{{APP_FRAMEWORK}}` | App framework / runtime | `Next.js` · `React Native` · `Express` · `FastAPI` · `Gin` · `none (plain runtime)` |
+| `{{PACKAGE_MANAGER}}` | Package manager binary | `npm` · `pnpm` · `yarn` · `bun` · `pip` · `poetry` · `cargo` · `go` |
+| `{{LINTER}}` | Linter | `Biome` · `ESLint` · `Ruff` · `golangci-lint` · `Clippy` |
+| `{{FORMATTER}}` | Formatter | `Biome` · `Prettier` · `Ruff` · `gofmt` · `rustfmt` |
+| `{{UNIT_TEST_FRAMEWORK}}` | Unit test framework | `Jest` · `Vitest` · `pytest` · `go test` · `cargo test` |
+| `{{SOURCE_DIR}}` | Main source dir | `src/` · `app/` · `lib/` · `internal/` |
+| `{{TEST_DIR}}` | Test root dir | `e2e/` · `tests/` · `__tests__/` · `spec/` |
+
+### Optional integrations
+
+If the project does not use one of these, **delete** the matching skill /
+section instead of filling the token (see Step 4). When kept, fill the token.
+
+| Token | Fill with | Example values | If absent |
+| ----- | --------- | -------------- | --------- |
+| `{{E2E_TEST_FRAMEWORK}}` | E2E test framework | `Playwright` · `Cypress` · `Detox` | delete `e2e-testing-guidelines` |
+| `{{ERROR_TRACKER}}` | Error-reporting service | `Sentry` · `Rollbar` · `Bugsnag` · `Honeybadger` | delete the error-tracking sections of `observability-guidelines` |
+| `{{LOGGER}}` | Structured logger | `Pino` · `Winston` · `structlog` · `zap` | delete the logging section of `observability-guidelines` |
+| `{{CMS_OR_DATA_LAYER}}` | Data / content layer | `Payload CMS` · `Prisma` · `Drizzle` · `SQLAlchemy` · `a REST API` | delete the data-layer sections (marked optional) |
+| `{{HOSTING_PLATFORM}}` | Hosting / deploy platform | `Vercel` · `AWS` · `Fly.io` · `Cloudflare` · `self-hosted` | leave generic or delete the mention |
+
+### Commands
+
+| Token | Fill with | Example values (npm-scripts · direct) |
+| ----- | --------- | ------------------------------------- |
+| `{{INSTALL_CMD}}` | Install dependencies | `npm install` · `pnpm install` · `pip install -r requirements.txt` · `go mod download` |
+| `{{DEV_CMD}}` | Start dev server | `npm run dev` · `pnpm dev` · `uvicorn app:app --reload` · `go run ./...` |
+| `{{BUILD_CMD}}` | Production build | `npm run build` · `pnpm build` · `go build ./...` · `cargo build --release` |
+| `{{START_CMD}}` | Start built app | `npm run start` · `node dist/index.js` · `./bin/app` |
+| `{{FORMAT_CMD}}` | Run formatter | `npm run format` · `biome format --write .` · `ruff format .` · `gofmt -w .` |
+| `{{LINT_CMD}}` | Run linter | `npm run lint` · `biome check .` · `ruff check .` · `golangci-lint run` |
+| `{{TYPECHECK_CMD}}` | Type-check (drop if the language is untyped) | `npm run typecheck` · `tsc --noEmit` · `mypy .` |
+| `{{UNIT_TEST_CMD}}` | Run unit tests | `npm run test:unit` · `pnpm test` · `pytest` · `go test ./...` |
+| `{{E2E_TEST_CMD}}` | Run e2e tests | `npm run test:e2e` · `npx playwright test` · `cypress run` |
+
+### Harness-hook tokens (`.claude/hooks/*.sh`)
+
+| Token | Fill with | Example values |
+| ----- | --------- | -------------- |
+| `{{CODE_FILE_GLOB}}` | Shell `case` pattern of formatted extensions (`format.sh`) | `*.ts \| *.tsx \| *.css` · `*.py` · `*.go` |
+| `{{CODE_FILE_REGEX}}` | Extended-regex of source extensions (`check.sh`) | `\.(ts\|tsx\|css)$` · `\.py$` · `\.go$` |
 
 A find-and-replace sweep is the fastest path. After replacing, search the tree
 for `{{` to confirm none remain (the completion checklist does this).
