@@ -564,8 +564,14 @@ function findUploadNodeValue(nodes: unknown[]): string | null {
 			continue;
 		}
 
-		if (node.type === "upload" && typeof node.value === "string") {
-			return node.value;
+		if (node.type === "upload") {
+			if (typeof node.value === "string") {
+				return node.value;
+			}
+
+			if (isRecord(node.value) && typeof node.value.id === "string") {
+				return node.value.id;
+			}
 		}
 
 		if (Array.isArray(node.children)) {
