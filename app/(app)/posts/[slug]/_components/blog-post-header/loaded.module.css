@@ -63,8 +63,8 @@
 		}
 
 		.authorImage {
-			width: 24px;
-			height: 24px;
+			width: var(--size-24);
+			height: var(--size-24);
 			border-radius: 50%;
 		}
 
