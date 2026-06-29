@@ -22,7 +22,7 @@
 
 		.logo {
 			width: auto;
-			height: 32px;
+			height: var(--size-32);
 			color: var(--accent-11);
 		}
 	}

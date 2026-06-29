@@ -32,13 +32,13 @@
 			}
 
 			&::before {
-				left: -2px;
+				left: calc(var(--size-2) * -1);
 				color: oklch(from var(--accent-9) l c calc(h - 16));
 				animation: noise-fast 2s infinite linear alternate-reverse;
 			}
 
 			&::after {
-				left: 2px;
+				left: var(--size-2);
 				color: oklch(from var(--accent-9) l c calc(h + 16));
 				animation: noise-slow 15s infinite linear alternate-reverse;
 			}

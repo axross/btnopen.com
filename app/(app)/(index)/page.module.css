@@ -77,7 +77,7 @@
 		}
 
 		.portraitGrungeGlitchFirst {
-			right: -2px;
+			right: calc(var(--size-2) * -1);
 			--grunge-outline: oklch(from var(--accent-9) l c calc(h - 32));
 			background-color: var(--neutral-0);
 			animation: noise-fast 2s infinite linear alternate-reverse;
@@ -85,7 +85,7 @@
 		}
 
 		.portraitGrungeGlitchSecond {
-			right: 2px;
+			right: var(--size-2);
 			--grunge-outline: oklch(from var(--accent-9) l c calc(h + 32));
 			background-color: var(--neutral-0);
 			animation: noise-slow 15s infinite linear alternate-reverse;
