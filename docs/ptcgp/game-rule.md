@@ -42,8 +42,8 @@ PTCGP uses a **deliberately simplified** version of the physical Pokémon Tradin
 - **No Prize cards and no deck-out loss.** Running out of cards to draw does **not** lose you the game — you simply cannot draw and play continues. **[vs. paper TCG: decking out is a loss.]**
 - **Alternate loss condition:** if your **Active Pokémon is Knocked Out and you have no Benched Pokémon to promote** into the Active spot, you lose immediately, regardless of points.
 - **Conceding:** a player may surrender at any time, giving the opponent the win.
-- **Time/turn-limit resolution:** if neither player reaches 3 points before the match limit (see §9), the player with **more points** wins.
-- **Simultaneous-KO edge case:** if both players would reach 3 points at the same instant (e.g., a double KO), the winner is whoever **still has Pokémon remaining on the Bench**. True draws are rare.
+- **Time/turn-limit resolution:** if neither player reaches 3 points before the match limit (see §9), the outcome is decided by points — more points wins, equal points is a **draw** (with a contested exception for the turn cap; see §9).
+- **Simultaneous-KO / tie edge cases:** these have specific rulings covered in detail in §11 (a true double-KO is resolved by bench presence, and a simultaneous 3rd point can be a draw).
 
 ---
 
@@ -123,13 +123,13 @@ The **Energy Zone** is PTCGP's replacement for Energy cards. **[vs. paper TCG: t
 
 Only the **Active Pokémon** can be affected by status conditions, and they resolve at the **Pokémon Checkup** between turns.
 
-| Condition               | Effect                                                                                                                                                          | Resolution / cure                                                                                        |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **Asleep** (ねむり)     | Cannot attack or retreat                                                                                                                                        | Flip a coin each Checkup — **heads = wakes up**. Also cured by retreating, evolving, or Lum Berry.       |
-| **Paralyzed** (マヒ)    | Cannot attack or retreat                                                                                                                                        | **Automatically cured after one full turn** (no coin flip). Also cured by retreating/evolving/Lum Berry. |
-| **Confused** (こんらん) | When it tries to attack, **flip a coin — heads = attack normally; tails = the attack fails and the Pokémon deals 30 damage to itself**. Heads does NOT cure it. | Cured only by retreating, evolving, or Lum Berry.                                                        |
-| **Poisoned** (どく)     | Takes **10 damage** each Checkup                                                                                                                                | Cured by retreating, evolving, or Lum Berry.                                                             |
-| **Burned** (やけど)     | Takes **20 damage** each Checkup, then flip a coin — **heads removes Burn**                                                                                     | Also cured by retreating/evolving/Lum Berry.                                                             |
+| Condition               | Effect                                                                                                                                                                                                                    | Resolution / cure                                                                                        |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Asleep** (ねむり)     | Cannot attack or retreat                                                                                                                                                                                                  | Flip a coin each Checkup — **heads = wakes up**. Also cured by retreating, evolving, or Lum Berry.       |
+| **Paralyzed** (マヒ)    | Cannot attack or retreat                                                                                                                                                                                                  | **Automatically cured after one full turn** (no coin flip). Also cured by retreating/evolving/Lum Berry. |
+| **Confused** (こんらん) | When it tries to attack, **flip a coin — heads = attack normally; tails = the attack simply fails**. **In Pocket there is NO self-damage** on tails. Heads does NOT cure it, and Confusion does **not** block retreating. | Cured only by retreating, evolving, or Lum Berry.                                                        |
+| **Poisoned** (どく)     | Takes **10 damage** each Checkup                                                                                                                                                                                          | Cured by retreating, evolving, or Lum Berry.                                                             |
+| **Burned** (やけど)     | Takes **20 damage** each Checkup, then flip a coin — **heads removes Burn**                                                                                                                                               | Also cured by retreating/evolving/Lum Berry.                                                             |
 
 - **Stacking:** only **Poison and Burn can be applied together**. **Asleep, Paralyzed, and Confused are mutually exclusive** — applying a new one of these replaces the previous one.
 - **Universal cures:** **retreating, evolving, or using Lum Berry** removes status conditions. Status is also cleared whenever a Pokémon leaves the Active spot (e.g., via a switch effect).
@@ -172,11 +172,11 @@ Knock-outs and recoveries are confirmed at this step.
 - **First turn (both players):** no evolving by anyone.
 - **Empty deck:** being unable to draw is **not** a loss; play continues.
 - **Time and turn limits:**
-  - **~90 seconds per turn** — when the timer expires the turn auto-ends.
-  - **Versus (PvP) battles: maximum 30 turns.**
-  - **Solo battles: maximum 50 turns.**
-  - When a limit is reached without anyone hitting 3 points, **the player with more points wins**.
-- **Conceding** ends the match in the opponent's favor.
+  - **~90 seconds per turn** — when the per-turn timer expires the turn auto-ends.
+  - **Per-player time budget (chess clock):** each player also has a total thinking-time budget (commonly cited around 20 minutes in PvP). If a player's budget runs out, the match ends and is **decided by points** — more points wins, equal points is a draw. (A pure clock-out with the opponent ahead is effectively a loss for the player who ran out.)
+  - **Versus (PvP) battles: maximum 30 turns. Solo battles: maximum 50 turns.**
+  - **Outcome at a limit:** the reliable rule is that the match is **decided by points** (more points wins; equal points = a **draw**). Sources disagree specifically on the **30-turn cap**: some, including community readings of the official Battle Rules, describe reaching it as an **automatic draw regardless of points**. Treat the turn cap's tie-handling as the one genuinely contested corner.
+- **Conceding** ends the match in the opponent's favor and overrides any pending resolution.
 
 ---
 
@@ -197,18 +197,106 @@ Knock-outs and recoveries are confirmed at this step.
 - In play they are **Colorless-type Basic Pokémon with 40 HP**, with **no Weakness, no Retreat Cost, no Ability, and no attacks**, and **cannot retreat**.
 - You need an **open Bench slot** to play one, and they **cannot** be played during pre-game setup. They serve as the "Basic" stage that the corresponding fossil-line Pokémon evolves from.
 
+### Baby Pokémon (from Wisdom of Sea and Sky / A4)
+
+- **Basic Pokémon with 30 HP and 0 Retreat Cost**, whose attacks generally cost **0 Energy**. This makes them fast, free utility openers (e.g., Pichu, Cleffa, Igglybuff, Tyrogue, Smoochum, Elekid, Magby).
+- **[vs. paper TCG]** In Pocket, Baby Pokémon are standalone Basics and **do not evolve** into their adult forms.
+
 ### Pokémon Tool cards (from Space-Time Smackdown / A2)
 
-- Trainer cards attached to a Pokémon to grant an ongoing effect (e.g., Giant Cape adds HP, Rocky Helmet deals damage to attackers, Lum Berry cures status).
+- Trainer cards **attached to a Pokémon** for an ongoing effect (e.g., Giant Cape adds HP, Rocky Helmet damages attackers, Lum Berry cures status).
+- **One Tool per Pokémon.** You cannot attach a Tool to a Pokémon that already has one. There is **no per-turn limit** on how many Tools you play (like Items), only the one-per-Pokémon cap.
+- **Tools cannot be manually removed or swapped.** A Tool leaves only via a card effect that discards it or by self-discard (some Tools discard themselves after triggering, e.g., Lum Berry). The freed slot can then hold a new Tool.
+- **On KO:** the Tool is discarded with the Pokémon. **On evolve:** the Tool stays attached.
 
 ### Stadium cards (from Fantastical Parade / B2)
 
-- Field cards affecting both players; a new Stadium replaces the previous one. **[Note: not present at launch.]**
+- **Field cards affecting both players;** only **one Stadium** is in play at a time, and only **one may be played per turn**.
+- Playing a new Stadium **discards and replaces** the existing one (yours or the opponent's). You **cannot** play a Stadium with the **same name** as the one already in play — you can only overwrite it with a _different_ Stadium (or remove it via another effect).
+- **[Note: Stadiums did not exist before B2.]**
 
-### No Stadium-less period note / removed types
+### Removed / absent card types
 
-- **There are no Special Energy cards or basic Energy cards** in decks (replaced by the Energy Zone).
-- **Stadium cards did not exist before B2**, and the physical game's Stadium rules were absent at launch.
+- **No Special Energy or basic Energy cards** in decks (replaced by the Energy Zone).
+- **No Resistance** stat on any card.
+- **Rare Candy** (from the Celestial Guardians era) lets you place a **Stage 2 directly onto an eligible Basic, skipping Stage 1**. It cannot be used on Turn 1, nor on a Basic that was put into play that same turn. Outside of Rare Candy, there is **no generic Stage-2 skip**.
+
+---
+
+## 11. Edge Cases and Corner-Case Rulings
+
+This section collects precise rulings for situations the main rules leave implicit. Items flagged _(uncertain)_ are not fully documented in official sources.
+
+### 11.1 Knock-out, promotion, and ties
+
+- **Promotion after a KO:** when your Active is Knocked Out, **you (its owner) immediately choose a Benched Pokémon to promote** to the Active spot before play continues — even if the KO happened during the **opponent's** turn. With no Benched Pokémon to promote, you lose immediately.
+- **"When this becomes Active" effects:** a bonus that needs the Pokémon to already be Active does **not** retroactively apply when it is promoted mid-opponent-turn.
+- **Double KO (both Active Pokémon Knocked Out at once,** e.g., via counter/recoil damage): resolved by **bench presence**, not who struck the final blow:
+  - Both players have a Benched Pokémon (or both have none) → **draw**.
+  - Exactly one player has a Benched Pokémon → **that player wins** (the other can't promote and loses on the empty-field condition).
+- **Simultaneous 3rd point:** if both players reach 3 points at the same instant, the result is a **draw** — the attacking player gets no priority. (This is the basis of community "unfair tie" complaints, because the double-KO bench rule above can convert a would-be draw into a loss.)
+
+### 11.2 Status interactions
+
+- **Leaving the Active spot cures ALL special conditions** (Poison, Burn, Asleep, Paralyzed, Confused) — whether by retreating, being switched by a card effect, or evolving. So **retreating cures Poison and Burn**, not just the "can't act" conditions.
+- **Evolving** cures all special conditions (the evolution is treated as a fresh Pokémon) and clears "can't attack this turn" flags. **Attached Energy, attached Tool, and existing damage all carry over**; only conditions/until-end-of-turn effects are removed.
+- **Retreating is blocked while Asleep or Paralyzed**; Confusion does **not** block retreating.
+- **Being switched by a card effect is not a retreat:** it bypasses the Asleep/Paralyzed retreat block, costs no Energy, and does not consume your once-per-turn retreat.
+
+### 11.3 Energy Zone
+
+- **Spent/discarded Energy does not return** to the Energy Zone — the Zone is a per-turn generator, not a recycling pool.
+- **Declared Energy types are fixed at deck-build** (up to 3) and do **not** change mid-game; the previewed "next Energy" is locked once shown.
+- **Extra-Energy effects** pull Energy from the game's supply, not the deck: e.g., **Misty** flips until tails and attaches 1 Water Energy per heads (0 heads is possible → nothing); **Moltres ex (Inferno Dance)** flips exactly 3 coins and attaches 1 Fire Energy to Benched Fire Pokémon per heads.
+- **Colorless** costs can be paid with any Energy; there is no dedicated Colorless Energy generated by the Zone.
+
+### 11.4 Evolution
+
+- A Pokémon **cannot evolve the turn it entered play — regardless of how it entered** (normal placement or a card effect). It must have been in play since at least the start of the turn.
+- **No evolving on Turn 1** by anyone; evolution is available from Turn 2 onward.
+- **Bench Pokémon can evolve** (both Active and Benched).
+- **Each Pokémon evolves at most once per turn** (no Basic → Stage 1 → Stage 2 chain in one turn, except via Rare Candy).
+
+### 11.5 Abilities
+
+- **"Once per turn" is per Pokémon/per copy**, not per player — two copies of the same Pokémon each get their own use.
+- Abilities can generally be used **the turn a Pokémon is played or evolved** (there is no blanket "can't use ability the turn it arrives" rule, though specific cards may restrict themselves).
+- Some abilities work **only from the Active spot**, others **from the Bench** — it depends on the card's wording.
+
+### 11.6 Coin flips
+
+- **"Flip until tails":** keep flipping; each heads grants the effect, with no cap. **0 heads (~50% on the first flip) is possible** → nothing happens.
+- **"Flip N coins":** flip a fixed number; the effect scales per heads (e.g., Marowak ex _Bonemerang_ flips 2 coins for 80 damage per heads → 0/80/160). 0 heads = no effect.
+
+### 11.7 Bench damage and spread attacks
+
+- Attacks can hit the **Bench** when the card says so.
+- **Weakness (+20) applies ONLY to the Defending Active Pokémon.** Bench damage ignores Weakness — a Benched Pokémon hit for 30 takes exactly 30, even if "weak" to that type.
+- Bench KOs award points normally (1/2/3 by card type). KO'ing every Pokémon on the opponent's field (Active + Bench) wins regardless of points.
+
+### 11.8 Fossils
+
+- **Fossils are Item cards** played from hand that then act as **Colorless Basic Pokémon (40 HP)** with no Weakness, Retreat Cost, Ability, or attacks; they **cannot retreat**.
+- They **cannot be placed during pre-game setup**, and **cannot be fetched by "Basic Pokémon" search effects** (e.g., Poké Ball) because they are Items until played. They count as in-play/Bench Pokémon once played and serve as the stage their fossil-line Pokémon evolves from.
+
+### 11.9 Hand, deck, and concede
+
+- **Hand cap is 10 cards.** Overflow handling is not officially documented; the game prevents exceeding 10 (you stop drawing rather than discarding). _(uncertain — exact mechanism unverified)_
+- **No deck-out loss:** an empty deck just means your draw step does nothing.
+- **No explicit stalemate rule** beyond the turn cap — a stalled board simply runs to the turn limit.
+- **Conceding/Surrender** is available almost any time and is an immediate loss that overrides any pending resolution.
+
+### 11.10 Self-damage, recoil, and effect damage
+
+- **A self-KO from your own recoil or self-damage effect awards the point(s) to your opponent** (a recoil self-KO of your own ex gives the opponent 2 points).
+- **Healing cannot exceed printed (or Tool-boosted) maximum HP** — healing only removes existing damage.
+- **"Attack damage" vs. "effect damage":** an attack's listed damage is attack damage (affected by Weakness on the Active). Counter damage (Rocky Helmet), Poison/Burn Checkup damage, and "place X damage" effects are **effect damage**, which ignores Weakness and may not trigger "when hit by an attack" responses.
+
+### 11.11 Mega Evolution ex (recap of unique rules)
+
+- **KO awards 3 points** (instant win). Introduced in Mega Rising (B1).
+- **Evolves from the prior real stage, not from a base "ex"** (e.g., Combusken → Mega Blaziken ex; Swablu → Mega Altaria ex). Some Megas are **Basic** and can be played immediately (e.g., Mega Absol, Mega Pinsir).
+- Higher HP/power than a normal ex of the same stage; the 3-point bounty is the built-in drawback.
 
 ---
 
@@ -239,6 +327,10 @@ Knock-outs and recoveries are confirmed at this step.
 - Bulbapedia — Pokémon Trading Card Game Pocket: <https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Trading_Card_Game_Pocket>
 - Bulbapedia — Special Condition (TCG): <https://bulbapedia.bulbagarden.net/wiki/Special_Condition_(TCG)>
 - Bulbapedia — Item card (TCG Pocket) / Fossils: <https://bulbapedia.bulbagarden.net/wiki/Item_card_(TCG_Pocket)>
-- Game8 — Battle System, Rule Differences, Point System, Energy Zone, Retreat Costs, Status Effects, Time Limit guides: <https://game8.co/games/Pokemon-TCG-Pocket>
+- Bulbapedia — Pokémon ex / Pokémon Tool card / Stadium card (TCG Pocket): <https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_ex_(TCG_Pocket)>
+- Game8 — Battle System, Rule Differences, Point System, Energy Zone, Retreat Costs, Status Effects, Confusion, Evolution, Bench-damage, Mega Evolution, Fossils, Rare Candy, Baby Pokémon, Time Limit guides: <https://game8.co/games/Pokemon-TCG-Pocket>
+- Game8 (JP) / GameWith (JP) — win/draw conditions, status, Baby Pokémon: <https://game8.jp/pokemon-tcg-pocket/650664> · <https://gamewith.net/pokemon-tcg-pocket/48611>
+- Game Rant — Confusion (no self-damage in Pocket): <https://gamerant.com/ptcgp-pokemon-pocket-confusion-confused-special-condition-effect-guide/>
+- Dexerto — double-KO / tie rulings: <https://www.dexerto.com/pokemon/pokemon-tcg-pocket-players-discover-unfair-rules-for-tying-games-3015305/>
 - Pokémon Zone — How to Play Pokémon TCG Pocket: <https://www.pokemon-zone.com/articles/how-to-play-pokemon-tcg-pocket/>
 - Pokémon.com — Mega Rising mechanics: <https://www.pokemon.com/us/pokemon-news/mega-rising-ranked-matches-have-begun-in-pokemon-trading-card-game-pocket>
