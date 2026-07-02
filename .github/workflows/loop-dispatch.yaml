@@ -1,0 +1,82 @@
+name: Loop Engineering Dispatch
+
+# Bridges GitHub issue events into a claude.ai routine, because cloud routines
+# can trigger natively on pull-request and release events but not on issues or
+# issue comments. Pull-request events are handled by Auto-fix, not this bridge.
+#
+# Requires two repository secrets from the routine's API trigger:
+#   CLAUDE_LOOP_ROUTINE_URL   - the routine's /fire endpoint URL
+#   CLAUDE_LOOP_ROUTINE_TOKEN - the routine's bearer token
+# See .agents/skills/loop-engineering/references/operator-setup.md.
+
+on:
+  issues:
+    types:
+      - labeled
+  issue_comment:
+    types:
+      - created
+
+# serialize dispatches per issue so overlapping events do not spawn racing sessions.
+concurrency:
+  group: loop-dispatch-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+# this workflow only calls an external API; it needs no repository permissions.
+permissions: {}
+
+jobs:
+  fire:
+    name: Fire Loop routine
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Trigger on:
+    #  - a human adding a loop trigger label (loop:plan / loop:ready-to-build), or
+    #  - a human comment on a loop-managed issue (not a PR, not the bot's own
+    #    marked comment).
+    if: >-
+      (
+        github.event_name == 'issues' &&
+        github.event.action == 'labeled' &&
+        (
+          github.event.label.name == 'loop:plan' ||
+          github.event.label.name == 'loop:ready-to-build'
+        )
+      ) || (
+        github.event_name == 'issue_comment' &&
+        github.event.action == 'created' &&
+        github.event.issue.pull_request == null &&
+        !contains(github.event.comment.body, '<!-- loop-agent -->') &&
+        contains(join(github.event.issue.labels.*.name, ','), 'loop:')
+      )
+    steps:
+      - name: POST to routine /fire endpoint
+        env:
+          ROUTINE_URL: ${{ secrets.CLAUDE_LOOP_ROUTINE_URL }}
+          ROUTINE_TOKEN: ${{ secrets.CLAUDE_LOOP_ROUTINE_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          EVENT: ${{ github.event_name }}.${{ github.event.action }}
+          TRIGGER_LABEL: ${{ github.event.label.name }}
+        run: |
+          set -euo pipefail
+          if [ -z "${ROUTINE_URL:-}" ] || [ -z "${ROUTINE_TOKEN:-}" ]; then
+            echo "::error::CLAUDE_LOOP_ROUTINE_URL / CLAUDE_LOOP_ROUTINE_TOKEN are not set." >&2
+            exit 1
+          fi
+
+          TEXT="Loop Engineering event ${EVENT}"
+          if [ -n "${TRIGGER_LABEL:-}" ]; then
+            TEXT="${TEXT} (label: ${TRIGGER_LABEL})"
+          fi
+          TEXT="${TEXT}. Run the /loop dispatcher for issue #${ISSUE_NUMBER} (${ISSUE_URL}). Read the issue's current loop:* label and full comment thread to determine the phase, then advance the state machine by exactly one step."
+
+          # build the JSON body safely (text is freeform and passed verbatim).
+          BODY="$(jq -nc --arg text "$TEXT" '{text: $text}')"
+
+          curl --fail-with-body -sS -X POST "$ROUTINE_URL" \
+            -H "Authorization: Bearer ${ROUTINE_TOKEN}" \
+            -H "anthropic-beta: experimental-cc-routine-2026-04-01" \
+            -H "anthropic-version: 2023-06-01" \
+            -H "Content-Type: application/json" \
+            -d "$BODY"

@@ -32,6 +32,7 @@ Apply these keywords consistently in this document and the documents linked from
 | [Code Review Guideline](.agents/skills/code-review-guideline/SKILL.md) | Reviewing a diff, pull request, local change, or post-implementation self-review |
 | [Development Guidelines](.agents/skills/development-guidelines/SKILL.md) | Implementing, refactoring, running commands, preparing commits, adding dependencies, checking current docs, or changing migrations |
 | [E2E Testing Guidelines](.agents/skills/e2e-testing-guidelines/SKILL.md) | Writing, running, reviewing, or maintaining Playwright tests, snapshots, route coverage, or browser assertions |
+| [Loop Engineering](.agents/skills/loop-engineering/SKILL.md) | Operating the autonomous issue-to-pull-request loop: running the `/loop` dispatcher, reacting to an issue/PR event, moving the `loop:*` state machine forward, or setting up the routine, API trigger, and dispatch workflow |
 | [Maintainable Code Guidelines](.agents/skills/maintainable-code-guidelines/SKILL.md) | Reviewing readability, naming, abstraction boundaries, complexity, dead code, or scope discipline |
 | [Markdown Processing Guidelines](.agents/skills/markdown-processing-guidelines/SKILL.md) | Writing, reviewing, or modifying markdown rendering, Remark/Rehype plugins, Shiki setup, custom nodes, or web embeds |
 | [Observability Guidelines](.agents/skills/observability-guidelines/SKILL.md) | Throwing, catching, reporting, or logging errors with Sentry or Pino |
