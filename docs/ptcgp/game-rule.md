@@ -1,6 +1,6 @@
 # Pokémon Trading Card Game Pocket — Complete Game Rules
 
-> A detailed, corner-by-corner description of how a battle works in Pokémon Trading Card Game Pocket (PTCGP / ポケポケ). For what the game is and what players do, see [`overview.md`](./overview.md); for the card/expansion inventory, see [`cards.md`](./cards.md).
+> A detailed, corner-by-corner description of how a battle works in Pokémon Trading Card Game Pocket (PTCGP / ポケポケ). For what the game is and what players do (including card kinds, types, and rarity), see [`overview.md`](./overview.md); for the per-set expansion inventory, see [`expansions.md`](./expansions.md).
 
 **Document status:** Research compiled mid-2026 from official rules pages and community references. PTCGP is a live game; some numeric values (turn timers, set-specific card classes) are added or tuned over time. Source URLs are at the end.
 

@@ -1,14 +1,13 @@
-# Pokémon Trading Card Game Pocket — Cards & Expansions
+# Pokémon Trading Card Game Pocket — Expansions
 
-> A structured inventory of PTCGP expansions and their notable cards, grouped by series and set, designed to be easy to parse and reuse. For what the game is, see [`overview.md`](./overview.md); for battle mechanics, see [`game-rule.md`](./game-rule.md).
+> A structured inventory of PTCGP expansions and their notable cards, grouped by series and set, designed to be easy to parse and reuse. For what cards are (kinds, types, anatomy, rarity), see [`overview.md`](./overview.md) §2; for battle mechanics, see [`game-rule.md`](./game-rule.md).
 
 **Document status:** Research compiled mid-2026 from Bulbapedia, Serebii, Limitless TCG (pocket.limitlesstcg.com), Game8, and official sources. Card totals, codes, and dates are cross-confirmed and reliable; per-set "secret"/star-tier lists run to dozens of cards each and are summarized to the notable/chase cards rather than enumerated exhaustively. The newest sets (B3a, B3b) and the upcoming B4 are the least settled. Source URLs are at the end.
 
 **Conventions used in this document**
 
 - **Set code** uses the in-game series notation (A1, A1a, … B1, B1a, …). Mini-sets carry a letter suffix.
-- **Energy types** refer to PTCGP's in-game types (Grass, Fire, Water, Lightning, Psychic, Fighting, Darkness, Metal, Dragon, Colorless), which can differ from the creatures' main-series types.
-- Rarity symbols: **◇** Diamond, **☆** Star, **✸** Shiny, **♛** Crown. The full rarity ladder, pull-rate table, and card-anatomy/type reference live in [`overview.md`](./overview.md) §2 ("Cards").
+- **Card terminology** — energy types, card kinds, the rarity ladder, and pull rates — is defined in [`overview.md`](./overview.md) §2 ("Cards"). This document uses the rarity symbols **◇** Diamond, **☆** Star, **✸** Shiny, **♛** Crown as shorthand.
 
 ---
 
@@ -42,8 +41,7 @@
 - **ex cards:** Dialga ex, Palkia ex, Darkrai ex, Gallade ex, Weavile ex, Infernape ex, Yanmega ex, Pachirisu ex, Mismagius ex, Lickilicky ex
 - **New mechanic:** first **Pokémon Tool** cards — Giant Cape, Rocky Helmet, Lum Berry
 - **Supporters:** Cynthia, Cyrus, Volkner, Dawn, Mars
-- **Live-service note:** the A2 update also **introduced the Trading feature** to the game.
-- **Meta note:** Dialga ex and Darkrai ex were major meta cards.
+- **Meta note:** Dialga ex and Darkrai ex were major meta cards. _(The A2 update also introduced the Trading feature — see [`overview.md`](./overview.md) §5.)_
 
 ### Triumphant Light — A2a (超克の光)
 
@@ -175,7 +173,6 @@ The B series launched on the game's first anniversary and introduced **Mega Evol
 - **Mega Evolution ex:** Mega Lucario ex, Mega Sceptile ex, Mega Camerupt ex, Mega Audino ex
 - **Other ex:** Vaporeon ex, Magnezone ex, Crustle ex, Zoroark ex, Corviknight ex, Flygon ex
 - **Support:** Korrina · **Stadium:** Arena of Antiquity
-- **System change:** Emblem tickets discontinued — emblems now earned by collecting a set quota of cards.
 
 ### Paradox Drive — B3a (進撃パラドックス)
 

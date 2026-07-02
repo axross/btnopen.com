@@ -1,6 +1,6 @@
 # Pokémon Trading Card Game Pocket — Overview
 
-> A comprehensive reference describing **what Pokémon Trading Card Game Pocket is made for** and **what players can do** in it. For battle mechanics see [`game-rule.md`](./game-rule.md); for the expansion and card inventory see [`cards.md`](./cards.md).
+> A comprehensive reference describing **what Pokémon Trading Card Game Pocket is made for** and **what players can do** in it. For battle mechanics see [`game-rule.md`](./game-rule.md); for the per-set expansion inventory see [`expansions.md`](./expansions.md).
 
 **Document status:** Research compiled mid-2026 from official and community sources (English and Japanese). PTCGP is a live-service game; numeric values (prices, timers, ranked tiers, trading costs, event line-ups) change with updates, and figures reflect commonly cited values at time of writing. Japanese in-game term names (ポケポケ is the game's own nickname) are included because the game is Japanese-first. Source URLs are at the end.
 
@@ -162,7 +162,7 @@ Every card shows a **rarity symbol in the lower-left corner** (beneath the illus
 - **Pack Points:** every opening earns Pack Points, redeemable for specific named cards (a chase ☆☆ costs ~1,350; higher tiers ~1,500) — a pity/targeting system, earned and spent per expansion.
 - **Variants worth distinguishing:** the same Pokémon has a base ◇ printing plus higher-rarity **parallels** (full-art, immersive, Crown) at card numbers above the set base; **parallel foil** cards were introduced in _Deluxe Pack: ex_ (A4b); **promo** cards come from events/shop and cannot be traded; **flair** and animation are per-owned-copy cosmetics distinct from card identity.
 
-> The per-set inventory of which specific cards exist at each rarity is in [`cards.md`](./cards.md).
+> The per-set inventory of which specific cards exist at each rarity is in [`expansions.md`](./expansions.md).
 
 ### 2.6 A structured way to describe a card
 
@@ -229,7 +229,7 @@ Everything above maps onto a consistent set of attributes, useful for any later 
 
 ### 3.1 Opening booster packs (パック開封)
 
-- **Pack contents.** Each booster pack contains **5 cards**. Card rarity is rolled **per slot**: slots 1–3 are always the lowest rarity, while **slot 5 has the most generous odds** for rare pulls. (Full rarity ladder and pull-rate table are in [`cards.md`](./cards.md).)
+- **Pack contents.** Each booster pack contains **5 cards**. Card rarity is rolled **per slot**: slots 1–3 are always the lowest rarity, while **slot 5 has the most generous odds** for rare pulls. (Full rarity ladder and pull-rate table are in §2.5.)
 - **Choosing a pack.** Most expansions split into multiple themed booster packs — e.g., the launch set offered **Charizard / Mewtwo / Pikachu** packs — and you choose which to open. Some cards are **pack-exclusive**, so collectors target specific packs.
 - **The free pack economy — Pack Power & Pack Hourglasses.**
   - Free packs are gated by a regenerating gauge (**パックパワー / "Pack Power"**). It refills **one pack roughly every 12 hours** and **stocks a maximum of two**, so the design nudges you to log in about twice a day; leaving two banked stalls further regeneration.
@@ -304,12 +304,12 @@ A signature, social-flavored acquisition feature:
 ## 5. Social Features
 
 - **Friends (フレンド).** Add via a numeric **Friend ID**, after a PvP match, or after Wonder-Picking from someone's pack. Friends populate your Wonder Pick feed and are required for trading. The Battle Hub and trading unlock at **player Level 3**.
-- **Trading (トレード).** Trade cards with friends, subject to rules:
+- **Trading (トレード).** Trade cards with friends. Trading was **not present at launch**; it was added with the **Space-Time Smackdown (A2) update in late January 2025**. It is subject to rules:
   - Both players must be **friends** and at least **Level 3**.
   - **Both offered cards must be the same rarity.** If one has flair, the other must too.
   - **Promo cards cannot be traded**, and the highest "chase" rarities (Crown, immersive, etc.) remain restricted; the tradeable rarity range has **expanded over time** (e.g., 2-Star and Shiny cards from older sets became tradeable in late 2025).
   - Each trade consumes **Trade Stamina / Trade Power (トレードパワー)** — naturally maxing around 5, recovering ~1/day — and, for higher rarities, **Shinedust**.
-  - **History note:** higher-rarity trading originally required **Trade Tokens / Trade Medals (トレードメダル)** earned by destroying duplicates, a system widely criticized as costly. On **July 30, 2025** Trade Tokens were **removed** and replaced with **Shinedust (ひかりのすな)**; leftover tokens converted to Pack Hourglasses/Shinedust. (Exact Shinedust costs per rarity are listed in [`cards.md`](./cards.md).)
+  - **History note:** higher-rarity trading originally required **Trade Tokens / Trade Medals (トレードメダル)** earned by destroying duplicates, a system widely criticized as costly. On **July 30, 2025** Trade Tokens were **removed** and replaced with **Shinedust (ひかりのすな)**; leftover tokens converted to Pack Hourglasses/Shinedust. Higher rarities cost more Shinedust to trade (roughly 10,000 for a 1-Shiny, ~25,000 for a 2-Star, ~30,000 for a 2-Shiny).
 - **Showcases & likes.** Public Display Boards and binders can be browsed and liked by friends and the community; "Thanks!" and likes both feed back small currency rewards.
 
 ---
@@ -339,7 +339,7 @@ PTCGP is free to play; spending **accelerates collecting and unlocks cosmetics**
 - **Player level / EXP.** Earned mainly from battles and play (no stamina cost to battle). Leveling unlocks features (**Level 3:** Battle Hub + trading; **Level 4:** Display Boards) and grants hourglasses.
 - **Login bonuses & the Complimentary Item Set.** A free daily grant (a Wonder Hourglass + a Shop Ticket) plus event-based login bonuses provide steady drip rewards.
 - **Events.** Solo Battle Events, Drop Events, Emblem Events, themed collection challenges, and Wonder Pick events rotate continuously, supplying promo cards, currency, and cosmetics.
-- **Expansion cadence.** New sets arrive on a steady schedule — roughly **a major expansion every ~3 months with a smaller mini-set about six weeks later** (~4 major sets per year) — each adding cards, missions, events, and frequently new mechanics (Tools, Baby Pokémon, Stadiums, Mega Evolution). The full chronology is in [`cards.md`](./cards.md).
+- **Expansion cadence.** New sets arrive on a steady schedule — roughly **a major expansion every ~3 months with a smaller mini-set about six weeks later** (~4 major sets per year) — each adding cards, missions, events, and frequently new mechanics (Tools, Baby Pokémon, Stadiums, Mega Evolution). The full chronology is in [`expansions.md`](./expansions.md).
 
 ### A representative day
 
