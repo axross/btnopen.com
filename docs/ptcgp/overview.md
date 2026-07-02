@@ -164,102 +164,64 @@ Every card shows a **rarity symbol in the lower-left corner** (beneath the illus
 
 > The per-set inventory of which specific cards exist at each rarity is in [`cards.md`](./cards.md).
 
-### 2.6 A structured data model
+### 2.6 A structured way to describe a card
 
-The above maps cleanly onto typed models, useful for any later tooling (a card database, deck builder, or collection tracker):
+Everything above maps onto a consistent set of attributes, useful for any later tooling (a card database, deck builder, or collection tracker). A card record can be thought of in four parts: fields shared by every card, fields specific to Pokémon cards, fields specific to Trainer cards, and the small repeating structures for attacks and abilities.
 
-```ts
-type EnergyType =
-  | "Grass"
-  | "Fire"
-  | "Water"
-  | "Lightning"
-  | "Psychic"
-  | "Fighting"
-  | "Darkness"
-  | "Metal"
-  | "Dragon"
-  | "Colorless";
+**Fields shared by every card**
 
-type Rarity =
-  | "◇"
-  | "◇◇"
-  | "◇◇◇"
-  | "◇◇◇◇" // Diamond tiers
-  | "☆"
-  | "☆☆"
-  | "☆☆☆" // Star tiers (☆☆☆ = immersive)
-  | "✸"
-  | "✸✸" // Shiny tiers
-  | "♛"; // Crown
+| Field            | Meaning                                                            | Example                     |
+| ---------------- | ------------------------------------------------------------------ | --------------------------- |
+| Identifier       | Stable key, usually set code + number                              | `A1-036`                    |
+| Name (EN / JA)   | Card name in each locale                                           | Charizard ex / リザードンex |
+| Set code         | Which expansion it belongs to                                      | A1, A1a, B1, …              |
+| Number in set    | Its position within the set                                        | 36                          |
+| Set base size    | The set's base count (secret/parallel cards have numbers above it) | 226                         |
+| Rarity           | One of the ten rarity tiers (see §2.5)                             | ◇◇◇◇                        |
+| Illustrator      | Art credit                                                         | Mitsuhiro Arita             |
+| Pack(s)          | Which booster pack(s) can yield it; empty if not pack-exclusive    | Charizard                   |
+| Promo?           | Whether it is a promo card (promos cannot be traded)               | no                          |
+| Parallel foil?   | Whether this printing is a parallel-foil variant (A4b onward)      | no                          |
+| Flair supported? | Whether cosmetic flair can be applied to owned copies              | yes                         |
 
-type PokemonStage = "Basic" | "Stage1" | "Stage2";
-type TrainerSubtype =
-  | "Supporter"
-  | "Item"
-  | "PokemonTool"
-  | "Stadium"
-  | "Fossil";
+**Fields specific to Pokémon cards**
 
-interface CardBase {
-  id: string; // e.g. "A1-036"
-  name: string;
-  nameJa?: string;
-  setCode: string; // "A1", "A1a", "B1", ...
-  numberInSet: number; // 36
-  setBaseSize: number; // 226 (secrets exceed this)
-  rarity: Rarity;
-  illustrator: string;
-  packs?: string[]; // pack-exclusivity, e.g. ["Charizard"]
-  isPromo: boolean;
-  isParallelFoil?: boolean;
-  flairSupported: boolean;
-}
+| Field           | Meaning                                                                    |
+| --------------- | -------------------------------------------------------------------------- |
+| Pokédex number  | The creature's National Dex number                                         |
+| Type            | One of the ten types (§2.2)                                                |
+| HP              | Hit points before Knock Out                                                |
+| Stage           | Basic, Stage 1, or Stage 2                                                 |
+| Evolves from    | Name of the required lower-stage Pokémon (empty for Basics)                |
+| Is ex?          | Whether it is a Pokémon ex                                                 |
+| Is Mega ex?     | Whether it is a Mega Evolution ex                                          |
+| Is Ultra Beast? | Whether it carries the Ultra Beast tag                                     |
+| Is Baby?        | Whether it is a Baby Pokémon                                               |
+| Weakness        | The single type that deals +20 to it, or none (Dragon has none)            |
+| Retreat cost    | Number of Energy discarded to switch it out                                |
+| KO points       | Points the opponent scores for KO'ing it — 1 (normal), 2 (ex), 3 (Mega ex) |
+| Ability         | Optional; see the ability structure below                                  |
+| Attacks         | Zero to two, each described by the attack structure below                  |
+| Flavor text     | Pokédex-style description (mostly on full-art rarities)                    |
 
-interface Attack {
-  name: string;
-  nameJa?: string;
-  cost: EnergyType[]; // ["Fire","Fire","Colorless","Colorless"]
-  damage: number | null; // null when the attack prints no fixed number
-  effect?: string; // rules text
-}
+**Fields specific to Trainer cards**
 
-interface Ability {
-  name: string;
-  nameJa?: string;
-  trigger: "active" | "passive";
-  effect: string;
-}
+| Field          | Meaning                                                                           |
+| -------------- | --------------------------------------------------------------------------------- |
+| Subtype        | Supporter, Item, Pokémon Tool, Stadium, or Fossil                                 |
+| Effect         | The rules text describing what the card does                                      |
+| Fossil in play | Only for Fossils: they act as a 40-HP Colorless Basic Pokémon that cannot retreat |
 
-interface PokemonCard extends CardBase {
-  kind: "Pokemon";
-  pokedexNumber: number;
-  type: EnergyType;
-  hp: number;
-  stage: PokemonStage;
-  evolvesFrom?: string;
-  isEx: boolean;
-  isMegaEx: boolean; // KO worth 3 points
-  isUltraBeast: boolean;
-  isBaby: boolean;
-  weakness: EnergyType | null; // +20 damage; null for Dragon
-  retreatCost: number; // Energy discarded to switch out
-  koPoints: 1 | 2 | 3; // 1 normal, 2 ex, 3 Mega ex
-  ability?: Ability;
-  attacks: Attack[]; // 0–2
-  flavorText?: string;
-}
+**The attack structure** (each Pokémon has zero to two): a name (EN / JA); an **Energy cost**, expressed as a list of type symbols (for example, two Fire plus two Colorless); a **damage** number, which may be absent when the attack prints no fixed number; and optional **effect** text.
 
-interface TrainerCard extends CardBase {
-  kind: "Trainer";
-  subtype: TrainerSubtype;
-  effect: string;
-  // Fossils act as a Pokémon once played:
-  fossilInPlay?: { hp: 40; type: "Colorless"; canRetreat: false };
-}
+**The ability structure** (optional, at most one): a name (EN / JA); a **trigger** that is either _active_ (used on demand during your turn) or _passive_ (always on); and the **effect** text.
 
-type Card = PokemonCard | TrainerCard;
-```
+**The fixed value sets** these fields draw from:
+
+- **Types (10):** Grass, Fire, Water, Lightning, Psychic, Fighting, Darkness, Metal, Dragon, Colorless.
+- **Rarity tiers (10):** ◇, ◇◇, ◇◇◇, ◇◇◇◇, ☆, ☆☆, ☆☆☆, ✸, ✸✸, ♛.
+- **Pokémon stages (3):** Basic, Stage 1, Stage 2.
+- **Trainer subtypes (5):** Supporter, Item, Pokémon Tool, Stadium, Fossil.
 
 ---
 
