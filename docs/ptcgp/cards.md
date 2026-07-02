@@ -8,55 +8,11 @@
 
 - **Set code** uses the in-game series notation (A1, A1a, … B1, B1a, …). Mini-sets carry a letter suffix.
 - **Energy types** refer to PTCGP's in-game types (Grass, Fire, Water, Lightning, Psychic, Fighting, Darkness, Metal, Dragon, Colorless), which can differ from the creatures' main-series types.
-- Rarity symbols: **◇** Diamond, **☆** Star, **✸** Shiny, **♛** Crown (see §1).
+- Rarity symbols: **◇** Diamond, **☆** Star, **✸** Shiny, **♛** Crown. The full rarity ladder, pull-rate table, and card-anatomy/type reference live in [`overview.md`](./overview.md) §2 ("Cards").
 
 ---
 
-## 1. The Rarity System
-
-Every card shows a **rarity symbol in the lower-left corner** (beneath the illustrator credit). From most common to rarest:
-
-| Tier                         | Symbol | Japanese name      | What it is                                                                                             |
-| ---------------------------- | ------ | ------------------ | ------------------------------------------------------------------------------------------------------ |
-| Common                       | ◇      | ダイヤ1            | Basic Pokémon, basic Trainers — the floor of every pack                                                |
-| Uncommon                     | ◇◇     | ダイヤ2            | Stage 1 Pokémon, some Basics/Trainers                                                                  |
-| Rare                         | ◇◇◇    | ダイヤ3            | Stage 2 and higher-power Pokémon                                                                       |
-| Double Rare                  | ◇◇◇◇   | ダイヤ4            | **Pokémon ex** in standard art; art begins to push past the frame                                      |
-| Illustration Rare / Full Art | ☆      | star1              | Full-art version of a non-ex Pokémon — the first true "chase" tier                                     |
-| Ultra Rare / Special Art     | ☆☆     | star2              | Full-art **ex** and full-art **Supporters**; includes special-illustration ("rainbow border") variants |
-| Immersive                    | ☆☆☆    | star3 (イマーシブ) | Animated, interactive art you can pan around in 3D; the showpiece unique to Pocket                     |
-| Shiny Rare                   | ✸      | シャイニー1        | Special illustration of a **Shiny** non-ex Pokémon (added in Shining Revelry / A2b)                    |
-| Shiny Ultra Rare             | ✸✸     | シャイニー2        | Special illustration of a **Shiny ex** Pokémon                                                         |
-| Crown Rare                   | ♛      | クラウン           | The single rarest tier — gold/"hyper rare" full-art cards                                              |
-
-**Actual rarity order (rarest → least, post-Shining Revelry):**
-♛ Crown → ☆☆☆ Immersive → ✸✸ 2-Shiny → ☆☆ 2-Star → ✸ 1-Shiny → ☆ 1-Star → ◇◇◇◇ → ◇◇◇ → ◇◇ → ◇.
-(Note: a 2-Star special-illustration card is individually rarer than a 3-Star immersive in pull terms.)
-
-### Pull rates in a standard 5-card pack
-
-Rarity is rolled **per card slot**; slots 1–3 are always Common, and slot 5 has the most generous odds.
-
-| Rarity                 | Cards 1–3 | Card 4 | Card 5  |
-| ---------------------- | --------- | ------ | ------- |
-| ◇ Common               | 100%      | 0%     | 0%      |
-| ◇◇ Uncommon            | 0%        | 90%    | 60%     |
-| ◇◇◇ Rare               | 0%        | 5%     | 20%     |
-| ◇◇◇◇ Double Rare (ex)  | 0%        | ~1.67% | ~6.66%  |
-| ☆ 1-Star               | 0%        | ~2.57% | ~10.29% |
-| ☆☆ 2-Star              | 0%        | 0.5%   | 2%      |
-| ☆☆☆ 3-Star (Immersive) | 0%        | ~0.22% | ~0.89%  |
-| ✸ 1-Shiny              | 0%        | ~0.71% | ~2.86%  |
-| ✸✸ 2-Shiny             | 0%        | ~0.33% | ~1.33%  |
-| ♛ Crown                | 0%        | ~0.04% | ~0.16%  |
-
-- **Rare Packs ("God Packs"):** ~**0.05% (1 in 2,000)** of packs open with **all 5 cards at ☆ (1-Star) or higher** — no diamond cards at all.
-- **Pack Points:** every pack opening earns Pack Points, redeemable for specific named cards (a chase ☆☆ costs ~1,350; higher tiers ~1,500), acting as a pity/targeting system.
-- **Deluxe Pack: ex (A4b)** introduced **parallel foil** cards and uses **4-card packs**.
-
----
-
-## 2. A Series (2024 – 2025) — Generations I–VII era
+## 1. A Series (2024 – 2025) — Generations I–VII era
 
 ### Genetic Apex — A1 (最強の遺伝子)
 
@@ -169,7 +125,7 @@ Rarity is rolled **per card slot**; slots 1–3 are always Common, and slot 5 ha
 
 ---
 
-## 3. B Series (2025 – 2026) — the Mega Evolution era
+## 2. B Series (2025 – 2026) — the Mega Evolution era
 
 The B series launched on the game's first anniversary and introduced **Mega Evolution Pokémon ex** — a new card class worth **3 points** when Knocked Out (vs. 2 for a regular ex). Mega ex still use the ◇◇◇◇ / ☆ / ♛ rarity symbols. In Pocket, a Stage-2 Mega evolves directly from its Stage-1 form via normal evolution rules.
 
@@ -242,7 +198,7 @@ The B series launched on the game's first anniversary and introduced **Mega Evol
 
 ---
 
-## 4. Promo Sets
+## 3. Promo Sets
 
 - **Promo-A (P-A):** from Oct 30, 2024, ~117 cards — event/login/shop promos for the A series.
 - **Promo-B (P-B):** from Oct 30, 2025, ~70–78 cards — promos for the B series.
@@ -251,7 +207,7 @@ Promo cards are obtained from events, login bonuses, the shop (Shop/Premium Tick
 
 ---
 
-## 5. Complete Chronological Index
+## 4. Complete Chronological Index
 
 > **Important naming note:** English set names are **not** direct translations of the Japanese names — both are official and are mapped one-to-one below.
 
