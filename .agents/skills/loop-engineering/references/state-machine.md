@@ -20,12 +20,16 @@ The loop stores all state in GitHub. Labels are the phase pointer, the issue/PR 
 ```
 (issue opened) --human adds--> loop:plan
 loop:plan --agent has a blocking question--> loop:awaiting-answer
-loop:awaiting-answer --human replies--> loop:plan            (agent resumes)
+loop:awaiting-answer --human replies--> loop:awaiting-answer (agent resumes in place; NO relabel)
+    then, when clear --> loop:plan-review                   (agent @mentions the operator)
 loop:plan --plan complete--> loop:plan-review               (agent @mentions the operator)
-loop:plan-review --human approves--> loop:ready-to-build
+loop:plan-review --unmarked human comment--> loop:plan-review (agent revises plan, re-requests approval)
+loop:plan-review --human approves--> loop:ready-to-build     (human applies the label; not a comment)
 loop:ready-to-build --agent opens draft PR--> loop:in-review
 loop:in-review --self-review round is clean--> loop:done    (PR flipped to ready; agent @mentions the operator)
-(any) --agent stuck--> loop:blocked                         (agent @mentions the operator)
+loop:blocked --human comment--> (agent resumes the appropriate phase and replaces loop:blocked)
+loop:done                                                   (terminal; further comments are no-ops)
+(active phase) --agent genuinely stuck--> loop:blocked      (agent @mentions the operator)
 ```
 
 **Guidelines:**

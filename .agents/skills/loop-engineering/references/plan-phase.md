@@ -6,7 +6,7 @@ The plan phase turns a raw issue into an approved, buildable specification. It r
 
 **Guidelines:**
 
-- MUST read the issue title, description, and full comment thread, then classify the work (UI-bearing, implementation-only, exploratory, mixed) per the [Response Approach](../../../AGENTS.md).
+- MUST read the issue title, description, and full comment thread, then classify the work (UI-bearing, implementation-only, exploratory, mixed) per the [Response Approach](../../../../AGENTS.md).
 - MUST investigate the smallest useful code and documentation context before proposing a plan, and consult every project skill whose routing condition matches the surface the issue touches.
 - SHOULD research external, current documentation when the issue depends on Next.js, Payload, Sentry, Vercel, Playwright, or Biome behavior, per [current-docs.md](../../development-guidelines/references/current-docs.md).
 - MUST inspect independent discovery targets in parallel when their outputs do not depend on each other.
@@ -27,7 +27,7 @@ A human reply on an `loop:awaiting-answer` issue re-triggers the loop.
 **Guidelines:**
 
 - MUST reconstruct the full state from the thread on resume, treating unmarked comments as the human's answers.
-- MUST re-set `loop:plan` and continue investigating, repeating the ask-and-yield cycle until nothing is unclear.
+- MUST continue investigating in place without re-applying `loop:plan`; re-applying it would re-fire the dispatch bridge and spawn a duplicate session. Keep `loop:awaiting-answer` while questions remain, and repeat the ask-and-yield cycle until nothing is unclear.
 
 ## Write the Plan and Refine the Issue
 

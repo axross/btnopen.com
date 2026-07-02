@@ -15,10 +15,13 @@ Target and event context: `$ARGUMENTS`
 3. **Acquire the lock.** If `loop:active` is present with a fresh (<30 min) heartbeat, exit immediately. Otherwise add `loop:active`.
 4. **Route by state and run the one matching phase** (see the skill's references for the detailed rules):
    - Issue `loop:plan` → **Plan phase**: investigate; if something is unclear, post a marked question comment mentioning `@axross`, set `loop:awaiting-answer`, and stop; otherwise write the comprehensive plan into the issue, collapse the original description, set `loop:plan-review`, mention `@axross`, and stop.
-   - Issue `loop:awaiting-answer` with a new human reply → resume the Plan phase (`loop:plan`).
+   - Issue `loop:awaiting-answer` with a new human reply → resume the Plan phase **in place**: keep investigating and do **not** re-apply `loop:plan` (that would re-fire the bridge). Either ask again and stay `loop:awaiting-answer`, or, when clear, advance to `loop:plan-review`.
+   - Issue `loop:plan-review` with a new unmarked human comment → treat it as a change request: revise the plan in the issue body, stay `loop:plan-review`, and re-request approval. (Approval itself arrives as the human applying `loop:ready-to-build`, a separate trigger — not a comment.)
    - Issue `loop:ready-to-build` → **Implementation phase**: build on `claude/issue-<n>`, verify, open the draft PR (`Closes #<n>`), set `loop:in-review`.
-   - Pull request in the loop (or issue `loop:in-review`) → **PR watch / self-review**: address and resolve human review comments and CI failures; when clear, run the comprehensive self-review and post findings as separate marked comments; on a clean round with green CI, flip the PR to ready, set `loop:done`, and mention `@axross` with a summary. Respect the 4-round termination guard.
-   - Anything ambiguous or needing a human decision → set `loop:blocked`, post a marked comment mentioning `@axross`, and stop.
+   - Issue `loop:in-review` (comment trigger) or a pull request in the loop → **PR watch / self-review**: first resolve the linked pull request (the one whose body has `Closes #<n>`) and operate on **it**, not the issue. Address and resolve human review comments and CI failures; when clear, run the comprehensive self-review and post findings as separate marked comments; on a clean round with green CI, flip the PR to ready, set `loop:done`, and mention `@axross` with a summary. Respect the 4-round termination guard.
+   - Issue `loop:done` → terminal: exit as a no-op (do not relabel or reopen) unless a human explicitly asks to reopen.
+   - Issue `loop:blocked` with a new human comment → re-evaluate with the new information and resume the appropriate phase, replacing `loop:blocked` with that phase's label.
+   - Only when the target is inside an **active** phase and genuinely ambiguous or needing a human decision → set `loop:blocked`, post a marked comment mentioning `@axross`, and stop. Do not block terminal (`loop:done`) or already-waiting (`loop:awaiting-answer`, `loop:plan-review`) states.
 5. **Release the lock** (remove `loop:active`) before exiting, including on error paths.
 
 ## Rules
