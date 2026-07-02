@@ -55,9 +55,11 @@ Cards are the fundamental unit of PTCGP — both the collectible and the thing y
 | **Pokémon ex**        | ポケモンex     | Higher HP/damage, but a Knock Out gives the opponent **2 points** instead of 1. Can be Basic, Stage 1, or 2.    |
 | **Mega Evolution ex** | メガシンカex   | Even stronger; a KO gives the opponent **3 points** (an instant loss). Introduced in the B-series Mega era.     |
 
-Two modifiers can apply on top of a Pokémon card rather than being a separate kind:
+Some things apply on top of a Pokémon card rather than being a separate kind:
 
-- **Ultra Beast (ウルトラビースト / UB)** — a keyword tag on certain Pokémon that some cards interact with (introduced with _Extradimensional Crisis_).
+- **Special tags** — keyword labels printed on certain Pokémon that specific cards interact with (for example, dedicated Supporters or Energy that only work on a tagged Pokémon). A Pokémon carries **at most one** such tag:
+  - **Ultra Beast (ウルトラビースト / UB)** — introduced with _Extradimensional Crisis_ (A3a).
+  - **Ancient (こだい)** and **Future (みらい)** — the two Paradox-Pokémon tags introduced with _Paradox Drive_ (B3a).
 - **Fossil** — technically an **Item** (see below) that is _played as_ a 40-HP Colorless Basic Pokémon that cannot retreat.
 
 **Trainer cards (トレーナーズ)** — one-shot or ongoing effects; no HP, type, or attacks:
@@ -186,23 +188,23 @@ Everything above maps onto a consistent set of attributes, useful for any later 
 
 **Fields specific to Pokémon cards**
 
-| Field           | Meaning                                                                    |
-| --------------- | -------------------------------------------------------------------------- |
-| Pokédex number  | The creature's National Dex number                                         |
-| Type            | One of the ten types (§2.2)                                                |
-| HP              | Hit points before Knock Out                                                |
-| Stage           | Basic, Stage 1, or Stage 2                                                 |
-| Evolves from    | Name of the required lower-stage Pokémon (empty for Basics)                |
-| Is ex?          | Whether it is a Pokémon ex                                                 |
-| Is Mega ex?     | Whether it is a Mega Evolution ex                                          |
-| Is Ultra Beast? | Whether it carries the Ultra Beast tag                                     |
-| Is Baby?        | Whether it is a Baby Pokémon                                               |
-| Weakness        | The single type that deals +20 to it, or none (Dragon has none)            |
-| Retreat cost    | Number of Energy discarded to switch it out                                |
-| KO points       | Points the opponent scores for KO'ing it — 1 (normal), 2 (ex), 3 (Mega ex) |
-| Ability         | Optional; see the ability structure below                                  |
-| Attacks         | Zero to two, each described by the attack structure below                  |
-| Flavor text     | Pokédex-style description (mostly on full-art rarities)                    |
+| Field          | Meaning                                                                     |
+| -------------- | --------------------------------------------------------------------------- |
+| Pokédex number | The creature's National Dex number                                          |
+| Type           | One of the ten types (§2.2)                                                 |
+| HP             | Hit points before Knock Out                                                 |
+| Stage          | Basic, Stage 1, or Stage 2                                                  |
+| Evolves from   | Name of the required lower-stage Pokémon (empty for Basics)                 |
+| Is ex?         | Whether it is a Pokémon ex                                                  |
+| Is Mega ex?    | Whether it is a Mega Evolution ex                                           |
+| Tag            | A special keyword tag, if any — Ultra Beast, Ancient, or Future (else none) |
+| Is Baby?       | Whether it is a Baby Pokémon                                                |
+| Weakness       | The single type that deals +20 to it, or none (Dragon has none)             |
+| Retreat cost   | Number of Energy discarded to switch it out                                 |
+| KO points      | Points the opponent scores for KO'ing it — 1 (normal), 2 (ex), 3 (Mega ex)  |
+| Ability        | Optional; see the ability structure below                                   |
+| Attacks        | Zero to two, each described by the attack structure below                   |
+| Flavor text    | Pokédex-style description (mostly on full-art rarities)                     |
 
 **Fields specific to Trainer cards**
 
@@ -221,6 +223,7 @@ Everything above maps onto a consistent set of attributes, useful for any later 
 - **Types (10):** Grass, Fire, Water, Lightning, Psychic, Fighting, Darkness, Metal, Dragon, Colorless.
 - **Rarity tiers (10):** ◇, ◇◇, ◇◇◇, ◇◇◇◇, ☆, ☆☆, ☆☆☆, ✸, ✸✸, ♛.
 - **Pokémon stages (3):** Basic, Stage 1, Stage 2.
+- **Special tags (3):** Ultra Beast, Ancient, Future (a Pokémon has at most one, or none).
 - **Trainer subtypes (5):** Supporter, Item, Pokémon Tool, Stadium, Fossil.
 
 ---
