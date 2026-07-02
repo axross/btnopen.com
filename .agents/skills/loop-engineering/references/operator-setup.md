@@ -1,6 +1,6 @@
 # Operator Setup
 
-One-time setup, performed by the operator (`@axross`). Steps 1-3 are done once; step 4 is per-issue.
+One-time setup for **this** repository, performed by the operator (`@axross`). Steps 1-3 are done once; step 4 is per-issue. To replicate the whole system in a **different** repository, follow [takeover.md](./takeover.md) instead — it covers the same setup plus the repo-specific substitutions.
 
 ## 1. Create the Labels
 

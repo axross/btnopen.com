@@ -4,10 +4,17 @@ name: Loop Engineering Dispatch
 # can trigger natively on pull-request and release events but not on issues or
 # issue comments. Pull-request events are handled by Auto-fix, not this bridge.
 #
+# This workflow is repo-agnostic: it holds no repository-specific values. To port
+# it to another repository, copy it as-is. The only per-repo requirements are the
+# two secrets below and that the loop:* label names match the state machine.
+# The anthropic-beta header is date-versioned; if the routines API advances, bump
+# it per https://code.claude.com/docs/en/routines.
+#
 # Requires two repository secrets from the routine's API trigger:
 #   CLAUDE_LOOP_ROUTINE_URL   - the routine's /fire endpoint URL
 #   CLAUDE_LOOP_ROUTINE_TOKEN - the routine's bearer token
-# See .agents/skills/loop-engineering/references/operator-setup.md.
+# See .agents/skills/loop-engineering/references/operator-setup.md, and
+# references/takeover.md to replicate the whole system in a new repository.
 
 on:
   issues:
