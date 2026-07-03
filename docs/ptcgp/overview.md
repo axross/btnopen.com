@@ -99,7 +99,7 @@ Each Pokémon card has exactly one of **10 types**, which also define the Energy
 
 ### 2.3 Anatomy of a card
 
-A **Pokémon card** prints: **HP**; **type**; **evolution stage** (and what it evolves from); an optional **Ability (とくせい)** — an effect that is _not_ an attack and does not end the turn, either _active_ (used on demand) or _passive_ (always on); **1–2 attacks (ワザ)**, each with an **Energy cost** (a row of type symbols), a **damage** number, and optional **effect text**; a **Weakness**; a **Retreat Cost** (Energy to discard to switch out); ex/Mega markers implying the KO point value; the **Ultra Beast** tag if applicable; **Pokédex data / flavor text** (mainly on full-art rarities); an **illustrator credit**; a **card number** (e.g., `036/226` = position / set base size — secret/parallel cards exceed the base count); a **rarity symbol**; and its **expansion and booster pack**.
+A **Pokémon card** prints: **HP**; **type**; **evolution stage** (and what it evolves from); an optional **Ability (とくせい)** — an effect that is _not_ an attack and does not end the turn, either _active_ (used on demand) or _passive_ (always on); **1–2 attacks (ワザ)**, each with an **Energy cost** (a row of type symbols), a **damage** number, and optional **effect text**; a **Weakness**; a **Retreat Cost** (Energy to discard to switch out); ex/Mega markers implying the KO point value; the **Ultra Beast** tag if applicable; a **flavor-text** sentence (present on regular non-ex Pokémon — including full-art AR and the immersive Mew — but omitted on Pokémon ex and Trainer cards; note that unlike paper cards, PTCGP drops the Pokédex **data block** of species/height/weight); an **illustrator credit**; a **card number** (e.g., `036/226` = position / set base size — secret/parallel cards exceed the base count); a **rarity symbol**; and its **expansion and booster pack**.
 
 A **Trainer card** prints instead: a **subtype banner** (Supporter / Item / Tool / Stadium / Fossil), **effect text**, and the same shared fields (number, rarity, illustrator, set/pack). Fossils additionally print an HP of 40 because they act as Pokémon in play.
 
@@ -203,7 +203,7 @@ Everything above maps onto a consistent set of attributes, useful for any later 
 | KO points      | Points the opponent scores for KO'ing it, set by the Rule Box — 1 (regular) / 2 (ex) / 3 (Mega ex)                                                                                         |
 | Ability        | Optional; see the ability structure below                                                                                                                                                  |
 | Attacks        | Zero to two, each described by the attack structure below                                                                                                                                  |
-| Flavor text    | Pokédex-style description (mostly on full-art rarities)                                                                                                                                    |
+| Flavor text    | Pokédex-style flavor sentence; present on non-ex Pokémon, absent on Pokémon ex and Trainer cards                                                                                           |
 
 **Fields specific to Trainer cards**
 

@@ -6,7 +6,7 @@ This folder holds machine-readable card data for Pokémon TCG Pocket, designed t
 
 - **Format:** [JSON Lines](https://jsonlines.org/) — one card object per line, UTF-8, newline-terminated. Parse by reading line by line and `JSON.parse`-ing each line.
 - **Contents:** all **286** cards of the first expansion, **Genetic Apex (A1 / 最強の遺伝子)**, in card-number order (`#1`–`#286`). 267 Pokémon + 19 Trainer cards.
-- **Source:** the community card database at `dotgg.gg` (fetched 2026-07). Card game text is quoted from that source.
+- **Sources:** card data from the `dotgg.gg` database; `flavorText` transcribed from `pocket.limitlesstcg.com` (fetched 2026-07). Card game text is quoted from these sources.
 
 ### Scope notes
 
@@ -18,22 +18,22 @@ This folder holds machine-readable card data for Pokémon TCG Pocket, designed t
 
 ### Top-level fields (every card)
 
-| Field          | Type           | Notes                                                                       |
-| -------------- | -------------- | --------------------------------------------------------------------------- |
-| `id`           | string         | Stable key, `"A1-280"`.                                                     |
-| `set`          | object         | `{ code, name, nameJa }` — e.g., `A1` / Genetic Apex / 最強の遺伝子.        |
-| `number`       | integer        | Card number within the set (1–286).                                         |
-| `setSize`      | integer        | Base set size (286).                                                        |
-| `name`         | object         | `{ en, ja }` — `ja` is `null` here (see reserved fields).                   |
-| `rarity`       | object         | `{ symbol, code, label }` — see the rarity enum below.                      |
-| `category`     | string         | `"Pokemon"` or `"Trainer"`.                                                 |
-| `pokemon`      | object \| null | Present when `category = "Pokemon"`, else `null`.                           |
-| `trainer`      | object \| null | Present when `category = "Trainer"`, else `null`.                           |
-| `illustrator`  | string \| null | Art credit.                                                                 |
-| `boosterPacks` | array \| null  | Which pack(s) yield it (Charizard/Mewtwo/Pikachu). `null` = not in source.  |
-| `flavorText`   | string \| null | Pokédex-style text. `null` = not in source.                                 |
-| `shop`         | object         | `{ packPoints, dupeShinedust }` — Pack-Point cost and Shinedust dupe value. |
-| `source`       | object         | `{ provider, slug }` — provenance.                                          |
+| Field          | Type           | Notes                                                                                                                                                         |
+| -------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`           | string         | Stable key, `"A1-280"`.                                                                                                                                       |
+| `set`          | object         | `{ code, name, nameJa }` — e.g., `A1` / Genetic Apex / 最強の遺伝子.                                                                                          |
+| `number`       | integer        | Card number within the set (1–286).                                                                                                                           |
+| `setSize`      | integer        | Base set size (286).                                                                                                                                          |
+| `name`         | object         | `{ en, ja }` — `ja` is `null` here (see reserved fields).                                                                                                     |
+| `rarity`       | object         | `{ symbol, code, label }` — see the rarity enum below.                                                                                                        |
+| `category`     | string         | `"Pokemon"` or `"Trainer"`.                                                                                                                                   |
+| `pokemon`      | object \| null | Present when `category = "Pokemon"`, else `null`.                                                                                                             |
+| `trainer`      | object \| null | Present when `category = "Trainer"`, else `null`.                                                                                                             |
+| `illustrator`  | string \| null | Art credit.                                                                                                                                                   |
+| `boosterPacks` | array \| null  | Which pack(s) yield it (Charizard/Mewtwo/Pikachu). `null` = not in source.                                                                                    |
+| `flavorText`   | string \| null | Pokédex-style flavor sentence. Present on non-ex Pokémon (incl. full-art AR and the immersive Mew); `null` for Pokémon ex and Trainer cards, which have none. |
+| `shop`         | object         | `{ packPoints, dupeShinedust }` — Pack-Point cost and Shinedust dupe value.                                                                                   |
+| `source`       | object         | `{ provider, slug }` — provenance.                                                                                                                            |
 
 ### `pokemon` object
 
@@ -103,7 +103,6 @@ These are modeled now so the identical schema scales to later sets and richer so
 
 - `name.ja` and attack/ability `name.ja` — Japanese names (the source is English-only).
 - `boosterPacks` — pack-exclusivity, not exposed by the source.
-- `flavorText` — not exposed by the source.
 - `pokemon.classification` — `UltraBeast` arrives in A3a; `Ancient`/`Future` in B3a.
 - `pokemon.isBaby` — Baby Pokémon arrive in A4.
 - `pokemon.ruleBox` and `trainer.subtype` are **open enumerations**: later sets add `MegaEx`, `PokemonTool`, `Stadium`, etc.
