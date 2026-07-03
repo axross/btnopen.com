@@ -81,17 +81,17 @@ This folder holds machine-readable card data for Pokémon TCG Pocket, designed t
 
 **Rarity (`rarity.code` → `symbol` / `label`):**
 
-| Code    | Symbol | Label            | In A1 |
-| ------- | ------ | ---------------- | ----- |
-| `C`     | ◇      | Common           | 100   |
-| `U`     | ◇◇     | Uncommon         | 71    |
-| `R`     | ◇◇◇    | Rare             | 42    |
-| `RR`    | ◇◇◇◇   | Double Rare (ex) | 15    |
-| `AR`    | ☆      | Art Rare         | 24    |
-| `SR`    | ☆☆     | Super Rare       | 23    |
-| `SAR`   | ☆☆     | Special Art Rare | 6     |
-| `IM`    | ☆☆☆    | Immersive Rare   | 4     |
-| `Crown` | ♛      | Crown Rare       | 3     |
+| Code  | Symbol | Label            | In A1 |
+| ----- | ------ | ---------------- | ----- |
+| `C`   | ◇      | Common           | 100   |
+| `U`   | ◇◇     | Uncommon         | 69    |
+| `R`   | ◇◇◇    | Rare             | 42    |
+| `RR`  | ◇◇◇◇   | Double Rare (ex) | 15    |
+| `AR`  | ☆      | Art Rare         | 24    |
+| `SR`  | ☆☆     | Super Rare       | 23    |
+| `SAR` | ☆☆     | Special Art Rare | 6     |
+| `IR`  | ☆☆☆    | Immersive Rare   | 4     |
+| `CR`  | ♛      | Crown Rare       | 3     |
 
 (Shiny tiers `✸` / `✸✸` do not appear until Shining Revelry / A2b.)
 
