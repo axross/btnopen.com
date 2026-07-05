@@ -17,8 +17,8 @@ Apply these keywords consistently in this document and the documents linked from
 - This is a personal blogging website. It displays a portrait, a bio, and links to the author's social media accounts.
 - Blog posts are the primary content type. They support tags, cover images, and rich Markdown including syntax-highlighted code blocks and embedded web content previews.
 - Content is written primarily in Japanese, with English provided as a fallback for readers in other locales.
-- For tech stack, third-party services, and directory placement, consult [Project Structure](.agents/skills/project-structure/SKILL.md).
-- For npm run-scripts, current-docs lookup rules, and verification commands, consult [Development Guidelines](.agents/skills/development-guidelines/SKILL.md).
+- For tech stack, third-party services, and directory placement, consult [Project Structure](.claude/skills/project-structure/SKILL.md).
+- For npm run-scripts, current-docs lookup rules, and verification commands, consult [Development Guidelines](.claude/skills/development-guidelines/SKILL.md).
 
 ## Skill Index
 
@@ -26,23 +26,25 @@ Apply these keywords consistently in this document and the documents linked from
 
 | Skill | When to apply |
 | ----- | ------------- |
-| [Agent Skills Best Practices](.agents/skills/agent-skills-best-practices/SKILL.md) | Creating, refining, splitting, renaming, deleting, or auditing project skills or this skill index |
-| [Application Security Requirements](.agents/skills/application-security-requirements/SKILL.md) | Reviewing secrets, environment variables, validation, Payload access control, markdown XSS, SSRF/embed fetching, auth/session behavior, privacy exposure, analytics/error-reporting data, or npm dependency risk |
-| [Blog Post Authoring Guidelines](.agents/skills/blog-post-authoring-guidelines/SKILL.md) | Drafting, rewriting, refining, translating, or reviewing blog post content, titles, briefs, tags, structure, tone, grammar, and authorial style |
-| [Code Review Guideline](.agents/skills/code-review-guideline/SKILL.md) | Reviewing a diff, pull request, local change, or post-implementation self-review |
-| [Development Guidelines](.agents/skills/development-guidelines/SKILL.md) | Implementing, refactoring, running commands, preparing commits, adding dependencies, checking current docs, or changing migrations |
-| [E2E Testing Guidelines](.agents/skills/e2e-testing-guidelines/SKILL.md) | Writing, running, reviewing, or maintaining Playwright tests, snapshots, route coverage, or browser assertions |
-| [Maintainable Code Guidelines](.agents/skills/maintainable-code-guidelines/SKILL.md) | Reviewing readability, naming, abstraction boundaries, complexity, dead code, or scope discipline |
-| [Markdown Processing Guidelines](.agents/skills/markdown-processing-guidelines/SKILL.md) | Writing, reviewing, or modifying markdown rendering, Remark/Rehype plugins, Shiki setup, custom nodes, or web embeds |
-| [Observability Guidelines](.agents/skills/observability-guidelines/SKILL.md) | Throwing, catching, reporting, or logging errors with Sentry or Pino |
-| [Payload CMS MCP](.agents/skills/payload-cms-mcp/SKILL.md) | Inspecting or mutating existing Payload CMS content through MCP, including blog posts, media, tags, locales, drafts, and metadata; use this for existing blog post edits even when MCP is not mentioned |
-| [Performance and Reliability Requirements](.agents/skills/performance-and-reliability-requirements/SKILL.md) | Reviewing Payload query cost, RSC/client boundaries, caching, image optimization, bundle weight, or runtime failure behavior |
-| [Project Structure](.agents/skills/project-structure/SKILL.md) | Navigating the repository, locating files, placing new modules, checking stack/service context, import aliases, or directory conventions |
-| [Quality Assurance Guidelines](.agents/skills/quality-assurance-guidelines/SKILL.md) | Reviewing verification evidence, e2e coverage, snapshots, flakiness, lint/format evidence, or manual checks |
-| [React Component Guidelines](.agents/skills/react-component-guidelines/SKILL.md) | Writing, reviewing, or refactoring React components, Server/Client component boundaries, styling, CSS conventions, or `data-testid` contracts |
-| [Routing Guidelines](.agents/skills/routing-guidelines/SKILL.md) | Creating, moving, renaming, or reviewing App Router routes, route handlers, route groups, dynamic params, or search params |
-| [Unit Test Guidelines](.agents/skills/unit-test-guidelines/SKILL.md) | Writing, refactoring, reviewing, or running Jest unit tests, including `@jest/globals` imports, mocks/fakes, fixtures, schema tests, and behavior-focused assertions |
-| [UI Design Principles](.agents/skills/ui-design-principles/SKILL.md) | Designing, implementing, or reviewing user-facing surfaces, responsive behavior, visual tone, copy, accessibility, loading states, or theme behavior |
+| [Agent Skills Best Practices](.claude/skills/agent-skills-best-practices/SKILL.md) | Creating, refining, splitting, renaming, deleting, or auditing project skills or this skill index |
+| [Application Security Requirements](.claude/skills/application-security-requirements/SKILL.md) | Reviewing secrets, environment variables, validation, Payload access control, markdown XSS, SSRF/embed fetching, auth/session behavior, privacy exposure, analytics/error-reporting data, or npm dependency risk |
+| [Blog Post Authoring Guidelines](.claude/skills/blog-post-authoring-guidelines/SKILL.md) | Drafting, rewriting, refining, translating, or reviewing blog post content, titles, briefs, tags, structure, tone, grammar, and authorial style |
+| [Code Review Guideline](.claude/skills/code-review-guideline/SKILL.md) | Reviewing a diff, pull request, local change, or post-implementation self-review |
+| [Development Guidelines](.claude/skills/development-guidelines/SKILL.md) | Implementing, refactoring, running commands, preparing commits, adding dependencies, checking current docs, or changing migrations |
+| [E2E Testing Guidelines](.claude/skills/e2e-testing-guidelines/SKILL.md) | Writing, running, reviewing, or maintaining Playwright tests, snapshots, route coverage, or browser assertions |
+| [GitHub Operations](.claude/skills/github-operations/SKILL.md) | Reading from or writing to GitHub — issues, pull requests, comments, labels, reviews, or branches — through a proxied single-operator identity: agent-comment markers, issue-vs-PR targets, untrusted content |
+| [Maintainable Code Guidelines](.claude/skills/maintainable-code-guidelines/SKILL.md) | Reviewing readability, naming, abstraction boundaries, complexity, dead code, or scope discipline |
+| [Markdown Processing Guidelines](.claude/skills/markdown-processing-guidelines/SKILL.md) | Writing, reviewing, or modifying markdown rendering, Remark/Rehype plugins, Shiki setup, custom nodes, or web embeds |
+| [Observability Guidelines](.claude/skills/observability-guidelines/SKILL.md) | Throwing, catching, reporting, or logging errors with Sentry or Pino |
+| [Payload CMS MCP](.claude/skills/payload-cms-mcp/SKILL.md) | Inspecting or mutating existing Payload CMS content through MCP, including blog posts, media, tags, locales, drafts, and metadata; use this for existing blog post edits even when MCP is not mentioned |
+| [Performance and Reliability Requirements](.claude/skills/performance-and-reliability-requirements/SKILL.md) | Reviewing Payload query cost, RSC/client boundaries, caching, image optimization, bundle weight, or runtime failure behavior |
+| [Product Requirement Guidelines](.claude/skills/product-requirement-guidelines/SKILL.md) | Writing, refining, or reviewing a product requirement, feature spec, or issue description; framing scope/non-goals, testable acceptance criteria, or a spec's UI-design or architecture sections |
+| [Project Structure](.claude/skills/project-structure/SKILL.md) | Navigating the repository, locating files, placing new modules, checking stack/service context, import aliases, or directory conventions |
+| [Quality Assurance Guidelines](.claude/skills/quality-assurance-guidelines/SKILL.md) | Reviewing verification evidence, e2e coverage, snapshots, flakiness, lint/format evidence, or manual checks |
+| [React Component Guidelines](.claude/skills/react-component-guidelines/SKILL.md) | Writing, reviewing, or refactoring React components, Server/Client component boundaries, styling, CSS conventions, or `data-testid` contracts |
+| [Routing Guidelines](.claude/skills/routing-guidelines/SKILL.md) | Creating, moving, renaming, or reviewing App Router routes, route handlers, route groups, dynamic params, or search params |
+| [Unit Test Guidelines](.claude/skills/unit-test-guidelines/SKILL.md) | Writing, refactoring, reviewing, or running Jest unit tests, including `@jest/globals` imports, mocks/fakes, fixtures, schema tests, and behavior-focused assertions |
+| [UI Design Principles](.claude/skills/ui-design-principles/SKILL.md) | Designing, implementing, or reviewing user-facing surfaces, responsive behavior, visual tone, copy, accessibility, loading states, or theme behavior |
 
 ## Response Approach
 
@@ -64,7 +66,7 @@ Non-trivial work should move through the same decision sequence even when some s
 
 **Guidelines:**
 
-- MUST consult [Development Guidelines](.agents/skills/development-guidelines/SKILL.md) at the start of every task.
+- MUST consult [Development Guidelines](.claude/skills/development-guidelines/SKILL.md) at the start of every task.
 - MUST classify non-trivial work as UI-bearing, implementation-only, review-only, skill-maintenance, exploratory, or mixed workflow before editing files.
 - MUST consult every skill whose routing condition matches the changed surface or requested review lens.
 - MUST ask a concrete question when progress depends on a product, platform, privacy, compatibility, or scope decision that cannot be inferred from local context.
@@ -89,7 +91,7 @@ User-facing changes need design intent before implementation mechanics. The sing
 **Guidelines:**
 
 - MUST establish design intent before implementing UI-bearing changes: hierarchy, interaction states, accessibility intent, responsive behavior, and copy constraints.
-- MUST consult [UI Design Principles](.agents/skills/ui-design-principles/SKILL.md) for design decisions and [React Component Guidelines](.agents/skills/react-component-guidelines/SKILL.md) for implementation mechanics.
+- MUST consult [UI Design Principles](.claude/skills/ui-design-principles/SKILL.md) for design decisions and [React Component Guidelines](.claude/skills/react-component-guidelines/SKILL.md) for implementation mechanics.
 - MUST express design intent in user-facing terms before translating it into components, CSS, or tests.
 - MUST verify that text, layout, focus behavior, loading states, and responsive behavior remain coherent across relevant viewports.
 - SHOULD keep design-system rules in design vocabulary and link to implementation-mechanics skills instead of duplicating CSS wiring rules.
@@ -101,13 +103,14 @@ A single agent cannot provide true independent review. This repository compensat
 **Guidelines:**
 
 - MUST perform a reviewer-mode reset after non-trivial implementation: stop editing, reread the request, inspect `git status` and `git diff`, and review only the produced diff.
-- MUST apply [Code Review Guideline](.agents/skills/code-review-guideline/SKILL.md) during self-review, including severity labels, file-line evidence, concrete fixes, and an explicit verdict when findings exist.
+- MUST apply [Code Review Guideline](.claude/skills/code-review-guideline/SKILL.md) during self-review, including severity labels, file-line evidence, concrete fixes, and an explicit verdict when findings exist.
 - MUST load topic-specific review lenses when relevant: maintainability, quality assurance, security, performance/reliability, UI design, routing, markdown, observability, or e2e testing.
 - MUST judge the actual diff and observed behavior, not the implementation intent.
 - MUST fix Critical or Major self-review findings before claiming completion.
 - MUST perform a second-pass re-review after fixing any blocking self-review finding.
 - MUST report verification evidence before completion: commands run, manual checks, failures, skipped checks, and residual risk.
 - MUST escalate high-risk changes to user review, CI/PR review, or an explicitly requested secondary review before calling them merge-ready.
+- SHOULD route that escalation through the project's independent-review channel — the posted-review policy in [REVIEW.md](./REVIEW.md).
 - SHOULD treat auth, access control, markdown/XSS, SSRF/embed fetching, migrations, public route contracts, production config, data-loss risk, and large refactors as high-risk.
 
 ### Verification
@@ -118,6 +121,7 @@ Verification should match the changed surface. Documentation-only changes need l
 
 - MUST run the relevant verification commands after non-trivial changes, or report why they could not run.
 - MUST run `npm run format` and `npm run lint` after code or documentation edits.
+- MUST run `npm run test:unit` when a change affects code the unit suite covers.
 - MUST run `npm run test:e2e` when a change affects a UI output surface or e2e coverage.
 - MUST run `npm run build` when a change affects Next.js routes, metadata, Payload config, runtime config, dependencies, or TypeScript signatures.
 - SHOULD perform focused manual checks when browser behavior, crawler metadata, custom protocol behavior, responsive layout, or CMS preview behavior changes.
@@ -129,7 +133,7 @@ Skill maintenance keeps reusable workflow learning close to the project rules. I
 
 **Guidelines:**
 
-- MUST consult [Agent Skills Best Practices](.agents/skills/agent-skills-best-practices/SKILL.md) when adding, renaming, moving, deleting, splitting, or cross-linking skills, changing reference files, or updating this index.
+- MUST consult [Agent Skills Best Practices](.claude/skills/agent-skills-best-practices/SKILL.md) when adding, renaming, moving, deleting, splitting, or cross-linking skills, changing reference files, or updating this index.
 - MUST keep this skill index synchronized when skills are added, renamed, moved, or removed.
 - MUST make one skill the source of truth for a rule instead of copying detailed guidance across multiple skills.
 - SHOULD propose or implement skill updates when the workflow exposes a reusable convention, outdated guidance, recurring review issue, or missing project rule.

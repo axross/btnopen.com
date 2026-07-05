@@ -1,0 +1,57 @@
+name: Merge Checks
+
+# The project's fast merge-gating CI: lint and unit tests on every pull
+# request and on pushes to the default branch. This is the CI the /address
+# command's tail polls after a push (see .claude/commands/address.md). Keep
+# REVIEW.md's do-not-report list in sync with exactly what these jobs enforce.
+# The heavier e2e + deploy pipeline lives in check-and-deploy.yaml.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Cancel superseded runs on PR refs only: on the default branch every push is a
+# distinct merged commit whose checks must run to completion, or back-to-back
+# merges leave earlier commits with cancelled (never-completed) verification.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: package.json
+          cache: npm
+      - name: Install Dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: package.json
+          cache: npm
+      - name: Install Dependencies
+        run: npm ci
+      - name: Unit Test Run
+        run: npm run test:unit
