@@ -38,7 +38,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## AI Coding Assistants
 
-This repository is AI-assistant-aware. Project conventions and workflow rules live in [`AGENTS.md`](AGENTS.md) and the skills under [`.agents/skills/`](.agents/skills/), following the tool-agnostic [AGENTS.md](https://agents.md) convention so that any AI coding assistant can consume the same guidance. Claude Code is one supported option among others — nothing here assumes a single tool.
+This repository is AI-assistant-aware. Project conventions and workflow rules live in [`AGENTS.md`](AGENTS.md) and the skills under [`.claude/skills/`](.claude/skills/), following the tool-agnostic [AGENTS.md](https://agents.md) convention so that any AI coding assistant can consume the same guidance. Claude Code is one supported option among others — nothing here assumes a single tool.
 
 ### Claude Code
 
