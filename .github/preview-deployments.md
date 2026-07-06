@@ -63,23 +63,43 @@ group** — `turso db create --from-db` branches within the source's group.
 | `VERCEL_ORG_ID` | Vercel org (already configured). |
 | `VERCEL_PROJECT_ID` | Vercel project (already configured). |
 
-### 3. Vercel Preview-scoped environment variables
+### 3. Vercel environment variables
 
-Set these on the Vercel project scoped to the **Preview** environment (Project
-→ Settings → Environment Variables → Preview). They apply to every preview; the
-per-branch database credentials are injected by the workflow and must **not** be
-set here.
+Most of what a preview needs is **already provided** — either by Vercel or by the
+project's existing variables — so this step is mostly verification rather than new
+configuration.
 
-| Variable | Recommended value | Notes |
+**Provided by Vercel automatically — no setup.** Vercel injects its
+[system environment variables](https://vercel.com/docs/environment-variables/system-environment-variables)
+into every deployment at build and runtime, and previews get them for free. The
+app already relies on these:
+
+- `VERCEL_URL` — the preview's own host; `runtime.ts` uses it to resolve absolute
+  URLs (OG, canonical, cache-invalidation target) to the preview itself.
+- `NEXT_PUBLIC_VERCEL_ENV` — distinguishes `preview` from `production`.
+- `VERCEL_PROJECT_PRODUCTION_URL` and `NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA`.
+
+**Inherited from existing project variables — verify scope.** Application secrets
+are not Vercel-provided, but they already exist on the project for production. A
+Vercel variable applies to every environment its scope includes, so if these are
+scoped to include **Preview** (the default when a variable is added), previews
+inherit them with no re-entry:
+
+| Variable | Preview value | Why |
 | --- | --- | --- |
-| `PAYLOAD_SECRET` | Same value as production | Lets the preview decrypt data carried over in the cloned database. |
+| `PAYLOAD_SECRET` | Same value as production | Decrypts data carried over in the cloned database. |
 | `BLOB_PAYLOAD_READ_WRITE_TOKEN` | Production blob store token | Serves existing images so previews render real media. See the trade-off below. |
 
-Deliberately **not** set for Preview:
+Verify with `vercel env ls preview`; if either is missing from Preview, add it
+with the same value production uses.
 
-- `LIBSQL_PAYLOAD_TURSO_DATABASE_URL` / `LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN` — the
-  workflow injects the ephemeral copy's credentials per deployment. Leaving these
-  unset for Preview guarantees a preview can never inherit production's database.
+**Must NOT reach Preview.** Scope these to exclude Preview:
+
+- `LIBSQL_PAYLOAD_TURSO_DATABASE_URL` / `LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN` — scope
+  to **Production only**. The workflow injects the ephemeral copy's credentials
+  per deployment (`--env` / `--build-env`), which override any project value;
+  keeping the production credentials out of Preview scope is defense-in-depth so a
+  preview can never fall back to the production database.
 - `PAYLOAD_TEST_USER_EMAIL` / `PAYLOAD_TEST_USER_PASSWORD` — these trigger the
   `onInit` seed, which would upload a seed avatar to the shared blob store. Keep
   them out of the Preview scope (scope them to Production/Development only, or add
