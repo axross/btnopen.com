@@ -1,0 +1,11 @@
+{
+	"mcpServers": {
+		"payload-btnopen": {
+			"type": "http",
+			"url": "${PAYLOAD_MCP_URL:-https://btnopen.com/api/mcp}",
+			"headers": {
+				"Authorization": "Bearer ${PAYLOAD_MCP_API_KEY:-}"
+			}
+		}
+	}
+}

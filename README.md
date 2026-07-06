@@ -75,19 +75,28 @@ Authorization: Bearer <API_KEY>
 
 Create a key in the Payload admin under the **MCP API Keys** collection (`payload-mcp-api-keys`). Each key is **scoped to a specific set of tools**, so a key only grants the operations you enable on it — treat the key as a secret and grant the narrowest set that the task needs.
 
-**Registering the server with an agent.** Most MCP clients accept a server entry either through their own CLI or a JSON config file (commonly `.mcp.json`). Reference the key via an environment variable rather than committing it:
+**Registering the server with an agent.** This repository already ships a committed [`.mcp.json`](.mcp.json) that registers the server for any MCP client that reads it, with both the endpoint and the key sourced from environment variables (so no secret lives in the repo):
 
 ```json
 {
   "mcpServers": {
     "payload-btnopen": {
       "type": "http",
-      "url": "http://localhost:3000/api/mcp",
-      "headers": { "Authorization": "Bearer ${PAYLOAD_MCP_API_KEY}" }
+      "url": "${PAYLOAD_MCP_URL:-https://btnopen.com/api/mcp}",
+      "headers": { "Authorization": "Bearer ${PAYLOAD_MCP_API_KEY:-}" }
     }
   }
 }
 ```
+
+The `url` defaults to production and can be overridden with `PAYLOAD_MCP_URL` (e.g. `http://localhost:3000/api/mcp` for local development). Set `PAYLOAD_MCP_API_KEY` in your environment before starting the agent; the empty `:-` default keeps the config parseable when it is unset (the server simply fails to authenticate rather than breaking the whole file).
+
+**Claude Code cloud/web sessions.** Cloud sessions load and connect a committed `.mcp.json` automatically — no per-session registration or approval — so `/author` and `/polish` work out of the box once two things are configured **once** in the [Claude Code web environment settings](https://code.claude.com/docs/en/claude-code-on-the-web):
+
+1. **Environment variables** (`.env` format, no quotes) — at minimum `PAYLOAD_MCP_API_KEY=<your production key>`, plus `PAYLOAD_MCP_URL` if you are not using the production default. These are visible to anyone who can edit the environment, so use a narrowly scoped key.
+2. **Network access** — cloud egress is proxied and does not reach arbitrary hosts by default. Set the environment's network access to **Custom** and allowlist the production origin (`btnopen.com`), otherwise the MCP requests are blocked.
+
+For **local terminal** sessions, Claude Code marks a project `.mcp.json` server pending until you approve it interactively; to skip the prompt, add `"enableAllProjectMcpServers": true` to your **user** settings (`~/.claude/settings.json`) — this flag is intentionally ignored in the repo's committed `.claude/settings.json`, so it cannot be enabled repo-wide.
 
 **Discovering the tools.** Because the available tools depend on the key, an agent should call `tools/list` before anything else. Any HTTP client works — for example:
 
@@ -101,7 +110,7 @@ curl -sS http://localhost:3000/api/mcp \
 
 Depending on the key, the tools include `find*` operations for the collections above, create/update/delete for CMS content, and custom body tools (`appendNodeInBlogPostBody`, `deleteNodeInBlogPostBody`) for controlled edits to a post's rich-text body.
 
-**Caveats.** The endpoint runs on the Payload app, so the server must be running and reachable at that origin. A key authenticates against **its own environment's database** — a local key will not work against production, and vice versa.
+**Caveats.** The endpoint runs on the Payload app, so the server must be running and reachable at that origin. A key authenticates against **its own environment's database** — a local key will not work against production, and vice versa. A production key writes to the live CMS, so prefer a **draft-scoped** key: `/author` and `/polish` operate on drafts you review at `/posts/<slug>?draft=true` before publishing.
 
 ## Learn More
 
