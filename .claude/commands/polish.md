@@ -9,6 +9,18 @@ Target: `$ARGUMENTS`
 
 This command orchestrates existing project skills; it does not restate their rules. Own the editorial judgment with [Blog Post Authoring Guidelines](../skills/blog-post-authoring-guidelines/SKILL.md), the review lens with [Code Review Guideline](../skills/code-review-guideline/SKILL.md), the supported syntax with [Markdown Processing Guidelines](../skills/markdown-processing-guidelines/SKILL.md), and every CMS read/write with [Payload CMS MCP](../skills/payload-cms-mcp/SKILL.md). Follow [Development Guidelines](../skills/development-guidelines/SKILL.md) and the [Response Approach](../../AGENTS.md) throughout.
 
+## Argument resolution
+
+`$ARGUMENTS` carries a target and an optional resume keyword. Resolve them before acting:
+
+| Argument | Meaning | Entry |
+| -------- | ------- | ----- |
+| `<post slug or URL>` | The post to review — a `slug`, or the `slug` parsed from a `/posts/<slug>` URL. Defaults to the latest **draft**. | Phase 1 (review and suggest) |
+| `apply` (after the target, e.g. `/polish <post> apply`) | Resume keyword: the author has approved a prior `/polish` run's suggestions for this post; skip straight to applying them. Still re-inspect the post first. | Phase 2 (apply) |
+
+- MUST detect a trailing `apply` token as the resume keyword and treat the rest of the argument as the target; without it, start at Phase 1.
+- MUST re-inspect the post through MCP even on an `apply` resume — never apply from memory of a prior turn's body tree.
+
 ## Preconditions
 
 - MUST validate MCP access first: call `tools/list` per [Payload CMS MCP](../skills/payload-cms-mcp/SKILL.md) and use only the exact tool names it returns. If no MCP key or callable connector is available, ask the author for an MCP API key rather than falling back to seed fixtures or local reads.
