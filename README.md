@@ -122,3 +122,5 @@ To learn more about the stack:
 ## Deploy on Vercel
 
 This site deploys to [Vercel](https://vercel.com). See the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for details.
+
+Pull requests get isolated **preview deployments**, each backed by a throwaway copy of the database branched from production and destroyed on close. See [`.github/preview-deployments.md`](.github/preview-deployments.md) for how it works and the one-time setup.

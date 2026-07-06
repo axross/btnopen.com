@@ -20,6 +20,11 @@ export let urlOrigin: string;
 
 if (vercelEnvironment === "production") {
 	urlOrigin = `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+} else if (process.env.VERCEL_URL) {
+	// preview deployments get a per-deployment host, so absolute URLs (OG,
+	// canonical) and the post-edit cache-invalidation hook resolve to the
+	// preview itself instead of a non-existent localhost server.
+	urlOrigin = `https://${process.env.VERCEL_URL}`;
 } else {
 	urlOrigin = "http://localhost:3000";
 }

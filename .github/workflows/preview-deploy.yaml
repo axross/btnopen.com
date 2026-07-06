@@ -1,0 +1,150 @@
+name: Preview Deployment
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+concurrency:
+  # one in-flight preview per pull request; distinct pull requests deploy
+  # concurrently, each against its own isolated database.
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  preview:
+    name: Deploy Preview
+    # secrets are withheld from forked-repository pull requests, so an isolated
+    # database cannot be provisioned for them; skip rather than fail.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
+      TURSO_PRODUCTION_DB_NAME: ${{ secrets.TURSO_PRODUCTION_DB_NAME }}
+      PREVIEW_DB_NAME: btnopen-preview-pr-${{ github.event.pull_request.number }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: package.json
+          cache: npm
+      - name: Install Dependencies
+        run: npm ci
+      - name: Install Turso CLI
+        run: |
+          curl --silent --show-error --location https://get.tur.so/install.sh | bash
+          echo "$HOME/.turso" >> "$GITHUB_PATH"
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Guard Against Targeting the Production Database
+        # a preview must never resolve to production. fail loudly if the
+        # production name is missing, the derived preview name is empty, the two
+        # collide, or the preview name escapes its expected shape.
+        run: |
+          test -n "$TURSO_PRODUCTION_DB_NAME"
+          test -n "$PREVIEW_DB_NAME"
+          test "$PREVIEW_DB_NAME" != "$TURSO_PRODUCTION_DB_NAME"
+          case "$PREVIEW_DB_NAME" in
+            btnopen-preview-pr-*) : ;;
+            *)
+              echo "Unexpected preview database name: $PREVIEW_DB_NAME" >&2
+              exit 1
+              ;;
+          esac
+      - name: Provision Isolated Preview Database
+        # branch a throwaway copy from production on first deploy, then reuse it
+        # on later pushes so preview-side state survives across commits. writes
+        # to this copy never reach the production database.
+        run: |
+          if turso db show "$PREVIEW_DB_NAME" >/dev/null 2>&1; then
+            echo "Reusing existing preview database $PREVIEW_DB_NAME."
+          else
+            echo "Branching $PREVIEW_DB_NAME from $TURSO_PRODUCTION_DB_NAME."
+            turso db create "$PREVIEW_DB_NAME" --from-db "$TURSO_PRODUCTION_DB_NAME"
+          fi
+      - name: Resolve Preview Database Credentials
+        # the freshly minted token is not a registered secret, so mask it
+        # explicitly before it can reach any log line.
+        run: |
+          DB_URL="$(turso db show "$PREVIEW_DB_NAME" --url)"
+          DB_TOKEN="$(turso db tokens create "$PREVIEW_DB_NAME")"
+          echo "::add-mask::$DB_TOKEN"
+          echo "PREVIEW_DB_URL=$DB_URL" >> "$GITHUB_ENV"
+          echo "PREVIEW_DB_TOKEN=$DB_TOKEN" >> "$GITHUB_ENV"
+      - name: Apply Branch Migrations to the Preview Database
+        # `payload migrate` reads env only from root-level `.env*` files, so the
+        # ephemeral credentials must be written to disk rather than exported.
+        # the seed user vars are intentionally omitted so `onInit` seeding never
+        # runs here (or at runtime) against the cloned production data.
+        run: |
+          {
+            echo "LIBSQL_PAYLOAD_TURSO_DATABASE_URL=$PREVIEW_DB_URL"
+            echo "LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN=$PREVIEW_DB_TOKEN"
+          } > .env.local
+          npm run migrate:up
+      - name: Pull Vercel Preview Environment
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy to Vercel Preview
+        # inject only the per-branch database credentials; everything else
+        # (PAYLOAD_SECRET, blob token, Sentry, Mixpanel) comes from the project's
+        # Preview-scoped environment variables.
+        run: |
+          DEPLOYMENT_URL="$(vercel deploy --token=${{ secrets.VERCEL_TOKEN }} \
+            --build-env LIBSQL_PAYLOAD_TURSO_DATABASE_URL="$PREVIEW_DB_URL" \
+            --build-env LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN="$PREVIEW_DB_TOKEN" \
+            --env LIBSQL_PAYLOAD_TURSO_DATABASE_URL="$PREVIEW_DB_URL" \
+            --env LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN="$PREVIEW_DB_TOKEN" | tail -n1)"
+          echo "DEPLOYMENT_URL=$DEPLOYMENT_URL" >> "$GITHUB_ENV"
+      - name: Comment Preview URL on the Pull Request
+        uses: actions/github-script@v7
+        env:
+          DEPLOYMENT_URL: ${{ env.DEPLOYMENT_URL }}
+          PREVIEW_DB_NAME: ${{ env.PREVIEW_DB_NAME }}
+        with:
+          script: |
+            const marker = "<!-- preview-deployment -->";
+            const url = process.env.DEPLOYMENT_URL;
+            const db = process.env.PREVIEW_DB_NAME;
+            const body = [
+              marker,
+              "### 🔎 Preview deployment",
+              "",
+              "A branch preview backed by an **isolated copy** of the database is ready:",
+              "",
+              `**${url}**`,
+              "",
+              `- Database: \`${db}\` — branched from production and destroyed when this pull request closes.`,
+              "- Anything done here writes only to that copy; production data is never touched.",
+              "",
+              "<sub>Automated by the Preview Deployment workflow.</sub>",
+            ].join("\n");
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number,
+            });
+            const existing = comments.find((comment) => comment.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body,
+              });
+            }
