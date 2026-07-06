@@ -3,6 +3,11 @@
 		:where(:scope) {
 			display: flex;
 			column-gap: var(--size-32);
+			list-style: none;
+		}
+
+		.listItem {
+			display: flex;
 		}
 
 		.item {

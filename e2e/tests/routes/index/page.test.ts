@@ -3,6 +3,8 @@ import { authenticatedStorageState } from "@/e2e/helpers/api/auth";
 import { getExampleBlogPost } from "@/e2e/helpers/api/blog-post";
 import { getWebsite } from "@/e2e/helpers/api/website";
 
+const socialLinkCount = 3;
+
 test.use({ storageState: authenticatedStorageState });
 
 test.beforeEach(async ({ page }) => {
@@ -24,6 +26,13 @@ test("Introduction section", async ({ page }) => {
 	await test.step("Verify the social links", async () => {
 		const socialLinks = intro.getByTestId("social-links");
 
+		await test.step("Verify the social links expose list semantics", async () => {
+			await expect(socialLinks).toHaveRole("list");
+			await expect(socialLinks.getByRole("listitem")).toHaveCount(
+				socialLinkCount,
+			);
+		});
+
 		await test.step("Verify the GitHub link", async () => {
 			await expect(socialLinks.getByTestId("github")).toBeVisible();
 		});
@@ -35,6 +44,18 @@ test("Introduction section", async ({ page }) => {
 		await test.step("Verify the LinkedIn link", async () => {
 			await expect(socialLinks.getByTestId("linkedin")).toBeVisible();
 		});
+	});
+});
+
+test("Landmark regions", async ({ page }) => {
+	await test.step("Verify the introduction region is exposed", async () => {
+		await expect(
+			page.getByRole("region", { name: "Introduction" }),
+		).toBeVisible();
+	});
+
+	await test.step("Verify the Posts region is exposed and named by its heading", async () => {
+		await expect(page.getByRole("region", { name: "Posts" })).toBeVisible();
 	});
 });
 
