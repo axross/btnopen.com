@@ -95,6 +95,7 @@ Create a key in the Payload admin under the **MCP API Keys** collection (`payloa
 curl -sS http://localhost:3000/api/mcp \
   -H "Authorization: Bearer $PAYLOAD_MCP_API_KEY" \
   -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
 ```
 
