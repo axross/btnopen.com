@@ -46,12 +46,14 @@ test("Reduced-motion disables the status-code glitch animation", async ({
 
 		await statusCode.waitFor();
 
-		const animationNames = await statusCode.evaluate((element) => [
-			getComputedStyle(element, "::before").animationName,
-			getComputedStyle(element, "::after").animationName,
-		]);
-
-		expect(animationNames).toEqual(["none", "none"]);
+		await expect
+			.poll(() =>
+				statusCode.evaluate((element) => [
+					getComputedStyle(element, "::before").animationName,
+					getComputedStyle(element, "::after").animationName,
+				]),
+			)
+			.toEqual(["none", "none"]);
 	});
 });
 
