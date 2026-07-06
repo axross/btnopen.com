@@ -113,9 +113,12 @@ jobs:
         # variables `vercel pull` caches under `.vercel/` never reach it.
         run: vercel env pull .env.local --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
       - name: Verify Production Database Credentials
-        # without this the sqlite adapter silently falls back to a local file
-        # and migrations never reach the production database.
-        run: grep --quiet "^LIBSQL_PAYLOAD_TURSO_DATABASE_URL=" .env.local
+        # the sqlite adapter requires both the url and the auth token; without
+        # either it silently falls back to a local file and migrations never
+        # reach the production database.
+        run: |
+          grep --quiet "^LIBSQL_PAYLOAD_TURSO_DATABASE_URL=" .env.local
+          grep --quiet "^LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN=" .env.local
       - name: Push Database Migrations
         run: npm run migrate:up
       - name: Deploy Project Artifacts to Vercel
