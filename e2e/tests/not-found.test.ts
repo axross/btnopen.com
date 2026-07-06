@@ -30,6 +30,33 @@ test("Not found page UI", async ({ page }) => {
 	});
 });
 
+test("Reduced-motion disables the status-code glitch animation", async ({
+	page,
+}) => {
+	await test.step("Emulate the reduced-motion preference", async () => {
+		await page.emulateMedia({ reducedMotion: "reduce" });
+	});
+
+	await test.step("Navigate to a non-existent route", async () => {
+		await page.goto("/this-page-does-not-exist");
+	});
+
+	await test.step("Verify the glitch pseudo-element animations are disabled", async () => {
+		const statusCode = page.getByTestId("not-found").getByTestId("status-code");
+
+		await statusCode.waitFor();
+
+		await expect
+			.poll(() =>
+				statusCode.evaluate((element) => [
+					getComputedStyle(element, "::before").animationName,
+					getComputedStyle(element, "::after").animationName,
+				]),
+			)
+			.toEqual(["none", "none"]);
+	});
+});
+
 test("Home link navigates to the index route", async ({ page }) => {
 	await test.step("Navigate to a non-existent route", async () => {
 		await page.goto("/this-page-does-not-exist");

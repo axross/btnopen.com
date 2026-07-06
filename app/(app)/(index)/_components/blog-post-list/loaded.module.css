@@ -17,10 +17,23 @@
 			}
 		}
 
+		.item {
+			display: flex;
+			width: stretch;
+		}
+
 		.link {
+			display: flex;
+			width: stretch;
 			color: unset;
 			text-decoration: unset;
 			border-radius: var(--radius-md);
+			outline: none;
+		}
+
+		.link:focus-visible {
+			outline: var(--accent-5) solid var(--size-3);
+			outline-offset: var(--size-3);
 		}
 	}
 

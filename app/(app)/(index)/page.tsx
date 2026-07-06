@@ -46,7 +46,13 @@ async function IndexPageMain({
 
 	return (
 		<main className={css.main}>
-			<section className={css.intro} data-testid="intro">
+			<h1 className={css.pageHeading}>{website.creator.name}</h1>
+
+			<section
+				className={css.intro}
+				aria-label="Introduction"
+				data-testid="intro"
+			>
 				<div className={css.portrait}>
 					<Image
 						src="/images/bio.webp"
@@ -57,17 +63,15 @@ async function IndexPageMain({
 						className={css.portraitForeground}
 					/>
 
-					<BrushGrunge aria-label="Background" className={css.portraitGrunge} />
+					<BrushGrunge className={css.portraitGrunge} />
 
 					<BrushGrunge
 						shadowOffsetX={-2}
-						aria-label="Background"
 						className={css.portraitGrungeGlitchFirst}
 					/>
 
 					<BrushGrunge
 						shadowOffsetX={2}
-						aria-label="Background"
 						className={css.portraitGrungeGlitchSecond}
 					/>
 				</div>
@@ -81,8 +85,11 @@ async function IndexPageMain({
 				</div>
 			</section>
 
-			<section className={css.section}>
-				<h1 className={css.sectionHeading}>{"Posts"}</h1>
+			<section className={css.section} aria-labelledby="posts-heading">
+				{/* biome-ignore lint/correctness/useUniqueElementIds: stable anchor for this section's aria-labelledby; IndexPageMain renders once per page (and is an async server component where useId is unavailable), so there is no duplicate-id risk */}
+				<h2 id="posts-heading" className={css.sectionHeading}>
+					{"Posts"}
+				</h2>
 
 				<BlogPostList
 					draft={draft}

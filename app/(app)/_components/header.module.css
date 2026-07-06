@@ -14,9 +14,15 @@
 			padding-block: var(--size-8);
 			padding-inline: var(--size-16);
 			border-radius: var(--radius-md);
+			outline: none;
 
 			&:hover {
 				background-color: var(--accent-2);
+			}
+
+			&:focus-visible {
+				outline: var(--accent-5) solid var(--size-3);
+				outline-offset: var(--size-3);
 			}
 		}
 

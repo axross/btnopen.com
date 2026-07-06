@@ -18,7 +18,11 @@ export function NotFoundContent({
 			data-testid="not-found"
 			{...props}
 		>
-			<p className={css.statusCode} aria-hidden="true">
+			<p
+				className={css.statusCode}
+				aria-hidden="true"
+				data-testid="status-code"
+			>
 				{"404"}
 			</p>
 

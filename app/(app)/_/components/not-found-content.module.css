@@ -42,6 +42,13 @@
 				color: oklch(from var(--accent-9) l c calc(h + 16));
 				animation: noise-slow 15s infinite linear alternate-reverse;
 			}
+
+			@media (prefers-reduced-motion: reduce) {
+				&::before,
+				&::after {
+					animation: none;
+				}
+			}
 		}
 
 		.heading {
@@ -72,10 +79,16 @@
 			font-size: var(--text-md);
 			font-weight: 700;
 			text-decoration: none;
+			outline: none;
 			transition: background-color var(--duration-md) var(--ease-in-out);
 
 			&:hover {
 				background-color: var(--accent-2);
+			}
+
+			&:focus-visible {
+				outline: var(--accent-5) solid var(--size-3);
+				outline-offset: var(--size-3);
 			}
 		}
 

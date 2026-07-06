@@ -17,6 +17,17 @@
 			}
 		}
 
+		.pageHeading {
+			position: absolute;
+			inline-size: var(--size-1);
+			block-size: var(--size-1);
+			margin: calc(var(--size-1) * -1);
+			padding: 0;
+			overflow: hidden;
+			clip-path: inset(50%);
+			white-space: nowrap;
+		}
+
 		.intro {
 			display: flex;
 			width: stretch;
@@ -90,6 +101,13 @@
 			background-color: var(--neutral-0);
 			animation: noise-slow 15s infinite linear alternate-reverse;
 			z-index: -3;
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			.portraitGrungeGlitchFirst,
+			.portraitGrungeGlitchSecond {
+				display: none;
+			}
 		}
 
 		.headline {

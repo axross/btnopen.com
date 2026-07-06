@@ -3,6 +3,8 @@ import { authenticatedStorageState } from "@/e2e/helpers/api/auth";
 import { getExampleBlogPost } from "@/e2e/helpers/api/blog-post";
 import { getWebsite } from "@/e2e/helpers/api/website";
 
+const socialLinkCount = 3;
+
 test.use({ storageState: authenticatedStorageState });
 
 test.beforeEach(async ({ page }) => {
@@ -24,6 +26,13 @@ test("Introduction section", async ({ page }) => {
 	await test.step("Verify the social links", async () => {
 		const socialLinks = intro.getByTestId("social-links");
 
+		await test.step("Verify the social links expose list semantics", async () => {
+			await expect(socialLinks).toHaveRole("list");
+			await expect(socialLinks.getByRole("listitem")).toHaveCount(
+				socialLinkCount,
+			);
+		});
+
 		await test.step("Verify the GitHub link", async () => {
 			await expect(socialLinks.getByTestId("github")).toBeVisible();
 		});
@@ -35,6 +44,18 @@ test("Introduction section", async ({ page }) => {
 		await test.step("Verify the LinkedIn link", async () => {
 			await expect(socialLinks.getByTestId("linkedin")).toBeVisible();
 		});
+	});
+});
+
+test("Landmark regions", async ({ page }) => {
+	await test.step("Verify the introduction region is exposed", async () => {
+		await expect(
+			page.getByRole("region", { name: "Introduction" }),
+		).toBeVisible();
+	});
+
+	await test.step("Verify the Posts region is exposed and named by its heading", async () => {
+		await expect(page.getByRole("region", { name: "Posts" })).toBeVisible();
 	});
 });
 
@@ -88,6 +109,36 @@ test("Blog post list", async ({ page }, testInfo) => {
 		await page.waitForURL(`/posts/${slug}?draft=true`);
 
 		await expect(page).toHaveURL(`/posts/${slug}?draft=true`);
+	});
+});
+
+test("Heading structure and list semantics", async ({ page }, testInfo) => {
+	let website: Awaited<ReturnType<typeof getWebsite>>;
+
+	await test.step("Retrieve the website record", async () => {
+		website = await getWebsite({ page, testInfo });
+	});
+
+	await test.step("Verify a single top-level heading names the creator", async () => {
+		const heading = page.getByRole("heading", { level: 1 });
+
+		await expect(heading).toHaveCount(1);
+		await expect(heading).toHaveText(website.creator.name);
+	});
+
+	await test.step("Verify the Posts section is a level-2 heading", async () => {
+		await expect(
+			page.getByRole("heading", { level: 2, name: "Posts" }),
+		).toBeVisible();
+	});
+
+	await test.step("Verify the blog post list exposes list semantics", async () => {
+		const blogPostList = page.getByTestId("blog-posts");
+
+		await blogPostList.waitFor();
+
+		await expect(blogPostList).toHaveRole("list");
+		await expect(blogPostList.getByRole("listitem").first()).toBeVisible();
 	});
 });
 
