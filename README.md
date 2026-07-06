@@ -58,6 +58,50 @@ This repository is AI-assistant-aware. Project conventions and workflow rules li
 
   These hooks merge with the committed `settings.json`, so you keep the cloud `SessionStart` behavior and add the local checks on top. They use mise if it is installed and degrade gracefully otherwise.
 
+## Connecting AI Agents to Payload CMS (MCP)
+
+Payload exposes a [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server, so any MCP-capable AI agent can inspect and edit CMS content — blog posts, tags, cover images, media, and the site profile — through a single authenticated endpoint. This is what powers the AI blogging workflow (drafting and refining posts); the agent-facing operating rules live in [`.claude/skills/payload-cms-mcp/`](.claude/skills/payload-cms-mcp/SKILL.md).
+
+**Endpoint.** The server is served by the Payload app itself, as HTTP [JSON-RPC 2.0](https://www.jsonrpc.org/specification):
+
+- Local: `http://localhost:3000/api/mcp` (while `npm run dev` is running)
+- Deployed: `https://<your-site-origin>/api/mcp`
+
+**Authentication.** Every request needs an API key sent as a bearer token:
+
+```
+Authorization: Bearer <API_KEY>
+```
+
+Create a key in the Payload admin under the **MCP API Keys** collection (`payload-mcp-api-keys`). Each key is **scoped to a specific set of tools**, so a key only grants the operations you enable on it — treat the key as a secret and grant the narrowest set that the task needs.
+
+**Registering the server with an agent.** Most MCP clients accept a server entry either through their own CLI or a JSON config file (commonly `.mcp.json`). Reference the key via an environment variable rather than committing it:
+
+```json
+{
+  "mcpServers": {
+    "payload-btnopen": {
+      "type": "http",
+      "url": "http://localhost:3000/api/mcp",
+      "headers": { "Authorization": "Bearer ${PAYLOAD_MCP_API_KEY}" }
+    }
+  }
+}
+```
+
+**Discovering the tools.** Because the available tools depend on the key, an agent should call `tools/list` before anything else. Any HTTP client works — for example:
+
+```bash
+curl -sS http://localhost:3000/api/mcp \
+  -H "Authorization: Bearer $PAYLOAD_MCP_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
+```
+
+Depending on the key, the tools include `find*` operations for the collections above, create/update/delete for CMS content, and custom body tools (`appendNodeInBlogPostBody`, `deleteNodeInBlogPostBody`) for controlled edits to a post's rich-text body.
+
+**Caveats.** The endpoint runs on the Payload app, so the server must be running and reachable at that origin. A key authenticates against **its own environment's database** — a local key will not work against production, and vice versa.
+
 ## Learn More
 
 To learn more about the stack:
