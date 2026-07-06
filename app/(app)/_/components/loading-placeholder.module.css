@@ -8,6 +8,10 @@
 			border-radius: var(--radius-md);
 			background-color: var(--neutral-2);
 			animation: pulse 500ms linear infinite alternate;
+
+			@media (prefers-reduced-motion: reduce) {
+				animation: none;
+			}
 		}
 	}
 
@@ -31,6 +35,10 @@
 			border-radius: var(--radius-sm);
 			background-color: var(--neutral-2);
 			animation: pulse 500ms linear infinite alternate;
+
+			@media (prefers-reduced-motion: reduce) {
+				animation: none;
+			}
 		}
 	}
 

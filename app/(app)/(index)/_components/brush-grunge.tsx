@@ -13,8 +13,7 @@ export function BrushGrunge({
 			xmlns="http://www.w3.org/2000/svg"
 			fill="none"
 			viewBox="0 0 763 932"
-			role="img"
-			aria-label="Brush Grunge"
+			aria-hidden="true"
 			{...props}
 		>
 			<g fill="currentColor" filter={`url(#${filterId})`}>

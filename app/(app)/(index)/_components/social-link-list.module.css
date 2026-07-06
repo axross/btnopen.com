@@ -11,10 +11,16 @@
 			margin: calc(var(--size-8) * -1);
 			color: var(--accent-11);
 			border-radius: var(--radius-md);
+			outline: none;
 
 			&:hover {
 				color: var(--accent-12);
 				background-color: var(--accent-3);
+			}
+
+			&:focus-visible {
+				outline: var(--accent-5) solid var(--size-3);
+				outline-offset: var(--size-3);
 			}
 		}
 	}

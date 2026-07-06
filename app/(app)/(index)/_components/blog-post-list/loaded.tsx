@@ -20,26 +20,27 @@ export async function BlogPostListLoaded({
 	return (
 		<ul className={clsx(css.blogPostListLoaded, className)} {...props}>
 			{blogPosts.map((blogPost) => (
-				<Link
-					href={{
-						pathname: `/posts/${blogPost.slug}`,
-						search: isDraft ? "draft=true" : undefined,
-					}}
-					className={css.link}
-					key={blogPost.slug}
-					data-testid="blog-post"
-					data-slug={blogPost.slug}
-				>
-					<BlogPostListItem
-						slug={blogPost.slug}
-						title={blogPost.title}
-						brief={blogPost.brief}
-						thumbnailImageUrl={blogPost.thumbnailImage.url}
-						thumbnailImageWidth={blogPost.thumbnailImage.width}
-						thumbnailImageHeight={blogPost.thumbnailImage.height}
-						publishedAt={blogPost.publishedAt}
-					/>
-				</Link>
+				<li className={css.item} key={blogPost.slug}>
+					<Link
+						href={{
+							pathname: `/posts/${blogPost.slug}`,
+							search: isDraft ? "draft=true" : undefined,
+						}}
+						className={css.link}
+						data-testid="blog-post"
+						data-slug={blogPost.slug}
+					>
+						<BlogPostListItem
+							slug={blogPost.slug}
+							title={blogPost.title}
+							brief={blogPost.brief}
+							thumbnailImageUrl={blogPost.thumbnailImage.url}
+							thumbnailImageWidth={blogPost.thumbnailImage.width}
+							thumbnailImageHeight={blogPost.thumbnailImage.height}
+							publishedAt={blogPost.publishedAt}
+						/>
+					</Link>
+				</li>
 			))}
 		</ul>
 	);
@@ -55,7 +56,7 @@ function BlogPostListItem({
 	publishedAt,
 	className,
 	...props
-}: ComponentProps<"li"> & {
+}: ComponentProps<"div"> & {
 	slug: string;
 	title: string;
 	brief: string;
@@ -65,7 +66,7 @@ function BlogPostListItem({
 	publishedAt: string;
 }): JSX.Element {
 	return (
-		<li className={clsx(css.blogPostListItem, className)} {...props}>
+		<div className={clsx(css.blogPostListItem, className)} {...props}>
 			<ViewTransition name={`blog-post-${slug}-image`}>
 				<Image
 					src={thumbnailImageUrl}
@@ -93,6 +94,6 @@ function BlogPostListItem({
 			<div className={css.brief} data-testid="brief">
 				{brief}
 			</div>
-		</li>
+		</div>
 	);
 }

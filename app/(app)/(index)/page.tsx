@@ -46,6 +46,8 @@ async function IndexPageMain({
 
 	return (
 		<main className={css.main}>
+			<h1 className={css.pageHeading}>{website.creator.name}</h1>
+
 			<section className={css.intro} data-testid="intro">
 				<div className={css.portrait}>
 					<Image
@@ -57,17 +59,15 @@ async function IndexPageMain({
 						className={css.portraitForeground}
 					/>
 
-					<BrushGrunge aria-label="Background" className={css.portraitGrunge} />
+					<BrushGrunge className={css.portraitGrunge} />
 
 					<BrushGrunge
 						shadowOffsetX={-2}
-						aria-label="Background"
 						className={css.portraitGrungeGlitchFirst}
 					/>
 
 					<BrushGrunge
 						shadowOffsetX={2}
-						aria-label="Background"
 						className={css.portraitGrungeGlitchSecond}
 					/>
 				</div>
@@ -82,7 +82,7 @@ async function IndexPageMain({
 			</section>
 
 			<section className={css.section}>
-				<h1 className={css.sectionHeading}>{"Posts"}</h1>
+				<h2 className={css.sectionHeading}>{"Posts"}</h2>
 
 				<BlogPostList
 					draft={draft}
