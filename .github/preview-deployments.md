@@ -44,14 +44,58 @@ the previous in-flight deploy.
 
 ### 1. Turso API token
 
-Create a non-interactive Platform API token and add it as a repository secret:
+`turso db create --from-db`, `turso db tokens create`, and `turso db destroy`
+are **control-plane** operations, so they need a **Platform API token** — the
+database auth token the app uses (`LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN`) cannot
+perform them. Add the Platform API token as the `TURSO_API_TOKEN` repository
+secret. Scope it as tightly as the automation allows:
+
+- **Group scope.** Pin the token to the single group that holds the production
+  database; preview copies are branched into that same group
+  (`turso db create --from-db` branches within the source's group). This bounds a
+  leaked token to that one group. Confirm the group with `turso db show <prod-db>`
+  and `turso group list`.
+- **Full access, not read-only.** The automation creates, mints tokens for, and
+  destroys databases, so it needs write/manage permissions. A `--read-only` token
+  fails at the first `db create`.
+
+Recent CLI versions mint a group-scoped token as below — **verify the exact
+subcommand and flags with `turso auth api-tokens --help` first**, as they vary by
+version:
 
 ```bash
-turso auth api-tokens create preview-ci
+turso auth api-tokens mint preview-ci \
+  --org <your-org> \
+  --group <production-group>   # e.g. icfg-…-aws-us-west-2 — and NO --read-only
 ```
 
-The production database and each preview copy must live in the **same Turso
-group** — `turso db create --from-db` branches within the source's group.
+If your CLI only has `turso auth api-tokens create` (no `--group`), it mints a
+broader user/org token; upgrade the CLI for group scope, or accept an org-scoped
+token as a fallback. Revoke any token with
+`turso auth api-tokens revoke preview-ci`.
+
+> Because production lives in this group, the token can read and destroy
+> production too — that is inherent to branching from production. Group scope
+> limits the blast radius to this group; it does not wall the token off from
+> production. To keep the automation token unable to touch production, use the
+> synthetic-seed variant instead of branching from production.
+
+#### Verify the token, then delete the check (temporary)
+
+Before relying on the pipeline, smoke-test the credential end to end with the
+throwaway script
+[`scripts/verify-preview-db.sh`](./scripts/verify-preview-db.sh):
+
+```bash
+export TURSO_API_TOKEN=...            # the token you just minted
+export TURSO_PRODUCTION_DB_NAME=...   # the production database name
+./.github/scripts/verify-preview-db.sh
+```
+
+It branches a temporary database from production, resolves its URL, mints a
+token, and destroys it — the exact operations the workflows perform — without
+touching production. **This is verification scaffolding, not part of the
+pipeline: delete the script once a real preview deploy succeeds.**
 
 ### 2. Repository secrets
 
