@@ -82,7 +82,7 @@ Create a key in the Payload admin under the **MCP API Keys** collection (`payloa
   "mcpServers": {
     "payload-btnopen": {
       "type": "http",
-      "url": "${PAYLOAD_MCP_URL:-https://btnopen.com/api/mcp}",
+      "url": "${PAYLOAD_MCP_URL:-https://www.btnopen.com/api/mcp}",
       "headers": { "Authorization": "Bearer ${PAYLOAD_MCP_API_KEY:-}" }
     }
   }
@@ -94,7 +94,7 @@ The `url` defaults to production and can be overridden with `PAYLOAD_MCP_URL` (e
 **Claude Code cloud/web sessions.** Cloud sessions load and connect a committed `.mcp.json` automatically — no per-session registration or approval — so `/author` and `/polish` work out of the box once two things are configured **once** in the [Claude Code web environment settings](https://code.claude.com/docs/en/claude-code-on-the-web):
 
 1. **Environment variables** (`.env` format, no quotes) — at minimum `PAYLOAD_MCP_API_KEY=<your production key>`, plus `PAYLOAD_MCP_URL` if you are not using the production default. These are visible to anyone who can edit the environment, so use a narrowly scoped key.
-2. **Network access** — cloud egress is proxied and does not reach arbitrary hosts by default. Set the environment's network access to **Custom** and allowlist the production origin (`btnopen.com`), otherwise the MCP requests are blocked.
+2. **Network access** — cloud egress is proxied and does not reach arbitrary hosts by default. Set the environment's network access to **Custom** and allowlist the production MCP host (`www.btnopen.com`), otherwise the MCP requests are blocked. The site canonicalizes to `www`, so `https://btnopen.com/api/mcp` answers with a `307` redirect to `https://www.btnopen.com/api/mcp`; allowlisting the bare `btnopen.com` alone is not enough because the redirect target is a different host (this is why the `.mcp.json` `url` above targets `www` directly — it also avoids a cross-host redirect that can drop the `Authorization` header).
 
 For **local terminal** sessions, Claude Code marks a project `.mcp.json` server pending until you approve it interactively; to skip the prompt, add `"enableAllProjectMcpServers": true` to your **user** settings (`~/.claude/settings.json`) — this flag is intentionally ignored in the repo's committed `.claude/settings.json`, so it cannot be enabled repo-wide.
 
