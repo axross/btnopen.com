@@ -71,6 +71,12 @@ jobs:
     timeout-minutes: 20
     permissions:
       contents: read
+      # `issues: write` is required for the github-script comment steps: PR
+      # comments post through the Issues API (issues.createComment /
+      # updateComment), which is scoped under `issues`, not `pull-requests`.
+      # With an explicit permissions block, every unlisted scope defaults to
+      # `none`, so omitting it would 403 and fail the job.
+      issues: write
       pull-requests: write
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -191,6 +197,12 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: read
+      # `issues: write` is required for the github-script comment steps: PR
+      # comments post through the Issues API (issues.createComment /
+      # updateComment), which is scoped under `issues`, not `pull-requests`.
+      # With an explicit permissions block, every unlisted scope defaults to
+      # `none`, so omitting it would 403 and fail the job.
+      issues: write
       pull-requests: write
     env:
       TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
