@@ -62,10 +62,32 @@
 			}
 		}
 
-		.authorImage {
-			width: var(--size-24);
-			height: var(--size-24);
+		.authorAvatar {
+			display: flex;
+			flex: none;
+			align-items: center;
+			justify-content: center;
+			overflow: hidden;
+			inline-size: var(--size-24);
+			block-size: var(--size-24);
 			border-radius: 50%;
+		}
+
+		.authorImage {
+			inline-size: 100%;
+			block-size: 100%;
+			object-fit: cover;
+		}
+
+		.authorAvatarFallback {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			inline-size: 100%;
+			block-size: 100%;
+			background-color: var(--neutral-3);
+			color: var(--neutral-11);
+			font-size: var(--text-xs);
 		}
 
 		.authorName {

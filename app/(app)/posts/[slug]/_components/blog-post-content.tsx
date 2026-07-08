@@ -47,6 +47,8 @@ const markdownClassNames = {
 	table: css.table,
 	tableWrapper: css.tableWrapper,
 	tableScrollArea: css.tableScrollArea,
+	tableScrollbar: css.tableScrollbar,
+	tableScrollbarThumb: css.tableScrollbarThumb,
 	thead: css.thead,
 	tbody: css.tbody,
 	tr: css.tr,

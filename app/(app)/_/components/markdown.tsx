@@ -38,6 +38,13 @@ const defaultComponents = {
 	// this entry exists so `classNames.tableScrollArea` is type-checked via `keyof typeof defaultComponents`;
 	// the actual scroll-area <div> is rendered inside the `Table` component (see `table.tsx`).
 	tableScrollArea: "div",
+	// type-only sentinels: the markdown pipeline never emits <tableScrollbar> /
+	// <tableScrollbarThumb> elements. these entries exist so the corresponding
+	// `classNames` keys are type-checked via `keyof typeof defaultComponents`;
+	// the actual scrollbar and thumb are rendered inside the `Table` component
+	// (see `table.tsx`).
+	tableScrollbar: "div",
+	tableScrollbarThumb: "div",
 	thead: "thead",
 	tbody: "tbody",
 	tr: "tr",
@@ -74,14 +81,16 @@ export async function Markdown({
 					? clsx(classNames[name], className)
 					: className,
 				// the <Table> component renders a non-scrolling outer wrapper <div>,
-				// an inner scroll-area <div>, and a <table>. it receives dedicated
-				// class names for the outer wrapper and the inner scroll area via
-				// the `tableWrapper` / `tableScrollArea` sentinel keys in the
-				// classNames map.
+				// an inner scroll area, a <table>, and a scrollbar with a thumb.
+				// it receives dedicated class names for those parts via the
+				// `tableWrapper` / `tableScrollArea` / `tableScrollbar` /
+				// `tableScrollbarThumb` sentinel keys in the classNames map.
 				...(name === "table"
 					? {
 							wrapperClassName: classNames.tableWrapper,
 							scrollAreaClassName: classNames.tableScrollArea,
+							scrollbarClassName: classNames.tableScrollbar,
+							scrollbarThumbClassName: classNames.tableScrollbarThumb,
 						}
 					: {}),
 			}),

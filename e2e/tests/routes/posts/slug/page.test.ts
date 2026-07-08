@@ -55,6 +55,44 @@ test("Blog post header", async ({ page }, testInfo) => {
 	});
 });
 
+test("Author avatar falls back to initials when the image fails to load", async ({
+	page,
+}, testInfo) => {
+	let blogPost: Awaited<ReturnType<typeof getExampleBlogPost>>;
+
+	await test.step("Retrieve the example blog post record", async () => {
+		blogPost = await getExampleBlogPost({ page, testInfo });
+	});
+
+	await test.step("Block every request for the avatar image", async () => {
+		// block both the raw media URL (Base UI's load-status probe requests it
+		// directly) and the optimizer URL that next/image derives from it
+		await page.route(
+			(url) =>
+				url.pathname === blogPost.author.avatarImage.url ||
+				(url.pathname === "/_next/image" &&
+					(url.searchParams.get("url") ?? "").startsWith(
+						blogPost.author.avatarImage.url,
+					)),
+			(route) => route.abort(),
+		);
+	});
+
+	await test.step("Reload the post route", async () => {
+		await page.reload();
+	});
+
+	const header = page.getByTestId("page").getByTestId("header");
+
+	await test.step("Verify the initials fallback is shown", async () => {
+		await expect(header.getByTestId("avatar-fallback")).toBeVisible();
+	});
+
+	await test.step("Verify the avatar image is not rendered", async () => {
+		await expect(header.getByTestId("avatar-image")).not.toBeAttached();
+	});
+});
+
 test("Blog post content", async ({ page }) => {
 	const content = page.getByTestId("page").getByTestId("content");
 
@@ -179,6 +217,29 @@ test("Wide table overflows and scrolls horizontally", async ({ page }) => {
 
 	await test.step("Verify the scroll area is keyboard-focusable", async () => {
 		await expect(scrollArea).toHaveAttribute("tabindex", "0");
+	});
+});
+
+test("Only the wide table renders a scrollbar", async ({ page }) => {
+	const tables = page
+		.getByTestId("page")
+		.getByTestId("content")
+		.getByTestId("table");
+
+	// the wide-table assertion runs first: the scrollbar mounts only after
+	// hydration measures the overflow, so waiting for it here keeps the
+	// narrow-table "not attached" assertion below from passing vacuously
+	// against a not-yet-hydrated page.
+	await test.step("Verify the wide table's scrollbar is mounted", async () => {
+		await expect(
+			tables.nth(wideTableIndex).getByTestId("table-scrollbar"),
+		).toBeAttached();
+	});
+
+	await test.step("Verify the narrow table has no scrollbar", async () => {
+		await expect(
+			tables.nth(narrowTableIndex).getByTestId("table-scrollbar"),
+		).not.toBeAttached();
 	});
 });
 
