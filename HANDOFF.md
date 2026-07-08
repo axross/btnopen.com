@@ -166,18 +166,14 @@ or GitHub/Vercel secrets instead.
   **variable**~~ — **done** in both preview workflows + the doc.
 - Delete this `HANDOFF.md`.
 
-## 6. Open decisions to confirm with the human first
+## 6. Open decisions — CONFIRMED by the human (2026-07-08)
 
-1. **Confirm the plan is to move production to the new standalone account** (§3).
-   If instead prod stays in the Vercel-linked account, branching cannot work
-   cross-account and the design must switch to **synthetic seeding** (fresh DB
-   seeded from repo fixtures). That variant needs one code change: the seed's
-   example post is created `draft: true`, so a synthetic preview would show an
-   **empty public homepage** — it must be published in previews.
-2. **Blob store for Preview:** reuse the production blob token (real images render;
-   a preview could in theory write to prod media, but the read-only review flow
-   never does) vs. a separate preview blob store (fully isolated; pre-existing
-   images won't render). Current doc/design assumes reuse.
+1. **Move production to the new standalone account** (§3) — **confirmed.** The
+   branch-from-production design stays; the synthetic-seeding variant is off
+   the table.
+2. **Blob store for Preview:** **reuse the production blob token** — confirmed.
+   Real images render in previews; the read-only review flow never writes.
+   This is what the committed doc/design already assumes, so no change needed.
 
 ## 7. Facts & gotchas worth knowing
 
