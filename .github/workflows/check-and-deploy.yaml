@@ -91,6 +91,10 @@ jobs:
     timeout-minutes: 30
     needs:
       - e2e-tests
+    # grants access to the `Production` github environment's variable
+    # (LIBSQL_PAYLOAD_LIBSQL_URL) and secret (LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN)
+    # referenced by the migration steps below.
+    environment: Production
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -115,13 +119,23 @@ jobs:
       - name: Verify Production Database Credentials
         # the sqlite adapter requires both the url and the auth token to be
         # non-empty; otherwise it silently falls back to a local file and
-        # migrations never reach the production database. `"?[^"[:space:]]`
-        # demands a real first value character whether or not the value is
-        # quoted, so missing keys, `KEY=`, and `KEY=""` all fail.
+        # migrations never reach the production database. both values come
+        # from the `Production` github environment because the auth token is
+        # a sensitive vercel variable, which `vercel env pull` writes to
+        # .env.local as an empty string. the pulled lines are deleted so the
+        # env-file loader can never shadow the credentials passed to the
+        # migration step through the process environment.
+        env:
+          LIBSQL_PAYLOAD_TURSO_DATABASE_URL: ${{ vars.LIBSQL_PAYLOAD_LIBSQL_URL }}
+          LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN: ${{ secrets.LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN }}
         run: |
-          grep --quiet --extended-regexp '^LIBSQL_PAYLOAD_TURSO_DATABASE_URL="?[^"[:space:]]' .env.local
-          grep --quiet --extended-regexp '^LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN="?[^"[:space:]]' .env.local
+          test -n "${LIBSQL_PAYLOAD_TURSO_DATABASE_URL}"
+          test -n "${LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN}"
+          sed --in-place --regexp-extended '/^LIBSQL_PAYLOAD_TURSO_(DATABASE_URL|AUTH_TOKEN)=/d' .env.local
       - name: Push Database Migrations
+        env:
+          LIBSQL_PAYLOAD_TURSO_DATABASE_URL: ${{ vars.LIBSQL_PAYLOAD_LIBSQL_URL }}
+          LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN: ${{ secrets.LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN }}
         run: npm run migrate:up
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
