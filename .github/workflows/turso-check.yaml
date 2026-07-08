@@ -1,0 +1,123 @@
+name: Turso Check
+# manually dispatched verification for the Turso setup. GitHub-hosted runners
+# can reach Turso, so these checks run here even when a local machine or agent
+# environment cannot (e.g. an egress policy that blocks *.turso.io).
+on:
+  workflow_dispatch:
+    inputs:
+      check:
+        description: Which check to run
+        type: choice
+        options:
+          - database
+          - preview-ops
+        default: database
+        required: true
+      source:
+        description: >-
+          Credentials for the database check: the Vercel production
+          environment, or the TURSO_CHECK_* repository secrets.
+        type: choice
+        options:
+          - vercel-production
+          - check-secrets
+        default: vercel-production
+        required: true
+      apply_migrations:
+        description: Run migrate:up before reporting status (database check only)
+        type: boolean
+        default: false
+        required: false
+jobs:
+  database:
+    name: Database Connection and Migration Status
+    if: inputs.check == 'database'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: package.json
+          cache: npm
+      - name: Install Dependencies
+        run: npm ci
+      - name: Resolve Credentials from Repository Secrets
+        # lets a database be checked before it is wired into Vercel — e.g. a
+        # candidate production database in a new Turso account. `payload
+        # migrate` reads env only from root-level `.env*` files, so the
+        # credentials must land on disk rather than in exported variables.
+        if: inputs.source == 'check-secrets'
+        env:
+          TURSO_CHECK_DATABASE_URL: ${{ secrets.TURSO_CHECK_DATABASE_URL }}
+          TURSO_CHECK_AUTH_TOKEN: ${{ secrets.TURSO_CHECK_AUTH_TOKEN }}
+        run: |
+          {
+            echo "LIBSQL_PAYLOAD_TURSO_DATABASE_URL=$TURSO_CHECK_DATABASE_URL"
+            echo "LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN=$TURSO_CHECK_AUTH_TOKEN"
+          } > .env.local
+      - name: Resolve Credentials from Vercel
+        if: inputs.source == 'vercel-production'
+        run: |
+          npm install --global vercel@latest
+          vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env pull .env.local --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Verify Database Credentials Are Present
+        # same guard as check-and-deploy.yaml: the sqlite adapter silently
+        # falls back to a local file when either value is empty, which would
+        # make every check below pass against nothing.
+        run: |
+          grep --quiet --extended-regexp '^LIBSQL_PAYLOAD_TURSO_DATABASE_URL="?[^"[:space:]]' .env.local
+          grep --quiet --extended-regexp '^LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN="?[^"[:space:]]' .env.local
+      - name: Check Connection
+        run: |
+          node --env-file=.env.local --eval '
+            const { createClient } = require("@libsql/client");
+            const client = createClient({
+              url: process.env.LIBSQL_PAYLOAD_TURSO_DATABASE_URL,
+              authToken: process.env.LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN,
+            });
+            client
+              .execute("select 1 as ok")
+              .then((result) => {
+                console.log("CONNECT OK:", JSON.stringify(result.rows));
+              })
+              .catch((error) => {
+                console.error("CONNECT FAIL:", error.message);
+                process.exit(1);
+              });
+          '
+      - name: Apply Migrations
+        if: inputs.apply_migrations
+        run: npm run migrate:up
+      - name: Report Migration Status
+        run: npm run migrate:status
+  preview-ops:
+    name: Preview Database Operations Smoke Test
+    if: inputs.check == 'preview-ops'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    env:
+      TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
+      TURSO_PRODUCTION_DB_NAME: ${{ vars.TURSO_PRODUCTION_DB_NAME }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Install Turso CLI
+        run: |
+          curl --silent --show-error --location https://get.tur.so/install.sh | bash
+          echo "$HOME/.turso" >> "$GITHUB_PATH"
+      - name: Run the Preview Database Smoke Test
+        # temporary, like the script itself: delete this job together with
+        # .github/scripts/verify-preview-db.sh once a real preview deploy
+        # has succeeded.
+        run: ./.github/scripts/verify-preview-db.sh

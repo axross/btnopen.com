@@ -19,7 +19,7 @@ jobs:
       pull-requests: write
     env:
       TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
-      TURSO_PRODUCTION_DB_NAME: ${{ secrets.TURSO_PRODUCTION_DB_NAME }}
+      TURSO_PRODUCTION_DB_NAME: ${{ vars.TURSO_PRODUCTION_DB_NAME }}
       PREVIEW_DB_NAME: btnopen-preview-pr-${{ github.event.pull_request.number }}
     steps:
       - name: Install Turso CLI

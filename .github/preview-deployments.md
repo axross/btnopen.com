@@ -84,7 +84,12 @@ token as a fallback. Revoke any token with
 
 Before relying on the pipeline, smoke-test the credential end to end with the
 throwaway script
-[`scripts/verify-preview-db.sh`](./scripts/verify-preview-db.sh):
+[`scripts/verify-preview-db.sh`](./scripts/verify-preview-db.sh). The easiest
+way is to run the [`Turso Check`](./workflows/turso-check.yaml) workflow
+(Actions → Turso Check → Run workflow) with `check: preview-ops` once
+`TURSO_API_TOKEN` and `TURSO_PRODUCTION_DB_NAME` are configured — it exercises
+the same secret and variable the preview workflows read. To run it locally
+instead:
 
 ```bash
 export TURSO_API_TOKEN=...            # the token you just minted
@@ -95,17 +100,26 @@ export TURSO_PRODUCTION_DB_NAME=...   # the production database name
 It branches a temporary database from production, resolves its URL, mints a
 token, and destroys it — the exact operations the workflows perform — without
 touching production. **This is verification scaffolding, not part of the
-pipeline: delete the script once a real preview deploy succeeds.**
+pipeline: delete the script and the workflow's `preview-ops` job once a real
+preview deploy succeeds.**
 
-### 2. Repository secrets
+### 2. Repository secrets and variables
+
+Secrets (Settings → Secrets and variables → Actions → Secrets):
 
 | Secret | Purpose |
 | --- | --- |
 | `TURSO_API_TOKEN` | Non-interactive auth for the Turso CLI. |
-| `TURSO_PRODUCTION_DB_NAME` | Name of the production Turso database to branch from. |
 | `VERCEL_TOKEN` | Deploy to Vercel (already used by production deploys). |
 | `VERCEL_ORG_ID` | Vercel org (already configured). |
 | `VERCEL_PROJECT_ID` | Vercel project (already configured). |
+
+Variables (Settings → Secrets and variables → Actions → Variables) — a database
+name is not sensitive, so it lives as a plain repository variable:
+
+| Variable | Purpose |
+| --- | --- |
+| `TURSO_PRODUCTION_DB_NAME` | Name of the production Turso database to branch from. |
 
 ### 3. Vercel environment variables
 
@@ -150,6 +164,23 @@ with the same value production uses.
   empty Preview overrides) so previews stay read-only against production media.
   Consequently, previews are for reviewing **public pages**; the admin panel is
   not provisioned with a known login.
+
+## Verifying a database from CI
+
+GitHub-hosted runners can reach Turso even when a local machine or an agent
+environment cannot (for example, an egress policy that blocks `*.turso.io`).
+The [`Turso Check`](./workflows/turso-check.yaml) workflow (Actions → Turso
+Check → Run workflow) covers the recurring verification needs:
+
+- `check: database` connects to a database (`select 1`) and reports
+  `migrate:status`; enable `apply_migrations` to run `migrate:up` first. With
+  `source: vercel-production` it checks the database production actually uses.
+  With `source: check-secrets` it reads the `TURSO_CHECK_DATABASE_URL` /
+  `TURSO_CHECK_AUTH_TOKEN` repository secrets instead — useful for validating a
+  candidate database (for example, in a new Turso account) before wiring it
+  into Vercel. Remove those two secrets when no candidate is being evaluated.
+- `check: preview-ops` runs the temporary control-plane smoke test described
+  above.
 
 ## Trade-offs and limits
 

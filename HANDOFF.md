@@ -11,8 +11,10 @@ This branch adds **preview deployments** so that AI-agent pull requests (from th
 document is a self-contained brief so another session can continue the work.
 
 **Branch:** `claude/upbeat-cori-ok1fg3` (do all work here; never push elsewhere).
-**Base:** `main` at `96ef326`. **New commits on this branch:** `5844ea1`,
-`41238dd`, `feba3e3`.
+The branch has been rebased onto the current `main`; the commits carry the same
+changes described below plus a follow-up commit that adds the `Turso Check`
+workflow and switches `TURSO_PRODUCTION_DB_NAME` from a secret to a repository
+variable.
 
 Read `.github/preview-deployments.md` and `AGENTS.md` before acting. Follow the
 project workflow rules in `AGENTS.md` (format/lint/test, Conventional Commits,
@@ -44,6 +46,7 @@ self-review, high-risk escalation).
 | `.github/workflows/preview-teardown.yaml` | On PR close: `turso db destroy` the copy, update the PR comment. Same production-name guard. |
 | `.github/scripts/verify-preview-db.sh` | **Temporary** smoke test: branches a throwaway DB from prod, resolves URL, mints a token, destroys it — the exact ops the workflow uses — without touching prod. Self-cleans on exit. Delete after the pipeline is proven. |
 | `.github/preview-deployments.md` | The canonical setup + operations doc (secrets, Vercel env scoping, Turso token scoping, trade-offs). Keep this current. |
+| `.github/workflows/turso-check.yaml` | Manually dispatched verification (Actions → Turso Check). `check: database` runs the connection + `migrate:status` check (optionally `migrate:up`) against Vercel production env or the `TURSO_CHECK_*` repo secrets; `check: preview-ops` runs `verify-preview-db.sh` in CI. This is how Phases A and C are verified, since agent environments cannot reach Turso. |
 | `app/(app)/_/runtime.ts` | Preview deployments now resolve `urlOrigin` to their own host via `VERCEL_URL` (was hardcoded to `localhost` for non-prod). Production path unchanged. |
 | `README.md` | Pointer to the preview-deployments doc. |
 
@@ -79,14 +82,16 @@ New account's group (given by the human): `icfg-vvcitrwxhnlyw1ppxk3hrjso-aws-us-
 
 ## 4. HARD CONSTRAINT for whatever environment runs this
 
-**Turso is not reachable from the Claude cloud environment used so far** — the
-egress policy blocks `*.turso.io` (verified: proxy returns `403` on CONNECT to
-`turso.io`). Any `turso` CLI or libsql connection will fail there.
+**Turso is not reachable from the Claude cloud environments used so far** — the
+egress policy blocks `*.turso.io` (verified in two separate sessions: proxy
+returns `403` on CONNECT to `turso.io`). Any `turso` CLI or libsql connection
+will fail there.
 
-The executing session must therefore either:
-- run in an environment whose network policy **allows `*.turso.io`**, or
-- have the human run the Turso steps (dump/restore, token creation) **locally**
-  and only hand the results (URLs, tokens, DB names) back.
+The Turso-touching steps must therefore run either:
+- in **GitHub Actions** via the `Turso Check` workflow (GitHub-hosted runners
+  reach Turso fine) — this is the sanctioned path for Phases A and C, or
+- **locally by the human** (dump/restore, token creation), handing only the
+  results (URLs, tokens, DB names) back.
 
 Do **not** try to route around the egress policy. Do **not** ask the human to
 paste live DB URLs/tokens into chat if they can be set as environment variables
@@ -98,22 +103,17 @@ or GitHub/Vercel secrets instead.
 > production data).
 
 ### Phase A — Verify the new account's database works
-1. Obtain the new DB's libsql URL + auth token (from the new Turso account).
-2. Connection test (safe, read-only), from the repo root (has `@libsql/client`):
-   ```bash
-   URL='libsql://…' TOKEN='…' node -e '
-   const { createClient } = require("@libsql/client");
-   const c = createClient({ url: process.env.URL, authToken: process.env.TOKEN });
-   c.execute("select 1 as ok")
-     .then(r => console.log("CONNECT OK:", r.rows))
-     .catch(e => { console.error("CONNECT FAIL:", e.message); process.exit(1); });
-   '
-   ```
-3. Functionality test (writes schema — only on the intended DB):
-   ```bash
-   printf 'LIBSQL_PAYLOAD_TURSO_DATABASE_URL=%s\nLIBSQL_PAYLOAD_TURSO_AUTH_TOKEN=%s\n' "$URL" "$TOKEN" > .env.local
-   npm run migrate:up && npm run migrate:status
-   ```
+1. Human: add the new DB's libsql URL + auth token as the repository secrets
+   `TURSO_CHECK_DATABASE_URL` and `TURSO_CHECK_AUTH_TOKEN` (do not paste them
+   into chat).
+2. Connection + migration-status test (read-only): run the **Turso Check**
+   workflow (Actions → Turso Check → Run workflow) with `check: database`,
+   `source: check-secrets`, `apply_migrations: false`.
+3. Functionality test (writes schema — only on the intended DB): re-run it with
+   `apply_migrations: true`. Note: if Phase B loads a full production dump
+   afterwards, recreate the database first so the dump does not collide with
+   the already-applied schema.
+4. Delete the two `TURSO_CHECK_*` secrets once the cutover is complete.
 
 ### Phase B — Cut production over to the new account (production-affecting)
 1. Do it in a quiet window; avoid admin edits between dump and repoint or those
@@ -140,9 +140,10 @@ or GitHub/Vercel secrets instead.
      --org <your-org> \
      --group icfg-vvcitrwxhnlyw1ppxk3hrjso-aws-us-west-2   # no --read-only
    ```
-2. Add GitHub repo secrets: `TURSO_API_TOKEN` (above), `TURSO_PRODUCTION_DB_NAME`
-   (the new prod DB name). (`VERCEL_TOKEN`/`VERCEL_ORG_ID`/`VERCEL_PROJECT_ID`
-   already exist.)
+2. Add the GitHub repo **secret** `TURSO_API_TOKEN` (above) and the repo
+   **variable** `TURSO_PRODUCTION_DB_NAME` (the new prod DB name — it is a
+   variable, not a secret, since a DB name is not sensitive).
+   (`VERCEL_TOKEN`/`VERCEL_ORG_ID`/`VERCEL_PROJECT_ID` secrets already exist.)
 3. Vercel env scoping:
    - Verify **Preview** scope includes `PAYLOAD_SECRET` and
      `BLOB_PAYLOAD_READ_WRITE_TOKEN` (`vercel env ls preview`).
@@ -150,18 +151,19 @@ or GitHub/Vercel secrets instead.
    - Ensure `PAYLOAD_TEST_USER_EMAIL` / `PAYLOAD_TEST_USER_PASSWORD` are **not**
      in Preview scope.
 4. Ensure the prod DB and preview copies share the group above.
-5. Smoke-test the token: run `.github/scripts/verify-preview-db.sh` (needs
-   `TURSO_API_TOKEN` + `TURSO_PRODUCTION_DB_NAME`).
+5. Smoke-test the token: run the **Turso Check** workflow with
+   `check: preview-ops` (it runs `.github/scripts/verify-preview-db.sh` in CI
+   using the secret and variable added in step 2).
 6. Open a throwaway test PR → confirm a preview deploys and the URL is commented →
    close it → confirm the DB is destroyed.
-7. **Delete `.github/scripts/verify-preview-db.sh`** and commit its removal once
-   the pipeline is proven.
+7. **Delete `.github/scripts/verify-preview-db.sh` and the `preview-ops` job in
+   `turso-check.yaml`** and commit the removal once the pipeline is proven.
 
 ### Phase D — Optional follow-ups
-- Add a `workflow_dispatch` CI job that runs the connection + `migrate:status`
-  check (CI can reach Turso) — useful if local testing is inconvenient.
-- Change `TURSO_PRODUCTION_DB_NAME` from a **secret** to a repository **variable**
-  (`vars.…`) in both workflows + the doc — a DB name is not sensitive.
+- ~~Add a `workflow_dispatch` CI job that runs the connection + `migrate:status`
+  check~~ — **done**: `.github/workflows/turso-check.yaml`.
+- ~~Change `TURSO_PRODUCTION_DB_NAME` from a **secret** to a repository
+  **variable**~~ — **done** in both preview workflows + the doc.
 - Delete this `HANDOFF.md`.
 
 ## 6. Open decisions to confirm with the human first
