@@ -391,7 +391,9 @@
 	}
 
 	.tableScrollArea {
-		overflow-x: auto;
+		/* No `overflow` here: Base UI's `<ScrollArea.Viewport>` applies
+		   `overflow: scroll` as an inline style (and hides the native
+		   scrollbars), so a declaration in this class could never win. */
 		outline: none;
 		/* Declare a named inline scroll-timeline on the actual scroll container.
 		   The outer `.tableWrapper` references this timeline by name so its
@@ -400,6 +402,36 @@
 		   them to scroll away from the visible edges — the bug this split
 		   fixes). */
 		scroll-timeline: --bpc-table-scroll inline;
+	}
+
+	/* Base UI positions the scrollbar absolutely along the bottom edge of the
+	   scroll area via inline styles; only the visual treatment lives here.
+	   Hidden at rest, revealed while the pointer is over the table or a scroll
+	   is in progress (the `data-hovering` / `data-scrolling` attributes), and
+	   unmounted entirely when the table has no horizontal overflow. */
+	.tableScrollbar {
+		height: var(--size-8);
+		opacity: 0;
+		transition: opacity var(--duration-md) ease-in-out;
+		pointer-events: none;
+		/* paint above the opaque `.thead` surface, like the edge fades */
+		z-index: 1;
+	}
+
+	.tableScrollbar[data-hovering],
+	.tableScrollbar[data-scrolling] {
+		opacity: 1;
+		pointer-events: auto;
+	}
+
+	.tableScrollbar[data-scrolling] {
+		transition-duration: 0ms;
+	}
+
+	.tableScrollbarThumb {
+		height: 100%;
+		border-radius: var(--radius-full);
+		background-color: var(--neutral-8);
 	}
 
 	/* Scroll-reactive edge-fade affordance. Two absolutely-positioned pseudo
@@ -491,11 +523,16 @@
 
 	@media print {
 		.tableScrollArea {
-			overflow-x: visible;
+			/* biome-ignore lint/complexity/noImportantStyles: `!important` is the only way to beat the `overflow: scroll` inline style that Base UI's `<ScrollArea.Viewport>` applies, so wide tables paint fully on paper instead of clipping */
+			overflow: visible !important;
 		}
 
 		.tableWrapper::before,
 		.tableWrapper::after {
+			display: none;
+		}
+
+		.tableScrollbar {
 			display: none;
 		}
 	}
