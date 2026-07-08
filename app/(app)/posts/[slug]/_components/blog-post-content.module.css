@@ -410,12 +410,16 @@
 	   is in progress (the `data-hovering` / `data-scrolling` attributes), and
 	   unmounted entirely when the table has no horizontal overflow. */
 	.tableScrollbar {
-		height: var(--size-8);
+		block-size: var(--size-8);
 		opacity: 0;
 		transition: opacity var(--duration-md) ease-in-out;
 		pointer-events: none;
 		/* paint above the opaque `.thead` surface, like the edge fades */
 		z-index: 1;
+
+		@media (prefers-reduced-motion: reduce) {
+			transition: none;
+		}
 	}
 
 	.tableScrollbar[data-hovering],
