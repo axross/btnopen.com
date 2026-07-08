@@ -122,3 +122,5 @@ To learn more about the stack:
 ## Deploy on Vercel
 
 This site deploys to [Vercel](https://vercel.com). See the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for details.
+
+Pull requests can also get their own isolated preview deployment. Because Payload is backed by a single Turso (SQLite) database, previews use a **per-PR Turso branch** so they never touch production data. See [`PREVIEW-DEPLOYMENTS.md`](PREVIEW-DEPLOYMENTS.md) for the architecture and the one-time setup.
