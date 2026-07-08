@@ -433,7 +433,7 @@
 	}
 
 	.tableScrollbarThumb {
-		height: 100%;
+		block-size: 100%;
 		border-radius: var(--radius-full);
 		background-color: var(--neutral-8);
 	}
