@@ -8,8 +8,12 @@ import {
 	IBM_Plex_Sans_JP,
 	JetBrains_Mono,
 } from "next/font/google";
-import type { JSX } from "react";
+import { NextIntlClientProvider } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import { type JSX, Suspense } from "react";
 import { NotFoundContent } from "@/components/not-found-content";
+import { htmlLangByLocale } from "@/i18n/config";
+import { getActiveLocale } from "@/i18n/get-active-locale";
 import { Header } from "./(app)/_components/header";
 
 const ibmPlexSans = IBM_Plex_Sans({
@@ -37,17 +41,33 @@ export const metadata: Metadata = {
 };
 
 export default function GlobalNotFound(): JSX.Element {
+	// The document depends on the negotiated locale (a request-time cookie
+	// read), so it renders inside a Suspense boundary to stay compatible with
+	// Cache Components.
 	return (
-		<html lang="en">
+		<Suspense>
+			<NotFoundDocument />
+		</Suspense>
+	);
+}
+
+async function NotFoundDocument(): Promise<JSX.Element> {
+	const locale = await getActiveLocale();
+	const t = await getTranslations("notFound");
+
+	return (
+		<html lang={htmlLangByLocale[locale]}>
 			<body
 				className={`${ibmPlexSans.variable} ${ibmPlexSansJp.variable} ${jetBrainsMono.variable}`}
 			>
-				<Header data-testid="header" />
+				<NextIntlClientProvider>
+					<Header data-testid="header" />
 
-				<NotFoundContent
-					heading="page.found === false"
-					description="お探しのページは見つかりませんでした"
-				/>
+					<NotFoundContent
+						heading="page.found === false"
+						description={t("pageDescription")}
+					/>
+				</NextIntlClientProvider>
 			</body>
 		</html>
 	);

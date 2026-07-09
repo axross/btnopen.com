@@ -1,5 +1,6 @@
 import { expect, type Locator, test } from "@playwright/test";
 import { format } from "date-fns";
+import { ja } from "date-fns/locale";
 import { authenticatedStorageState } from "@/e2e/helpers/api/auth";
 import { getExampleBlogPost } from "@/e2e/helpers/api/blog-post";
 import { getWebsite } from "@/e2e/helpers/api/website";
@@ -33,7 +34,7 @@ test("Blog post header", async ({ page }, testInfo) => {
 
 	await test.step("Verify the blog post timestamp", async () => {
 		await expect(header.getByTestId("timestamp")).toHaveText(
-			format(blogPost.publishedAt ?? "", "PPP"),
+			format(blogPost.publishedAt ?? "", "PPP", { locale: ja }),
 		);
 	});
 

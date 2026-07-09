@@ -10,7 +10,7 @@ import type z from "zod";
 import { rootLogger } from "@/logger";
 import { config } from "@/payload/config";
 import { editor } from "@/payload/editor";
-import { PayloadWebsite } from "./payload-types";
+import { type PayloadLocale, PayloadWebsite } from "./payload-types";
 
 const logger = rootLogger.child({ module: "📥" });
 
@@ -27,10 +27,12 @@ const Website = PayloadWebsite.transform((website) => ({
 export type Website = z.infer<typeof Website>;
 
 export async function getWebsite({
+	locale,
 	draft = false,
 }: {
+	locale: PayloadLocale;
 	draft?: boolean;
-} = {}): Promise<Website | null> {
+}): Promise<Website | null> {
 	"use cache";
 
 	cacheLife("hours");
@@ -51,7 +53,7 @@ export async function getWebsite({
 			},
 		},
 		depth: 4,
-		locale: "ja-JP",
+		locale,
 		draft,
 	});
 

@@ -5,6 +5,8 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { ComponentProps, JSX } from "react";
 import { ViewTransition } from "react";
+import { dateFnsLocaleByLocale } from "@/i18n/date-locale";
+import { getActiveLocale } from "@/i18n/get-active-locale";
 import type { BlogPostDetail } from "@/repositories/get-blog-post";
 import css from "./loaded.module.css";
 
@@ -22,7 +24,10 @@ export async function BlogPostHeaderLoaded({
 }: ComponentProps<"header"> & {
 	blogPost: Promise<BlogPostDetail | null>;
 }): Promise<JSX.Element> {
-	const blogPost = await blogPostPromise;
+	const [blogPost, locale] = await Promise.all([
+		blogPostPromise,
+		getActiveLocale(),
+	]);
 
 	if (!blogPost) {
 		notFound();
@@ -44,7 +49,9 @@ export async function BlogPostHeaderLoaded({
 
 			<ViewTransition name={`blog-post-${blogPost.slug}-timestamp`}>
 				<div className={css.timestamp} data-testid="timestamp">
-					{format(blogPost.publishedAt, "PPP")}
+					{format(blogPost.publishedAt, "PPP", {
+						locale: dateFnsLocaleByLocale[locale],
+					})}
 				</div>
 			</ViewTransition>
 

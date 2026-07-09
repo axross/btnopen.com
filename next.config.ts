@@ -1,6 +1,9 @@
 import { withPayload } from "@payloadcms/next/withPayload";
 import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin("./app/(app)/_/i18n/request.ts");
 
 // biome-ignore-start lint/style/noProcessEnv: nextjs config needs to access env vars
 const isCi = !!process.env.CI;
@@ -34,7 +37,7 @@ const nextConfig: NextConfig = {
 	],
 };
 
-export default withSentryConfig(withPayload(nextConfig), {
+export default withSentryConfig(withPayload(withNextIntl(nextConfig)), {
 	org: sentryOrg,
 	project: sentryProject,
 	silent: !isCi,

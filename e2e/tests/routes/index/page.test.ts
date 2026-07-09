@@ -49,13 +49,11 @@ test("Introduction section", async ({ page }) => {
 
 test("Landmark regions", async ({ page }) => {
 	await test.step("Verify the introduction region is exposed", async () => {
-		await expect(
-			page.getByRole("region", { name: "Introduction" }),
-		).toBeVisible();
+		await expect(page.getByRole("region", { name: "自己紹介" })).toBeVisible();
 	});
 
 	await test.step("Verify the Posts region is exposed and named by its heading", async () => {
-		await expect(page.getByRole("region", { name: "Posts" })).toBeVisible();
+		await expect(page.getByRole("region", { name: "投稿" })).toBeVisible();
 	});
 });
 
@@ -128,7 +126,7 @@ test("Heading structure and list semantics", async ({ page }, testInfo) => {
 
 	await test.step("Verify the Posts section is a level-2 heading", async () => {
 		await expect(
-			page.getByRole("heading", { level: 2, name: "Posts" }),
+			page.getByRole("heading", { level: 2, name: "投稿" }),
 		).toBeVisible();
 	});
 

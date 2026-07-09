@@ -5,7 +5,7 @@ import { getPayload } from "payload";
 import z from "zod";
 import { rootLogger } from "@/logger";
 import { config } from "@/payload/config";
-import { PayloadBlogPost } from "./payload-types";
+import { PayloadBlogPost, type PayloadLocale } from "./payload-types";
 
 const logger = rootLogger.child({ module: "📥" });
 
@@ -21,10 +21,12 @@ const BlogPostSummary = PayloadBlogPost.transform((blogPost) => ({
 export type BlogPostSummary = z.infer<typeof BlogPostSummary>;
 
 export async function getBlogPosts({
+	locale,
 	draft = false,
 }: {
+	locale: PayloadLocale;
 	draft?: boolean;
-} = {}): Promise<BlogPostSummary[]> {
+}): Promise<BlogPostSummary[]> {
 	"use cache";
 
 	cacheLife("hours");
@@ -53,7 +55,7 @@ export async function getBlogPosts({
 						equals: "published",
 					},
 				},
-		locale: "ja-JP",
+		locale,
 		sort: ["-publishedAt"],
 		limit: 50,
 		draft,

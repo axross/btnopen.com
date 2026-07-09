@@ -1,0 +1,14 @@
+{
+	"index": {
+		"introductionLabel": "Introduction",
+		"postsHeading": "Posts"
+	},
+	"notFound": {
+		"homeLink": "Go back home",
+		"pageDescription": "The page you are looking for was not found.",
+		"postDescription": "The post you are looking for was not found."
+	},
+	"languageSwitcher": {
+		"label": "Switch language"
+	}
+}

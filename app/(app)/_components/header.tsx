@@ -2,6 +2,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import type { ComponentProps } from "react";
 import css from "./header.module.css";
+import { LanguageSwitcher } from "./language-switcher";
 
 export function Header({ className, ...props }: ComponentProps<"header">) {
 	return (
@@ -21,6 +22,8 @@ export function Header({ className, ...props }: ComponentProps<"header">) {
 					</g>
 				</svg>
 			</Link>
+
+			<LanguageSwitcher />
 		</header>
 	);
 }

@@ -9,6 +9,7 @@ import { ImageResponse } from "next/og";
 import type { ImageResponseOptions, NextRequest } from "next/server";
 import sharp from "sharp";
 import { Logo } from "@/components/logo";
+import { defaultLocale } from "@/i18n/config";
 import { rootLogger } from "@/logger";
 import { getBlogPost } from "@/repositories/get-blog-post";
 import { urlOrigin, vercelBlobToken } from "@/runtime";
@@ -26,8 +27,10 @@ export async function GET(
 	{ params }: { params: Promise<{ slug: string }> },
 ): Promise<Response> {
 	const { slug } = await params;
+	// the Open Graph image lives at a single, locale-independent URL, so it is
+	// always rendered in the default locale.
 	const [blogPost, fonts] = await Promise.all([
-		getBlogPost({ slug, draft: true }),
+		getBlogPost({ slug, draft: true, locale: defaultLocale }),
 		loadFonts(),
 	]);
 

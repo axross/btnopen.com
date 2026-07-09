@@ -1,10 +1,13 @@
 import type { MetadataRoute } from "next";
+import { defaultLocale } from "@/i18n/config";
 import { getBlogPosts } from "@/repositories/get-blog-posts";
 import { urlOrigin } from "@/runtime";
 
 // biome-ignore lint/style/noDefaultExport: sitemap needs default export
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-	const blogPosts = await getBlogPosts();
+	// slugs are not localized, so the sitemap lists each post once under the
+	// default locale regardless of the visitor's negotiated language.
+	const blogPosts = await getBlogPosts({ locale: defaultLocale });
 
 	return [
 		{

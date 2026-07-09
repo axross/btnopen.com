@@ -3,6 +3,8 @@ import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
 import { type ComponentProps, type JSX, ViewTransition } from "react";
+import { dateFnsLocaleByLocale } from "@/i18n/date-locale";
+import { getActiveLocale } from "@/i18n/get-active-locale";
 import { getBlogPosts } from "@/repositories/get-blog-posts";
 import css from "./loaded.module.css";
 
@@ -14,8 +16,9 @@ export async function BlogPostListLoaded({
 }: ComponentProps<"ul"> & {
 	draft?: Promise<boolean>;
 }): Promise<JSX.Element> {
-	const isDraft = await draft;
-	const blogPosts = await getBlogPosts({ draft: isDraft });
+	const [locale, isDraft] = await Promise.all([getActiveLocale(), draft]);
+	const blogPosts = await getBlogPosts({ draft: isDraft, locale });
+	const dateFnsLocale = dateFnsLocaleByLocale[locale];
 
 	return (
 		<ul className={clsx(css.blogPostListLoaded, className)} {...props}>
@@ -37,7 +40,10 @@ export async function BlogPostListLoaded({
 							thumbnailImageUrl={blogPost.thumbnailImage.url}
 							thumbnailImageWidth={blogPost.thumbnailImage.width}
 							thumbnailImageHeight={blogPost.thumbnailImage.height}
-							publishedAt={blogPost.publishedAt}
+							publishedLabel={formatDistanceToNow(blogPost.publishedAt, {
+								addSuffix: true,
+								locale: dateFnsLocale,
+							})}
 						/>
 					</Link>
 				</li>
@@ -53,7 +59,7 @@ function BlogPostListItem({
 	thumbnailImageUrl,
 	thumbnailImageWidth,
 	thumbnailImageHeight,
-	publishedAt,
+	publishedLabel,
 	className,
 	...props
 }: ComponentProps<"div"> & {
@@ -63,7 +69,7 @@ function BlogPostListItem({
 	thumbnailImageUrl: string;
 	thumbnailImageWidth: number;
 	thumbnailImageHeight: number;
-	publishedAt: string;
+	publishedLabel: string;
 }): JSX.Element {
 	return (
 		<div className={clsx(css.blogPostListItem, className)} {...props}>
@@ -81,7 +87,7 @@ function BlogPostListItem({
 
 			<ViewTransition name={`blog-post-${slug}-timestamp`}>
 				<div className={css.timestamp} data-testid="timestamp">
-					{formatDistanceToNow(publishedAt, { addSuffix: true })}
+					{publishedLabel}
 				</div>
 			</ViewTransition>
 

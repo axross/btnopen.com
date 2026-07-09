@@ -9,14 +9,17 @@ import { getPayload } from "payload";
 import { rootLogger } from "@/logger";
 import { config } from "@/payload/config";
 import { editor } from "@/payload/editor";
+import type { PayloadLocale } from "./payload-types";
 
 const logger = rootLogger.child({ module: "📥" });
 
 export async function getBlogPostMarkdown({
 	slug,
+	locale,
 	draft = false,
 }: {
 	slug: string;
+	locale: PayloadLocale;
 	draft?: boolean;
 }): Promise<string | null> {
 	"use cache";
@@ -46,7 +49,7 @@ export async function getBlogPostMarkdown({
 						},
 					}),
 		},
-		locale: "ja-JP",
+		locale,
 		limit: 1,
 		draft,
 	});

@@ -1,0 +1,38 @@
+@layer components {
+	@scope (.languageSwitcher) {
+		:where(:scope) {
+			display: flex;
+			align-items: center;
+			gap: var(--size-4);
+			margin-inline-start: auto;
+		}
+
+		.option {
+			padding-block: var(--size-4);
+			padding-inline: var(--size-8);
+			border-radius: var(--radius-md);
+			font-size: var(--text-sm);
+			line-height: 1;
+			color: var(--accent-11);
+			background-color: transparent;
+			border: none;
+			cursor: pointer;
+			outline: none;
+
+			&:hover:not(:disabled) {
+				background-color: var(--accent-2);
+			}
+
+			&:focus-visible {
+				outline: var(--accent-5) solid var(--size-3);
+				outline-offset: var(--size-3);
+			}
+		}
+
+		.optionActive {
+			color: var(--accent-12);
+			font-weight: 700;
+			cursor: default;
+		}
+	}
+}
