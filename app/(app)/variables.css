@@ -1,37 +1,56 @@
 @layer variables {
 	:where(:root) {
-		--text-xs: 0.75rem;
-		--text-sm: 0.875rem;
-		--text-md: 1rem;
-		--text-lg: 1.125rem;
-		--text-xl: 1.25rem;
-		--text-2xl: 1.5rem;
-		--text-3xl: 1.75rem;
-		--text-4xl: 2.1875rem;
+		/* Fluid scalar tokens interpolate against the viewport (`vi`) between
+		   320px and 1440px, clamping flat outside that range. The `rem` bounds
+		   are today's fixed values (the small-screen floor) and a larger
+		   large-screen ceiling. Tokens live on `:root`, which is not a query
+		   container, so container-query units cannot resolve here — global
+		   scalar sizing must track the viewport. Structural tiering
+		   (`--variant` / `--page-variant`) stays container-driven and is
+		   unaffected. */
+		--text-xs: clamp(0.75rem, 0.7321rem + 0.0893vi, 0.8125rem);
+		--text-sm: clamp(0.875rem, 0.8571rem + 0.0893vi, 0.9375rem);
+		--text-md: clamp(1rem, 0.9643rem + 0.1786vi, 1.125rem);
+		--text-lg: clamp(1.125rem, 1.0714rem + 0.2679vi, 1.3125rem);
+		--text-xl: clamp(1.25rem, 1.1786rem + 0.3571vi, 1.5rem);
+		--text-2xl: clamp(1.5rem, 1.3929rem + 0.5357vi, 1.875rem);
+		--text-3xl: clamp(1.75rem, 1.6071rem + 0.7143vi, 2.25rem);
+		--text-4xl: clamp(2.1875rem, 1.9911rem + 0.9821vi, 2.875rem);
 
 		--leading-sm: 1.25;
 		--leading-md: 1.5;
 		--leading-lg: 1.75;
 
+		/* Reading measure: cap the reading column at ~80 characters. Because
+		   `ch` is font-relative and the body font is fluid, the column widens
+		   with the font and holds ~80 Latin (≈40 full-width Japanese)
+		   characters across the fluid range. */
+		--measure: 80ch;
+
+		/* Structural spacing tokens (hairlines, borders, focus-ring width and
+		   offset) stay fixed — sub-pixel fluidity would harm border rendering
+		   and break the focus-ring spec. */
 		--size-1: 0.0625rem;
 		--size-2: 0.125rem;
 		--size-3: 0.1875rem;
 		--size-4: 0.25rem;
 		--size-6: 0.375rem;
-		--size-8: 0.5rem;
-		--size-12: 0.75rem;
-		--size-14: 0.875rem;
-		--size-16: 1rem;
-		--size-18: 1.125rem;
-		--size-20: 1.25rem;
-		--size-24: 1.5rem;
-		--size-32: 2rem;
-		--size-40: 2.5rem;
-		--size-48: 3rem;
-		--size-64: 4rem;
-		--size-80: 5rem;
-		--size-96: 6rem;
-		--size-160: 10rem;
+		/* Spacing rhythm tokens are fluid (uniform ×1.25 at the max viewport). */
+		--size-8: clamp(0.5rem, 0.4643rem + 0.1786vi, 0.625rem);
+		--size-12: clamp(0.75rem, 0.6964rem + 0.2679vi, 0.9375rem);
+		--size-14: clamp(0.875rem, 0.8125rem + 0.3125vi, 1.0938rem);
+		--size-16: clamp(1rem, 0.9286rem + 0.3571vi, 1.25rem);
+		--size-18: clamp(1.125rem, 1.0446rem + 0.4018vi, 1.4062rem);
+		--size-20: clamp(1.25rem, 1.1607rem + 0.4464vi, 1.5625rem);
+		--size-24: clamp(1.5rem, 1.3929rem + 0.5357vi, 1.875rem);
+		--size-32: clamp(2rem, 1.8571rem + 0.7143vi, 2.5rem);
+		--size-40: clamp(2.5rem, 2.3214rem + 0.8929vi, 3.125rem);
+		--size-48: clamp(3rem, 2.7857rem + 1.0714vi, 3.75rem);
+		--size-64: clamp(4rem, 3.7143rem + 1.4286vi, 5rem);
+		--size-80: clamp(5rem, 4.6429rem + 1.7857vi, 6.25rem);
+		--size-96: clamp(6rem, 5.5714rem + 2.1429vi, 7.5rem);
+		--size-160: clamp(10rem, 9.2857rem + 3.5714vi, 12.5rem);
+		/* Large fixed-width tokens stay fixed. */
 		--size-256: 16rem;
 		--size-480: 30rem;
 		--size-960: 60rem;
