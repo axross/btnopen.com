@@ -4,7 +4,7 @@ import {
 	convertLexicalToMarkdown,
 	editorConfigFactory,
 } from "@payloadcms/richtext-lexical";
-import { cacheLife } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import { getPayload } from "payload";
 import type z from "zod";
 import { rootLogger } from "@/logger";
@@ -36,6 +36,9 @@ export async function getWebsite({
 	"use cache";
 
 	cacheLife("hours");
+	// locale-independent tag so a single revalidateTag busts every locale's
+	// cached website entry.
+	cacheTag("website");
 
 	logger.info("Started fetching website record.");
 

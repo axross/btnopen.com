@@ -1,6 +1,6 @@
 "use server";
 
-import { cacheLife } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import { getPayload } from "payload";
 import z from "zod";
 import { rootLogger } from "@/logger";
@@ -30,6 +30,9 @@ export async function getBlogPosts({
 	"use cache";
 
 	cacheLife("hours");
+	// locale-independent tag so a single revalidateTag busts every locale's
+	// cached list entry (both locales render at the same URL).
+	cacheTag("blog-posts");
 
 	logger.info("Started fetching blog posts.");
 

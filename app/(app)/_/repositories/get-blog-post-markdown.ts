@@ -4,7 +4,7 @@ import {
 	convertLexicalToMarkdown,
 	editorConfigFactory,
 } from "@payloadcms/richtext-lexical";
-import { cacheLife } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import { getPayload } from "payload";
 import { rootLogger } from "@/logger";
 import { config } from "@/payload/config";
@@ -25,6 +25,9 @@ export async function getBlogPostMarkdown({
 	"use cache";
 
 	cacheLife("hours");
+	// shares the post's tag so revalidating a post busts its markdown across
+	// every locale too.
+	cacheTag(`blog-post:${slug}`);
 
 	logger.info({ slug, draft }, "Started fetching post markdown.");
 
