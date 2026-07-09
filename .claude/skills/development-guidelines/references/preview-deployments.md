@@ -45,7 +45,7 @@ These steps touch the GitHub and Turso/Vercel accounts and cannot be performed f
 
 `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` already exist for the production deploy and are reused as-is.
 
-**Vercel project settings:**
+**Vercel project settings:** in the Vercel dashboard, under Settings → Environment Variables:
 
 **Guidelines:**
 
