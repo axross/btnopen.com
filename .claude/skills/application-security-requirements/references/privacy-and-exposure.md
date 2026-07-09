@@ -24,6 +24,17 @@ Values sent to the browser are public. The `NEXT_PUBLIC_*` prefix is a release d
 - MUST verify `process.env.*` access remains limited to the env-access files allowed by [secret-handling](./secret-handling.md).
 - SHOULD ask for a narrower public value when a client component only needs a derived boolean or public identifier.
 
+## Preview Environment Data Exposure
+
+Per-PR preview deployments branch the production Turso database (see [development-guidelines › preview-deployments](../../development-guidelines/references/preview-deployments.md) for the pipeline). A branch is a full copy of production content, so it also copies sensitive rows — `users` (including hashed passwords) and `payload-mcp-api-keys` — into a database served from a publicly reachable preview URL whose Payload admin and MCP endpoints are live.
+
+**Guidelines:**
+
+- MUST flag a Major when a change would route production `LIBSQL_*` credentials to a preview/branch deployment, or otherwise let a preview reach the production database.
+- MUST require a distinct Preview `PAYLOAD_SECRET` (see [secret-handling](./secret-handling.md)) so preview session cookies and tokens cannot interoperate with production.
+- SHOULD prefer a read-only branch token, or sanitizing `users` / `payload-mcp-api-keys` after branching, when a preview only needs to render the public site rather than exercise write flows.
+- SHOULD verify the Preview Vercel Blob token does not point at the production blob store, so preview CMS writes cannot mutate production media.
+
 ## Analytics and Error Reporting Exposure
 
 Sentry and Mixpanel are third-party data processors. Event context should be useful for debugging or analytics without carrying raw private content.

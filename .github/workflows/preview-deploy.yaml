@@ -5,8 +5,10 @@ name: Preview Deploy
 # change without any risk to the production database. Each PR gets a child
 # database branched from production; that branch is migrated, wired into a
 # Vercel preview deployment, and destroyed when the PR closes. See
-# PREVIEW-DEPLOYMENTS.md for the architecture, the required one-time account
-# setup, and the security trade-offs.
+# .claude/skills/development-guidelines/references/preview-deployments.md for
+# the architecture and the required one-time account setup, and
+# .claude/skills/application-security-requirements/references/privacy-and-exposure.md
+# for the data-exposure trade-offs.
 #
 # The pipeline is inert until that setup exists: the `preflight` job skips the
 # deploy/teardown jobs whenever the required secrets/vars are absent (including
@@ -60,7 +62,7 @@ jobs:
             echo "ready=true" >> "${GITHUB_OUTPUT}"
           else
             echo "ready=false" >> "${GITHUB_OUTPUT}"
-            echo "::notice::Preview deploy skipped: required secrets/vars are not configured. See PREVIEW-DEPLOYMENTS.md."
+            echo "::notice::Preview deploy skipped: required secrets/vars are not configured. See .claude/skills/development-guidelines/references/preview-deployments.md."
           fi
 
   deploy:
