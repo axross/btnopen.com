@@ -24,6 +24,7 @@ export function LanguageSwitcher({
 	const router = useRouter();
 	const [isPending, startTransition] = useTransition();
 
+	/** Persists the selected locale via a cookie and refreshes the route to re-render in it. */
 	function handleSelect(locale: PayloadLocale): void {
 		if (locale === activeLocale) {
 			return;
