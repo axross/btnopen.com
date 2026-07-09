@@ -1,6 +1,6 @@
 ---
 name: application-security-requirements
-description: Use this skill when reviewing security or privacy implications of a change in this Next.js + Payload CMS + Vercel project. Covers secrets/env vars, the `NEXT_PUBLIC_*` boundary, input validation, Payload access control and drafts, public exposure, markdown XSS, SSRF/webembed/OG fetching, auth/session settings, Sentry/Mixpanel data capture, and npm dependency supply-chain risk. Use for "is this safe", "security", "auth", "admin", "secret", "privacy", "PII", "XSS", "SSRF", or dependency reviews.
+description: Use this skill when reviewing security or privacy implications of a change in this Next.js + Payload CMS + Vercel project. Covers secrets/env vars, the `NEXT_PUBLIC_*` boundary, input validation, Payload access control and drafts, public exposure, preview/branch deployment data exposure, markdown XSS, SSRF/webembed/OG fetching, auth/session settings, Sentry/Mixpanel data capture, and npm dependency supply-chain risk. Use for "is this safe", "security", "auth", "admin", "secret", "privacy", "PII", "XSS", "SSRF", "preview deployment", or dependency reviews.
 ---
 
 # Application Security Requirements
@@ -42,6 +42,7 @@ See [privacy-and-exposure.md](./references/privacy-and-exposure.md) for:
 - Public media URLs expose only intentionally public assets and do not reveal private storage tokens or internal identifiers
 - Sentry and Mixpanel changes do not capture unnecessary PII, secrets, draft content, or CMS-authored private fields
 - Client-exposed environment variables, analytics event properties, and error context are intentionally public
+- Preview/branch deployments do not receive production database credentials, and branching production copies sensitive rows into a publicly reachable preview
 
 ## XSS in Markdown Rendering
 

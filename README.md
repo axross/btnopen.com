@@ -265,3 +265,8 @@ section of [`AGENTS.md`](AGENTS.md).
 - This site deploys to [Vercel](https://vercel.com); see the
   [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying)
   for details.
+- Pull requests can get their own isolated preview deployment; because Payload
+  is backed by a single Turso (SQLite) database, previews use a per-PR Turso
+  branch so they never touch production data — see
+  [`development-guidelines › preview-deployments`](.claude/skills/development-guidelines/references/preview-deployments.md)
+  for the architecture and the one-time setup.

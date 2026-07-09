@@ -1,0 +1,249 @@
+name: Preview Deploy
+
+# Per-pull-request Vercel preview deployments backed by an isolated Turso
+# branch database, so the maintainer can review the actual look and feel of a
+# change without any risk to the production database. Each PR gets a child
+# database branched from production; that branch is migrated, wired into a
+# Vercel preview deployment, and destroyed when the PR closes. See
+# .claude/skills/development-guidelines/references/preview-deployments.md for
+# the architecture and the required one-time account setup, and
+# .claude/skills/application-security-requirements/references/privacy-and-exposure.md
+# for the data-exposure trade-offs.
+#
+# The pipeline is inert until that setup exists: the `preflight` job skips the
+# deploy/teardown jobs whenever the required secrets/vars are absent (including
+# forked pull requests, which never receive secrets), so merging this workflow
+# changes nothing on its own.
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - closed
+
+# One preview per pull request; supersede an in-flight deploy when a newer
+# commit arrives. Migrations and `vercel deploy` are idempotent, so a cancelled
+# run leaves nothing half-applied that the next run does not reconcile.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    name: Preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - name: Check Required Configuration
+        id: check
+        # Secrets are only readable inside a step, so the gate lives here and is
+        # surfaced to downstream jobs as an output. Missing configuration is a
+        # clean skip, never a failure.
+        env:
+          TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
+          TURSO_PARENT_DATABASE: ${{ vars.TURSO_PARENT_DATABASE }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          set -euo pipefail
+          if [ -n "${TURSO_API_TOKEN}" ] \
+            && [ -n "${TURSO_PARENT_DATABASE}" ] \
+            && [ -n "${VERCEL_TOKEN}" ] \
+            && [ -n "${VERCEL_ORG_ID}" ] \
+            && [ -n "${VERCEL_PROJECT_ID}" ]; then
+            echo "ready=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "ready=false" >> "${GITHUB_OUTPUT}"
+            echo "::notice::Preview deploy skipped: required secrets/vars are not configured. See .claude/skills/development-guidelines/references/preview-deployments.md."
+          fi
+
+  deploy:
+    name: Deploy Preview
+    needs: preflight
+    if: ${{ needs.preflight.outputs.ready == 'true' && github.event.action != 'closed' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      # `issues: write` is required for the github-script comment steps: PR
+      # comments post through the Issues API (issues.createComment /
+      # updateComment), which is scoped under `issues`, not `pull-requests`.
+      # With an explicit permissions block, every unlisted scope defaults to
+      # `none`, so omitting it would 403 and fail the job.
+      issues: write
+      pull-requests: write
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: package.json
+          cache: npm
+      - name: Install Dependencies
+        run: npm ci
+      - name: Install Turso CLI
+        run: |
+          set -euo pipefail
+          curl --silent --show-error --location --fail https://get.tur.so/install.sh | bash
+          echo "${HOME}/.turso" >> "${GITHUB_PATH}"
+      - name: Provision Turso Branch Database
+        id: turso
+        # Branch a child database from production (a point-in-time copy with
+        # its own storage), so the preview never touches production data.
+        # Creation is idempotent across `synchronize` events; the branch is
+        # reused and only the PR's new migrations are (re-)applied below.
+        env:
+          TURSO_PARENT_DATABASE: ${{ vars.TURSO_PARENT_DATABASE }}
+          TURSO_GROUP: ${{ vars.TURSO_GROUP }}
+        run: |
+          set -euo pipefail
+          database="preview-pr-${{ github.event.pull_request.number }}"
+          if ! turso db show "${database}" >/dev/null 2>&1; then
+            if [ -n "${TURSO_GROUP}" ]; then
+              turso db create "${database}" --from-db "${TURSO_PARENT_DATABASE}" --group "${TURSO_GROUP}"
+            else
+              turso db create "${database}" --from-db "${TURSO_PARENT_DATABASE}"
+            fi
+          fi
+          url="$(turso db show "${database}" --url)"
+          token="$(turso db tokens create "${database}")"
+          echo "::add-mask::${token}"
+          echo "database=${database}" >> "${GITHUB_OUTPUT}"
+          echo "url=${url}" >> "${GITHUB_OUTPUT}"
+          echo "token=${token}" >> "${GITHUB_OUTPUT}"
+      - name: Push Database Migrations
+        # Apply the PR branch's migrations to the isolated branch database only.
+        # A no-op when the PR adds no migration, since the branch inherits
+        # production's already-applied migration state.
+        env:
+          LIBSQL_PAYLOAD_TURSO_DATABASE_URL: ${{ steps.turso.outputs.url }}
+          LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN: ${{ steps.turso.outputs.token }}
+        run: npm run migrate:up
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Deploy Preview to Vercel
+        id: deploy
+        # Inject the branch credentials for this deployment only, at both build
+        # and runtime, so they override the project's Preview environment for
+        # this deploy alone. The production credentials must be scoped to the
+        # Production environment in Vercel and are never passed here.
+        env:
+          LIBSQL_URL: ${{ steps.turso.outputs.url }}
+          LIBSQL_TOKEN: ${{ steps.turso.outputs.token }}
+        run: |
+          set -euo pipefail
+          # `vercel deploy` prints progress to stderr and the deployment URL to
+          # stdout; take the last stdout line to be robust to any extra output.
+          url="$(vercel deploy \
+            --token="${{ secrets.VERCEL_TOKEN }}" \
+            --env LIBSQL_PAYLOAD_TURSO_DATABASE_URL="${LIBSQL_URL}" \
+            --env LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN="${LIBSQL_TOKEN}" \
+            --build-env LIBSQL_PAYLOAD_TURSO_DATABASE_URL="${LIBSQL_URL}" \
+            --build-env LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN="${LIBSQL_TOKEN}" | tail -n1)"
+          echo "url=${url}" >> "${GITHUB_OUTPUT}"
+      - name: Comment Preview URL
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const marker = "<!-- preview-deploy -->";
+            const url = ${{ toJSON(steps.deploy.outputs.url) }};
+            const database = `preview-pr-${context.issue.number}`;
+            const body = [
+              marker,
+              "### 🚀 Preview deployment",
+              "",
+              url,
+              "",
+              `Served by an isolated Turso branch database (\`${database}\`) branched from production. It is destroyed automatically when this pull request closes.`,
+            ].join("\n");
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find((c) => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+  teardown:
+    name: Teardown Preview
+    needs: preflight
+    if: ${{ needs.preflight.outputs.ready == 'true' && github.event.action == 'closed' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      # `issues: write` is required for the github-script comment steps: PR
+      # comments post through the Issues API (issues.createComment /
+      # updateComment), which is scoped under `issues`, not `pull-requests`.
+      # With an explicit permissions block, every unlisted scope defaults to
+      # `none`, so omitting it would 403 and fail the job.
+      issues: write
+      pull-requests: write
+    env:
+      TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
+    steps:
+      - name: Install Turso CLI
+        run: |
+          set -euo pipefail
+          curl --silent --show-error --location --fail https://get.tur.so/install.sh | bash
+          echo "${HOME}/.turso" >> "${GITHUB_PATH}"
+      - name: Destroy Turso Branch Database
+        # Tolerate an already-absent database so re-runs and manual cleanups do
+        # not fail the job.
+        run: |
+          set -euo pipefail
+          database="preview-pr-${{ github.event.pull_request.number }}"
+          turso db destroy "${database}" --yes || echo "::notice::${database} was already absent."
+      - name: Update Preview Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const marker = "<!-- preview-deploy -->";
+            const database = `preview-pr-${context.issue.number}`;
+            const body = [
+              marker,
+              "### 🚀 Preview deployment",
+              "",
+              `Torn down — the isolated Turso branch database (\`${database}\`) for this pull request was destroyed when it closed.`,
+            ].join("\n");
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find((c) => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            }

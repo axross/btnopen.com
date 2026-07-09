@@ -1,6 +1,6 @@
 ---
 name: development-guidelines
-description: Apply this skill at the start of EVERY task in this project. Covers the Biome format/lint loop, scoped change management, current-docs lookup triggers, npm run-scripts, TypeScript type-safety discipline, source-comment and doc-comment conventions, verification requirements, Payload migration handling, Playwright e2e expectations, Conventional Commits, and pull request descriptions. Use even when the user does not mention formatting, linting, testing, type casts, comments, doc-comments, dependencies, migrations, docs, commands, commit wording, or pull request bodies.
+description: Apply this skill at the start of EVERY task in this project. Covers the Biome format/lint loop, scoped change management, current-docs lookup triggers, npm run-scripts, TypeScript type-safety discipline, source-comment and doc-comment conventions, verification requirements, Payload migration handling, Playwright e2e expectations, Conventional Commits, pull request descriptions, and the per-PR Turso-branch preview-deployment pipeline. Use even when the user does not mention formatting, linting, testing, type casts, comments, doc-comments, dependencies, migrations, docs, commands, commit wording, pull request bodies, branch/preview deploys, or Turso database branching.
 ---
 
 # Development Guidelines
@@ -34,6 +34,14 @@ See [verification.md](./references/verification.md) for:
 - Manual and automated verification steps
 - How to maintain test coverage and respond to failures
 - CI pipeline behavior
+
+## Preview Deployments
+
+See [preview-deployments.md](./references/preview-deployments.md) for:
+
+- the per-PR Turso-branch preview-deployment pipeline (`preview-deploy.yaml`) and how it isolates production
+- the one-time Turso/GitHub/Vercel setup, including scoping production credentials to the Production environment
+- first-run verification, orphan cleanup, cost, and the media-isolation limitation
 
 ## Current External Documentation
 
