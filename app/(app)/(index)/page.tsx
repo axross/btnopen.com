@@ -4,7 +4,10 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { type JSX, Suspense } from "react";
 import { Markdown } from "@/components/markdown";
-import { openGraphLocaleByLocale } from "@/i18n/config";
+import {
+	alternateOpenGraphLocales,
+	openGraphLocaleByLocale,
+} from "@/i18n/config";
 import { getActiveLocale } from "@/i18n/get-active-locale";
 import { getWebsite, type Website } from "@/repositories/get-website";
 import { urlOrigin } from "@/runtime";
@@ -145,6 +148,7 @@ export async function generateMetadata(): Promise<Metadata> {
 			siteName: website.name,
 			type: "website",
 			locale: openGraphLocaleByLocale[locale],
+			alternateLocale: alternateOpenGraphLocales(locale),
 		},
 	};
 }

@@ -30,3 +30,15 @@ export const openGraphLocaleByLocale: Record<PayloadLocale, string> = {
 	"ja-JP": "ja_JP",
 	"en-US": "en_US",
 };
+
+/**
+ * Open Graph `og:locale:alternate` values for a given active locale — every
+ * supported locale's OG code except the active one.
+ */
+export function alternateOpenGraphLocales(
+	activeLocale: PayloadLocale,
+): string[] {
+	return locales
+		.filter((locale) => locale !== activeLocale)
+		.map((locale) => openGraphLocaleByLocale[locale]);
+}

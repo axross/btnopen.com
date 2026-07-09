@@ -24,6 +24,12 @@ test.describe("English content negotiation", () => {
 			);
 		});
 
+		await test.step("Verify og:locale:alternate advertises Japanese", async () => {
+			await expect(
+				page.locator('meta[property="og:locale:alternate"]'),
+			).toHaveAttribute("content", "ja_JP");
+		});
+
 		await test.step("Verify the Posts section heading is in English", async () => {
 			await expect(
 				page.getByRole("heading", { level: 2, name: "Posts" }),
@@ -59,6 +65,12 @@ test.describe("Japanese content negotiation", () => {
 				"content",
 				"ja_JP",
 			);
+		});
+
+		await test.step("Verify og:locale:alternate advertises English", async () => {
+			await expect(
+				page.locator('meta[property="og:locale:alternate"]'),
+			).toHaveAttribute("content", "en_US");
 		});
 
 		await test.step("Verify the Posts section heading is in Japanese", async () => {

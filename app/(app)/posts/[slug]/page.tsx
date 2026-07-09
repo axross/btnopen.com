@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { JSX } from "react";
 import { Suspense } from "react";
-import { openGraphLocaleByLocale } from "@/i18n/config";
+import {
+	alternateOpenGraphLocales,
+	openGraphLocaleByLocale,
+} from "@/i18n/config";
 import { getActiveLocale } from "@/i18n/get-active-locale";
 import { getBlogPost } from "@/repositories/get-blog-post";
 import { getWebsite } from "@/repositories/get-website";
@@ -122,6 +125,7 @@ export async function generateMetadata({
 			section: "Technology",
 			tags: blogPost.tags.map((tag) => tag.name),
 			locale: openGraphLocaleByLocale[locale],
+			alternateLocale: alternateOpenGraphLocales(locale),
 		},
 	};
 }

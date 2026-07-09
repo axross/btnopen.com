@@ -10,6 +10,9 @@ const cookieMaxAgeSeconds = 31_536_000;
 /**
  * Persists the visitor's explicit locale choice in the locale cookie so it
  * overrides `Accept-Language` negotiation on subsequent requests.
+ *
+ * @throws if `locale` is not a supported {@link PayloadLocale} (a caller
+ * invoking this server action directly can bypass the compile-time type).
  */
 export async function setLocale(locale: PayloadLocale): Promise<void> {
 	const parsed = PayloadLocale.parse(locale);
