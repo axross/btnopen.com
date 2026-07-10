@@ -50,7 +50,7 @@ export function LanguageSwitcher({
 			</Menu.Trigger>
 
 			<Menu.Portal>
-				<Menu.Positioner className={css.positioner} sideOffset={8} align="end">
+				<Menu.Positioner sideOffset={8} align="end">
 					<Menu.Popup className={css.popup} data-testid="language-menu">
 						<Menu.RadioGroup
 							value={activeLocale}

@@ -73,8 +73,8 @@ export const viewport: Viewport = {
 export default function RootLayout({
 	children,
 }: Readonly<{ children: ReactNode }>) {
-	// Resolving the negotiated locale for `<html lang>` is request-time work.
-	// Rendering the document from inside a Suspense boundary lets Cache
+	// resolving the negotiated locale for `<html lang>` is request-time work.
+	// rendering the document from inside a Suspense boundary lets Cache
 	// Components stream it as dynamic content instead of treating the cookie
 	// read as blocking the whole route.
 	return (

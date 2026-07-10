@@ -41,7 +41,7 @@ export const metadata: Metadata = {
 };
 
 export default function GlobalNotFound(): JSX.Element {
-	// The document depends on the negotiated locale (a request-time cookie
+	// the document depends on the negotiated locale (a request-time cookie
 	// read), so it renders inside a Suspense boundary to stay compatible with
 	// Cache Components.
 	return (
