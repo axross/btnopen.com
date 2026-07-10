@@ -1,0 +1,14 @@
+{
+	"index": {
+		"introduction-label": "自己紹介",
+		"posts-heading": "投稿"
+	},
+	"not-found": {
+		"home-link": "ホームに戻る",
+		"page-description": "お探しのページは見つかりませんでした",
+		"post-description": "お探しの投稿は見つかりませんでした"
+	},
+	"language-switcher": {
+		"label": "言語を切り替える"
+	}
+}

@@ -6,9 +6,9 @@ import { type JSX, Suspense } from "react";
 import { Markdown } from "@/components/markdown";
 import {
 	alternateOpenGraphLocales,
+	getActiveLocale,
 	openGraphLocaleByLocale,
-} from "@/i18n/config";
-import { getActiveLocale } from "@/i18n/get-active-locale";
+} from "@/helpers/i18n";
 import { getWebsite, type Website } from "@/repositories/get-website";
 import { urlOrigin } from "@/runtime";
 import { BlogJsonLd } from "./_components/blog-json-jd";
@@ -64,7 +64,7 @@ async function IndexPageMain({
 
 			<section
 				className={css.intro}
-				aria-label={t("introductionLabel")}
+				aria-label={t("introduction-label")}
 				data-testid="intro"
 			>
 				<div className={css.portrait}>
@@ -102,7 +102,7 @@ async function IndexPageMain({
 			<section className={css.section} aria-labelledby="posts-heading">
 				{/* biome-ignore lint/correctness/useUniqueElementIds: stable anchor for this section's aria-labelledby; IndexPageMain renders once per page (and is an async server component where useId is unavailable), so there is no duplicate-id risk */}
 				<h2 id="posts-heading" className={css.sectionHeading}>
-					{t("postsHeading")}
+					{t("posts-heading")}
 				</h2>
 
 				<BlogPostList

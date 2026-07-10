@@ -8,12 +8,12 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogPostNotFound(): Promise<JSX.Element> {
-	const t = await getTranslations("notFound");
+	const t = await getTranslations("not-found");
 
 	return (
 		<NotFoundContent
 			heading="post.found === false"
-			description={t("postDescription")}
+			description={t("post-description")}
 		/>
 	);
 }

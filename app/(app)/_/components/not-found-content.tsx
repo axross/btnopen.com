@@ -13,7 +13,7 @@ export async function NotFoundContent({
 	heading: string;
 	description: string;
 }): Promise<JSX.Element> {
-	const t = await getTranslations("notFound");
+	const t = await getTranslations("not-found");
 
 	return (
 		<main
@@ -34,7 +34,7 @@ export async function NotFoundContent({
 			<p className={css.description}>{description}</p>
 
 			<Link href="/" className={css.homeLink} data-testid="link">
-				{t("homeLink")}
+				{t("home-link")}
 			</Link>
 		</main>
 	);

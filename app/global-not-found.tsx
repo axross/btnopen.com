@@ -12,8 +12,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { type JSX, Suspense } from "react";
 import { NotFoundContent } from "@/components/not-found-content";
-import { htmlLangByLocale } from "@/i18n/config";
-import { getActiveLocale } from "@/i18n/get-active-locale";
+import { getActiveLocale, htmlLangByLocale } from "@/helpers/i18n";
 import { Header } from "./(app)/_components/header";
 
 const ibmPlexSans = IBM_Plex_Sans({
@@ -53,7 +52,7 @@ export default function GlobalNotFound(): JSX.Element {
 
 async function NotFoundDocument(): Promise<JSX.Element> {
 	const locale = await getActiveLocale();
-	const t = await getTranslations("notFound");
+	const t = await getTranslations("not-found");
 
 	return (
 		<html lang={htmlLangByLocale[locale]}>
@@ -65,7 +64,7 @@ async function NotFoundDocument(): Promise<JSX.Element> {
 
 					<NotFoundContent
 						heading="page.found === false"
-						description={t("pageDescription")}
+						description={t("page-description")}
 					/>
 				</NextIntlClientProvider>
 			</body>

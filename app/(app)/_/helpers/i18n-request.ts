@@ -1,7 +1,6 @@
 import { cookies, headers } from "next/headers";
 import { getRequestConfig } from "next-intl/server";
-import { localeCookieName } from "./config";
-import { negotiateLocale } from "./negotiate";
+import { localeCookieName, negotiateLocale } from "./i18n";
 
 /**
  * next-intl request configuration for the App Router "without i18n routing"
@@ -19,6 +18,6 @@ export default getRequestConfig(async () => {
 
 	return {
 		locale,
-		messages: (await import(`./messages/${locale}.json`)).default,
+		messages: (await import(`../translations/${locale}.json`)).default,
 	};
 });

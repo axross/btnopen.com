@@ -5,7 +5,7 @@ import { clsx } from "clsx";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { type JSX, useTransition } from "react";
-import { setLocale } from "@/i18n/set-locale";
+import { setLocale } from "@/helpers/set-locale";
 import type { PayloadLocale } from "@/repositories/payload-types";
 import css from "./language-switcher.module.css";
 
@@ -22,7 +22,7 @@ export function LanguageSwitcher({
 	className?: string;
 }): JSX.Element {
 	const activeLocale = useLocale();
-	const t = useTranslations("languageSwitcher");
+	const t = useTranslations("language-switcher");
 	const router = useRouter();
 	const [isPending, startTransition] = useTransition();
 

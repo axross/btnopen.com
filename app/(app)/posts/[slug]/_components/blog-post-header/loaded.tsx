@@ -5,8 +5,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { ComponentProps, JSX } from "react";
 import { ViewTransition } from "react";
-import { dateFnsLocaleByLocale } from "@/i18n/date-locale";
-import { getActiveLocale } from "@/i18n/get-active-locale";
+import { dateFnsLocaleByLocale, getActiveLocale } from "@/helpers/i18n";
 import type { BlogPostDetail } from "@/repositories/get-blog-post";
 import css from "./loaded.module.css";
 

@@ -3,8 +3,7 @@ import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
 import { type ComponentProps, type JSX, ViewTransition } from "react";
-import { dateFnsLocaleByLocale } from "@/i18n/date-locale";
-import { getActiveLocale } from "@/i18n/get-active-locale";
+import { dateFnsLocaleByLocale, getActiveLocale } from "@/helpers/i18n";
 import { getBlogPosts } from "@/repositories/get-blog-posts";
 import css from "./loaded.module.css";
 

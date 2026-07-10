@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { defaultLocale } from "@/i18n/config";
+import { defaultLocale } from "@/helpers/i18n";
 import { getBlogPosts } from "@/repositories/get-blog-posts";
 import { urlOrigin } from "@/runtime";
 

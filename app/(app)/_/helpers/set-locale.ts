@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 import { PayloadLocale } from "@/repositories/payload-types";
-import { localeCookieName } from "./config";
+import { localeCookieName } from "./i18n";
 
 // one year, expressed in seconds (365 days)
 const cookieMaxAgeSeconds = 31_536_000;

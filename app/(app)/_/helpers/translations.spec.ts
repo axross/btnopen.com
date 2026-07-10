@@ -1,8 +1,8 @@
 import { describe, expect, it } from "@jest/globals";
-import enUS from "./messages/en-US.json" with { type: "json" };
-import jaJP from "./messages/ja-JP.json" with { type: "json" };
+import enUS from "../translations/en-US.json" with { type: "json" };
+import jaJP from "../translations/ja-JP.json" with { type: "json" };
 
-/** Collects the dot-joined leaf key paths of a nested message catalog. */
+/** Collects the dot-joined leaf key paths of a nested translation catalog. */
 function collectKeyPaths(value: unknown, prefix = ""): string[] {
 	if (typeof value !== "object" || value === null) {
 		return [prefix];
@@ -15,7 +15,7 @@ function collectKeyPaths(value: unknown, prefix = ""): string[] {
 		.sort();
 }
 
-describe("message catalogs", () => {
+describe("translation catalogs", () => {
 	it("expose the same set of keys in every locale", () => {
 		expect(collectKeyPaths(enUS)).toEqual(collectKeyPaths(jaJP));
 	});

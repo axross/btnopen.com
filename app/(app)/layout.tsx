@@ -10,8 +10,7 @@ import {
 } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { type ReactNode, Suspense } from "react";
-import { htmlLangByLocale } from "@/i18n/config";
-import { getActiveLocale } from "@/i18n/get-active-locale";
+import { getActiveLocale, htmlLangByLocale } from "@/helpers/i18n";
 import { getWebsite } from "@/repositories/get-website";
 import { sha, urlOrigin, vercelEnvironment } from "@/runtime";
 import { Header } from "./_components/header";

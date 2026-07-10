@@ -4,9 +4,9 @@ import type { JSX } from "react";
 import { Suspense } from "react";
 import {
 	alternateOpenGraphLocales,
+	getActiveLocale,
 	openGraphLocaleByLocale,
-} from "@/i18n/config";
-import { getActiveLocale } from "@/i18n/get-active-locale";
+} from "@/helpers/i18n";
 import { getBlogPost } from "@/repositories/get-blog-post";
 import { getWebsite } from "@/repositories/get-website";
 import { urlOrigin } from "@/runtime";

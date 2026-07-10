@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { negotiateLocale } from "./negotiate";
+import { negotiateLocale } from "./i18n";
 
 describe("negotiateLocale()", () => {
 	describe("cookie precedence", () => {

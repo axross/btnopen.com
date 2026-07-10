@@ -3,7 +3,7 @@
 import { captureException } from "@sentry/nextjs";
 import NextError from "next/error";
 import { useEffect } from "react";
-import { defaultLocale, htmlLangByLocale } from "@/i18n/config";
+import { defaultLocale, htmlLangByLocale } from "@/helpers/i18n";
 
 export default function GlobalError({
 	error,

@@ -1,7 +1,7 @@
 import { formatDate } from "date-fns";
 import type { JSX } from "react";
 import type { BlogPosting, WithContext } from "schema-dts";
-import { getActiveLocale } from "@/i18n/get-active-locale";
+import { getActiveLocale } from "@/helpers/i18n";
 import type { BlogPostDetail } from "@/repositories/get-blog-post";
 import { getWebsite } from "@/repositories/get-website";
 import { urlOrigin } from "@/runtime";

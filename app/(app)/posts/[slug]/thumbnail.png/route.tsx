@@ -9,7 +9,7 @@ import { ImageResponse } from "next/og";
 import type { ImageResponseOptions, NextRequest } from "next/server";
 import sharp from "sharp";
 import { Logo } from "@/components/logo";
-import { defaultLocale } from "@/i18n/config";
+import { defaultLocale } from "@/helpers/i18n";
 import { rootLogger } from "@/logger";
 import { getBlogPost } from "@/repositories/get-blog-post";
 import { urlOrigin, vercelBlobToken } from "@/runtime";

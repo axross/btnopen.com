@@ -1,6 +1,6 @@
 import type { JSX } from "react";
 import { Markdown } from "@/components/markdown";
-import { getActiveLocale } from "@/i18n/get-active-locale";
+import { getActiveLocale } from "@/helpers/i18n";
 import { getBlogPostMarkdown } from "@/repositories/get-blog-post-markdown";
 import css from "./blog-post-content.module.css";
 
