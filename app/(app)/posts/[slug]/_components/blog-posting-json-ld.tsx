@@ -1,6 +1,7 @@
 import { formatDate } from "date-fns";
 import type { JSX } from "react";
 import type { BlogPosting, WithContext } from "schema-dts";
+import { getActiveLocale } from "@/helpers/i18n";
 import type { BlogPostDetail } from "@/repositories/get-blog-post";
 import { getWebsite } from "@/repositories/get-website";
 import { urlOrigin } from "@/runtime";
@@ -13,7 +14,7 @@ export async function BlogPostingJsonLd({
 	draft?: Promise<boolean>;
 }): Promise<JSX.Element | null> {
 	const [website, blogPost] = await Promise.all([
-		getWebsite({ draft: await draftPromise }),
+		getWebsite({ draft: await draftPromise, locale: await getActiveLocale() }),
 		blogPostPromise,
 	]);
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import type { JSX } from "react";
 import { NotFoundContent } from "@/components/not-found-content";
 
@@ -6,11 +7,13 @@ export const metadata: Metadata = {
 	title: "Not Found | <btn open />",
 };
 
-export default function BlogPostNotFound(): JSX.Element {
+export default async function BlogPostNotFound(): Promise<JSX.Element> {
+	const t = await getTranslations("not-found");
+
 	return (
 		<NotFoundContent
 			heading="post.found === false"
-			description="お探しの投稿は見つかりませんでした"
+			description={t("post-description")}
 		/>
 	);
 }

@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { type JSX, Suspense } from "react";
 import { Markdown } from "@/components/markdown";
+import {
+	alternateOpenGraphLocales,
+	getActiveLocale,
+	openGraphLocaleByLocale,
+} from "@/helpers/i18n";
 import { getWebsite, type Website } from "@/repositories/get-website";
 import { urlOrigin } from "@/runtime";
 import { BlogJsonLd } from "./_components/blog-json-jd";
@@ -14,7 +20,12 @@ import type { PageProps } from "./page-props";
 
 async function IndexPage({ searchParams }: PageProps): Promise<JSX.Element> {
 	const draft = searchParams.then((params) => params.draft === "true");
-	const website = draft.then((isDraft) => getWebsite({ draft: isDraft }));
+	// resolve the locale inside the promise callback (not as an eagerly
+	// evaluated argument) so the dynamic cookie read happens within the Suspense
+	// boundaries that await `website`.
+	const website = draft.then(async (isDraft) =>
+		getWebsite({ draft: isDraft, locale: await getActiveLocale() }),
+	);
 
 	return (
 		<>
@@ -38,7 +49,10 @@ async function IndexPageMain({
 	website: Promise<Website | null>;
 	draft?: Promise<boolean>;
 }): Promise<JSX.Element> {
-	const website = await websitePromise;
+	const [website, t] = await Promise.all([
+		websitePromise,
+		getTranslations("index"),
+	]);
 
 	if (!website) {
 		notFound();
@@ -50,7 +64,7 @@ async function IndexPageMain({
 
 			<section
 				className={css.intro}
-				aria-label="Introduction"
+				aria-label={t("introduction-label")}
 				data-testid="intro"
 			>
 				<div className={css.portrait}>
@@ -88,7 +102,7 @@ async function IndexPageMain({
 			<section className={css.section} aria-labelledby="posts-heading">
 				{/* biome-ignore lint/correctness/useUniqueElementIds: stable anchor for this section's aria-labelledby; IndexPageMain renders once per page (and is an async server component where useId is unavailable), so there is no duplicate-id risk */}
 				<h2 id="posts-heading" className={css.sectionHeading}>
-					{"Posts"}
+					{t("posts-heading")}
 				</h2>
 
 				<BlogPostList
@@ -102,7 +116,8 @@ async function IndexPageMain({
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const website = await getWebsite();
+	const locale = await getActiveLocale();
+	const website = await getWebsite({ locale });
 
 	if (!website) {
 		notFound();
@@ -132,7 +147,8 @@ export async function generateMetadata(): Promise<Metadata> {
 			],
 			siteName: website.name,
 			type: "website",
-			locale: "ja_JP",
+			locale: openGraphLocaleByLocale[locale],
+			alternateLocale: alternateOpenGraphLocales(locale),
 		},
 	};
 }

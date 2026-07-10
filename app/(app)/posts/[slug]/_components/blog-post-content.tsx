@@ -1,5 +1,6 @@
 import type { JSX } from "react";
 import { Markdown } from "@/components/markdown";
+import { getActiveLocale } from "@/helpers/i18n";
 import { getBlogPostMarkdown } from "@/repositories/get-blog-post-markdown";
 import css from "./blog-post-content.module.css";
 
@@ -10,8 +11,12 @@ export async function BlogPostContent({
 	slug: Promise<string>;
 	draft?: Promise<boolean>;
 }): Promise<JSX.Element | null> {
-	const [slug, draft] = await Promise.all([slugPromise, draftPromise]);
-	const markdown = await getBlogPostMarkdown({ slug, draft });
+	const [slug, draft, locale] = await Promise.all([
+		slugPromise,
+		draftPromise,
+		getActiveLocale(),
+	]);
+	const markdown = await getBlogPostMarkdown({ slug, draft, locale });
 
 	if (!markdown) {
 		return null;

@@ -31,6 +31,10 @@ export default defineConfig({
 
 	use: {
 		baseURL: baseUrl ?? "http://localhost:3000",
+		// pin the negotiated locale so the suite renders the Japanese-primary
+		// site deterministically; locale-specific behavior is covered explicitly
+		// in e2e/tests/content-negotiation.test.ts.
+		locale: "ja-JP",
 		trace: {
 			mode: "retain-on-first-failure",
 			screenshots: true,

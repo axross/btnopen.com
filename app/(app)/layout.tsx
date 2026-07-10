@@ -8,7 +8,9 @@ import {
 	IBM_Plex_Sans_JP,
 	JetBrains_Mono,
 } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
 import { type ReactNode, Suspense } from "react";
+import { getActiveLocale, htmlLangByLocale } from "@/helpers/i18n";
 import { getWebsite } from "@/repositories/get-website";
 import { sha, urlOrigin, vercelEnvironment } from "@/runtime";
 import { Header } from "./_components/header";
@@ -35,7 +37,7 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-	const website = await getWebsite();
+	const website = await getWebsite({ locale: await getActiveLocale() });
 
 	return {
 		metadataBase: new URL(urlOrigin),
@@ -70,18 +72,36 @@ export const viewport: Viewport = {
 export default function RootLayout({
 	children,
 }: Readonly<{ children: ReactNode }>) {
+	// resolving the negotiated locale for `<html lang>` is request-time work.
+	// rendering the document from inside a Suspense boundary lets Cache
+	// Components stream it as dynamic content instead of treating the cookie
+	// read as blocking the whole route.
 	return (
-		<html lang="en">
+		<Suspense>
+			<Document>{children}</Document>
+		</Suspense>
+	);
+}
+
+async function Document({
+	children,
+}: Readonly<{ children: ReactNode }>): Promise<ReactNode> {
+	const locale = await getActiveLocale();
+
+	return (
+		<html lang={htmlLangByLocale[locale]}>
 			<body
 				className={`${ibmPlexSans.variable} ${ibmPlexSansJp.variable} ${jetBrainsMono.variable}`}
 			>
-				<Header />
+				<NextIntlClientProvider>
+					<Header />
 
-				{children}
+					{children}
 
-				<Suspense>
-					<PageViewTracking />
-				</Suspense>
+					<Suspense>
+						<PageViewTracking />
+					</Suspense>
+				</NextIntlClientProvider>
 			</body>
 		</html>
 	);

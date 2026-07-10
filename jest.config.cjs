@@ -40,7 +40,10 @@ const customJestConfig = {
 		]),
 	),
 	testEnvironment: "node",
-	testMatch: ["<rootDir>/payload/helpers/mcp/**/*.spec.ts"],
+	testMatch: [
+		"<rootDir>/payload/helpers/mcp/**/*.spec.ts",
+		"<rootDir>/app/**/*.spec.ts",
+	],
 };
 
 module.exports = createJestConfig(customJestConfig);

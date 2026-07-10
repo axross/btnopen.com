@@ -3,6 +3,7 @@
 import { captureException } from "@sentry/nextjs";
 import NextError from "next/error";
 import { useEffect } from "react";
+import { defaultLocale, htmlLangByLocale } from "@/helpers/i18n";
 
 export default function GlobalError({
 	error,
@@ -14,7 +15,9 @@ export default function GlobalError({
 	}, [error]);
 
 	return (
-		<html lang="en">
+		// this top-level error boundary renders outside the next-intl provider,
+		// so it cannot resolve the negotiated locale; fall back to the default.
+		<html lang={htmlLangByLocale[defaultLocale]}>
 			<body>
 				{/* `NextError` is the default Next.js error page component. Its type
         definition requires a `statusCode` prop. However, since the App Router

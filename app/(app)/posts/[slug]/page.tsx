@@ -2,6 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { JSX } from "react";
 import { Suspense } from "react";
+import {
+	alternateOpenGraphLocales,
+	getActiveLocale,
+	openGraphLocaleByLocale,
+} from "@/helpers/i18n";
 import { getBlogPost } from "@/repositories/get-blog-post";
 import { getWebsite } from "@/repositories/get-website";
 import { urlOrigin } from "@/runtime";
@@ -19,8 +24,11 @@ export default async function BlogPostPage({
 	const slug = params.then((p) => p.slug);
 	const draft = searchParams.then((p) => p.draft === "true");
 	const preview = searchParams.then((p) => p.preview === "true");
-	const blogPost = Promise.all([slug, draft]).then(([s, d]) =>
-		getBlogPost({ slug: s, draft: d }),
+	// resolve the locale inside the promise callback (not as an eagerly
+	// evaluated argument) so the dynamic cookie read happens within the Suspense
+	// boundaries that await `blogPost`, not at the top of the route.
+	const blogPost = Promise.all([slug, draft]).then(async ([s, d]) =>
+		getBlogPost({ slug: s, draft: d, locale: await getActiveLocale() }),
 	);
 
 	return (
@@ -77,9 +85,10 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
 	const [{ slug }, { draft }] = await Promise.all([params, searchParams]);
 	const isDraft = draft === "true";
+	const locale = await getActiveLocale();
 	const [website, blogPost] = await Promise.all([
-		getWebsite({ draft: isDraft }),
-		getBlogPost({ slug, draft: isDraft }),
+		getWebsite({ draft: isDraft, locale }),
+		getBlogPost({ slug, draft: isDraft, locale }),
 	]);
 
 	if (!website || !blogPost) {
@@ -115,7 +124,8 @@ export async function generateMetadata({
 			modifiedTime: blogPost.updatedAt,
 			section: "Technology",
 			tags: blogPost.tags.map((tag) => tag.name),
-			locale: "ja_JP",
+			locale: openGraphLocaleByLocale[locale],
+			alternateLocale: alternateOpenGraphLocales(locale),
 		},
 	};
 }
