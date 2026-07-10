@@ -61,4 +61,4 @@ A constrained input format is itself a security control: every capability the fo
 **Guidelines:**
 
 - MUST flag a Critical when any new code calls `unified().use(…).process(rawHtml)` with HTML — the project uses markdown only. A divergence to HTML widens the attack surface to anything `rehype` accepts.
-- MUST flag a Critical when a new module loads markdown from the filesystem or arbitrary HTTP at runtime — the project rule per [markdown-processing-guidelines › content-source](../../markdown-processing-guidelines/references/content-source.md) is that all content comes from Payload.
+- MUST flag a Critical when a new module loads markdown from the filesystem or arbitrary HTTP at runtime — the project rule per the project's markdown-processing guidelines (content-source rules) is that all content comes from Payload.

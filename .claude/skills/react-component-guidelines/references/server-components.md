@@ -121,7 +121,7 @@ export function WebembedLoading({ ...props }: ComponentProps<"div">): JSX.Elemen
   - `[name]/loading.tsx` — the skeleton/placeholder Client or Server Component.
 
 - SHOULD make the parent component (`[name].tsx`) act as the orchestrator, wrapping `loaded` in `<Suspense fallback={<Loading />}>`.
-- MUST keep the `loaded` and `loading` siblings on the same CSS-Module selectors and tokens across their paired `loaded.module.css` / `loading.module.css` files so adding a cell on one side does not silently diverge from the other. The design rationale (no layout shift between skeleton and real content) lives in [ui-design-principles › loading-and-empty-states](../../ui-design-principles/references/loading-and-empty-states.md).
+- MUST keep the `loaded` and `loading` siblings on the same CSS-Module selectors and tokens across their paired `loaded.module.css` / `loading.module.css` files so adding a cell on one side does not silently diverge from the other. The design rationale (no layout shift between skeleton and real content) lives in the project's UI design principles (loading-and-empty-states rules).
 - SHOULD make the `loading` sibling accept the same `className` passthrough and a `data-testid` suffixed with `-loading` (see [testable-components.md](./testable-components.md)) so parents swap only the component, not the surrounding markup.
 
 ## Caching with `"use cache"` and `cacheLife()`

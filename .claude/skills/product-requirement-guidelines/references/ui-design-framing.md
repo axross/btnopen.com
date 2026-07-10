@@ -1,6 +1,6 @@
 # UI Design Section Framing
 
-Apply this reference when drafting or reviewing the "UI design" section of a spec — hierarchy, interaction states, accessibility intent, responsive behavior, and copy constraints, described in spec terms, not implementation. Sourced from PRD/design-spec practice, design-system precedent, and accessibility standards: [Shape Up's breadboarding](https://basecamp.com/shapeup/1.3-chapter-04), [Shopify Polaris on interaction states](https://polaris-react.shopify.com/design/interaction-states), [Material Design 3 on states](https://m3.material.io/foundations/interaction/states/applying-states), [NN/g on empty states](https://www.nngroup.com/articles/empty-state-interface-design/) and [error messages](https://www.nngroup.com/articles/error-message-guidelines/), [W3C WCAG 2.2](https://www.w3.org/TR/WCAG22/), [GOV.UK's accessibility acceptance criteria practice](https://insidegovuk.blog.gov.uk/2018/01/24/improving-accessibility-with-accessibility-acceptance-criteria/), and [A List Apart on responsive design](https://alistapart.com/article/responsive-web-design/). Implementation mechanics for these same concerns — component structure, CSS, ARIA markup — stay owned by [UI Design Principles](../../ui-design-principles/SKILL.md) and [React Component Guidelines](../../react-component-guidelines/SKILL.md); this reference owns only how to *describe* them in a spec.
+Apply this reference when drafting or reviewing the "UI design" section of a spec — hierarchy, interaction states, accessibility intent, responsive behavior, and copy constraints, described in spec terms, not implementation. Sourced from PRD/design-spec practice, design-system precedent, and accessibility standards: [Shape Up's breadboarding](https://basecamp.com/shapeup/1.3-chapter-04), [Shopify Polaris on interaction states](https://polaris-react.shopify.com/design/interaction-states), [Material Design 3 on states](https://m3.material.io/foundations/interaction/states/applying-states), [NN/g on empty states](https://www.nngroup.com/articles/empty-state-interface-design/) and [error messages](https://www.nngroup.com/articles/error-message-guidelines/), [W3C WCAG 2.2](https://www.w3.org/TR/WCAG22/), [GOV.UK's accessibility acceptance criteria practice](https://insidegovuk.blog.gov.uk/2018/01/24/improving-accessibility-with-accessibility-acceptance-criteria/), and [A List Apart on responsive design](https://alistapart.com/article/responsive-web-design/). Implementation mechanics for these same concerns — component structure, CSS, ARIA markup — stay owned by the project's UI design principles and the project's React component guidelines; this reference owns only how to *describe* them in a spec.
 
 ## When to Include a UI Design Section
 
@@ -14,12 +14,12 @@ Not every change earns a UI design section, and forcing one onto a non-view-affe
 
 ## State Before Mechanics
 
-A UI design section describes hierarchy, layout intent, and content priority in spec terms — what's primary, what's secondary, what's optional — not specific components, class names, or markup. That separation is what keeps this reference from duplicating [UI Design Principles](../../ui-design-principles/SKILL.md) and [React Component Guidelines](../../react-component-guidelines/SKILL.md): the spec states *what* the surface must convey, those skills own *how* it's built.
+A UI design section describes hierarchy, layout intent, and content priority in spec terms — what's primary, what's secondary, what's optional — not specific components, class names, or markup. That separation is what keeps this reference from duplicating the project's UI design principles and the project's React component guidelines: the spec states *what* the surface must convey, those skills own *how* it's built.
 
 **Guidelines:**
 
 - MUST describe hierarchy and content priority in spec-level terms (primary/secondary/optional), not component names or markup.
-- MUST NOT prescribe implementation details (specific components, CSS properties, class names) that belong to [React Component Guidelines](../../react-component-guidelines/SKILL.md).
+- MUST NOT prescribe implementation details (specific components, CSS properties, class names) that belong to the project's React component guidelines.
 - SHOULD state layout intent as relationships between elements (e.g., "the confirmation sits below the primary action") rather than pixel positions.
 
 ## Interaction States
@@ -40,7 +40,7 @@ Accessibility intent belongs in the spec as testable outcomes, not a compliance 
 **Guidelines:**
 
 - MUST state accessibility intent as testable, outcome-level criteria referencing specific WCAG success criteria (e.g., "meets 2.4.7 Focus Visible") rather than a blanket "must be accessible."
-- SHOULD describe keyboard and screen-reader expectations as user-observable behavior (visible focus indicator, logical tab order, meaningful state announcement on change), deferring ARIA attribute choices to [React Component Guidelines](../../react-component-guidelines/SKILL.md) and the [W3C ARIA Authoring Practices Guide](https://www.w3.org/WAI/ARIA/apg/).
+- SHOULD describe keyboard and screen-reader expectations as user-observable behavior (visible focus indicator, logical tab order, meaningful state announcement on change), deferring ARIA attribute choices to the project's React component guidelines and the [W3C ARIA Authoring Practices Guide](https://www.w3.org/WAI/ARIA/apg/).
 - SHOULD scope accessibility criteria to the specific interaction being changed rather than restating all of WCAG.
 
 ## Responsive Behavior Intent

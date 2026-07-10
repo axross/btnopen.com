@@ -8,7 +8,7 @@ Sequential awaits make response time the sum of every operation's latency; concu
 
 **Guidelines:**
 
-- MUST flag a Major when a Server Component does `await getA()` followed by `await getB()` where `getB` does not depend on `getA`. Use `Promise.all([getA(), getB()])`, or pass each as a `Promise<T>` prop down to the consuming child per [react-component-guidelines › client-vs-server-components](../../react-component-guidelines/references/client-vs-server-components.md).
+- MUST flag a Major when a Server Component does `await getA()` followed by `await getB()` where `getB` does not depend on `getA`. Use `Promise.all([getA(), getB()])`, or pass each as a `Promise<T>` prop down to the consuming child per the project's React component guidelines (client-vs-server-components rules).
 - MUST flag a Critical when the diff converts a `Promise<T>`-prop pattern back into an awaited-at-parent pattern without a stated reason — that change re-introduces the waterfall.
 - SHOULD point to the existing pattern in `app/(app)/posts/[slug]/page.tsx` as the reference: `params`, `searchParams`, and `getBlogPost(…)` are derived as Promises and passed to children that `await` them inside `<Suspense>` boundaries.
 
@@ -20,7 +20,7 @@ A `<Suspense>` boundary streams at the pace of the slowest thing inside it, so g
 
 - MUST flag a Major when a single `<Suspense>` boundary wraps two independently-slow async children. Split into one boundary per slow unit so each can stream to the client as it resolves.
 - MUST flag a Major when `<Suspense>` is missing for an async Server Component that has a meaningful loading state — without it, the parent route blocks until the data arrives.
-- MUST flag a Minor when `<Suspense fallback={…}>` provides a fallback for a side-effect-only component (e.g., a JSON-LD injector). Side-effect components SHOULD use `<Suspense>` without a fallback per [react-component-guidelines › server-components](../../react-component-guidelines/references/server-components.md).
+- MUST flag a Minor when `<Suspense fallback={…}>` provides a fallback for a side-effect-only component (e.g., a JSON-LD injector). Side-effect components SHOULD use `<Suspense>` without a fallback per the project's React component guidelines (server-components rules).
 
 ## Loading / Loaded Split
 
@@ -30,7 +30,7 @@ Mixing loading and loaded concerns in one component couples the skeleton to data
 
 - MUST flag a Major when a new component performs data fetching but does not split into `<name>/loaded.tsx` + `<name>/loading.tsx` + `<name>.tsx` orchestrator when the loading state is user-visible. The existing `app/(app)/_/components/webembed/` is the canonical layout.
 - MUST flag a Critical when a `loading.tsx` skeleton imports the loaded data type and renders fields from it — the skeleton MUST render with no data so it can show before the fetch resolves.
-- MUST flag a Major when the orchestrator does not propagate `data-testid={…+ "-loading"}` to the `<Loading>` fallback — e2e cannot assert the skeleton state otherwise. See [e2e-testing-guidelines](../../e2e-testing-guidelines/SKILL.md).
+- MUST flag a Major when the orchestrator does not propagate `data-testid={…+ "-loading"}` to the `<Loading>` fallback — e2e cannot assert the skeleton state otherwise. See the project's e2e testing guidelines.
 
 ## Client Component Promotion
 
@@ -61,4 +61,4 @@ The `"use client"` boundary is transitive — a promoted component carries every
 
 **Guidelines:**
 
-- MUST NOT recommend disabling `cacheComponents` or `reactCompiler` to "fix" a perf issue — escalate to the human owner per [code-review-guideline › escalation](../../code-review-guideline/references/escalation.md).
+- MUST NOT recommend disabling `cacheComponents` or `reactCompiler` to "fix" a perf issue — escalate to the human owner per the project's code-review guideline (escalation rules).

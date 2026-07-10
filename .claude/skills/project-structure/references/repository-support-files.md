@@ -19,8 +19,8 @@ Repository support files define runtime, build, type-checking, test, and observa
 
 **Guidelines:**
 
-- MUST consult [Development Guidelines](../../development-guidelines/SKILL.md) before changing npm scripts, dependencies, formatting, linting, or verification commands.
-- MUST consult [Application Security Requirements](../../application-security-requirements/SKILL.md) before changing environment-variable shape, secrets, Payload access control, or public exposure.
-- MUST consult [Observability Guidelines](../../observability-guidelines/SKILL.md) before changing instrumentation, Sentry config, or logger setup.
-- MUST consult [E2E Testing Guidelines](../../e2e-testing-guidelines/SKILL.md) before changing `playwright.config.ts` or files under `e2e/`.
+- MUST consult the project's development guidelines before changing npm scripts, dependencies, formatting, linting, or verification commands.
+- MUST consult the project's application-security requirements before changing environment-variable shape, secrets, Payload access control, or public exposure.
+- MUST consult the project's observability guidelines before changing instrumentation, Sentry config, or logger setup.
+- MUST consult the project's e2e testing guidelines before changing `playwright.config.ts` or files under `e2e/`.
 - MUST treat generated outputs such as `.next/`, `node_modules/`, `payload/types.ts`, and Payload-generated route files as non-source unless the task explicitly concerns generation.

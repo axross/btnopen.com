@@ -9,8 +9,8 @@ Every changed file a reviewer cannot trace back to the stated goal widens the re
 **Guidelines:**
 
 - MUST identify the stated user goal (from the PR description, commit message, or the task the user gave the reviewer) and confirm every changed file traces back to that goal.
-- MUST flag any drive-by change — a renamed unrelated variable, a refactor of an untouched file, a formatter change to a file that did not need to be edited — as Minor scope creep, per [development-guidelines › change-management](../../development-guidelines/references/change-management.md).
-- MUST NOT itself extend the review into pre-existing concerns; surface them under "Pre-existing Observations" per [evidence.md](../../code-review-guideline/references/evidence.md).
+- MUST flag any drive-by change — a renamed unrelated variable, a refactor of an untouched file, a formatter change to a file that did not need to be edited — as Minor scope creep, per the project's development guidelines (change-management rules).
+- MUST NOT itself extend the review into pre-existing concerns; surface them under "Pre-existing Observations" per the project's code-review guideline (evidence rules).
 
 ## YAGNI
 
@@ -48,7 +48,7 @@ A component that owns several unrelated entities couples their fetches, so one s
 
 **Guidelines:**
 
-- SHOULD flag a Server Component whose responsibility extends across multiple unrelated entities (e.g., one component that fetches a blog post **and** the website settings **and** the tag list). Split per concern; each child gets its own Suspense boundary per [react-component-guidelines › server-components](../../react-component-guidelines/references/server-components.md).
+- SHOULD flag a Server Component whose responsibility extends across multiple unrelated entities (e.g., one component that fetches a blog post **and** the website settings **and** the tag list). Split per concern; each child gets its own Suspense boundary per the project's React component guidelines (server-components rules).
 - MUST flag a Server Component that **mutates** data — repositories under `app/(app)/_/repositories/` are read-only. Mutations belong in `route.ts` handlers or Payload hooks.
 - SHOULD flag a Loading component that depends on the loaded data shape (defeats the loaded/loading split) — the loading skeleton must render with no data.
 
@@ -58,4 +58,4 @@ The more unrelated ground one diff covers, the more likely a real defect slips p
 
 **Guidelines:**
 
-- SHOULD flag a single PR/diff that touches more than ~15 unrelated files or more than ~600 lines net change as Minor "consider splitting". Large diffs increase the chance the reviewer misses something. Defer the split decision to the human owner per [escalation.md](../../code-review-guideline/references/escalation.md).
+- SHOULD flag a single PR/diff that touches more than ~15 unrelated files or more than ~600 lines net change as Minor "consider splitting". Large diffs increase the chance the reviewer misses something. Defer the split decision to the human owner per the project's code-review guideline (escalation rules).

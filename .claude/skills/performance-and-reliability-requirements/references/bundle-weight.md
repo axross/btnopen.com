@@ -16,7 +16,7 @@ The bundler follows every import edge regardless of how little of a module is us
   - `@sentry/nextjs`'s server-only entries (e.g., `captureRequestError`)
   - `node:*` modules
   - `server-only` (the literal package; importing it in a client file is a build error by design)
-- MUST flag a Critical when a `"use client"` file imports from `@/repositories/*` or `@/payload/*` — these tiers contain server-only code per [maintainable-code-guidelines › abstraction-boundaries](../../maintainable-code-guidelines/references/abstraction-boundaries.md).
+- MUST flag a Critical when a `"use client"` file imports from `@/repositories/*` or `@/payload/*` — these tiers contain server-only code per the project's maintainable-code guidelines (abstraction-boundaries rules).
 
 ## Heavy Client Dependencies
 
@@ -28,7 +28,7 @@ Server-side code costs the server once per request; client-side code costs every
   - `date-fns` is OK but flag if the diff uses ≥ 5 separate `date-fns` modules and the work could happen server-side in a Server Component.
   - `mixpanel-browser` is necessarily client-side (analytics) — do not flag.
   - `clsx` is tiny; do not flag.
-- MUST flag a Major when a new dependency added to `package.json` has an installed size > 200 KB and is imported into a `"use client"` file. Cross-reference with [application-security-requirements › supply-chain](../../application-security-requirements/references/supply-chain.md).
+- MUST flag a Major when a new dependency added to `package.json` has an installed size > 200 KB and is imported into a `"use client"` file. Cross-reference with the project's application-security requirements (supply-chain rules).
 
 ## Re-Exports and Barrel Files
 
@@ -36,7 +36,7 @@ A barrel import hands the bundler the whole index, and everything the re-exports
 
 **Guidelines:**
 
-- MUST flag a Critical when a new barrel file (`index.ts` that re-exports everything) is created and imported from a `"use client"` file. Per [development-guidelines › code-quality](../../development-guidelines/references/code-quality.md), the project rule is to import directly from the source module.
+- MUST flag a Critical when a new barrel file (`index.ts` that re-exports everything) is created and imported from a `"use client"` file. Per the project's development guidelines (code-quality rules), the project rule is to import directly from the source module.
 - MUST flag a Major when a new client component imports from a file that itself re-exports server-only modules. The transitive pull will fail the build at best and bloat the client bundle at worst.
 
 ## `serverExternalPackages`

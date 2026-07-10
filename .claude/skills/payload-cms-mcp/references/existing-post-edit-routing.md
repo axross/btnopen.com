@@ -4,7 +4,7 @@ Existing Post Edit Routing resolves the project convention that caused ambiguity
 
 Seed markdown files such as `payload/helpers/seed/blog-post.md` describe initial fixture content used when the local seed process creates missing records. They are useful references for reconstructing an example post, but they do not update an already-existing Payload document.
 
-For editorial decisions about what the replacement prose should say, consult [Blog Post Authoring Guidelines](../../blog-post-authoring-guidelines/SKILL.md). This skill owns the mechanics of locating, mutating, and verifying Payload CMS content through MCP.
+For editorial decisions about what the replacement prose should say, consult the project's blog-post authoring guidelines. This skill owns the mechanics of locating, mutating, and verifying Payload CMS content through MCP.
 
 **Guidelines:**
 

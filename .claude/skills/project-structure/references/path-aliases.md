@@ -15,4 +15,4 @@ The TypeScript aliases in `tsconfig.json` make shared app, Payload, and e2e impo
 - MUST keep route-local imports relative when both files live in the same route-owned subtree.
 - MUST update this section when `tsconfig.json` path aliases are added, removed, or repointed.
 - MUST NOT add a new alias without confirming it improves ownership clarity beyond the existing `@/*`, Payload, or e2e aliases.
-- SHOULD prefer direct module imports over barrel files per [Development Guidelines](../../development-guidelines/references/code-quality.md).
+- SHOULD prefer direct module imports over barrel files per the project's development guidelines (code-quality rules).

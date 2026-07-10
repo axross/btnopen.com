@@ -13,7 +13,7 @@ Each of these hides a real race instead of fixing it, so the nondeterminism ship
   - A `try`/`catch` around an `expect(…)` to "make the test pass when it sometimes fails".
   - A `test.skip(…)` or `test.fixme(…)` added to suppress an intermittent failure rather than to skip a known-broken test with a tracked issue.
   - A `for (let i = 0; i < <n>; i++)` retry loop wrapping an assertion.
-- MUST flag a Critical when the diff modifies `playwright.config.ts` to weaken `repeatEach`, `failOnFlakyTests`, `forbidOnly`, or to add `retries: > 0`. Defer the change to the human owner per [escalation.md](../../code-review-guideline/references/escalation.md).
+- MUST flag a Critical when the diff modifies `playwright.config.ts` to weaken `repeatEach`, `failOnFlakyTests`, `forbidOnly`, or to add `retries: > 0`. Defer the change to the human owner per the project's code-review guideline (escalation rules).
 
 ## Root-Cause Investigation
 

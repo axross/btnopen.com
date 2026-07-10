@@ -1,6 +1,6 @@
 # Error Handling and Observability
 
-Apply these rules to verify the change keeps the project's error-propagation model and structured-logging discipline intact. Defer the developer-facing rules to [observability-guidelines](../../observability-guidelines/SKILL.md) — this file is the **reviewer's** flagging checklist. Errors are reported to Sentry via `captureException()`; structured logging goes through Pino.
+Apply these rules to verify the change keeps the project's error-propagation model and structured-logging discipline intact. Defer the developer-facing rules to the project's observability guidelines — this file is the **reviewer's** flagging checklist. Errors are reported to Sentry via `captureException()`; structured logging goes through Pino.
 
 ## `try`/`catch` Placement
 
@@ -8,7 +8,7 @@ A catch block inside a nested helper decides recovery policy for callers it know
 
 **Guidelines:**
 
-- MUST flag a Major when a new `try`/`catch` is placed inside a nested helper rather than at the root call site (route handler, RSC, `route.ts`, server action). The project rule per [observability-guidelines › error-handling](../../observability-guidelines/references/error-handling.md) is "let errors propagate to the root call site".
+- MUST flag a Major when a new `try`/`catch` is placed inside a nested helper rather than at the root call site (route handler, RSC, `route.ts`, server action). The project rule per the project's observability guidelines (error-handling rules) is "let errors propagate to the root call site".
 - MUST flag a Critical when a `catch` block does any of:
   - Logs without rethrowing or calling `captureException()` (silent error swallow)
   - Returns a default value (e.g., `return null`, `return []`) without `captureException()` — the failure becomes invisible
@@ -32,7 +32,7 @@ The logger has none of the stack traces, grouping, or alerting Sentry provides, 
 
 **Guidelines:**
 
-- MUST flag a Critical when the diff calls `logger.error(…)` — the project bans this in favor of `captureException()` per [observability-guidelines › logging](../../observability-guidelines/references/logging.md).
+- MUST flag a Critical when the diff calls `logger.error(…)` — the project bans this in favor of `captureException()` per the project's observability guidelines (logging rules).
 - MUST flag a Critical when a new module creates a `pino()` instance directly instead of `rootLogger.child({ module: "<emoji>" })`.
 - MUST flag a Major when the new module's child-logger emoji collides with an existing one. Currently in use: `📥` (data fetching), `🌏` (external HTTP), `🖼️` (image handling), `🥾` (instrumentation/bootstrap).
 - MUST flag a Major when a new slow / external operation lacks the `Started …` / `Completed …` log pair with `duration` per the convention. The existing `getBlogPostMarkdown` records `duration: performance.now() - processStartedAt` — match this for new fetch / parse / IO operations.
@@ -43,7 +43,7 @@ Log output is retained, indexed, and readable by far more people and systems tha
 
 **Guidelines:**
 
-- MUST flag a Critical when a log line interpolates a secret (token, password, session ID, full request body). Cross-reference with [application-security-requirements › secret-handling](../../application-security-requirements/references/secret-handling.md).
+- MUST flag a Critical when a log line interpolates a secret (token, password, session ID, full request body). Cross-reference with the project's application-security requirements (secret-handling rules).
 - MUST flag a Major when a log message lacks a trailing period — the project convention is "every log message ends with a period".
 - MUST flag a Major when `logger.info(…)` is called for a high-frequency operation (e.g., per-render of a Server Component, per-iteration inside a tight loop). Move to `Started/Completed` at the boundary of the operation, not inside it.
 

@@ -20,7 +20,7 @@ See [verification-evidence.md](./references/verification-evidence.md) for:
 
 See [lint-and-format-gate.md](./references/lint-and-format-gate.md) for:
 
-- The author ran `npm run format` and `npm run lint` per [development-guidelines › code-quality](../development-guidelines/references/code-quality.md)
+- The author ran `npm run format` and `npm run lint` per the project's development guidelines (code-quality rules)
 - No new `// biome-ignore …` directives without an inline justification
 - No new lint warnings introduced into modified files
 
@@ -29,8 +29,8 @@ See [lint-and-format-gate.md](./references/lint-and-format-gate.md) for:
 See [e2e-coverage.md](./references/e2e-coverage.md) for:
 
 - Every new route, page section, or user-facing feature has a co-located test under `e2e/tests/routes/<route>/…`
-- New visually distinct UI elements expose `data-testid` per [react-component-guidelines › testable-components](../react-component-guidelines/references/testable-components.md)
-- Test files use the project's required locator and structure conventions per [e2e-testing-guidelines](../e2e-testing-guidelines/SKILL.md)
+- New visually distinct UI elements expose `data-testid` per the project's React component guidelines (testable-components rules)
+- Test files use the project's required locator and structure conventions per the project's e2e testing guidelines
 - API helpers under `e2e/helpers/api/` are used (not duplicated inline in the test file)
 
 ## Snapshot Handling

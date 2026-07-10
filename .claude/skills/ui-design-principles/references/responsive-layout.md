@@ -1,6 +1,6 @@
 # Responsive Layout
 
-Apply these rules when deciding how a surface should behave across screen widths — which transitions should happen at which width, how content density and structure should shift, and when a surface needs to opt into a layout variant at all. This file governs **design intent**; the mechanics for propagating tier state down into descendant styles live in [react-component-guidelines › css-property-usage › responsive-layout](../../react-component-guidelines/references/css-property-usage.md#responsive-layout), and the high-level reading posture sits in [design-tone-and-taste › layout-posture](./design-tone-and-taste.md#layout-posture).
+Apply these rules when deciding how a surface should behave across screen widths — which transitions should happen at which width, how content density and structure should shift, and when a surface needs to opt into a layout variant at all. This file governs **design intent**; the mechanics for propagating tier state down into descendant styles live in the project's React component guidelines (css-property-usage rules, Responsive Layout), and the high-level reading posture sits in [design-tone-and-taste › layout-posture](./design-tone-and-taste.md#layout-posture).
 
 ## Breakpoint Tiers
 

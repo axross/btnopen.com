@@ -2,7 +2,7 @@
 
 Editorial work should be planned around the reader-visible outcome first, then applied through the appropriate CMS workflow. This prevents an agent from optimizing for the easiest file edit instead of the correct content source.
 
-For existing posts, use [Payload CMS MCP](../../payload-cms-mcp/SKILL.md) to read the current document, apply mutations, and verify persistence.
+For existing posts, use the project's Payload CMS MCP skill to read the current document, apply mutations, and verify persistence.
 
 **Guidelines:**
 

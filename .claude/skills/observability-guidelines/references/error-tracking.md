@@ -9,8 +9,8 @@ This project uses `@sentry/nextjs` through Next.js instrumentation and runtime-s
 **Guidelines:**
 
 - MUST import Sentry helpers from `@sentry/nextjs`, not `@sentry/node` or other Sentry packages.
-- MUST consult [Development Guidelines › current-docs](../../development-guidelines/references/current-docs.md) before changing `instrumentation.ts`, `instrumentation-client.ts`, `sentry.server.config.ts`, `sentry.edge.config.ts`, source maps, or Sentry runtime options.
-- MUST consult [Application Security Requirements › privacy and exposure](../../application-security-requirements/references/privacy-and-exposure.md) before adding event context, tags, user identifiers, breadcrumbs, or request data.
+- MUST consult the project's development guidelines (current-docs rules) before changing `instrumentation.ts`, `instrumentation-client.ts`, `sentry.server.config.ts`, `sentry.edge.config.ts`, source maps, or Sentry runtime options.
+- MUST consult the project's application-security requirements (privacy-and-exposure rules) before adding event context, tags, user identifiers, breadcrumbs, or request data.
 - SHOULD keep Sentry setup in the existing instrumentation/config files instead of scattering initialization across feature modules.
 
 ## Capturing Exceptions

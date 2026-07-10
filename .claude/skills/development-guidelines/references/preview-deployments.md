@@ -2,7 +2,7 @@
 
 Apply these guidelines when working on the per-pull-request preview-deployment pipeline, or when configuring, verifying, or reasoning about branch deployments. The pipeline lets a reviewer see a PR's actual look and feel on a live Vercel URL without any risk to the production database, because Payload runs on a single Turso (SQLite) database that a naive preview could corrupt.
 
-The security trade-offs of this design (branching copies production content into a publicly reachable preview) are owned by [application-security-requirements › privacy-and-exposure](../../application-security-requirements/references/privacy-and-exposure.md); consult it before changing what data a preview receives or who can reach it.
+The security trade-offs of this design (branching copies production content into a publicly reachable preview) are owned by the project's application-security requirements (privacy-and-exposure rules); consult it before changing what data a preview receives or who can reach it.
 
 ## Pipeline Overview
 
@@ -52,7 +52,7 @@ These steps touch the GitHub and Turso/Vercel accounts and cannot be performed f
 - MUST scope the production `LIBSQL_PAYLOAD_TURSO_DATABASE_URL` and `LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN` to the **Production** environment only — this is the critical safety measure: with the production credentials absent from Preview, no preview build can reach production even if the workflow is bypassed (Payload falls back to a local file).
 - MUST NOT set the `LIBSQL_*` variables for the Preview environment; the workflow injects the branch credentials per deployment.
 - MUST configure the Preview environment's non-database variables (`PAYLOAD_SECRET`, the Vercel Blob token, Sentry variables) so a preview can build and run.
-- SHOULD use a distinct Preview `PAYLOAD_SECRET` per [application-security-requirements › privacy-and-exposure](../../application-security-requirements/references/privacy-and-exposure.md).
+- SHOULD use a distinct Preview `PAYLOAD_SECRET` per the project's application-security requirements (privacy-and-exposure rules).
 
 ## First-Run Verification
 

@@ -26,7 +26,7 @@ Values sent to the browser are public. The `NEXT_PUBLIC_*` prefix is a release d
 
 ## Preview Environment Data Exposure
 
-Per-PR preview deployments branch the production Turso database (see [development-guidelines › preview-deployments](../../development-guidelines/references/preview-deployments.md) for the pipeline). A branch is a full copy of production content, so it also copies sensitive rows — `users` (including hashed passwords) and `payload-mcp-api-keys` — into a database served from a publicly reachable preview URL whose Payload admin and MCP endpoints are live.
+Per-PR preview deployments branch the production Turso database (see the project's development guidelines, preview-deployments rules, for the pipeline). A branch is a full copy of production content, so it also copies sensitive rows — `users` (including hashed passwords) and `payload-mcp-api-keys` — into a database served from a publicly reachable preview URL whose Payload admin and MCP endpoints are live.
 
 **Guidelines:**
 

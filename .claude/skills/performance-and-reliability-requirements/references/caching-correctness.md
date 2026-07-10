@@ -53,4 +53,4 @@ The webembed cache exists to shield third-party metadata hosts from per-request 
 **Guidelines:**
 
 - MUST verify that `getWebEmbedMetadata` remains `cacheLife("hours")`; flag a Critical when a diff makes this function vary by request-time inputs (e.g., adds a `User-Agent` parameter that changes per visitor) because that explodes the cache key.
-- SHOULD flag a Minor recommendation that newly-added `fetch`-based metadata helpers also wrap their Pino logs in `Started …` / `Completed …` pairs with `duration` so cache misses are observable. See [observability-guidelines › logging](../../observability-guidelines/references/logging.md).
+- SHOULD flag a Minor recommendation that newly-added `fetch`-based metadata helpers also wrap their Pino logs in `Started …` / `Completed …` pairs with `duration` so cache misses are observable. See the project's observability guidelines (logging rules).

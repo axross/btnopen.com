@@ -11,7 +11,7 @@ The project enforces these thresholds in `biome.jsonc`; use the table as the rev
 | `noExcessiveCognitiveComplexity` | `error` at 24 | A new or modified function exceeds 24 — Critical (lint will fail) |
 | `noExcessiveLinesPerFunction` | `info` at 120 | A new or modified function exceeds 120 lines — Major (won't fail lint, but indicates the function should be split) |
 | `noMagicNumbers` | `style` warn | A literal number with no semantic meaning appears outside a CSS variable or named constant — Minor, unless the magic value affects security/auth (then Major) |
-| `noExplicitAny` | suspicious | `any` appears in changed code — Critical per [react-component-guidelines › conventions](../../react-component-guidelines/references/conventions.md) |
+| `noExplicitAny` | suspicious | `any` appears in changed code — Critical per the project's React component guidelines (conventions rules) |
 
 **Guidelines:**
 
@@ -37,15 +37,15 @@ Commented-out code cannot be tested or type-checked and only rots, and version c
 - MUST flag commented-out code blocks introduced by the change. Remove or restore them — do not leave them as TODO breadcrumbs.
 - MUST flag an unused import in a changed file (the linter will too, but call it out so it does not slip through).
 - MUST flag an exported symbol from a changed module that has zero callers in the diff or in the existing codebase. Either remove the export or add the caller in the same change.
-- SHOULD flag an empty `try`/`catch` (e.g., `catch { /* swallow */ }`) — see [observability-guidelines › error-handling](../../observability-guidelines/references/error-handling.md) for the rethrow rule.
+- SHOULD flag an empty `try`/`catch` (e.g., `catch { /* swallow */ }`) — see the project's observability guidelines (error-handling rules) for the rethrow rule.
 
 ## Comments and Doc-Comments
 
-The project's comment and doc-comment rules are owned by [development-guidelines › code-quality › Comments](../../development-guidelines/references/code-quality.md); this lens flags violations of them and links back rather than restating them.
+The project's comment and doc-comment rules are owned by the project's development guidelines (code-quality rules, Comments); this lens flags violations of them and links back rather than restating them.
 
 **Guidelines:**
 
-- MUST flag a changed/added type or function that lacks the doc-comment [code-quality › Doc-Comments](../../development-guidelines/references/code-quality.md) requires of it (including undocumented throwing conditions) — Minor, Major when it is an exported API.
+- MUST flag a changed/added type or function that lacks the doc-comment the project's development guidelines (code-quality rules, Doc-Comments) require of it (including undocumented throwing conditions) — Minor, Major when it is an exported API.
 - MUST flag a line comment that violates the project's lowercase-first comment voice — Nit.
 - SHOULD flag a line comment that merely restates the code it precedes.
 
@@ -56,7 +56,7 @@ A repeated inline shape has to be changed in every copy when it evolves, whereas
 **Guidelines:**
 
 - MUST flag an inline object type repeated more than once in the diff — extract into a named `interface` or `type`.
-- MUST flag a new prop type that does not extend `ComponentProps<…>` for a component rendering a DOM element, per [react-component-guidelines › conventions](../../react-component-guidelines/references/conventions.md).
+- MUST flag a new prop type that does not extend `ComponentProps<…>` for a component rendering a DOM element, per the project's React component guidelines (conventions rules).
 - SHOULD flag a `type` alias used where an `interface` would suffice (object-only, no intersection/union) — the project prefers `interface` for those.
 
 ## Control Flow
@@ -67,4 +67,4 @@ Deep nesting forces a reader to hold every branch condition at once, while early
 
 - SHOULD flag a deeply nested ternary or `if`/`else` chain that can be flattened with early returns — improves the cognitive complexity score.
 - SHOULD flag a `switch` with no `default` branch when the discriminant is a string union — Biome will warn, but call it out so the author considers an exhaustive check.
-- SHOULD flag a `Promise.all([…])` that is awaited and then immediately destructured into independent values — those values may be passable as Promise props per [react-component-guidelines › client-vs-server-components](../../react-component-guidelines/references/client-vs-server-components.md).
+- SHOULD flag a `Promise.all([…])` that is awaited and then immediately destructured into independent values — those values may be passable as Promise props per the project's React component guidelines (client-vs-server-components rules).

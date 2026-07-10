@@ -44,4 +44,4 @@ Components that accept callbacks or render children — render-prop components e
 - MUST NOT extract and export private callback or render-prop functions solely to make them unit-testable.
 - MUST NOT mock a callback- or render-prop-driving dependency solely to inspect private callback arguments.
 - SHOULD test component behavior through rendered output and user-visible interaction when callbacks, render props, providers, or browser behavior are involved.
-- SHOULD consult [React Component Guidelines](../../react-component-guidelines/SKILL.md) and [E2E Testing Guidelines](../../e2e-testing-guidelines/SKILL.md) when the unit under discussion is a component rather than a pure helper.
+- SHOULD consult the project's React component guidelines and the project's e2e testing guidelines when the unit under discussion is a component rather than a pure helper.

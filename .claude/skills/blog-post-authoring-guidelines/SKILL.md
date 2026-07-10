@@ -7,17 +7,17 @@ description: Apply this skill when drafting, rewriting, refining, translating, o
 
 Use this skill for editorial decisions about what a btnopen blog post should say and how it should read. This skill owns content quality, structure, tone, metadata wording, and natural use of rich Markdown.
 
-This skill does not operate Payload MCP tools. When authored content needs to be applied to an existing CMS post, consult [Payload CMS MCP](../payload-cms-mcp/SKILL.md) for discovery, mutation, draft/published targeting, locale handling, and verification.
+This skill does not operate Payload MCP tools. When authored content needs to be applied to an existing CMS post, consult the project's Payload CMS MCP skill for discovery, mutation, draft/published targeting, locale handling, and verification.
 
 **Guidelines:**
 
 - MUST separate editorial decisions from CMS mutation mechanics.
-- MUST consult [Payload CMS MCP](../payload-cms-mcp/SKILL.md) when applying authored changes to an existing Payload document.
+- MUST consult the project's Payload CMS MCP skill when applying authored changes to an existing Payload document.
 - MUST inspect the target post before rewriting it when a current CMS version is available.
 - MUST preserve the author's intent, technical specificity, and level of certainty unless the user asks for a stronger rewrite.
 - MUST write Japanese as the primary language unless the user requests English or another locale.
 - MUST avoid turning a post into a feature demonstration; supported syntax should appear because it helps the article.
-- SHOULD consult [Markdown Processing Guidelines](../markdown-processing-guidelines/SKILL.md) when exact supported syntax, rendering behavior, or custom markdown directives matter.
+- SHOULD consult the project's markdown-processing guidelines when exact supported syntax, rendering behavior, or custom markdown directives matter.
 
 ## Writing Style And Tone
 

@@ -1,6 +1,6 @@
 # CSS Property Usage
 
-Apply these rules when choosing between CSS properties and values in any component stylesheet. These rules sit on top of the CSS-Modules / `@layer components` / `clsx` mechanics defined in [styling.md](./styling.md); this document deliberately does not restate those mechanics. The design-decision rationale behind the tokens and tiers referenced here (palette semantics, shape language, motion taste, layout posture) lives in [ui-design-principles › design-tone-and-taste](../../ui-design-principles/references/design-tone-and-taste.md).
+Apply these rules when choosing between CSS properties and values in any component stylesheet. These rules sit on top of the CSS-Modules / `@layer components` / `clsx` mechanics defined in [styling.md](./styling.md); this document deliberately does not restate those mechanics. The design-decision rationale behind the tokens and tiers referenced here (palette semantics, shape language, motion taste, layout posture) lives in the project's UI design principles (design-tone-and-taste rules).
 
 ## Logical Properties
 
@@ -29,7 +29,7 @@ Design Tokens Only sets the required project default: draw all color, spacing, r
   - Durations: `--duration-sm` / `--duration-md` / `--duration-lg` / `--duration-xl` / `--duration-2xl` / `--duration-3xl`.
   - Easing: `--ease-in-out` (the only easing token).
   - Fonts: `--font-sans` / `--font-mono`, paired with `--font-sans-features` / `--font-mono-features`.
-  - Color: `--accent-*` / `--neutral-*`. Semantic slot reference is in [ui-design-principles › design-tone-and-taste](../../ui-design-principles/references/design-tone-and-taste.md).
+  - Color: `--accent-*` / `--neutral-*`. Semantic slot reference is in the project's UI design principles (design-tone-and-taste rules).
 - MUST NOT introduce hard-coded color, spacing, radius, or duration literals in component CSS. The general prohibition is in [styling.md](./styling.md); this file reinforces that the ban applies to duration / easing / font tokens as well.
 - MAY introduce component-scoped CSS variables when a value needs to vary by context (see the `--max-width` / `--variant` / `--page-variant` / `--blog-post-content-negative-margin` / `--snippet-token-*` patterns). Component-scoped variables MUST still resolve to one of the root tokens somewhere in the chain — do not terminate a `--my-color: #fff` with a literal.
 
@@ -73,7 +73,7 @@ When adding a new responsive surface, follow this exact pattern: declare `--vari
 **Guidelines:**
 
 - MUST prefer `@container` queries over `@media` queries for layout adaptation. The body element is declared as a container (`container: body / inline-size`), and every major surface opens its own named or anonymous container when it needs internal breakpoints.
-- SHOULD reuse the canonical project breakpoints for reading surfaces: `width > 30rem` (mobile→tablet) and `width > 50rem` (tablet→desktop). The semantic meaning of each tier and the structural transformations expected at each transition are defined in [ui-design-principles › responsive-layout](../../ui-design-principles/references/responsive-layout.md). Note that the CSS `--variant` / `--page-variant` custom property is binary (`"mobile"` vs `"desktop"`) and flips at the 30rem boundary — it does not distinguish tablet from desktop, because no structural transformation fires at the tablet→desktop boundary.
+- SHOULD reuse the canonical project breakpoints for reading surfaces: `width > 30rem` (mobile→tablet) and `width > 50rem` (tablet→desktop). The semantic meaning of each tier and the structural transformations expected at each transition are defined in the project's UI design principles (responsive-layout rules). Note that the CSS `--variant` / `--page-variant` custom property is binary (`"mobile"` vs `"desktop"`) and flips at the 30rem boundary — it does not distinguish tablet from desktop, because no structural transformation fires at the tablet→desktop boundary.
 - SHOULD name containers when a descendant needs to query a specific ancestor (e.g., `container: blog-post-content / inline-size` → `@container blog-post-content style(--variant: "desktop")`). Anonymous `@container` queries are acceptable when the nearest container is unambiguous.
 - SHOULD reserve `@media` queries for page-level concerns that are not inline-size-driven: `prefers-color-scheme`, `prefers-reduced-motion` (not currently wired), `print` (not currently wired).
 
@@ -116,12 +116,12 @@ Theme and Color-Scheme sets the required project default: rely on the project's 
 - MUST rely on the project's color-scheme plumbing:
   - `:root` declares `color-scheme: var(--theme)` with `--theme: light` by default and `--theme: dark` under `@media (prefers-color-scheme: dark)`.
   - `scrollbar-color` is themed via the accent ramp.
-  - Surfaces that need to branch on theme SHOULD use `@container style(--theme: dark) { ... }` (the project's style-query bridge) rather than a component-local media query. Before reaching for this branch, confirm the design-side rules in [ui-design-principles › color-theming › legitimate-per-scheme-overrides](../../ui-design-principles/references/color-theming.md#legitimate-per-scheme-overrides) — per-surface dark-mode branches are only legitimate for filtered imagery.
+  - Surfaces that need to branch on theme SHOULD use `@container style(--theme: dark) { ... }` (the project's style-query bridge) rather than a component-local media query. Before reaching for this branch, confirm the design-side rules in the project's UI design principles (color-theming rules, Legitimate Per-Scheme Overrides) — per-surface dark-mode branches are only legitimate for filtered imagery.
 - MUST use `currentColor` for SVG strokes and fills that track surrounding text color. The logo, social icons, and 404 underline patterns all depend on `color: var(--accent-11); fill: currentColor;`.
 
 ## Branded Imagery Filter
 
-Thumbnails and web-embed cover images share a single filter chain so external imagery joins the palette rather than sitting beside it. The design-intent description of the four passes and the four-category imagery taxonomy live in [ui-design-principles › design-tone-and-taste › imagery-treatment](../../ui-design-principles/references/design-tone-and-taste.md#imagery-treatment); the canonical per-scheme saturation / brightness values live in [ui-design-principles › color-theming › imagery-brightness-compensation](../../ui-design-principles/references/color-theming.md#imagery-brightness-compensation).
+Thumbnails and web-embed cover images share a single filter chain so external imagery joins the palette rather than sitting beside it. The design-intent description of the four passes and the four-category imagery taxonomy live in the project's UI design principles (design-tone-and-taste rules, Imagery Treatment); the canonical per-scheme saturation / brightness values live in the project's UI design principles (color-theming rules, Imagery Brightness Compensation).
 
 **Guidelines:**
 
@@ -169,7 +169,7 @@ Transitions and Hover State captures the project-specific context for the checkl
 
 - MUST use the medium duration token paired with `ease-in-out` for interactive hover transitions, as in `transition: background-color var(--duration-md) ease-in-out`. Project convention inlines the `ease-in-out` keyword inside `transition` shorthands for parity with CSS defaults; the `var(--ease-in-out)` token is reserved for standalone `animation-timing-function` / `transition-timing-function` declarations.
 - MUST use `transition: filter var(--duration-md) ease-in-out` for image-filter hover transitions (brightness bump on thumbnails).
-- MUST toggle only the scoped `--brightness` / `--saturation` custom properties for image-filter hover transitions — never rewrite the whole `filter` chain per state. Re-authoring the chain per state detaches the image from the per-scheme compensation recipe defined in [ui-design-principles › color-theming › imagery-brightness-compensation](../../ui-design-principles/references/color-theming.md#imagery-brightness-compensation).
+- MUST toggle only the scoped `--brightness` / `--saturation` custom properties for image-filter hover transitions — never rewrite the whole `filter` chain per state. Re-authoring the chain per state detaches the image from the per-scheme compensation recipe defined in the project's UI design principles (color-theming rules, Imagery Brightness Compensation).
 
 ## Scroll-Driven Animations
 
@@ -185,7 +185,7 @@ Scroll-Driven Animations sets the required project default: wrap any use of `ani
 
 ## Focus Ring
 
-Focus Ring captures the project-specific context for the checklist below: Interactive surfaces MUST replace the default browser focus ring with the project's canonical `:focus-visible` pattern, not remove it outright. The design-side requirement is in [ui-design-principles › accessibility › keyboard-focus](../../ui-design-principles/references/accessibility.md#keyboard-focus).
+Focus Ring captures the project-specific context for the checklist below: Interactive surfaces MUST replace the default browser focus ring with the project's canonical `:focus-visible` pattern, not remove it outright. The design-side requirement is in the project's UI design principles (accessibility rules, Keyboard Focus).
 
 - The canonical CSS template is:
   ```css
@@ -202,13 +202,13 @@ Focus Ring captures the project-specific context for the checklist below: Intera
 
 **Guidelines:**
 
-- MUST replace the default browser focus ring on interactive surfaces with the project's canonical `:focus-visible` pattern, not remove it outright. The design-side requirement is in [ui-design-principles › accessibility › keyboard-focus](../../ui-design-principles/references/accessibility.md#keyboard-focus).
+- MUST replace the default browser focus ring on interactive surfaces with the project's canonical `:focus-visible` pattern, not remove it outright. The design-side requirement is in the project's UI design principles (accessibility rules, Keyboard Focus).
 - MUST NOT retune the outline color, width, or offset per surface. The `--accent-5` palette token handles per-scheme contrast automatically; a per-surface override of any of these three properties is a design-level decision, not a component tweak.
 - MUST match the focus target's `border-radius` to the surface's resting corner shape so the ring tracks the squircle silhouette rather than revealing a rectangular underlying box.
 
 ## Hit-Area Expansion
 
-Hit-Area Expansion captures the project-specific context for the checklist below: Small interactive elements (inline icons, social-link glyphs) MUST expand their hit area beyond the icon's drawn bounds using the project's invisible padding + negative margin pattern, so the visual position does not move while the tap target grows to ~40×40. The design-side requirement is in [ui-design-principles › accessibility › tappable-target-size](../../ui-design-principles/references/accessibility.md#tappable-target-size).
+Hit-Area Expansion captures the project-specific context for the checklist below: Small interactive elements (inline icons, social-link glyphs) MUST expand their hit area beyond the icon's drawn bounds using the project's invisible padding + negative margin pattern, so the visual position does not move while the tap target grows to ~40×40. The design-side requirement is in the project's UI design principles (accessibility rules, Tappable Target Size).
 
 - The canonical CSS template (from `social-link-list.module.css`):
   ```css
@@ -222,7 +222,7 @@ Hit-Area Expansion captures the project-specific context for the checklist below
 
 **Guidelines:**
 
-- MUST expand the hit area of small interactive elements (inline icons, social-link glyphs) beyond the icon's drawn bounds using the project's invisible padding + negative margin pattern, so the visual position does not move while the tap target grows to ~40×40. The design-side requirement is in [ui-design-principles › accessibility › tappable-target-size](../../ui-design-principles/references/accessibility.md#tappable-target-size).
+- MUST expand the hit area of small interactive elements (inline icons, social-link glyphs) beyond the icon's drawn bounds using the project's invisible padding + negative margin pattern, so the visual position does not move while the tap target grows to ~40×40. The design-side requirement is in the project's UI design principles (accessibility rules, Tappable Target Size).
 - MUST match the padding value and its negation exactly so the surface's visible position is unchanged. The `border-radius` MUST come from the shared radius tier so the pressed-state background reads as on-brand rather than a generic hit-box.
 
 ## Intentional Exceptions

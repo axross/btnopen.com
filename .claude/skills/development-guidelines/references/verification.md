@@ -41,7 +41,7 @@ The e2e suite drives the real application through the full render pipeline, so i
   ```bash
   npm run test:e2e
   ```
-- MUST follow the e2e authoring and coverage rules owned by [e2e-testing-guidelines](../../e2e-testing-guidelines/SKILL.md) and [quality-assurance-guidelines › e2e-coverage](../../quality-assurance-guidelines/references/e2e-coverage.md) — new-route/feature coverage, stable `data-testid` identifiers, and co-location under `e2e/` — rather than restating them here.
+- MUST follow the e2e authoring and coverage rules owned by the project's e2e testing guidelines and quality-assurance guidelines (e2e-coverage rules) — new-route/feature coverage, stable `data-testid` identifiers, and co-location under `e2e/` — rather than restating them here.
 
 ## E2E Tests vs Unit Tests
 
@@ -65,7 +65,7 @@ The Playwright configuration repeats every test case twice (`repeatEach: 2`) and
 
 A red test is usually reporting a real regression; muting it ships the defect while destroying the signal that would have caught the next one.
 
-- Snapshots are platform-specific — the snapshot path includes a `{/platform}` segment. Running `--update-snapshots` locally on macOS will update macOS snapshots only, not the Linux snapshots used in CI. See [quality-assurance-guidelines › snapshot-handling](../../quality-assurance-guidelines/references/snapshot-handling.md) for the full snapshot-review discipline.
+- Snapshots are platform-specific — the snapshot path includes a `{/platform}` segment. Running `--update-snapshots` locally on macOS will update macOS snapshots only, not the Linux snapshots used in CI. See the project's quality-assurance guidelines (snapshot-handling rules) for the full snapshot-review discipline.
 
 **Guidelines:**
 
