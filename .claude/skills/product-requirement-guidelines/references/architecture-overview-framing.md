@@ -1,6 +1,6 @@
 # Architecture Overview Framing
 
-Apply this reference when drafting or reviewing the "System design / architecture" section of a spec — data flow, module boundaries, alternatives considered, and constraints, described at the specification level, not the implementation itself. Sourced from design-doc and architecture-decision-record practice: [Design Docs at Google](https://www.industrialempathy.com/posts/design-docs-at-google/), the [C4 model](https://c4model.com/), [arc42](https://arc42.org/overview), [Michael Nygard's ADR format](https://github.com/joelparkerhenderson/architecture-decision-record/blob/main/locales/en/templates/decision-record-template-by-michael-nygard/index.md), the [Rust RFC template](https://github.com/rust-lang/rfcs/blob/master/0000-template.md), [AWS's ADR guidance](https://docs.aws.amazon.com/prescriptive-guidance/latest/architectural-decision-records/adr-process.html), and [GitLab's documentation ladder](https://docs.gitlab.com/charts/architecture/decision-making/). Implementation mechanics for these same concerns — actual module placement, file layout, routing — stay owned by [Project Structure](../../project-structure/SKILL.md); this reference owns only how to *describe* system-design decisions in a spec.
+Apply this reference when drafting or reviewing the "System design / architecture" section of a spec — data flow, module boundaries, alternatives considered, and constraints, described at the specification level, not the implementation itself. Sourced from design-doc and architecture-decision-record practice: [Design Docs at Google](https://www.industrialempathy.com/posts/design-docs-at-google/), the [C4 model](https://c4model.com/), [arc42](https://arc42.org/overview), [Michael Nygard's ADR format](https://github.com/joelparkerhenderson/architecture-decision-record/blob/main/locales/en/templates/decision-record-template-by-michael-nygard/index.md), the [Rust RFC template](https://github.com/rust-lang/rfcs/blob/master/0000-template.md), [AWS's ADR guidance](https://docs.aws.amazon.com/prescriptive-guidance/latest/architectural-decision-records/adr-process.html), and [GitLab's documentation ladder](https://docs.gitlab.com/charts/architecture/decision-making/). Implementation mechanics for these same concerns — actual module placement, file layout, routing — stay owned by the project's project-structure skill; this reference owns only how to *describe* system-design decisions in a spec.
 
 ## When to Include an Architecture Overview
 
@@ -20,7 +20,7 @@ An architecture section answers "what talks to what, and who owns which piece of
 
 - MUST describe data flow as named entities moving between processes and stores, and MUST NOT contain code, pseudocode, or literal function/type signatures except for a genuinely novel algorithm.
 - MUST state which module or service owns each piece of shared state and how other modules may read or mutate it.
-- MUST NOT prescribe file layout, routing, or module-placement mechanics that belong to [Project Structure](../../project-structure/SKILL.md).
+- MUST NOT prescribe file layout, routing, or module-placement mechanics that belong to the project's project-structure skill.
 
 ## Alternatives Considered
 

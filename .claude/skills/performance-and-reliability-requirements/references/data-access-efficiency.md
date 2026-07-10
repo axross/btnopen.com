@@ -11,7 +11,7 @@ Every `payload.find(…)` call should make its projection, relationship depth, r
 | `select: { … }` | Without an explicit projection, Payload returns every field on every document, including large `richText` `body` blobs. The existing `getBlogPosts` and `getBlogPost` use `select` to fetch only what the consumer renders. |
 | `depth: <n>` | Default is `2`. Removing `depth: 0` is Critical when the consumer relies on populated relationships; `depth: > 3` is Major because each depth level fans out joins. |
 | `limit: <n>` | Without `limit`, Payload defaults to 10. Flag a Critical when the consumer expects all documents but `limit` is missing (the user will silently see 10). The existing `getBlogPosts` sets `limit: 50` — match the project's bounding pattern. |
-| `where: { … }` | Required when fetching anything other than "all of this collection". Non-draft reads include `_status: { equals: "published" }` per [application-security-requirements › access-control](../../application-security-requirements/references/access-control.md). |
+| `where: { … }` | Required when fetching anything other than "all of this collection". Non-draft reads include `_status: { equals: "published" }` per the project's application-security requirements (access-control rules). |
 
 **Guidelines:**
 
@@ -54,7 +54,7 @@ A migration runs against production data exactly once, and a dropped or renamed 
 
 **Guidelines:**
 
-- MUST flag a Critical when a new Payload migration (under `payload/migrations/`) drops a column or renames a field on a collection that has production data, without a data-backfill step. Defer to the human owner per [code-review-guideline › escalation](../../code-review-guideline/references/escalation.md).
+- MUST flag a Critical when a new Payload migration (under `payload/migrations/`) drops a column or renames a field on a collection that has production data, without a data-backfill step. Defer to the human owner per the project's code-review guideline (escalation rules).
 - MUST flag a Major when a new collection adds an unindexed field used in a `where` filter — Payload's SQLite adapter will full-scan. Either add `index: true` to the field config or document the expected row count.
 
 ## Locale Handling

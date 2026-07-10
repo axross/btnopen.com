@@ -1,6 +1,6 @@
 # E2E Coverage
 
-Apply these rules to verify the change has the right e2e coverage. The project relies on Playwright e2e tests as the **primary** verification mechanism per [development-guidelines › verification](../../development-guidelines/references/verification.md).
+Apply these rules to verify the change has the right e2e coverage. The project relies on Playwright e2e tests as the **primary** verification mechanism per the project's development guidelines (verification rules).
 
 ## Coverage Floor
 
@@ -11,7 +11,7 @@ A new route or surface with no test is a hole in the project's primary verificat
 - MUST flag a Critical when the diff adds a new route (any new `page.tsx` under `app/(app)/`) without a co-located test file under `e2e/tests/routes/<route>/`.
 - MUST flag a Major when the diff adds a new visually distinct page section to an existing route without a new `test()` (or `test.step()`) covering it.
 - MUST flag a Major when the diff adds a new user-facing feature (a new interactive element, a new server action, a new `route.ts` endpoint) without an e2e assertion that exercises the user-observable outcome.
-- SHOULD NOT demand unit tests for pure logic unless the logic is complex enough that e2e would not adequately exercise edge cases — the project explicitly de-prioritizes unit tests per [development-guidelines › verification](../../development-guidelines/references/verification.md).
+- SHOULD NOT demand unit tests for pure logic unless the logic is complex enough that e2e would not adequately exercise edge cases — the project explicitly de-prioritizes unit tests per the project's development guidelines (verification rules).
 
 ## `data-testid` Hooks
 
@@ -19,11 +19,11 @@ Because the suite locates elements primarily by `data-testid`, an element that s
 
 **Guidelines:**
 
-- MUST flag a Major when the diff introduces a new visually distinct element (a new section, a new button, a new image, a new list) without a `data-testid` attribute. The e2e suite cannot target it otherwise per [react-component-guidelines › testable-components](../../react-component-guidelines/references/testable-components.md).
+- MUST flag a Major when the diff introduces a new visually distinct element (a new section, a new button, a new image, a new list) without a `data-testid` attribute. The e2e suite cannot target it otherwise per the project's React component guidelines (testable-components rules).
 - MUST flag a Critical when the diff **removes** a `data-testid` that an existing e2e test references. Cross-check with `rg` over `e2e/tests/`.
-- MUST flag any locator in a new or modified test that violates the locator hierarchy of [e2e-testing-guidelines › conventions](../../e2e-testing-guidelines/references/conventions.md) — e.g., `getByText()` matching where the assertion is not about the copy itself.
+- MUST flag any locator in a new or modified test that violates the locator hierarchy of the project's e2e testing guidelines (conventions rules) — e.g., `getByText()` matching where the assertion is not about the copy itself.
 - MUST flag a `data-testid` value that is not kebab-case.
-- SHOULD flag a `data-testid` value chosen to be globally unique (e.g., `"blog-post-header-title"`) instead of scope-relative (`"title"`) — the project chains locators per the nesting pattern in [react-component-guidelines › testable-components](../../react-component-guidelines/references/testable-components.md).
+- SHOULD flag a `data-testid` value chosen to be globally unique (e.g., `"blog-post-header-title"`) instead of scope-relative (`"title"`) — the project chains locators per the nesting pattern in the project's React component guidelines (testable-components rules).
 
 ## Loading State Coverage
 
@@ -42,7 +42,7 @@ Consistent names and locations are what let the runner discover route tests and 
 
 - MUST flag a new test file not named `<thing>.test.ts` (kebab-case + `.test.ts`).
 - MUST flag a new test file placed outside `e2e/tests/routes/<route>/…` for a route-specific test.
-- MUST flag a multi-phase `test()` body that does not group its phases into `test.step()` calls per [e2e-testing-guidelines › structure](../../e2e-testing-guidelines/references/structure.md) — short atomic tests may omit steps.
+- MUST flag a multi-phase `test()` body that does not group its phases into `test.step()` calls per the project's e2e testing guidelines (structure rules) — short atomic tests may omit steps.
 - MUST flag a chained-locator chain that re-roots at `page.getByTestId(…)` mid-test instead of narrowing from a previously captured `Locator` — defeats the readability of the nesting pattern.
 
 ## API Helpers
@@ -52,5 +52,5 @@ Inline setup duplicated across tests drifts out of sync as the resource changes;
 **Guidelines:**
 
 - MUST flag an API call (`page.request.get(…)`) made inline in a test body when an existing helper under `e2e/helpers/api/` exists for that resource. Use the helper.
-- MUST flag a new API helper that does not live under `e2e/helpers/api/`, does not take `{ page, testInfo }`, or does not use `page.request` per [e2e-testing-guidelines › conventions](../../e2e-testing-guidelines/references/conventions.md).
+- MUST flag a new API helper that does not live under `e2e/helpers/api/`, does not take `{ page, testInfo }`, or does not use `page.request` per the project's e2e testing guidelines (conventions rules).
 - MUST flag a test that calls API helpers without `test.use({ storageState: authenticatedStorageState })` when the API requires auth (anything that hits Payload's draft-aware endpoints).

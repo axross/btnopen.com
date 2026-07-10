@@ -58,5 +58,5 @@ Payload ships its own admin UI under `app/(payload)/` — that route segment is 
 
 **Guidelines:**
 
-- MUST NOT review files under `app/(payload)/` per [code-review-guideline › scoping](../../code-review-guideline/references/scoping.md). Payload owns that route segment.
+- MUST NOT review files under `app/(payload)/` per the project's code-review guideline (scoping rules). Payload owns that route segment.
 - MUST flag a Critical when a Payload collection field is added with `admin.hidden: true` to "hide" sensitive data from the admin UI — `hidden` is a UI affordance, not access control. Use `access.read` to actually gate the field.

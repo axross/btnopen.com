@@ -57,7 +57,7 @@ To assert state that no locator-native assertion covers (such as a computed styl
 **Guidelines:**
 
 - MUST prefer Playwright's locator-native auto-waiting assertions (visibility, focus, attribute, class, text, count) over evaluating DOM state and comparing it manually in the test.
-- MUST NOT use `page.waitForTimeout(...)` or fixed sleeps to "let the animation finish" (see [flakiness-tolerance.md](../../quality-assurance-guidelines/references/flakiness-tolerance.md)).
+- MUST NOT use `page.waitForTimeout(...)` or fixed sleeps to "let the animation finish" (see the project's quality-assurance guidelines (flakiness-tolerance rules)).
 - MUST use `expect.poll(() => ...)` or `page.waitForFunction(...)` to re-sample state until the expected value is reached when no locator-native assertion covers it, such as scroll position, computed styles, scroll-driven animations, transitions, or intersection-observer-driven classes.
 
 ## Hooks Usage

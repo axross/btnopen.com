@@ -55,7 +55,7 @@ With nothing to diff, there is no defined change to review, and any files the re
 
 ## Repository-Specific Boundaries
 
-Style feedback on files the tooling produces is noise the author cannot act on, since the fix would mean changing the generator rather than the file. See [Development Guidelines › change-management](../../development-guidelines/references/change-management.md) for which paths the project treats as generated/managed.
+Style feedback on files the tooling produces is noise the author cannot act on, since the fix would mean changing the generator rather than the file. See the project's development guidelines (change-management rules) for which paths the project treats as generated/managed.
 
 **Guidelines:**
 

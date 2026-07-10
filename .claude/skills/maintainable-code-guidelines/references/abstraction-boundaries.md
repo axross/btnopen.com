@@ -18,7 +18,7 @@ Fetching from the client ships data-access code into the browser bundle and adds
 
 **Guidelines:**
 
-- MUST flag a `"use client"` component that performs data fetching (`fetch()`, `getPayload(…)`, `getBlogPost(…)`) — see [react-component-guidelines › client-vs-server-components](../../react-component-guidelines/references/client-vs-server-components.md). Lift the fetch into the parent Server Component or its repository.
+- MUST flag a `"use client"` component that performs data fetching (`fetch()`, `getPayload(…)`, `getBlogPost(…)`) — see the project's React component guidelines (client-vs-server-components rules). Lift the fetch into the parent Server Component or its repository.
 - MUST flag a `"use client"` component that imports from `@/repositories/*`, `@/payload/*`, `payload`, or any module that itself imports `server-only`. This will leak server code into the client bundle.
 - MUST flag a Server Component that uses `useState`, `useEffect`, `onClick`, or any browser API — it should be split into `loaded.tsx` (server) and an interactive child (client).
 - MUST flag a `Promise<T>` prop being passed into a `"use client"` component — Promise props are RSC-only.
@@ -29,8 +29,8 @@ A shared pipeline copied into a second place drifts out of sync, so a fix applie
 
 **Guidelines:**
 
-- MUST flag any new component that calls `unified()`, `remarkParse`, `remarkRehype`, or `rehypeReact` outside of `app/(app)/_/helpers/markdown.ts`. The pipeline is a single chain per [markdown-processing-guidelines › pipeline-integrity](../../markdown-processing-guidelines/references/pipeline-integrity.md).
-- MUST flag any markdown rendering attempted in a Client Component — the pipeline is server-side only per [markdown-processing-guidelines › server-components-and-caching](../../markdown-processing-guidelines/references/server-components-and-caching.md).
+- MUST flag any new component that calls `unified()`, `remarkParse`, `remarkRehype`, or `rehypeReact` outside of `app/(app)/_/helpers/markdown.ts`. The pipeline is a single chain per the project's markdown-processing guidelines (pipeline-integrity rules).
+- MUST flag any markdown rendering attempted in a Client Component — the pipeline is server-side only per the project's markdown-processing guidelines (server-components-and-caching rules).
 - MUST flag a new HAST tag added to the renderer's `defaultComponents` map without a corresponding component import.
 
 ## Payload Hooks / UI Boundary

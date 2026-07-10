@@ -20,7 +20,7 @@ See [data-access-efficiency.md](./references/data-access-efficiency.md) for:
 
 See [server-client-boundary.md](./references/server-client-boundary.md) for:
 
-- Independent async work is parallelized via `Promise.all` or deferred as `Promise<T>` props to the components that consume it per [react-component-guidelines › client-vs-server-components](../react-component-guidelines/references/client-vs-server-components.md), not awaited sequentially into a waterfall
+- Independent async work is parallelized via `Promise.all` or deferred as `Promise<T>` props to the components that consume it per the project's React component guidelines (client-vs-server-components rules), not awaited sequentially into a waterfall
 - `<Suspense>` boundaries are placed around independently slow units so streaming actually streams
 - Loading skeletons (`*-loading.tsx`) do not depend on the loaded data shape
 - New Client Components are justified — not promoting an entire RSC subtree into the client just for one event handler
@@ -41,7 +41,7 @@ See [image-optimization.md](./references/image-optimization.md) for:
 - Payload upload collections use `webpFormatOptions` and `resizeOptions` (matching the existing `media`, `cover-images`, `avatar-images` collections)
 - `next/image` is used over raw `<img>` for any DOM-rendered image, with intrinsic dimensions so optimization can apply
 - Above-the-fold imagery is prioritized; below-the-fold imagery is lazy-loaded; `unoptimized` is a fallback, not a default
-- New external image hosts added to `next.config.ts` `images.remotePatterns` are tightly scoped per [application-security-requirements › ssrf-and-embeds](../application-security-requirements/references/ssrf-and-embeds.md)
+- New external image hosts added to `next.config.ts` `images.remotePatterns` are tightly scoped per the project's application-security requirements (ssrf-and-embeds rules)
 
 ## Bundle and Dependency Weight
 
@@ -56,7 +56,7 @@ See [bundle-weight.md](./references/bundle-weight.md) for:
 
 See [error-and-observability.md](./references/error-and-observability.md) for:
 
-- `try`/`catch` is at the root call site (route handler / RSC / `route.ts`), not in nested helpers, per [observability-guidelines › error-handling](../observability-guidelines/references/error-handling.md)
+- `try`/`catch` is at the root call site (route handler / RSC / `route.ts`), not in nested helpers, per the project's observability guidelines (error-handling rules)
 - `captureException()` is called before any early `notFound()` / `redirect()` / return
-- Slow or external operations are bracketed by Pino `Started …` / `Completed …` log pairs per [observability-guidelines › logging](../observability-guidelines/references/logging.md)
+- Slow or external operations are bracketed by Pino `Started …` / `Completed …` log pairs per the project's observability guidelines (logging rules)
 - New routes have `error.tsx` boundaries when they need custom error UI, and `global-error.tsx` is not bypassed

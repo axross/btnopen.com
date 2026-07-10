@@ -53,11 +53,11 @@ Images captures the project-specific context for the checklist below: Every imag
 
 ## External Links
 
-External Links captures the project-specific context for the checklist below: Every link pointing at an external origin MUST open in a new tab and MUST isolate the new tab from the originating page (no access back to the opener, no referrer leakage). The mechanical pairing of these attributes is in [react-component-guidelines › css-property-usage](../../react-component-guidelines/references/css-property-usage.md).
+External Links captures the project-specific context for the checklist below: Every link pointing at an external origin MUST open in a new tab and MUST isolate the new tab from the originating page (no access back to the opener, no referrer leakage). The mechanical pairing of these attributes is in the project's React component guidelines (css-property-usage rules).
 
 **Guidelines:**
 
-- MUST open every external-origin link in a new tab and isolate the new tab from the originating page (no access back to the opener, no referrer leakage). The mechanical pairing of these attributes is in [react-component-guidelines › css-property-usage](../../react-component-guidelines/references/css-property-usage.md).
+- MUST open every external-origin link in a new tab and isolate the new tab from the originating page (no access back to the opener, no referrer leakage). The mechanical pairing of these attributes is in the project's React component guidelines (css-property-usage rules).
 - MUST NOT apply external-link attributes to internal links. Internal navigation MUST use the project's internal-link primitive so client-side routing kicks in.
 
 ## Keyboard Focus
@@ -67,7 +67,7 @@ Keyboard Focus captures the project-specific context for the checklist below: Ev
 **Guidelines:**
 
 - MUST show a visible focus indicator on every interactive surface when it is reached by keyboard. Removing the browser's default focus ring without a replacement is prohibited.
-- SHOULD use an accent-ramp step for the replacement ring and SHOULD match the surface's corner shape — a squircle card gets a squircle ring, a pill gets a pill ring. The canonical CSS template is in [react-component-guidelines › css-property-usage › focus-ring](../../react-component-guidelines/references/css-property-usage.md#focus-ring).
+- SHOULD use an accent-ramp step for the replacement ring and SHOULD match the surface's corner shape — a squircle card gets a squircle ring, a pill gets a pill ring. The canonical CSS template is in the project's React component guidelines (css-property-usage rules, Focus Ring).
 - MUST NOT retune the ring's width, offset, or color per surface — the shared template is what makes focus affordances feel consistent across the site.
 - MUST preserve keyboard focusability on every clickable surface. Removing a surface from the tab order for styling convenience is prohibited.
 
@@ -100,7 +100,7 @@ Hover and Interactive Affordances captures the project-specific context for the 
 
 Tappable Target Size captures the project-specific context for the checklist below: Every interactive icon and small inline control MUST have an effective tap area of at least ~40×40 regardless of its visual size. The icon's drawn bounds are NOT the tap area.
 
-- The project's pattern is to expand the hit area invisibly by padding the interactive element and compensating with an outward margin, so the visual position does not move. The canonical CSS template is in [react-component-guidelines › css-property-usage › hit-area-expansion](../../react-component-guidelines/references/css-property-usage.md#hit-area-expansion).
+- The project's pattern is to expand the hit area invisibly by padding the interactive element and compensating with an outward margin, so the visual position does not move. The canonical CSS template is in the project's React component guidelines (css-property-usage rules, Hit-Area Expansion).
 
 **Guidelines:**
 

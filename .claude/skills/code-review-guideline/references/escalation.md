@@ -18,7 +18,7 @@ A Critical or Major fix that lands without its verification step can silently tr
 
 **Guidelines:**
 
-- MUST list, under **Recommended Actions**, the verification step (`npm run lint`, `npm run test:e2e`, a manual check of the affected route per [development-guidelines › verification](../../development-guidelines/references/verification.md)) needed after each Critical or Major fix.
+- MUST list, under **Recommended Actions**, the verification step (`npm run lint`, `npm run test:e2e`, a manual check of the affected route per the project's development guidelines (verification rules)) needed after each Critical or Major fix.
 - SHOULD phrase recommendations as imperative checklist items written to the future fixer, such as "Apply fix #1, then run `npm run lint`."
 
 ## Surface Recurring Guideline Gaps to the Caller
@@ -60,8 +60,8 @@ Frame deferred items under the **Recommended Actions** section as **Decision nee
 
 Guideline-gap reporting is reserved for missing reusable guidance. Ordinary execution failures and already documented rules should stay in the review findings instead.
 
-- Lint or format errors — the developer's [code-quality](../../development-guidelines/references/code-quality.md) loop covers them; flag them as Critical findings and let the fixer run `npm run format` / `npm run lint`. (A **posted** PR review omits these CI-enforced findings per the [Repository Review Policy Overlay](../SKILL.md#repository-review-policy-overlay).)
-- Snapshot regenerations — flag whether the change is intentional per [quality-assurance-guidelines](../../quality-assurance-guidelines/SKILL.md) and let the fixer re-run with `--update-snapshots`.
+- Lint or format errors — the developer's code-quality loop, per the project's development guidelines (code-quality rules), covers them; flag them as Critical findings and let the fixer run `npm run format` / `npm run lint`. (A **posted** PR review omits these CI-enforced findings per the [Repository Review Policy Overlay](../SKILL.md#repository-review-policy-overlay).)
+- Snapshot regenerations — flag whether the change is intentional per the project's quality-assurance guidelines and let the fixer re-run with `--update-snapshots`.
 - Anything resolvable by re-reading an existing guideline file.
 
 **Guidelines:**

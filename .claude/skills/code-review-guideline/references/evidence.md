@@ -10,7 +10,7 @@ A finding the author cannot locate is one they cannot act on, so every finding i
 
 - MUST cite a `file:line` (or `file:line-line` for a range) for every finding. Use repo-relative paths from the project root (e.g., `app/(app)/posts/[slug]/page.tsx:42`).
 - MUST quote the offending code (one-to-five lines) directly under the citation when the surrounding context is needed to understand the finding.
-- MUST link to the violated guideline section when the finding is a guideline violation, using a relative path from the report context (e.g., `[react-component-guidelines › client-vs-server-components](../../react-component-guidelines/references/client-vs-server-components.md)`).
+- MUST name the violated guideline when the finding is a guideline violation, referring to it by its descriptive name rather than a relative path (e.g., the project's React component guidelines (client-vs-server-components rules)).
 - MUST NOT invent line numbers or paths. If unsure, re-read the file.
 
 ## Fix Snippet Format

@@ -69,7 +69,7 @@ the posted report follows `REVIEW.md`.
   list excludes (CI-enforced checks, lockfiles, generated files), even where
   the severity floors would otherwise rate them Critical.
 - MUST keep a posted review **COMMENT**-type (never APPROVE /
-  REQUEST_CHANGES), per [github-operations](../github-operations/SKILL.md); the
+  REQUEST_CHANGES), per the project's GitHub operation guidelines; the
   reviewer is advisory and does not gate merges.
 
 ## Evidence-Based Reporting
@@ -106,11 +106,11 @@ Consult the appropriate skill for detailed review checklists in each lens. These
 
 | Lens | Skill |
 |---|---|
-| Readability, naming, complexity, abstraction boundaries, scope discipline, dead code | [Maintainable Code Guidelines](../maintainable-code-guidelines/SKILL.md) |
-| Verifying e2e coverage, snapshot handling, flakiness, manual verification, lint/format gate | [Quality Assurance Guidelines](../quality-assurance-guidelines/SKILL.md) |
-| OWASP-lens for Next.js + Payload CMS on Vercel — secrets, input validation, access control, XSS, SSRF, auth, supply chain | [Application Security Requirements](../application-security-requirements/SKILL.md) |
-| Payload N+1, RSC/client boundary cost, `"use cache"` / `cacheLife` correctness, image optimization, bundle weight, error and observability hooks | [Performance and Reliability Requirements](../performance-and-reliability-requirements/SKILL.md) |
-| Project stack, repository layout, path aliases, support files, and file placement | [Project Structure](../project-structure/SKILL.md) |
+| Readability, naming, complexity, abstraction boundaries, scope discipline, dead code | the project's maintainable-code guidelines |
+| Verifying e2e coverage, snapshot handling, flakiness, manual verification, lint/format gate | the project's quality-assurance guidelines |
+| OWASP-lens for Next.js + Payload CMS on Vercel — secrets, input validation, access control, XSS, SSRF, auth, supply chain | the project's application-security requirements |
+| Payload N+1, RSC/client boundary cost, `"use cache"` / `cacheLife` correctness, image optimization, bundle weight, error and observability hooks | the project's performance-and-reliability requirements |
+| Project stack, repository layout, path aliases, support files, and file placement | the project's project-structure skill |
 
 **Guidelines:**
 
@@ -124,15 +124,15 @@ Developer-facing skills own how to write project-conforming code. The review ski
 
 | Topic | Skill |
 |---|---|
-| Biome format/lint loop, change scope discipline, npm dep / migration rules | [Development Guidelines](../development-guidelines/SKILL.md) |
-| Project stack, repository layout, and file placement | [Project Structure](../project-structure/SKILL.md) |
-| Routing, URL structure, route directory/file conventions | [Routing Guidelines](../routing-guidelines/SKILL.md) |
-| React component conventions, client-vs-server split, styling, testability | [React Component Guidelines](../react-component-guidelines/SKILL.md) |
-| Visual design tone, CSS property usage, UI copy/wording, accessibility | [UI Design Principles](../ui-design-principles/SKILL.md) |
-| Sentry / Pino error handling and logging | [Observability Guidelines](../observability-guidelines/SKILL.md) |
-| Markdown parsing pipeline, custom plugins, Shiki highlighting | [Markdown Processing Guidelines](../markdown-processing-guidelines/SKILL.md) |
-| End-to-end test structure, conventions, and commands | [E2E Testing Guidelines](../e2e-testing-guidelines/SKILL.md) |
-| Unit test structure, conventions, mocks/fixtures, and commands | [Unit Test Guidelines](../unit-test-guidelines/SKILL.md) |
+| Biome format/lint loop, change scope discipline, npm dep / migration rules | the project's development guidelines |
+| Project stack, repository layout, and file placement | the project's project-structure skill |
+| Routing, URL structure, route directory/file conventions | the project's routing guidelines |
+| React component conventions, client-vs-server split, styling, testability | the project's React component guidelines |
+| Visual design tone, CSS property usage, UI copy/wording, accessibility | the project's UI design principles |
+| Sentry / Pino error handling and logging | the project's observability guidelines |
+| Markdown parsing pipeline, custom plugins, Shiki highlighting | the project's markdown-processing guidelines |
+| End-to-end test structure, conventions, and commands | the project's e2e testing guidelines |
+| Unit test structure, conventions, mocks/fixtures, and commands | the project's unit-test guidelines |
 
 **Guidelines:**
 

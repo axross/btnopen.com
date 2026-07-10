@@ -19,7 +19,7 @@ The `unoptimized` path skips the byte savings and the host-allowlist check at on
 
 **Guidelines:**
 
-- MUST flag a Critical when `<Image src={userControlled} unoptimized />` is added with a `userControlled` URL whose host is not in `next.config.ts` `images.remotePatterns`. Cross-reference with [application-security-requirements › ssrf-and-embeds](../../application-security-requirements/references/ssrf-and-embeds.md).
+- MUST flag a Critical when `<Image src={userControlled} unoptimized />` is added with a `userControlled` URL whose host is not in `next.config.ts` `images.remotePatterns`. Cross-reference with the project's application-security requirements (ssrf-and-embeds rules).
 - MUST flag a Major when `unoptimized` is used for an image whose dimensions are known (the field is on the Payload doc, or is a static asset). Optimization saves bandwidth — `unoptimized` should be a fallback, not a default.
 
 ## Loading and Priority

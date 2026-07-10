@@ -8,7 +8,7 @@ A dependency is a permanent liability — maintenance, security surface, and wei
 
 **Guidelines:**
 
-- MUST flag a Major when the diff adds a new entry to `dependencies` or `devDependencies` in `package.json` without a justification per [development-guidelines › change-management](../../development-guidelines/references/change-management.md). The author should have considered ≥ 2 alternatives and chosen the most popular / well-maintained / platform-agnostic option.
+- MUST flag a Major when the diff adds a new entry to `dependencies` or `devDependencies` in `package.json` without a justification per the project's development guidelines (change-management rules). The author should have considered ≥ 2 alternatives and chosen the most popular / well-maintained / platform-agnostic option.
 - MUST flag a Major when a new dependency duplicates functionality already available in:
   - A package already in `package.json` (e.g., adding `lodash` when `change-case` and native ES already cover the use)
   - A built-in Node API (e.g., `node:crypto`, `node:url`, `node:path`)
@@ -61,7 +61,7 @@ A dependency that cannot be tree-shaken ships its whole body to the browser, tax
 
 **Guidelines:**
 
-- MUST flag a Major when the new dependency lacks tree-shaking support (no ESM, no `sideEffects: false`) and is imported into a Client Component or shared module that gets bundled into the client. Cross-reference with [performance-and-reliability-requirements › bundle-weight](../../performance-and-reliability-requirements/references/bundle-weight.md).
+- MUST flag a Major when the new dependency lacks tree-shaking support (no ESM, no `sideEffects: false`) and is imported into a Client Component or shared module that gets bundled into the client. Cross-reference with the project's performance-and-reliability requirements (bundle-weight rules).
 - MUST flag a Critical when a new dependency is added to `serverExternalPackages` in `next.config.ts` without justification — the existing entries (`re2`, `pino`, `pino-pretty`) are there because they are native or stream-based and incompatible with Next's bundler.
 
 ## Transitive CVEs

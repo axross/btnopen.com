@@ -48,4 +48,4 @@ The Payload admin UI's own routes under `app/(payload)/` own their CSRF and requ
 
 **Guidelines:**
 
-- MUST NOT flag findings inside `app/(payload)/` per [code-review-guideline › scoping](../../code-review-guideline/references/scoping.md); Payload owns its CSRF and request-validation.
+- MUST NOT flag findings inside `app/(payload)/` per the project's code-review guideline (scoping rules); Payload owns its CSRF and request-validation.

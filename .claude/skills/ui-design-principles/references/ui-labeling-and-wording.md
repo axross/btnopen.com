@@ -83,7 +83,7 @@ Emoji is a project prohibition: do not include emoji in rendered UI copy or in M
 **Guidelines:**
 
 - MUST NOT include emoji in rendered UI copy or in Markdown content authored for the project's own surfaces.
-- MAY allow emoji in observability module identifiers because they are not rendered UI copy. See [observability-guidelines](../../observability-guidelines/SKILL.md).
+- MAY allow emoji in observability module identifiers because they are not rendered UI copy. See the project's observability guidelines.
 
 ## Loading-Placeholder Sample Text
 

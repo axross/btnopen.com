@@ -2,7 +2,7 @@
 
 Metadata helps readers decide whether to open a post and helps the site present content consistently. Titles, briefs, tags, cover images, slugs, publication dates, and status changes are editorial choices first and CMS mutations second.
 
-Apply metadata changes through [Payload CMS MCP](../../payload-cms-mcp/SKILL.md) only when the current MCP tool list exposes a suitable mutation capability.
+Apply metadata changes through the project's Payload CMS MCP skill only when the current MCP tool list exposes a suitable mutation capability.
 
 **Guidelines:**
 

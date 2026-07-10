@@ -9,7 +9,7 @@ Use this skill when an agent needs to inspect or mutate existing btnopen CMS con
 
 In this project, existing blog-post edit requests are CMS content operations through Payload MCP, even when the user names a post title or slug without mentioning MCP. Seed markdown files are fixtures for initial database seeding, not the update path for existing Payload documents.
 
-This skill is about operating the MCP server. For changing the MCP implementation itself, follow [Development Guidelines](../development-guidelines/SKILL.md) and the relevant code-review skills.
+This skill is about operating the MCP server. For changing the MCP implementation itself, follow the project's development guidelines and the relevant code-review skills.
 
 **Guidelines:**
 
@@ -24,7 +24,7 @@ This skill is about operating the MCP server. For changing the MCP implementatio
 - MUST NOT edit seed markdown files as a substitute for updating an existing Payload document unless the user explicitly asks for seed fixture changes.
 - MUST preserve existing fields and Lexical nodes unless the user requested a removal or replacement.
 - MUST verify the post after every mutation by re-reading the affected fields through MCP.
-- MUST consult [Blog Post Authoring Guidelines](../blog-post-authoring-guidelines/SKILL.md) when a CMS mutation changes prose, title, brief, tags, structure, tone, grammar, or editorial quality.
+- MUST consult the project's blog-post authoring guidelines when a CMS mutation changes prose, title, brief, tags, structure, tone, grammar, or editorial quality.
 
 ## Existing Post Edit Routing
 

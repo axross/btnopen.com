@@ -8,7 +8,7 @@ user-invocable: false
 
 Apply these rules whenever designing, writing, or reviewing any user-facing surface of this website from a UI/UX design perspective.
 
-This skill governs the **design decisions** that sit on top of the component and styling mechanics defined in [react-component-guidelines](../react-component-guidelines/SKILL.md). For CSS-mechanic conventions — CSS-Module / `@layer components` / `clsx` wiring in [react-component-guidelines › styling](../react-component-guidelines/references/styling.md), and CSS property-choice rules (logical properties, `@container` / `@scope`, `oklch()` / relative color, modern units, `currentColor`, theme plumbing) in [react-component-guidelines › css-property-usage](../react-component-guidelines/references/css-property-usage.md) — defer to those files. This skill deliberately does not restate them.
+This skill governs the **design decisions** that sit on top of the component and styling mechanics defined in the project's React component guidelines. For CSS-mechanic conventions — CSS-Module / `@layer components` / `clsx` wiring covered by the project's React component guidelines (styling rules), and CSS property-choice rules (logical properties, `@container` / `@scope`, `oklch()` / relative color, modern units, `currentColor`, theme plumbing) covered by the project's React component guidelines (css-property-usage rules) — defer to those files. This skill deliberately does not restate them.
 
 ## Design Tone and Taste
 

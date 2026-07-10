@@ -2,7 +2,7 @@
 
 Markdown coverage should be natural. A post can exercise headings, emphasis, lists, links, embeds, images, code blocks, tables, blockquotes, and inline code without becoming a checklist if every element supports one coherent explanation.
 
-When exact support matters, trace the Payload editor configuration and the local rendering pipeline through [Markdown Processing Guidelines](../../markdown-processing-guidelines/SKILL.md) before promising syntax coverage.
+When exact support matters, trace the Payload editor configuration and the local rendering pipeline through the project's markdown-processing guidelines before promising syntax coverage.
 
 **Guidelines:**
 

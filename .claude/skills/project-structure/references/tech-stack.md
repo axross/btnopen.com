@@ -15,7 +15,7 @@ This website is built as a Next.js App Router app backed by Payload CMS. Markdow
 **Guidelines:**
 
 - MUST treat Next.js App Router and Payload CMS as the primary architectural constraints when placing app or content-management code.
-- MUST route markdown rendering changes through [Markdown Processing Guidelines](../../markdown-processing-guidelines/SKILL.md).
-- MUST route Playwright work through [E2E Testing Guidelines](../../e2e-testing-guidelines/SKILL.md).
-- MUST route formatting and linting behavior through [Development Guidelines](../../development-guidelines/SKILL.md).
+- MUST route markdown rendering changes through the project's markdown-processing guidelines.
+- MUST route Playwright work through the project's e2e testing guidelines.
+- MUST route formatting and linting behavior through the project's development guidelines.
 - SHOULD keep technology-stack summaries here instead of duplicating them in `AGENTS.md`.

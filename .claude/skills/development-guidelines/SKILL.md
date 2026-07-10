@@ -86,13 +86,13 @@ Consult the appropriate skill for detailed guidance on each area:
 
 | Topic | Skill |
 |---|---|
-| Project stack, repository layout, and file placement | [Project Structure](../project-structure/SKILL.md) |
-| Routing, URL structure, route directory/file conventions | [Routing Guidelines](../routing-guidelines/SKILL.md) |
-| React component conventions, client-vs-server split, styling, testability | [React Component Guidelines](../react-component-guidelines/SKILL.md) |
-| Visual design tone, CSS property usage, UI copy/wording, accessibility | [UI Design Principles](../ui-design-principles/SKILL.md) |
-| Error handling, Sentry reporting, and Pino logging | [Observability Guidelines](../observability-guidelines/SKILL.md) |
-| Markdown parsing, plugins, and rendering pipeline | [Markdown Processing Guidelines](../markdown-processing-guidelines/SKILL.md) |
-| End-to-end test structure, conventions, and commands | [E2E Testing Guidelines](../e2e-testing-guidelines/SKILL.md) |
+| Project stack, repository layout, and file placement | the project's project-structure skill |
+| Routing, URL structure, route directory/file conventions | the project's routing guidelines |
+| React component conventions, client-vs-server split, styling, testability | the project's React component guidelines |
+| Visual design tone, CSS property usage, UI copy/wording, accessibility | the project's UI design principles |
+| Error handling, Sentry reporting, and Pino logging | the project's observability guidelines |
+| Markdown parsing, plugins, and rendering pipeline | the project's markdown-processing guidelines |
+| End-to-end test structure, conventions, and commands | the project's e2e testing guidelines |
 
 **Guidelines:**
 

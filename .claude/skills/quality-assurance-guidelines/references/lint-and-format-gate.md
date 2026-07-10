@@ -9,7 +9,7 @@ Formatting drift is caught by CI, so an unformatted diff is a guaranteed red bui
 **Guidelines:**
 
 - MUST mentally run `npm run format` (Biome) over the diff. Flag any tab/space inconsistency, trailing whitespace, missing trailing newline, or quote-style drift as Critical (lint will fail).
-- MUST flag a hand-applied formatting change to a file the diff did not otherwise need to touch — that violates [development-guidelines › change-management](../../development-guidelines/references/change-management.md) scope discipline.
+- MUST flag a hand-applied formatting change to a file the diff did not otherwise need to touch — that violates the project's development guidelines (change-management rules) scope discipline.
 
 ## Lint
 
@@ -25,7 +25,7 @@ A lint error fails the build, and most of the categories Biome promotes to error
   - `noProcessEnv` — a `process.env.*` access outside of `payload/config.ts`, `next.config.ts`, `playwright.config.ts`, or `app/(app)/_/runtime.ts` (the only files where this is whitelisted)
   - `noNonInteractiveElementInteractions`
 - MUST flag a Major when modified files carry **new** lint warnings (e.g., a new `noExcessiveLinesPerFunction` info-level message).
-- SHOULD report pre-existing lint warnings in changed files as Minor with a "consider fixing while you're here" framing — these are explicitly allowed to be cleaned up per [development-guidelines › code-quality](../../development-guidelines/references/code-quality.md).
+- SHOULD report pre-existing lint warnings in changed files as Minor with a "consider fixing while you're here" framing — these are explicitly allowed to be cleaned up per the project's development guidelines (code-quality rules).
 
 ## Suppressions
 
@@ -43,6 +43,6 @@ Every escape-hatch cast or suppression turns off the type checker exactly where 
 
 **Guidelines:**
 
-- MUST flag any introduced `any`, `as any`, `as unknown as <T>`, or `// @ts-expect-error` swallowing a real error per [react-component-guidelines › conventions](../../react-component-guidelines/references/conventions.md).
+- MUST flag any introduced `any`, `as any`, `as unknown as <T>`, or `// @ts-expect-error` swallowing a real error per the project's React component guidelines (conventions rules).
 - MUST flag a missing return type on a new exported function, especially React components — the rules require explicit `JSX.Element` / `Promise<JSX.Element>` / `null`.
 - SHOULD flag a non-`type`-only import for symbols used only as types (`import { ComponentProps } from "react"` where it should be `import type { ComponentProps } from "react"`).
