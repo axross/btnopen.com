@@ -23,7 +23,7 @@ export function Header({ className, ...props }: ComponentProps<"header">) {
 				</svg>
 			</Link>
 
-			<LanguageSwitcher />
+			<LanguageSwitcher className={css.switcher} />
 		</header>
 	);
 }

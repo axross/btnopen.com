@@ -1,38 +1,107 @@
 @layer components {
-	@scope (.languageSwitcher) {
+	@scope (.trigger) {
 		:where(:scope) {
 			display: flex;
 			align-items: center;
-			gap: var(--size-4);
-			margin-inline-start: auto;
-		}
-
-		.option {
-			padding-block: var(--size-4);
-			padding-inline: var(--size-8);
+			justify-content: center;
+			inline-size: var(--size-40);
+			block-size: var(--size-40);
+			padding: 0;
 			border-radius: var(--radius-md);
-			font-size: var(--text-sm);
-			line-height: 1;
 			color: var(--accent-11);
 			background-color: transparent;
 			border: none;
 			cursor: pointer;
 			outline: none;
 
-			&:hover:not(:disabled) {
+			&:hover:not(:disabled),
+			&[data-popup-open] {
 				background-color: var(--accent-2);
+				color: var(--accent-12);
 			}
 
 			&:focus-visible {
 				outline: var(--accent-5) solid var(--size-3);
 				outline-offset: var(--size-3);
 			}
+
+			&:disabled {
+				cursor: default;
+			}
 		}
 
-		.optionActive {
-			color: var(--accent-12);
-			font-weight: 700;
-			cursor: default;
+		.triggerIcon {
+			inline-size: var(--size-20);
+			block-size: var(--size-20);
+		}
+	}
+
+	@scope (.popup) {
+		:where(:scope) {
+			display: flex;
+			flex-direction: column;
+			gap: var(--size-2);
+			min-inline-size: var(--size-160);
+			padding: var(--size-6);
+			border-radius: var(--radius-md);
+			background-color: var(--neutral-1);
+			border: var(--size-1) solid var(--accent-4);
+			box-shadow: 0 var(--size-8) var(--size-24)
+				oklch(
+					var(--lightness-12) var(--neutral-chroma) var(--neutral-hue) /
+					0.18
+				);
+			outline: none;
+			transform-origin: var(--transform-origin);
+			transition:
+				opacity var(--duration-sm) var(--ease-in-out),
+				transform var(--duration-sm) var(--ease-in-out);
+
+			&[data-starting-style],
+			&[data-ending-style] {
+				opacity: 0;
+				transform: scale(0.95);
+			}
+		}
+
+		.item {
+			display: flex;
+			align-items: center;
+			gap: var(--size-8);
+			padding-block: var(--size-8);
+			padding-inline: var(--size-8);
+			border-radius: var(--radius-sm);
+			font-size: var(--text-sm);
+			line-height: 1;
+			color: var(--accent-11);
+			cursor: pointer;
+			user-select: none;
+			outline: none;
+
+			&[data-highlighted],
+			&:hover {
+				background-color: var(--accent-2);
+				color: var(--accent-12);
+			}
+
+			&[data-checked] {
+				color: var(--accent-12);
+				font-weight: 700;
+			}
+		}
+
+		.itemIndicator {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			inline-size: var(--size-16);
+			block-size: var(--size-16);
+			color: var(--accent-11);
+		}
+
+		.checkIcon {
+			inline-size: var(--size-16);
+			block-size: var(--size-16);
 		}
 	}
 }

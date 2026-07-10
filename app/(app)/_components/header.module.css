@@ -1,7 +1,13 @@
 @layer components {
 	@scope (.header) {
 		:where(:scope) {
-			display: flex;
+			/* the body centers its flex children, so stretch the header to the
+			   full width; three columns then keep the logo optically centered,
+			   the empty leading column balancing the trailing language switcher
+			   regardless of its width */
+			align-self: stretch;
+			display: grid;
+			grid-template-columns: 1fr auto 1fr;
 			align-items: center;
 			min-block-size: var(--size-64);
 			padding-block: var(--size-32);
@@ -11,6 +17,8 @@
 		.link {
 			display: flex;
 			align-items: center;
+			grid-column: 2;
+			justify-self: center;
 			padding-block: var(--size-8);
 			padding-inline: var(--size-16);
 			border-radius: var(--radius-md);
@@ -30,6 +38,11 @@
 			width: auto;
 			height: var(--size-32);
 			color: var(--accent-11);
+		}
+
+		.switcher {
+			grid-column: 3;
+			justify-self: end;
 		}
 	}
 }

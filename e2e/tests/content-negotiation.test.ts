@@ -37,11 +37,11 @@ test.describe("English content negotiation", () => {
 		});
 
 		await test.step("Verify the switcher marks English as the active locale", async () => {
+			await page.getByTestId("language-switcher").click();
+
 			await expect(
-				page.getByTestId("language-switcher").getByRole("button", {
-					name: "English",
-				}),
-			).toHaveAttribute("aria-current", "true");
+				page.getByRole("menuitemradio", { name: "English" }),
+			).toHaveAttribute("aria-checked", "true");
 		});
 	});
 });
@@ -96,10 +96,8 @@ test.describe("language switcher", () => {
 		});
 
 		await test.step("Switch to Japanese", async () => {
-			await page
-				.getByTestId("language-switcher")
-				.getByRole("button", { name: "日本語" })
-				.click();
+			await page.getByTestId("language-switcher").click();
+			await page.getByRole("menuitemradio", { name: "日本語" }).click();
 
 			await expect(page.locator("html")).toHaveAttribute("lang", "ja");
 		});
