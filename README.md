@@ -67,7 +67,7 @@ reviewed before merge.
 
 ### `/address` — deliver a unit of work end-to-end
 
-[`/address`](.claude/commands/address.md) is the main delivery entry point. It
+[`/address`](.claude/skills/address/SKILL.md) is the main delivery entry point. It
 takes one unit of work — a GitHub issue, a pull request, or a free-form
 prompt — from intake to a merge-ready pull request in a single continuing
 session:
@@ -81,7 +81,7 @@ session:
    reviewer, a separate bot session, so the code's author never certifies its
    own work.
 4. **Address** — fixes review findings and CI failures, tying each resolved
-   thread to the resolving commit, for up to four rounds.
+   thread to the resolving commit, for up to eight rounds.
 5. **Ready** — flips the pull request to ready and pings the maintainer once
    CI is green and the review is clean. Merging always stays a human decision.
 
@@ -89,20 +89,9 @@ The run pauses whenever it genuinely needs a human — an ambiguous requirement,
 a plan approval, a judgment call on conflicting changes — and `/address
 continue` picks it back up where it stopped.
 
-### `/review` — get findings on any diff
-
-[`/review`](.claude/commands/review.md) runs this repository's review policy
-([`REVIEW.md`](REVIEW.md)) — severity-tagged findings with `file:line`
-evidence and concrete fixes — on a pull request (`/review 57`), a ref range
-(`/review main...feature`), or the current branch's diff (`/review`). Use it
-for a pre-merge check on a hand-written change or a second opinion before
-pushing; the same policy runs automatically in CI
-([`claude-review.yaml`](.github/workflows/claude-review.yaml)) against
-`/address` pull requests.
-
 ### `/handoff` — suspend work for another session
 
-[`/handoff`](.claude/commands/handoff.md) packages in-progress work — goal,
+[`/handoff`](.claude/skills/handoff/SKILL.md) packages in-progress work — goal,
 current state, remaining to-dos, uncommitted changes — into a downloadable
 `handoff-<epoch>.md` (plus an optional zip of supporting files). Use it when a
 session is running low on context, or to park work for later; a fresh session
@@ -110,7 +99,7 @@ takes the package over with `/address continue`.
 
 ### `/author` — the blog authoring loop
 
-[`/author`](.claude/commands/author.md) drives a post from an idea or an
+[`/author`](.claude/skills/author/SKILL.md) drives a post from an idea or an
 outline to a reviewed draft in two human-gated loops: research rounds that
 audit and strengthen the outline stored on the post's `outline` field until
 you give the go sign, then drafting rounds that write the body and return a

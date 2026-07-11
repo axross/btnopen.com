@@ -46,6 +46,16 @@ Apply these keywords consistently in this document and the documents linked from
 | [Unit Test Guidelines](.claude/skills/unit-test-guidelines/SKILL.md) | Writing, refactoring, reviewing, or running Jest unit tests, including `@jest/globals` imports, mocks/fakes, fixtures, schema tests, and behavior-focused assertions |
 | [UI Design Principles](.claude/skills/ui-design-principles/SKILL.md) | Designing, implementing, or reviewing user-facing surfaces, responsive behavior, visual tone, copy, accessibility, loading states, or theme behavior |
 
+### Workflow Entry Points
+
+Unlike the guideline skills above, these skills are runnable workflows: a human launches one as `/<name>` (or the agent invokes it when its `when_to_use` matches), so they carry `user-invocable: true` and an `argument-hint` per [Agent Skills Best Practices](.claude/skills/agent-skills-best-practices/SKILL.md).
+
+| Skill | What it drives |
+| ----- | -------------- |
+| [Address](.claude/skills/address/SKILL.md) | Delivering one unit of work — an issue, a pull request, or a free-form prompt — end-to-end: plan, human approval, code, independent review, address findings; `continue` resumes a paused run or takes over a handoff package |
+| [Handoff](.claude/skills/handoff/SKILL.md) | Suspending in-progress work into a downloadable package that a fresh-context session takes over with `/address continue` |
+| [Author](.claude/skills/author/SKILL.md) | Driving a btnopen blog post from an idea or outline through research and drafting rounds to a reviewed draft via the Payload MCP server |
+
 ## Response Approach
 
 Use this workflow for single-agent work in this repository. The agent owns planning, implementation, investigation, verification, review, and reporting directly.

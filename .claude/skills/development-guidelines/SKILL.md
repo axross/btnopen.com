@@ -1,6 +1,8 @@
 ---
 name: development-guidelines
-description: Apply this skill at the start of EVERY task in this project. Covers the Biome format/lint loop, scoped change management, current-docs lookup triggers, npm run-scripts, TypeScript type-safety discipline, source-comment and doc-comment conventions, verification requirements, Payload migration handling, Playwright e2e expectations, Conventional Commits, pull request descriptions, and the per-PR Turso-branch preview-deployment pipeline. Use even when the user does not mention formatting, linting, testing, type casts, comments, doc-comments, dependencies, migrations, docs, commands, commit wording, pull request bodies, branch/preview deploys, or Turso database branching.
+description: The project's baseline working rules. Covers the Biome format/lint loop, scoped change management, current-docs lookup triggers, npm run-scripts, TypeScript type-safety discipline, source-comment and doc-comment conventions, verification requirements, Payload migration handling, Playwright e2e expectations, Conventional Commits, pull request descriptions, and the per-PR Turso-branch preview-deployment pipeline.
+when_to_use: Apply at the start of EVERY task in this project, even when the user does not mention formatting, linting, testing, type casts, comments, doc-comments, dependencies, migrations, docs, commands, commit wording, pull request bodies, branch/preview deploys, or Turso database branching.
+user-invocable: false
 ---
 
 # Development Guidelines

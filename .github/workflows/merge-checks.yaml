@@ -2,7 +2,7 @@ name: Merge Checks
 
 # The project's fast merge-gating CI: lint and unit tests on every pull
 # request and on pushes to the default branch. This is the CI the /address
-# command's tail polls after a push (see .claude/commands/address.md). Keep
+# skill's tail polls after a push (see .claude/skills/address/SKILL.md). Keep
 # REVIEW.md's do-not-report list in sync with exactly what these jobs enforce.
 # The heavier e2e + deploy pipeline lives in check-and-deploy.yaml.
 

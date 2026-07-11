@@ -1,6 +1,8 @@
 ---
 name: maintainable-code-guidelines
-description: Use this skill when reviewing maintainability and design of changed code. Covers naming and file organization, route-local vs shared abstraction boundaries, complexity/readability limits, magic-number and dead-code discipline, scope control, and SOLID/DRY/KISS/YAGNI judgment for RSC trees and Payload repositories. This is the reviewer's lens on top of development, project-structure, React, and routing rules. Use for "readable", "too long", "refactor", "abstraction", or "should this live elsewhere".
+description: The maintainability and design review lens for changed code — the reviewer's layer on top of development, project-structure, React, and routing rules. Covers naming and file organization, route-local vs shared abstraction boundaries, complexity/readability limits, magic-number and dead-code discipline, scope control, and SOLID/DRY/KISS/YAGNI judgment for RSC trees and Payload repositories.
+when_to_use: Use when reviewing maintainability and design of changed code — "readable", "too long", "refactor", "abstraction", or "should this live elsewhere".
+user-invocable: false
 ---
 
 # Maintainable Code Guidelines
