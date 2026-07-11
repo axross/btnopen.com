@@ -8,6 +8,10 @@
 		"page-description": "The page you are looking for was not found.",
 		"post-description": "The post you are looking for was not found."
 	},
+	"outline": {
+		"label": "Outline",
+		"empty": "No outline yet."
+	},
 	"language-switcher": {
 		"label": "Switch language"
 	}

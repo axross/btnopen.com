@@ -307,6 +307,13 @@ async function seedExampleBlogPost({
 			),
 		});
 
+		// the outline is a plain-text authoring field, so it holds the raw Markdown
+		// verbatim (no Lexical conversion, unlike the body).
+		const outline = await readFile(
+			resolve(selfDirname, "./seed/outline.md"),
+			"utf-8",
+		);
+
 		exampleBlogPost = await payload.create({
 			collection: "blog-posts",
 			data: {
@@ -317,6 +324,7 @@ async function seedExampleBlogPost({
 					"Markdown の構文確認を、実装の制約と判断材料が残る実用的なブログ記事として組み直す。",
 				tags: [tag],
 				body,
+				outline,
 				author,
 				publishedAt: "2026-03-22T17:00:00Z",
 			},

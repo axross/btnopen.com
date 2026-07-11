@@ -29,7 +29,7 @@ export async function BlogPostContent({
 	);
 }
 
-const markdownClassNames = {
+export const markdownClassNames = {
 	a: css.a,
 	h1: css.h1,
 	h2: css.h2,

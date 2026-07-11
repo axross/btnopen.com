@@ -1,0 +1,71 @@
+@layer components {
+	@scope (.outlinePage) {
+		:where(:scope) {
+			display: flex;
+			width: stretch;
+			container: page / inline-size;
+			flex-direction: column;
+			align-items: center;
+
+			--blog-post-content-negative-margin: var(--size-16);
+
+			@container (width > 30rem) {
+				--page-variant: "desktop";
+				--max-width: calc(30rem - var(--size-16) * 2);
+				--blog-post-content-negative-margin: 0;
+			}
+
+			@container (width > 50rem) {
+				--max-width: min(calc(50rem - var(--size-32) * 2), var(--measure));
+			}
+		}
+
+		.header {
+			display: flex;
+			width: stretch;
+			max-width: var(--max-width);
+			flex-direction: column;
+			gap: var(--size-8);
+			padding-inline: var(--size-16);
+
+			@container style(--page-variant: "desktop") {
+				padding-inline: unset;
+			}
+		}
+
+		.eyebrow {
+			color: var(--accent-11);
+			font-family: var(--font-mono);
+			font-feature-settings: var(--font-mono-features);
+			font-size: var(--text-sm);
+			font-weight: 500;
+			letter-spacing: 0.04em;
+			text-transform: uppercase;
+		}
+
+		.title {
+			color: var(--neutral-12);
+			font-size: var(--text-3xl);
+			font-weight: 700;
+			line-height: var(--leading-sm);
+			word-break: break-word;
+		}
+
+		.content {
+			width: stretch;
+			max-width: var(--max-width);
+			margin-block-start: var(--size-32);
+			padding-inline: var(--size-16);
+
+			@container style(--page-variant: "desktop") {
+				padding-inline: unset;
+			}
+		}
+
+		.empty {
+			color: var(--neutral-10);
+			font-size: var(--text-md);
+			line-height: var(--leading-lg);
+		}
+	}
+}
