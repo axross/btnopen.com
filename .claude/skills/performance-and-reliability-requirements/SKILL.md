@@ -1,6 +1,8 @@
 ---
 name: performance-and-reliability-requirements
-description: Use this skill when reviewing runtime cost or failure-mode behavior of a code change in this Next.js + Payload CMS + Vercel project. Covers Payload query efficiency and N+1 risk, RSC/client boundary cost and async waterfalls, `Promise<T>` props, Suspense loading splits, `"use cache"`/`cacheLife()` caching correctness (lifetime, scope, invalidation), image optimization, client bundle and dependency weight, React Compiler impact, and error-handling/observability hooks (Sentry, Pino). This is the reviewer's lens. Use for "fast", "cache", "scale", "slow", "bundle", or "what happens when this fails".
+description: The runtime-cost and failure-mode review lens for changes in this Next.js + Payload CMS + Vercel project. Covers Payload query efficiency and N+1 risk, RSC/client boundary cost and async waterfalls, `Promise<T>` props, Suspense loading splits, `"use cache"`/`cacheLife()` caching correctness (lifetime, scope, invalidation), image optimization, client bundle and dependency weight, React Compiler impact, and error-handling/observability hooks (Sentry, Pino).
+when_to_use: Use when reviewing runtime cost or failure-mode behavior of a code change — "fast", "cache", "scale", "slow", "bundle", or "what happens when this fails".
+user-invocable: false
 ---
 
 # Performance and Reliability Requirements

@@ -1,6 +1,8 @@
 ---
 name: code-review-guideline
-description: Apply this skill at the start of EVERY review task, including post-implementation self-review. Covers reviewer-mode reset, diff scoping with `git status`/`git diff`, severity labels, file-line evidence, fix snippets, verification evidence, second-pass re-review after fixes, escalation for high-risk changes, and topic-specific lenses for maintainability, QA, security, performance, structure, routing, markdown, UI, observability, and e2e tests. Use for "review", "PR", "audit", "check this change", or self-review prompts.
+description: The review methodology for this project. Covers reviewer-mode reset, diff scoping with `git status`/`git diff`, severity labels, file-line evidence, fix snippets, verification evidence, second-pass re-review after fixes, escalation for high-risk changes, and topic-specific lenses for maintainability, QA, security, performance, structure, routing, markdown, UI, observability, and e2e tests.
+when_to_use: Apply at the start of EVERY review task, including post-implementation self-review. Use for "review", "PR", "audit", "check this change", or self-review prompts.
+user-invocable: false
 ---
 
 # Code Review Guideline
@@ -39,8 +41,8 @@ See [severity.md](./references/severity.md) for:
 
 ## Repository Review Policy Overlay
 
-When the review output is a **posted** pull-request review — the `/review`
-command, the CI reviewer, or a managed review product —
+When the review output is a **posted** pull-request review — the CI
+reviewer or a managed review product —
 [`REVIEW.md`](../../../REVIEW.md) at the repo root is the authoritative policy
 and overrides the vocabulary in this skill where they differ. The internal
 Critical/Major/Minor/Nit triage and verdict mapping still drive self-review;

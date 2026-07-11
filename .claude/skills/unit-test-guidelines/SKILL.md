@@ -1,6 +1,8 @@
 ---
 name: unit-test-guidelines
-description: Apply this skill when writing, refactoring, reviewing, or running Jest unit tests in this project. Covers Jest configuration, explicit `@jest/globals` imports, colocated `*.spec.ts` test files, `describe()`/`it()` naming and grouping conventions, behavior-focused test design, fixture quality, AHA test abstraction, mocks and fakes, async assertions, snapshot discipline, Zod schema/codec tests, type-only modules, and when unit tests should yield to integration or e2e coverage.
+description: The Jest unit-testing conventions for this project. Covers Jest configuration, explicit `@jest/globals` imports, colocated `*.spec.ts` test files, `describe()`/`it()` naming and grouping conventions, behavior-focused test design, fixture quality, AHA test abstraction, mocks and fakes, async assertions, snapshot discipline, Zod schema/codec tests, type-only modules, and when unit tests should yield to integration or e2e coverage.
+when_to_use: Apply when writing, refactoring, reviewing, or running Jest unit tests in this project.
+user-invocable: false
 ---
 
 # Unit Test Guidelines

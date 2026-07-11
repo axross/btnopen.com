@@ -1,6 +1,7 @@
 ---
 name: ui-design-principles
-description: Use this skill when designing, implementing, or reviewing user-facing UI/UX. Covers visual identity, color tokens, spacing/radii/motion, imagery treatment, responsive mobile/tablet/desktop behavior, light/dark themes, focus states, Japanese-primary copy, loading/empty/not-found states, semantic HTML, ARIA, alt text, and external-link affordances. Use for "design", "palette", "theme", "dark mode", "responsive", "mobile", "a11y", "copy", "typography", "squircle", "loading state", "view transition", or "not found".
+description: The user-facing UI/UX design system for this project. Covers visual identity, color tokens, spacing/radii/motion, imagery treatment, responsive mobile/tablet/desktop behavior, light/dark themes, focus states, Japanese-primary copy, loading/empty/not-found states, semantic HTML, ARIA, alt text, and external-link affordances.
+when_to_use: Use when designing, implementing, or reviewing user-facing UI/UX — "design", "palette", "theme", "dark mode", "responsive", "mobile", "a11y", "copy", "typography", "squircle", "loading state", "view transition", or "not found".
 user-invocable: false
 ---
 

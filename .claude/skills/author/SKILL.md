@@ -1,13 +1,16 @@
 ---
-description: Drive the outline-first blog authoring loop — research and refine the post's outline to a go sign, then draft the body through Payload MCP and iterate on the preview URL until the author is satisfied
+name: author
+description: The btnopen blog-post authoring workflow — an outline-first loop that researches and strengthens a post's outline to an explicit go sign, then drafts the body through the Payload MCP server and iterates on the draft preview URL until the author is satisfied. Publishing stays in the Payload admin.
+when_to_use: Invoke when the human wants to write or develop a btnopen blog post from an idea, a slug, or an outline — "write a post about X", "draft this article", "work on the <slug> post". Do not invoke for one-off edits to already-published content, or for non-post copy.
 argument-hint: <post slug or URL, or an idea summary>
+user-invocable: true
 ---
 
-You are the `/author` driver. Take a btnopen blog post from an idea or an outline to a reviewed **draft** through two human-gated loops: **research rounds** that audit and strengthen the post's outline until the author gives an explicit go sign, then **drafting rounds** that write the body through the Payload MCP server and hand back the draft preview URL until the author has no more requests. Publishing is never part of this command — the author publishes in the Payload admin.
+You are the `/author` driver. Take a btnopen blog post from an idea or an outline to a reviewed **draft** through two human-gated loops: **research rounds** that audit and strengthen the post's outline until the author gives an explicit go sign, then **drafting rounds** that write the body through the Payload MCP server and hand back the draft preview URL until the author has no more requests. Publishing is never part of this skill — the author publishes in the Payload admin.
 
 Target: `$ARGUMENTS`
 
-This command orchestrates existing project skills; it does not restate their rules. Own the editorial decisions with [Blog Post Authoring Guidelines](../skills/blog-post-authoring-guidelines/SKILL.md), the review lens with [Code Review Guideline](../skills/code-review-guideline/SKILL.md), the exact supported syntax with [Markdown Processing Guidelines](../skills/markdown-processing-guidelines/SKILL.md), and every CMS read/write with [Payload CMS MCP](../skills/payload-cms-mcp/SKILL.md). Follow [Development Guidelines](../skills/development-guidelines/SKILL.md) and the [Response Approach](../../AGENTS.md) throughout.
+This skill orchestrates existing project skills; it does not restate their rules. Own the editorial decisions with [Blog Post Authoring Guidelines](../blog-post-authoring-guidelines/SKILL.md), the review lens with [Code Review Guideline](../code-review-guideline/SKILL.md), the exact supported syntax with [Markdown Processing Guidelines](../markdown-processing-guidelines/SKILL.md), and every CMS read/write with [Payload CMS MCP](../payload-cms-mcp/SKILL.md). Follow [Development Guidelines](../development-guidelines/SKILL.md) and the [Response Approach](../../../AGENTS.md) throughout.
 
 ## The outline field
 
@@ -27,7 +30,7 @@ For an existing post, choose the entry from its current state:
 
 ## Preconditions
 
-- MUST validate MCP access first: call `tools/list` per [Payload CMS MCP](../skills/payload-cms-mcp/SKILL.md) and use only the exact tool names it returns. If no MCP key or callable connector is available, ask the author for an MCP API key rather than falling back to seed fixtures, direct database writes, or local REST calls.
+- MUST validate MCP access first: call `tools/list` per [Payload CMS MCP](../payload-cms-mcp/SKILL.md) and use only the exact tool names it returns. If no MCP key or callable connector is available, ask the author for an MCP API key rather than falling back to seed fixtures, direct database writes, or local REST calls.
 - MUST confirm the tools an entry needs are present (`findBlogPosts` always; `createBlogPosts` for a new post; `updateBlogPosts` for outline write-back and metadata; the body-node tools for body edits) before promising the work. If one is absent for the current key, stop and report the missing capability precisely.
 - MUST re-inspect the post through MCP at the start of every round — never act on memory of a prior turn's outline or body tree.
 
@@ -46,7 +49,7 @@ Each round:
 
 Each round:
 
-1. Write or update the **draft** body from the approved outline per [Blog Post Authoring Guidelines](../skills/blog-post-authoring-guidelines/SKILL.md) — Japanese-primary (`ja-JP`), covering supported Markdown naturally per [Markdown Processing Guidelines](../skills/markdown-processing-guidelines/SKILL.md). Body writes use the serialized-Lexical conventions in [Payload CMS MCP](../skills/payload-cms-mcp/SKILL.md); prefer local block-level edits for targeted feedback, and suggest-then-apply for anything destructive.
+1. Write or update the **draft** body from the approved outline per [Blog Post Authoring Guidelines](../blog-post-authoring-guidelines/SKILL.md) — Japanese-primary (`ja-JP`), covering supported Markdown naturally per [Markdown Processing Guidelines](../markdown-processing-guidelines/SKILL.md). Body writes use the serialized-Lexical conventions in [Payload CMS MCP](../payload-cms-mcp/SKILL.md); prefer local block-level edits for targeted feedback, and suggest-then-apply for anything destructive.
 2. For a new post, resolve the required relationships as part of the first round: the site's single author resolved from existing data (never an invented ID), tags matched through `findTags` (report unmatched candidates rather than inventing), and the cover image chosen by the author via `AskUserQuestion` from `findCoverImages` options — **ask on every run**, never guess.
 3. Verify every mutation by re-reading the affected fields through MCP.
 4. Hand back the draft preview URL — `<site origin>/posts/<slug>?draft=true` (rendered draft) and `<site origin>/posts/<slug>?preview=true&draft=true` (Payload live preview) — and summarize what changed this round.

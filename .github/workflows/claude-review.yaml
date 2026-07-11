@@ -4,9 +4,9 @@ name: Claude Code Review
 # GitHub-hosted runner — a different session, on different infrastructure,
 # under a bot identity distinct from the connected operator — triggered by a
 # comment containing the review trigger phrase (`@claude review`; if you change
-# it, change it in .claude/commands/*.md too). It bootstraps REVIEW.md at the
-# repo root as the review policy. This is the authoritative review for the
-# /address flow (.claude/commands/address.md), which posts the trigger phrase
+# it, change it in .claude/skills/address/SKILL.md too). It bootstraps REVIEW.md
+# at the repo root as the review policy. This is the authoritative review for the
+# /address flow (.claude/skills/address/SKILL.md), which posts the trigger phrase
 # after opening a PR and then addresses the findings this workflow leaves.
 #
 # NOTE: issue_comment workflows run only from the version on the DEFAULT
@@ -79,7 +79,6 @@ jobs:
           # and stops silently. With `--comment` it posts inline comments via
           # mcp__github_inline_comment__create_inline_comment plus one
           # `gh pr comment` summary; it never submits a formal `gh pr review`.
-          # (The repo's /review command runs the same practice locally.)
           plugin_marketplaces: "https://github.com/anthropics/claude-code.git"
           plugins: "code-review@claude-code-plugins"
           prompt: "/code-review:code-review https://github.com/${{ github.repository }}/pull/${{ github.event.issue.number }} --comment"

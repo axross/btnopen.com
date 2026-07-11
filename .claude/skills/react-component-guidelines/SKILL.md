@@ -1,6 +1,8 @@
 ---
 name: react-component-guidelines
-description: Use this skill when writing, reviewing, or refactoring React components. Covers kebab-case files, prop typing, explicit JSX return types, Server vs Client component boundaries, `"use client"`, Suspense loading/loaded splits, `"use cache"`/`cacheLife()`, `Promise<T>` props, CSS Modules, `clsx`, style isolation, modern CSS properties, and `data-testid` conventions. Use for "component", "use client", "RSC", "Suspense", "styling", "container query", "oklch", "@scope", "animation-timeline", or "data-testid".
+description: The conventions for writing React components in this project. Covers kebab-case files, prop typing, explicit JSX return types, Server vs Client component boundaries, `"use client"`, Suspense loading/loaded splits, `"use cache"`/`cacheLife()`, `Promise<T>` props, CSS Modules, `clsx`, style isolation, modern CSS properties, and `data-testid` conventions.
+when_to_use: Use when writing, reviewing, or refactoring React components — "component", "use client", "RSC", "Suspense", "styling", "container query", "oklch", "@scope", "animation-timeline", or "data-testid".
+user-invocable: false
 ---
 
 # React Component Guidelines
