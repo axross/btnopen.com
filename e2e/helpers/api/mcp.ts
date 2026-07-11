@@ -171,7 +171,7 @@ function readMcpApiKeyState(): McpApiKeyState | null {
 	}
 }
 
-async function getCurrentUserId({
+export async function getCurrentUserId({
 	page,
 	testInfo,
 }: {
@@ -202,7 +202,7 @@ async function getCurrentUserId({
 	);
 }
 
-function getCreatedDocId(json: unknown): number | null {
+export function getCreatedDocId(json: unknown): number | null {
 	if (!isRecord(json)) {
 		return null;
 	}
@@ -218,7 +218,7 @@ function getCreatedDocId(json: unknown): number | null {
 	return null;
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
+export function isRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === "object" && value !== null;
 }
 

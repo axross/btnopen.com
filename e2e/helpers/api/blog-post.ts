@@ -2,6 +2,7 @@ import type { Page, TestInfo } from "@playwright/test";
 import { NIL as uuidNIL, v5 as uuidV5 } from "uuid";
 import type z from "zod";
 import { PayloadBlogPost } from "@/repositories/payload-types";
+import { getCreatedDocId, getCurrentUserId, isRecord } from "./mcp";
 
 export const exampleBlogPostSlug = "markdown-example";
 
@@ -131,37 +132,6 @@ async function getExampleCoverImageId({
 	);
 }
 
-async function getCurrentUserId({
-	page,
-	testInfo,
-}: {
-	page: Page;
-	testInfo: TestInfo;
-}): Promise<number> {
-	const url = new URL("/api/users/me", testInfo.project.use.baseURL);
-	const response = await page.request.get(`${url}`);
-
-	if (!response.ok()) {
-		throw new Error(
-			`Failed to get current user: ${response.status()} ${await response.text()}`,
-		);
-	}
-
-	const json: unknown = await response.json();
-
-	if (
-		isRecord(json) &&
-		isRecord(json.user) &&
-		typeof json.user.id === "number"
-	) {
-		return json.user.id;
-	}
-
-	throw new Error(
-		"Failed to get current user because the response was invalid.",
-	);
-}
-
 function createMinimalBlogPostBody(): unknown {
 	return {
 		root: {
@@ -193,24 +163,4 @@ function createMinimalBlogPostBody(): unknown {
 			version: 1,
 		},
 	};
-}
-
-function getCreatedDocId(json: unknown): number | null {
-	if (!isRecord(json)) {
-		return null;
-	}
-
-	if (typeof json.id === "number") {
-		return json.id;
-	}
-
-	if (isRecord(json.doc) && typeof json.doc.id === "number") {
-		return json.doc.id;
-	}
-
-	return null;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-	return typeof value === "object" && value !== null;
 }
