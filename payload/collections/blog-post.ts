@@ -6,19 +6,16 @@ export const blogPostCollection: CollectionConfig = {
 	slug: "blog-posts",
 	fields: [
 		{
-			name: "slug",
-			type: "text",
-			required: true,
-			unique: true,
-			admin: {
-				position: "sidebar",
-			},
-		},
-		{
 			name: "title",
 			type: "text",
 			required: true,
 			localized: true,
+		},
+		{
+			name: "slug",
+			type: "text",
+			required: true,
+			unique: true,
 		},
 		{
 			type: "tabs",

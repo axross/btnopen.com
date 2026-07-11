@@ -216,8 +216,8 @@ export interface AvatarImage {
  */
 export interface BlogPost {
   id: number;
-  slug: string;
   title: string;
+  slug: string;
   body: {
     root: {
       type: string;
@@ -571,8 +571,8 @@ export interface UsersSelect<T extends boolean = true> {
  * via the `definition` "blog-posts_select".
  */
 export interface BlogPostsSelect<T extends boolean = true> {
-  slug?: T;
   title?: T;
+  slug?: T;
   body?: T;
   brief?: T;
   coverImage?: T;
