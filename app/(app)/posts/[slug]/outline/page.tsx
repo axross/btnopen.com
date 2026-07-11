@@ -14,12 +14,12 @@ export default async function BlogPostOutlinePage({
 	params,
 	searchParams,
 }: PageProps): Promise<JSX.Element> {
-	const [{ slug }, { draft: draftParam }] = await Promise.all([
+	const [{ slug }, { draft: draftParam }, locale] = await Promise.all([
 		params,
 		searchParams,
+		getActiveLocale(),
 	]);
 	const draft = draftParam === "true";
-	const locale = await getActiveLocale();
 	const [post, t] = await Promise.all([
 		getBlogPostOutline({ slug, draft, locale }),
 		getTranslations("outline"),
@@ -59,12 +59,12 @@ export async function generateMetadata({
 	params,
 	searchParams,
 }: PageProps): Promise<Metadata> {
-	const [{ slug }, { draft: draftParam }] = await Promise.all([
+	const [{ slug }, { draft: draftParam }, locale] = await Promise.all([
 		params,
 		searchParams,
+		getActiveLocale(),
 	]);
 	const draft = draftParam === "true";
-	const locale = await getActiveLocale();
 	const [post, t] = await Promise.all([
 		getBlogPostOutline({ slug, draft, locale }),
 		getTranslations("outline"),

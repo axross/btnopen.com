@@ -73,7 +73,7 @@ export async function getBlogPostOutline({
 	if (result.docs.length > 0) {
 		const blogPost = BlogPostOutline.parse(result.docs[0]);
 
-		logger.info({ slug }, "Successfully fetched blog post outline.");
+		logger.info({ slug }, "Completed fetching post outline.");
 
 		return blogPost;
 	}
