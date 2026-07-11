@@ -38,9 +38,9 @@ test(
 
 		const content = root.getByTestId("content");
 
-		await test.step("Verify the outline Markdown is rendered as headings", async () => {
+		await test.step("Verify the outline Markdown is rendered as a bullet list", async () => {
 			await expect(
-				content.getByRole("heading", { name: "ねらい" }),
+				content.getByRole("listitem").filter({ hasText: "ねらい" }),
 			).toBeVisible();
 		});
 
@@ -131,7 +131,7 @@ test(
 					slug,
 					testInfo,
 					title: "公開済み・下書きにアウトラインなし",
-					outline: "## フォールバック見出し\n\n- 項目",
+					outline: "- フォールバック項目: 公開版のアウトラインを表示する",
 				}));
 			});
 
@@ -144,7 +144,8 @@ test(
 					page
 						.getByTestId("page")
 						.getByTestId("content")
-						.getByRole("heading", { name: "フォールバック見出し" }),
+						.getByRole("listitem")
+						.filter({ hasText: "フォールバック項目" }),
 				).toBeVisible();
 			});
 		} finally {
