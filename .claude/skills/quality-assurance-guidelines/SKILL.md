@@ -32,6 +32,7 @@ See [e2e-coverage.md](./references/e2e-coverage.md) for:
 - New visually distinct UI elements expose `data-testid` per the project's React component guidelines (testable-components rules)
 - Test files use the project's required locator and structure conventions per the project's e2e testing guidelines
 - API helpers under `e2e/helpers/api/` are used (not duplicated inline in the test file)
+- Scenario-coverage evidence: a new user-facing journey is cataloged in `e2e/scenarios.md` and tagged on the asserting test, and a `must`-priority gap blocks `npm run coverage:scenarios`
 
 ## Snapshot Handling
 

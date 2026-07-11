@@ -1,6 +1,6 @@
 ---
 name: e2e-testing-guidelines
-description: Use this skill whenever writing, reviewing, refactoring, or running Playwright end-to-end tests in this project, or whenever a change requires verification via the e2e suite. Covers the `e2e/` test directory layout, `.test.ts` test-file naming, structured `test()` / `test.step()` naming, stable `getByTestId()` chained/scoped locators with a role-then-copy fallback hierarchy (text matching only when asserting the copy itself), locator-native auto-waiting assertions (`toBeFocused`, `toBeVisible`, `toHaveAttribute`) over manual DOM reads via `evaluate()`, `expect.poll` / `waitForFunction` (never fixed sleeps) for async settling such as scroll-driven or CSS-animation transitions, pseudo-element state via `getComputedStyle(el, "::before")`, authenticated `storageState` reuse for API helpers, reusable API/setup helper conventions in `e2e/helpers/api/`, the snapshot update flow, and commands for running tests against dev, local production, and the deployed Vercel environment. Use even when the user only mentions "Playwright", e2e tests, snapshots, `data-testid`, `expect.poll`, `toBeFocused`, pseudo-elements, polling/waiting, focus assertions, or a failing test run.
+description: Use this skill whenever writing, reviewing, refactoring, or running Playwright end-to-end tests in this project, or whenever a change requires verification via the e2e suite. Covers the `e2e/` test directory layout, `.test.ts` test-file naming, structured `test()` / `test.step()` naming, stable `getByTestId()` chained/scoped locators with a role-then-copy fallback hierarchy (text matching only when asserting the copy itself), locator-native auto-waiting assertions (`toBeFocused`, `toBeVisible`, `toHaveAttribute`) over manual DOM reads via `evaluate()`, `expect.poll` / `waitForFunction` (never fixed sleeps) for async settling such as scroll-driven or CSS-animation transitions, pseudo-element state via `getComputedStyle(el, "::before")`, authenticated `storageState` reuse for API helpers, reusable API/setup helper conventions in `e2e/helpers/api/`, the snapshot update flow, the scenario-coverage journey catalog (`e2e/scenarios.md`) and its `@scenario`/`@area`/`@priority`/`@smoke` tagging, and commands for running tests against dev, local production, and the deployed Vercel environment. Use even when the user only mentions "Playwright", e2e tests, snapshots, `data-testid`, `expect.poll`, `toBeFocused`, pseudo-elements, polling/waiting, focus assertions, or a failing test run.
 ---
 
 # E2E Testing Guidelines
@@ -29,3 +29,11 @@ See [conventions.md](./references/conventions.md) for:
 - Playwright's locator-native auto-waiting assertions and polling/wait-for-condition helpers
 - Setup/cleanup hooks
 - API-call and authenticated-state helper conventions
+
+## E2E Scenario Coverage
+
+See [scenario-coverage.md](./references/scenario-coverage.md) for:
+
+- The scenario-coverage metric (user journeys asserted, **not** e2e line coverage) and why line coverage was rejected
+- The human-authored journey catalog (`e2e/scenarios.md`) and the `@scenario` join tag plus `@area`/`@priority`/`@smoke` facet tags
+- The phased gate (`must`-priority journeys at 100% first via `npm run coverage:scenarios`), the reporter (`e2e/reporters/scenario-coverage.ts`), and the gate script (`e2e/check-scenario-coverage.mjs`)

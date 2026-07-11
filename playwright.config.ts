@@ -12,7 +12,13 @@ const vercelAutomationBypassSecret =
 
 export default defineConfig({
 	testDir: "./e2e/tests",
-	reporter: isCI ? "github" : "list",
+	// keep the default terminal reporter (github annotations on CI, list locally)
+	// and append the scenario-coverage reporter — it only tallies @scenario: tags
+	// against e2e/scenarios.md, so it adds no measurable cost to the default run.
+	reporter: [
+		[isCI ? "github" : "list"],
+		["./e2e/reporters/scenario-coverage.ts"],
+	],
 	outputDir: ".playwright-results",
 
 	// restrict workers to 1 on GitHub Actions to reduce costs

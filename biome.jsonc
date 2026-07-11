@@ -381,6 +381,32 @@
 			}
 		},
 		{
+			// the scenario-coverage reporter and gate are standalone Node tooling —
+			// a Playwright reporter (default-exported by contract) and a CLI check —
+			// so these rules are inherent to the file type, not application code.
+			"includes": ["e2e/reporters/*.ts", "e2e/check-scenario-coverage.mjs"],
+			"linter": {
+				"rules": {
+					"correctness": {
+						// off because Node tooling needs node: built-ins (fs, path, url)
+						"noNodejsModules": "off"
+					},
+					"style": {
+						// off because a Playwright reporter must be the default export
+						"noDefaultExport": "off",
+						// off because the gate reads its SCENARIO_GATE toggle from env
+						"noProcessEnv": "off",
+						// off because a coverage formatter uses percentage/column literals
+						"noMagicNumbers": "off"
+					},
+					"suspicious": {
+						// off because the reporter and gate print their report to stdout
+						"noConsole": "off"
+					}
+				}
+			}
+		},
+		{
 			"includes": ["package.json", "package-lock.json", "skills-lock.json"],
 			"formatter": {
 				"enabled": false

@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-test("Redirect to index page", async ({ page }) => {
+test("Redirect to index page", {
+	tag: ["@scenario:posts.redirect", "@area:posts", "@priority:should"],
+}, async ({ page }) => {
 	await test.step("Navigate to post list route", async () => {
 		await page.goto("/posts");
 	});

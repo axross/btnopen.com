@@ -28,7 +28,9 @@ test.beforeEach(async ({ page }) => {
 	});
 });
 
-test("Thumbnail image", async ({ page }) => {
+test("Thumbnail image", {
+	tag: ["@scenario:index.thumbnail", "@area:metadata", "@priority:should"],
+}, async ({ page }) => {
 	await test.step("Verify the thumbnail image", async () => {
 		await expect(page).toHaveScreenshot("thumbnail.png");
 	});

@@ -6,13 +6,22 @@ test.beforeEach(async ({ page }) => {
 	});
 });
 
-test("Unknown post slug shows not found page", async ({ page }) => {
+test("Unknown post slug shows not found page", {
+	tag: [
+		"@scenario:post.not-found",
+		"@area:not-found",
+		"@priority:must",
+		"@smoke",
+	],
+}, async ({ page }) => {
 	await test.step("Verify the not found page is visible", async () => {
 		await expect(page.getByTestId("not-found")).toBeVisible();
 	});
 });
 
-test("Blog post not found page UI", async ({ page }) => {
+test("Blog post not found page UI", {
+	tag: ["@scenario:post.not-found", "@area:not-found", "@priority:must"],
+}, async ({ page }) => {
 	const notFound = page.getByTestId("not-found");
 
 	await test.step("Verify the not found page is visible", async () => {
@@ -28,9 +37,13 @@ test("Blog post not found page UI", async ({ page }) => {
 	});
 });
 
-test("Home link on blog post not found navigates to index", async ({
-	page,
-}) => {
+test("Home link on blog post not found navigates to index", {
+	tag: [
+		"@scenario:post.not-found.home-link",
+		"@area:not-found",
+		"@priority:should",
+	],
+}, async ({ page }) => {
 	await test.step("Click the home link", async () => {
 		await page.getByTestId("not-found").getByTestId("link").click();
 	});

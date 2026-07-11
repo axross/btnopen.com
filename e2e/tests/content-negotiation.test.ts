@@ -6,9 +6,13 @@ test.use({ storageState: authenticatedStorageState });
 test.describe("English content negotiation", () => {
 	test.use({ locale: "en-US" });
 
-	test("serves English chrome and locale metadata to an English browser", async ({
-		page,
-	}) => {
+	test("serves English chrome and locale metadata to an English browser", {
+		tag: [
+			"@scenario:localization.english",
+			"@area:localization",
+			"@priority:should",
+		],
+	}, async ({ page }) => {
 		await test.step("Navigate to the index route (draft=true)", async () => {
 			await page.goto("/?draft=true");
 		});
@@ -49,9 +53,13 @@ test.describe("English content negotiation", () => {
 test.describe("Japanese content negotiation", () => {
 	test.use({ locale: "ja-JP" });
 
-	test("serves Japanese chrome and locale metadata to a Japanese browser", async ({
-		page,
-	}) => {
+	test("serves Japanese chrome and locale metadata to a Japanese browser", {
+		tag: [
+			"@scenario:localization.japanese",
+			"@area:localization",
+			"@priority:must",
+		],
+	}, async ({ page }) => {
 		await test.step("Navigate to the index route (draft=true)", async () => {
 			await page.goto("/?draft=true");
 		});
@@ -84,9 +92,13 @@ test.describe("Japanese content negotiation", () => {
 test.describe("language switcher", () => {
 	test.use({ locale: "en-US" });
 
-	test("persists an explicit locale choice across reloads via cookie", async ({
-		page,
-	}) => {
+	test("persists an explicit locale choice across reloads via cookie", {
+		tag: [
+			"@scenario:localization.switcher-persists",
+			"@area:localization",
+			"@priority:should",
+		],
+	}, async ({ page }) => {
 		await test.step("Navigate to the index route (draft=true)", async () => {
 			await page.goto("/?draft=true");
 		});

@@ -12,132 +12,137 @@ import {
 
 test.use({ storageState: authenticatedStorageState });
 
-test("MCP endpoint rejects requests without an API key", async ({
-	page,
-}, testInfo) => {
-	const url = new URL("/api/mcp", testInfo.project.use.baseURL);
+test(
+	"MCP endpoint rejects requests without an API key",
+	{ tag: ["@scenario:mcp.auth-required", "@area:mcp", "@priority:must"] },
+	async ({ page }, testInfo) => {
+		const url = new URL("/api/mcp", testInfo.project.use.baseURL);
 
-	const response = await page.request.post(`${url}`, {
-		headers: {
-			accept: "application/json, text/event-stream",
-			"content-type": "application/json",
-		},
-		data: {
-			jsonrpc: "2.0",
-			id: "unauthorized",
-			method: "tools/list",
-			params: {},
-		},
-	});
-
-	await test.step("Verify the request is rejected", async () => {
-		expect(response.ok()).toBe(false);
-	});
-});
-
-test("MCP exposes scoped tools and mutates blog post body nodes", async ({
-	page,
-}, testInfo) => {
-	let createdBlogPostId: number | null = null;
-
-	try {
-		const apiKey =
-			await test.step("Load the pre-issued MCP API key", async () =>
-				getMcpApiKey());
-		const toolsResponse = await test.step("List MCP tools", async () =>
-			callMcp({
-				apiKey,
+		const response = await page.request.post(`${url}`, {
+			headers: {
+				accept: "application/json, text/event-stream",
+				"content-type": "application/json",
+			},
+			data: {
+				jsonrpc: "2.0",
+				id: "unauthorized",
 				method: "tools/list",
-				page,
-				testInfo,
-			}));
-
-		await test.step("Verify only intended tools are exposed", async () => {
-			verifyToolList(toolsResponse);
+				params: {},
+			},
 		});
 
-		const blogPostSlug = `mcp-body-${testInfo.repeatEachIndex}-${Date.now()}`;
-		const blogPostTitle = "MCP Body Mutation";
-		const appendedText = "This paragraph was appended through MCP.";
-		const coverImageId =
-			await test.step("Retrieve an existing cover image ID", async () =>
-				getExampleCoverImageId({ page, testInfo }));
-		const mediaId = await test.step("Retrieve an existing media ID", async () =>
-			getExampleMediaId({ page, testInfo }));
+		await test.step("Verify the request is rejected", async () => {
+			expect(response.ok()).toBe(false);
+		});
+	},
+);
 
-		createdBlogPostId =
-			await test.step("Create a published blog post through the API", async () =>
-				createPublishedBlogPost({
-					coverImageId,
+test(
+	"MCP exposes scoped tools and mutates blog post body nodes",
+	{ tag: ["@scenario:mcp.body-mutation", "@area:mcp", "@priority:should"] },
+	async ({ page }, testInfo) => {
+		let createdBlogPostId: number | null = null;
+
+		try {
+			const apiKey =
+				await test.step("Load the pre-issued MCP API key", async () =>
+					getMcpApiKey());
+			const toolsResponse = await test.step("List MCP tools", async () =>
+				callMcp({
+					apiKey,
+					method: "tools/list",
+					page,
+					testInfo,
+				}));
+
+			await test.step("Verify only intended tools are exposed", async () => {
+				verifyToolList(toolsResponse);
+			});
+
+			const blogPostSlug = `mcp-body-${testInfo.repeatEachIndex}-${Date.now()}`;
+			const blogPostTitle = "MCP Body Mutation";
+			const appendedText = "This paragraph was appended through MCP.";
+			const coverImageId =
+				await test.step("Retrieve an existing cover image ID", async () =>
+					getExampleCoverImageId({ page, testInfo }));
+			const mediaId =
+				await test.step("Retrieve an existing media ID", async () =>
+					getExampleMediaId({ page, testInfo }));
+
+			createdBlogPostId =
+				await test.step("Create a published blog post through the API", async () =>
+					createPublishedBlogPost({
+						coverImageId,
+						mediaId,
+						page,
+						slug: blogPostSlug,
+						testInfo,
+						title: blogPostTitle,
+					}));
+
+			await test.step("Append a paragraph through MCP", async () => {
+				await appendNodeThroughMcp({
+					apiKey,
+					location: [1],
+					node: createParagraphNode(appendedText),
+					page,
+					slug: blogPostSlug,
+					testInfo,
+				});
+			});
+
+			await test.step("Verify MCP find returns the appended body", async () => {
+				await verifyBlogPostBodyThroughMcpFind({
+					apiKey,
+					expectedText: appendedText,
 					mediaId,
 					page,
 					slug: blogPostSlug,
 					testInfo,
+				});
+			});
+
+			await test.step("Delete the paragraph through MCP", async () => {
+				await deleteNodeThroughMcp({
+					apiKey,
+					expectedText: appendedText,
+					location: [1],
+					page,
+					slug: blogPostSlug,
+					testInfo,
+				});
+			});
+
+			await test.step("Verify the deleted paragraph is absent", async () => {
+				await verifyBlogPostBodyThroughMcpFind({
+					apiKey,
+					expectedText: appendedText,
+					mediaId,
+					page,
+					shouldContainText: false,
+					slug: blogPostSlug,
+					testInfo,
+				});
+			});
+
+			await test.step("Verify the published page remains visible", async () => {
+				await verifyPublishedRouteVisibility({
+					page,
+					slug: blogPostSlug,
 					title: blogPostTitle,
-				}));
-
-		await test.step("Append a paragraph through MCP", async () => {
-			await appendNodeThroughMcp({
-				apiKey,
-				location: [1],
-				node: createParagraphNode(appendedText),
-				page,
-				slug: blogPostSlug,
-				testInfo,
+				});
 			});
-		});
+		} finally {
+			if (createdBlogPostId !== null) {
+				const blogPostId = createdBlogPostId;
 
-		await test.step("Verify MCP find returns the appended body", async () => {
-			await verifyBlogPostBodyThroughMcpFind({
-				apiKey,
-				expectedText: appendedText,
-				mediaId,
-				page,
-				slug: blogPostSlug,
-				testInfo,
-			});
-		});
-
-		await test.step("Delete the paragraph through MCP", async () => {
-			await deleteNodeThroughMcp({
-				apiKey,
-				expectedText: appendedText,
-				location: [1],
-				page,
-				slug: blogPostSlug,
-				testInfo,
-			});
-		});
-
-		await test.step("Verify the deleted paragraph is absent", async () => {
-			await verifyBlogPostBodyThroughMcpFind({
-				apiKey,
-				expectedText: appendedText,
-				mediaId,
-				page,
-				shouldContainText: false,
-				slug: blogPostSlug,
-				testInfo,
-			});
-		});
-
-		await test.step("Verify the published page remains visible", async () => {
-			await verifyPublishedRouteVisibility({
-				page,
-				slug: blogPostSlug,
-				title: blogPostTitle,
-			});
-		});
-	} finally {
-		if (createdBlogPostId !== null) {
-			const blogPostId = createdBlogPostId;
-
-			await test.step("Clean up the blog post", async () => {
-				await deleteBlogPost({ id: blogPostId, page, testInfo });
-			});
+				await test.step("Clean up the blog post", async () => {
+					await deleteBlogPost({ id: blogPostId, page, testInfo });
+				});
+			}
 		}
-	}
-});
+	},
+);
 
 function verifyToolList(toolsResponse: McpJsonRpcResponse): void {
 	const toolNames = toolsResponse.result?.tools?.map((tool) => tool.name) ?? [];

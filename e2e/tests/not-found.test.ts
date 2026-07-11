@@ -2,7 +2,14 @@ import { expect, test } from "@playwright/test";
 
 const notFoundStatus = 404;
 
-test("Returns 404 status when invalid route is accessed", async ({ page }) => {
+test("Returns 404 status when invalid route is accessed", {
+	tag: [
+		"@scenario:not-found.status",
+		"@area:not-found",
+		"@priority:must",
+		"@smoke",
+	],
+}, async ({ page }) => {
 	let response: Awaited<ReturnType<typeof page.goto>>;
 
 	await test.step("Navigate to a non-existent route", async () => {
@@ -14,7 +21,9 @@ test("Returns 404 status when invalid route is accessed", async ({ page }) => {
 	});
 });
 
-test("Not found page UI", async ({ page }) => {
+test("Not found page UI", {
+	tag: ["@scenario:not-found.ui", "@area:not-found", "@priority:should"],
+}, async ({ page }) => {
 	await test.step("Navigate to a non-existent route", async () => {
 		await page.goto("/this-page-does-not-exist");
 	});
@@ -30,9 +39,13 @@ test("Not found page UI", async ({ page }) => {
 	});
 });
 
-test("Reduced-motion disables the status-code glitch animation", async ({
-	page,
-}) => {
+test("Reduced-motion disables the status-code glitch animation", {
+	tag: [
+		"@scenario:not-found.reduced-motion",
+		"@area:not-found",
+		"@priority:may",
+	],
+}, async ({ page }) => {
 	await test.step("Emulate the reduced-motion preference", async () => {
 		await page.emulateMedia({ reducedMotion: "reduce" });
 	});
@@ -57,7 +70,9 @@ test("Reduced-motion disables the status-code glitch animation", async ({
 	});
 });
 
-test("Home link navigates to the index route", async ({ page }) => {
+test("Home link navigates to the index route", {
+	tag: ["@scenario:not-found.home-link", "@area:not-found", "@priority:should"],
+}, async ({ page }) => {
 	await test.step("Navigate to a non-existent route", async () => {
 		await page.goto("/this-page-does-not-exist");
 	});
