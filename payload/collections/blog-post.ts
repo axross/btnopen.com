@@ -6,12 +6,6 @@ export const blogPostCollection: CollectionConfig = {
 	slug: "blog-posts",
 	fields: [
 		{
-			name: "title",
-			type: "text",
-			required: true,
-			localized: true,
-		},
-		{
 			name: "slug",
 			type: "text",
 			required: true,
@@ -21,8 +15,25 @@ export const blogPostCollection: CollectionConfig = {
 			},
 		},
 		{
+			name: "title",
+			type: "text",
+			required: true,
+			localized: true,
+		},
+		{
 			type: "tabs",
 			tabs: [
+				{
+					label: "Body",
+					fields: [
+						{
+							name: "body",
+							type: "richText",
+							required: true,
+							localized: true,
+						},
+					],
+				},
 				{
 					label: "Metadata",
 					fields: [
@@ -59,17 +70,6 @@ export const blogPostCollection: CollectionConfig = {
 									displayFormat: "yyyy/MM/dd",
 								},
 							},
-						},
-					],
-				},
-				{
-					label: "Body",
-					fields: [
-						{
-							name: "body",
-							type: "richText",
-							required: true,
-							localized: true,
 						},
 					],
 				},

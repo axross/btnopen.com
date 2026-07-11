@@ -216,13 +216,8 @@ export interface AvatarImage {
  */
 export interface BlogPost {
   id: number;
-  title: string;
   slug: string;
-  brief: string;
-  coverImage: string | CoverImage;
-  tags?: (number | Tag)[] | null;
-  author: number | User;
-  publishedAt?: string | null;
+  title: string;
   body: {
     root: {
       type: string;
@@ -238,6 +233,11 @@ export interface BlogPost {
     };
     [k: string]: unknown;
   };
+  brief: string;
+  coverImage: string | CoverImage;
+  tags?: (number | Tag)[] | null;
+  author: number | User;
+  publishedAt?: string | null;
   /**
    * Summarized outline sentences — the post's goal/conclusion and its target reader. Authoring artifact for the agent-driven authoring loop.
    */
@@ -571,14 +571,14 @@ export interface UsersSelect<T extends boolean = true> {
  * via the `definition` "blog-posts_select".
  */
 export interface BlogPostsSelect<T extends boolean = true> {
-  title?: T;
   slug?: T;
+  title?: T;
+  body?: T;
   brief?: T;
   coverImage?: T;
   tags?: T;
   author?: T;
   publishedAt?: T;
-  body?: T;
   summary?: T;
   outline?: T;
   agenticStatus?: T;
