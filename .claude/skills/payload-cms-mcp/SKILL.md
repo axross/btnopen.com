@@ -1,6 +1,8 @@
 ---
 name: payload-cms-mcp
-description: Apply this skill whenever using the btnopen Payload MCP server to inspect or mutate existing CMS content, especially when the user asks to update, edit, rewrite, refine, or translate an existing blog post even without mentioning MCP. Treat seed files as fixtures unless explicitly requested. Covers tools/list discovery, findBlogPosts, body mutations, media, tags, metadata, draft/published targeting, locale handling, and verification.
+description: How to use the btnopen Payload MCP server to inspect or mutate existing CMS content. Covers tools/list discovery, findBlogPosts, body mutations, media, tags, metadata, draft/published targeting, locale handling, and verification; treat seed files as fixtures unless explicitly requested.
+when_to_use: Apply whenever inspecting or mutating existing CMS content through the Payload MCP server — especially when the user asks to update, edit, rewrite, refine, or translate an existing blog post, even without mentioning MCP.
+user-invocable: false
 ---
 
 # Payload CMS MCP

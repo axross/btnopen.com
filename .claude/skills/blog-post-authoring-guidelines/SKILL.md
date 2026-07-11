@@ -1,6 +1,8 @@
 ---
 name: blog-post-authoring-guidelines
-description: Apply this skill when drafting, rewriting, refining, translating, or reviewing btnopen blog post content, titles, briefs, tags, structure, tone, grammar, or Markdown usage. Covers Japanese-primary pragmatic authoring, natural syntax coverage, metadata quality, translation/localization, and preserving the author's style. Use Payload CMS MCP separately when applying authored changes to existing CMS posts.
+description: The editorial rules for btnopen blog post content — Japanese-primary pragmatic authoring, natural syntax coverage, metadata (titles, briefs, tags) quality, translation/localization, and preserving the author's style. Apply Payload CMS MCP separately when writing authored changes back to existing CMS posts.
+when_to_use: Apply when drafting, rewriting, refining, translating, or reviewing btnopen blog post content, titles, briefs, tags, structure, tone, grammar, or Markdown usage.
+user-invocable: false
 ---
 
 # Blog Post Authoring Guidelines
