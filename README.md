@@ -108,12 +108,15 @@ current state, remaining to-dos, uncommitted changes — into a downloadable
 session is running low on context, or to park work for later; a fresh session
 takes the package over with `/address continue`.
 
-### `/author` and `/polish` — blog content
+### `/author` — the blog authoring loop
 
-[`/author`](.claude/commands/author.md) turns a short summary into a draft
-blog post, and [`/polish`](.claude/commands/polish.md) reviews and refines an
-existing one. Both operate on drafts through the Payload MCP server (below) and
-return a preview URL for review before publishing.
+[`/author`](.claude/commands/author.md) drives a post from an idea or an
+outline to a reviewed draft in two human-gated loops: research rounds that
+audit and strengthen the outline stored on the post's `outline` field until
+you give the go sign, then drafting rounds that write the body and return a
+preview URL until you have no more requests. Point it at an existing post to
+refine it (this replaced the former `/polish` command). It operates on drafts
+through the Payload MCP server (below); publishing stays manual.
 
 ### Claude Code environment setup
 
@@ -146,8 +149,8 @@ return a preview URL for review before publishing.
 Payload exposes a [Model Context Protocol](https://modelcontextprotocol.io)
 (MCP) server, so any MCP-capable AI agent can inspect and edit CMS content —
 blog posts, tags, cover images, media, and the site profile — through a single
-authenticated endpoint. This is what powers the AI blogging workflow (`/author`
-and `/polish`); the agent-facing operating rules live in
+authenticated endpoint. This is what powers the AI blogging workflow
+(`/author`); the agent-facing operating rules live in
 [`.claude/skills/payload-cms-mcp/`](.claude/skills/payload-cms-mcp/SKILL.md).
 
 **Endpoint.** The server is served by the Payload app itself, as HTTP
@@ -192,7 +195,7 @@ fails to authenticate rather than breaking the whole file).
 
 **Claude Code cloud/web sessions.** Cloud sessions load and connect a committed
 `.mcp.json` automatically — no per-session registration or approval — so
-`/author` and `/polish` work out of the box once two things are configured
+`/author` works out of the box once two things are configured
 **once** in the
 [Claude Code web environment settings](https://code.claude.com/docs/en/claude-code-on-the-web):
 
@@ -237,7 +240,7 @@ a post's rich-text body.
 running and reachable at that origin. A key authenticates against **its own
 environment's database** — a local key will not work against production, and
 vice versa. A production key writes to the live CMS, so prefer a
-**draft-scoped** key: `/author` and `/polish` operate on drafts you review at
+**draft-scoped** key: `/author` operates on drafts you review at
 `/posts/<slug>?draft=true` before publishing.
 
 ## Testing
