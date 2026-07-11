@@ -68,6 +68,14 @@ export const blogPostCollection: CollectionConfig = {
 			},
 		},
 		{
+			name: "outline",
+			type: "textarea",
+			admin: {
+				description:
+					"Authoring outline for the agent-driven authoring loop — bullet items or a free-form summary. Never rendered on the public site.",
+			},
+		},
+		{
 			name: "body",
 			type: "richText",
 			required: true,

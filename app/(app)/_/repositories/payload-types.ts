@@ -134,6 +134,12 @@ export const PayloadBlogPost = z
 		slug: PayloadSlug.describe("Blog post URL slug."),
 		title: PayloadNonEmptyString.describe("Localized blog post title."),
 		brief: PayloadNonEmptyString.describe("Localized blog post summary."),
+		outline: z
+			.string()
+			.nullish()
+			.describe(
+				"Authoring outline for the agent-driven authoring loop; never rendered on the public site.",
+			),
 		body: PayloadRichTextEditorState.optional().describe(
 			"Localized blog post rich text body.",
 		),

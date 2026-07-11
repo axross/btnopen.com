@@ -149,6 +149,7 @@ describe("McpSanitizedBlogPost", () => {
 			slug: "hello-world",
 			title: "Hello",
 			brief: "Brief",
+			outline: "- first point\n- second point",
 			body: emptyBody,
 			_status: "published",
 			publishedAt: "2026-01-01T00:00:00.000Z",
@@ -165,6 +166,7 @@ describe("McpSanitizedBlogPost", () => {
 			slug: "hello-world",
 			title: "Hello",
 			brief: "Brief",
+			outline: "- first point\n- second point",
 			body: emptyBody,
 			status: "published",
 			publishedAt: "2026-01-01T00:00:00.000Z",
@@ -187,6 +189,18 @@ describe("McpSanitizedBlogPost", () => {
 			},
 		});
 		expect(z.encode(McpSanitizedBlogPost, decoded)._status).toBe("published");
+		expect(z.encode(McpSanitizedBlogPost, decoded).outline).toBe(
+			"- first point\n- second point",
+		);
+	});
+
+	it("leaves outline undefined when input omits it", () => {
+		expect(
+			z.decode(McpSanitizedBlogPost, {
+				id: 11,
+				slug: "no-outline",
+			}).outline,
+		).toBeUndefined();
 	});
 });
 
@@ -212,6 +226,7 @@ describe("McpBlogPostResponse", () => {
 					slug: "hello",
 					title: undefined,
 					brief: undefined,
+					outline: undefined,
 					body: undefined,
 					status: "draft",
 					publishedAt: undefined,
