@@ -116,6 +116,8 @@ async function findPublishedOutline({
 	slug: string;
 	locale: PayloadLocale;
 }): Promise<string | null> {
+	logger.info({ slug }, "Started fetching published outline fallback.");
+
 	const result = await payload.find({
 		collection: "blog-posts",
 		select: {
@@ -133,6 +135,8 @@ async function findPublishedOutline({
 		locale,
 		limit: 1,
 	});
+
+	logger.info({ slug }, "Completed fetching published outline fallback.");
 
 	const outline = result.docs[0]?.outline;
 
