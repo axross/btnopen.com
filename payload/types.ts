@@ -223,6 +223,10 @@ export interface BlogPost {
   tags?: (number | Tag)[] | null;
   author: number | User;
   publishedAt?: string | null;
+  /**
+   * Authoring outline for the agent-driven authoring loop — bullet items or a free-form summary. Never rendered on the public site.
+   */
+  outline?: string | null;
   body: {
     root: {
       type: string;
@@ -558,6 +562,7 @@ export interface BlogPostsSelect<T extends boolean = true> {
   tags?: T;
   author?: T;
   publishedAt?: T;
+  outline?: T;
   body?: T;
   updatedAt?: T;
   createdAt?: T;
