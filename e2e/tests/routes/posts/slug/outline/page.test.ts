@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { authenticatedStorageState } from "@/e2e/helpers/api/auth";
 import {
 	createDraftBlogPost,
+	createPublishedPostWithEmptyDraftOutline,
 	exampleBlogPostSlug,
 	getExampleBlogPost,
 } from "@/e2e/helpers/api/blog-post";
@@ -102,6 +103,55 @@ test(
 				const id = createdId;
 
 				await test.step("Clean up the draft post", async () => {
+					await deleteBlogPost({ id, page, testInfo });
+				});
+			}
+		}
+	},
+);
+
+test(
+	"Draft preview falls back to the published outline when the draft has none",
+	{
+		tag: [
+			"@scenario:post.outline.draft-fallback",
+			"@area:posts",
+			"@priority:should",
+		],
+	},
+	async ({ page }, testInfo) => {
+		let createdId: number | null = null;
+
+		try {
+			const slug = `outline-fallback-${testInfo.repeatEachIndex}-${testInfo.workerIndex}-${Date.now()}`;
+
+			await test.step("Create a published post whose draft version has no outline", async () => {
+				({ id: createdId } = await createPublishedPostWithEmptyDraftOutline({
+					page,
+					slug,
+					testInfo,
+					title: "公開済み・下書きにアウトラインなし",
+					outline: "## フォールバック見出し\n\n- 項目",
+				}));
+			});
+
+			await test.step("Navigate to the outline route (draft=true)", async () => {
+				await page.goto(`/posts/${slug}/outline?draft=true`);
+			});
+
+			await test.step("Verify the published outline is shown via fallback", async () => {
+				await expect(
+					page
+						.getByTestId("page")
+						.getByTestId("content")
+						.getByRole("heading", { name: "フォールバック見出し" }),
+				).toBeVisible();
+			});
+		} finally {
+			if (createdId !== null) {
+				const id = createdId;
+
+				await test.step("Clean up the post", async () => {
 					await deleteBlogPost({ id, page, testInfo });
 				});
 			}

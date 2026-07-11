@@ -70,18 +70,71 @@ export async function getBlogPostOutline({
 		draft,
 	});
 
-	if (result.docs.length > 0) {
-		const blogPost = BlogPostOutline.parse(result.docs[0]);
+	if (result.docs.length === 0) {
+		logger.info(
+			{ slug },
+			"Failed to fetch blog post outline because it was not found.",
+		);
 
-		logger.info({ slug }, "Completed fetching post outline.");
-
-		return blogPost;
+		return null;
 	}
 
-	logger.info(
-		{ slug },
-		"Failed to fetch blog post outline because it was not found.",
-	);
+	const blogPost = BlogPostOutline.parse(result.docs[0]);
 
-	return null;
+	// The outline is often authored on the published document, so a post's draft
+	// version can lack it even when the published document has one. When
+	// previewing a draft (`draft: true`), fall back to the published outline so
+	// the preview still shows it instead of the empty state.
+	if (draft && !blogPost.outline?.trim()) {
+		const publishedOutline = await findPublishedOutline({
+			payload,
+			slug,
+			locale,
+		});
+
+		if (publishedOutline) {
+			logger.info(
+				{ slug },
+				"Completed fetching post outline (published fallback for draft preview).",
+			);
+
+			return { ...blogPost, outline: publishedOutline };
+		}
+	}
+
+	logger.info({ slug }, "Completed fetching post outline.");
+
+	return blogPost;
+}
+
+async function findPublishedOutline({
+	payload,
+	slug,
+	locale,
+}: {
+	payload: Awaited<ReturnType<typeof getPayload>>;
+	slug: string;
+	locale: PayloadLocale;
+}): Promise<string | null> {
+	const result = await payload.find({
+		collection: "blog-posts",
+		select: {
+			outline: true,
+		},
+		depth: 1,
+		where: {
+			slug: {
+				equals: slug,
+			},
+			_status: {
+				equals: "published",
+			},
+		},
+		locale,
+		limit: 1,
+	});
+
+	const outline = result.docs[0]?.outline;
+
+	return typeof outline === "string" && outline.trim() ? outline : null;
 }

@@ -96,6 +96,86 @@ export async function createDraftBlogPost({
 	return { id, slug };
 }
 
+// Creates a PUBLISHED post carrying an outline, then writes a draft version that
+// clears the outline — reproducing the state where the published document has an
+// outline but the post's draft version does not. Used to verify the draft
+// preview falls back to the published outline. Pair with `deleteBlogPost`.
+export async function createPublishedPostWithEmptyDraftOutline({
+	outline,
+	page,
+	slug,
+	testInfo,
+	title,
+}: {
+	outline: string;
+	page: Page;
+	slug: string;
+	testInfo: TestInfo;
+	title: string;
+}): Promise<{ id: number; slug: string }> {
+	const [coverImageId, userId] = await Promise.all([
+		getExampleCoverImageId({ page, testInfo }),
+		getCurrentUserId({ page, testInfo }),
+	]);
+	const createUrl = new URL("/api/blog-posts", testInfo.project.use.baseURL);
+	createUrl.searchParams.set("locale", "ja-JP");
+
+	const createResponse = await page.request.post(`${createUrl}`, {
+		headers: {
+			"content-type": "application/json",
+		},
+		data: {
+			title,
+			slug,
+			coverImage: coverImageId,
+			brief: "Published post created by the outline fallback e2e test.",
+			body: createMinimalBlogPostBody(),
+			author: userId,
+			outline,
+			_status: "published",
+			publishedAt: "2026-03-01T00:00:00Z",
+		},
+	});
+
+	if (!createResponse.ok()) {
+		throw new Error(
+			`Failed to create published blog post: ${createResponse.status()} ${await createResponse.text()}`,
+		);
+	}
+
+	const id = getCreatedDocId(await createResponse.json());
+
+	if (id === null) {
+		throw new Error(
+			"Failed to create published blog post because no ID was returned.",
+		);
+	}
+
+	const draftUrl = new URL(
+		`/api/blog-posts/${id}`,
+		testInfo.project.use.baseURL,
+	);
+	draftUrl.searchParams.set("draft", "true");
+	draftUrl.searchParams.set("locale", "ja-JP");
+
+	const draftResponse = await page.request.patch(`${draftUrl}`, {
+		headers: {
+			"content-type": "application/json",
+		},
+		data: {
+			outline: null,
+		},
+	});
+
+	if (!draftResponse.ok()) {
+		throw new Error(
+			`Failed to clear the draft outline: ${draftResponse.status()} ${await draftResponse.text()}`,
+		);
+	}
+
+	return { id, slug };
+}
+
 async function getExampleCoverImageId({
 	page,
 	testInfo,

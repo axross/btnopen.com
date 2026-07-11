@@ -34,6 +34,7 @@ carries its `@scenario:<id>` tag. The reporter
 | post.content | A blog post page renders its Markdown content | posts | must |
 | post.outline | A blog post's outline preview renders its outline as Markdown | posts | must |
 | post.outline.empty | The outline preview shows an empty state when the post has no outline | posts | should |
+| post.outline.draft-fallback | The draft outline preview falls back to the published outline when the draft version has none | posts | should |
 | post.avatar-fallback | The author avatar falls back to initials when the image fails to load | posts | may |
 | post.table.narrow-fits | A narrow content table fits the reading column | posts | should |
 | post.table.wide-scrolls | A wide content table overflows and scrolls horizontally | posts | should |
