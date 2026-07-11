@@ -19,82 +19,94 @@ test.beforeEach(async ({ page }, testInfo) => {
 	});
 });
 
-test("Blog post header", async ({ page }, testInfo) => {
-	let blogPost: Awaited<ReturnType<typeof getExampleBlogPost>>;
+test(
+	"Blog post header",
+	{
+		tag: ["@scenario:post.header", "@area:posts", "@priority:must", "@smoke"],
+	},
+	async ({ page }, testInfo) => {
+		let blogPost: Awaited<ReturnType<typeof getExampleBlogPost>>;
 
-	await test.step("Retrieve the example blog post record", async () => {
-		blogPost = await getExampleBlogPost({ page, testInfo });
-	});
+		await test.step("Retrieve the example blog post record", async () => {
+			blogPost = await getExampleBlogPost({ page, testInfo });
+		});
 
-	const header = page.getByTestId("page").getByTestId("header");
+		const header = page.getByTestId("page").getByTestId("header");
 
-	await test.step("Verify the blog post title", async () => {
-		await expect(header.getByTestId("title")).toHaveText(blogPost.title);
-	});
+		await test.step("Verify the blog post title", async () => {
+			await expect(header.getByTestId("title")).toHaveText(blogPost.title);
+		});
 
-	await test.step("Verify the blog post timestamp", async () => {
-		await expect(header.getByTestId("timestamp")).toHaveText(
-			format(blogPost.publishedAt ?? "", "PPP", { locale: ja }),
-		);
-	});
+		await test.step("Verify the blog post timestamp", async () => {
+			await expect(header.getByTestId("timestamp")).toHaveText(
+				format(blogPost.publishedAt ?? "", "PPP", { locale: ja }),
+			);
+		});
 
-	await test.step("Verify the blog post cover image", async () => {
-		await expect(header.getByTestId("cover-image")).toHaveScreenshot(
-			"cover-image.png",
-		);
-	});
+		await test.step("Verify the blog post cover image", async () => {
+			await expect(header.getByTestId("cover-image")).toHaveScreenshot(
+				"cover-image.png",
+			);
+		});
 
-	await test.step("Verify the blog post author", async () => {
-		await expect(header.getByTestId("author")).toHaveText(blogPost.author.name);
-	});
+		await test.step("Verify the blog post author", async () => {
+			await expect(header.getByTestId("author")).toHaveText(
+				blogPost.author.name,
+			);
+		});
 
-	await test.step("Verify the blog post tags", async () => {
-		const tags = header.getByTestId("tags");
-		const firstTag = tags.getByTestId("tag").first();
+		await test.step("Verify the blog post tags", async () => {
+			const tags = header.getByTestId("tags");
+			const firstTag = tags.getByTestId("tag").first();
 
-		await expect(firstTag).toHaveText(blogPost.tags[0].name);
-	});
-});
+			await expect(firstTag).toHaveText(blogPost.tags[0].name);
+		});
+	},
+);
 
-test("Author avatar falls back to initials when the image fails to load", async ({
-	page,
-}, testInfo) => {
-	let blogPost: Awaited<ReturnType<typeof getExampleBlogPost>>;
+test(
+	"Author avatar falls back to initials when the image fails to load",
+	{ tag: ["@scenario:post.avatar-fallback", "@area:posts", "@priority:may"] },
+	async ({ page }, testInfo) => {
+		let blogPost: Awaited<ReturnType<typeof getExampleBlogPost>>;
 
-	await test.step("Retrieve the example blog post record", async () => {
-		blogPost = await getExampleBlogPost({ page, testInfo });
-	});
+		await test.step("Retrieve the example blog post record", async () => {
+			blogPost = await getExampleBlogPost({ page, testInfo });
+		});
 
-	await test.step("Block every request for the avatar image", async () => {
-		// block both the raw media URL (Base UI's load-status probe requests it
-		// directly) and the optimizer URL that next/image derives from it
-		await page.route(
-			(url) =>
-				url.pathname === blogPost.author.avatarImage.url ||
-				(url.pathname === "/_next/image" &&
-					(url.searchParams.get("url") ?? "").startsWith(
-						blogPost.author.avatarImage.url,
-					)),
-			(route) => route.abort(),
-		);
-	});
+		await test.step("Block every request for the avatar image", async () => {
+			// block both the raw media URL (Base UI's load-status probe requests it
+			// directly) and the optimizer URL that next/image derives from it
+			await page.route(
+				(url) =>
+					url.pathname === blogPost.author.avatarImage.url ||
+					(url.pathname === "/_next/image" &&
+						(url.searchParams.get("url") ?? "").startsWith(
+							blogPost.author.avatarImage.url,
+						)),
+				(route) => route.abort(),
+			);
+		});
 
-	await test.step("Reload the post route", async () => {
-		await page.reload();
-	});
+		await test.step("Reload the post route", async () => {
+			await page.reload();
+		});
 
-	const header = page.getByTestId("page").getByTestId("header");
+		const header = page.getByTestId("page").getByTestId("header");
 
-	await test.step("Verify the initials fallback is shown", async () => {
-		await expect(header.getByTestId("avatar-fallback")).toBeVisible();
-	});
+		await test.step("Verify the initials fallback is shown", async () => {
+			await expect(header.getByTestId("avatar-fallback")).toBeVisible();
+		});
 
-	await test.step("Verify the avatar image is not rendered", async () => {
-		await expect(header.getByTestId("avatar-image")).not.toBeAttached();
-	});
-});
+		await test.step("Verify the avatar image is not rendered", async () => {
+			await expect(header.getByTestId("avatar-image")).not.toBeAttached();
+		});
+	},
+);
 
-test("Blog post content", async ({ page }) => {
+test("Blog post content", {
+	tag: ["@scenario:post.content", "@area:posts", "@priority:must", "@smoke"],
+}, async ({ page }) => {
 	const content = page.getByTestId("page").getByTestId("content");
 
 	await test.step("Hide Next.js DevTools indicator", async () => {
@@ -166,7 +178,9 @@ const fadeVisibleMin = 0.95;
 // mobile and tolerant of future changes to that step size.
 const keyboardScrollPressCount = 20;
 
-test("Narrow table fits the reading column", async ({ page }) => {
+test("Narrow table fits the reading column", {
+	tag: ["@scenario:post.table.narrow-fits", "@area:posts", "@priority:should"],
+}, async ({ page }) => {
 	const tables = page
 		.getByTestId("page")
 		.getByTestId("content")
@@ -187,7 +201,9 @@ test("Narrow table fits the reading column", async ({ page }) => {
 	});
 });
 
-test("Wide table overflows and scrolls horizontally", async ({ page }) => {
+test("Wide table overflows and scrolls horizontally", {
+	tag: ["@scenario:post.table.wide-scrolls", "@area:posts", "@priority:should"],
+}, async ({ page }) => {
 	const tables = page
 		.getByTestId("page")
 		.getByTestId("content")
@@ -221,7 +237,9 @@ test("Wide table overflows and scrolls horizontally", async ({ page }) => {
 	});
 });
 
-test("Only the wide table renders a scrollbar", async ({ page }) => {
+test("Only the wide table renders a scrollbar", {
+	tag: ["@scenario:post.table.scrollbar", "@area:posts", "@priority:may"],
+}, async ({ page }) => {
 	const tables = page
 		.getByTestId("page")
 		.getByTestId("content")
@@ -244,7 +262,13 @@ test("Only the wide table renders a scrollbar", async ({ page }) => {
 	});
 });
 
-test("Wide table is keyboard-scrollable", async ({ page }) => {
+test("Wide table is keyboard-scrollable", {
+	tag: [
+		"@scenario:post.table.keyboard-scroll",
+		"@area:posts",
+		"@priority:should",
+	],
+}, async ({ page }) => {
 	const tables = page
 		.getByTestId("page")
 		.getByTestId("content")
@@ -287,7 +311,9 @@ test("Wide table is keyboard-scrollable", async ({ page }) => {
 	});
 });
 
-test("Edge fades track scroll position", async ({ page }) => {
+test("Edge fades track scroll position", {
+	tag: ["@scenario:post.table.edge-fades", "@area:posts", "@priority:may"],
+}, async ({ page }) => {
 	const tables = page
 		.getByTestId("page")
 		.getByTestId("content")
@@ -343,117 +369,124 @@ test("Edge fades track scroll position", async ({ page }) => {
 	});
 });
 
-test("JSON-LD metadata", async ({ page }, testInfo) => {
-	let website: Awaited<ReturnType<typeof getWebsite>>;
+test(
+	"JSON-LD metadata",
+	{ tag: ["@scenario:post.json-ld", "@area:metadata", "@priority:should"] },
+	async ({ page }, testInfo) => {
+		let website: Awaited<ReturnType<typeof getWebsite>>;
 
-	await test.step("Retrieve the website record", async () => {
-		website = await getWebsite({ page, testInfo });
-	});
+		await test.step("Retrieve the website record", async () => {
+			website = await getWebsite({ page, testInfo });
+		});
 
-	let blogPost: Awaited<ReturnType<typeof getExampleBlogPost>>;
+		let blogPost: Awaited<ReturnType<typeof getExampleBlogPost>>;
 
-	await test.step("Retrieve the example blog post record", async () => {
-		blogPost = await getExampleBlogPost({ page, testInfo });
-	});
+		await test.step("Retrieve the example blog post record", async () => {
+			blogPost = await getExampleBlogPost({ page, testInfo });
+		});
 
-	let ldJson: Locator;
+		let ldJson: Locator;
 
-	await test.step("Verify the JSON LD element exists", async () => {
-		ldJson = page.locator('script[type="application/ld+json"]');
+		await test.step("Verify the JSON LD element exists", async () => {
+			ldJson = page.locator('script[type="application/ld+json"]');
 
-		await expect(ldJson).toBeAttached();
-	});
+			await expect(ldJson).toBeAttached();
+		});
 
-	await test.step("Verify the JSON LD element content", async () => {
-		const ldJsonContent = await ldJson.textContent();
-		const url = new URL(
-			`/posts/${blogPost.slug}`,
-			testInfo.project.use.baseURL,
-		);
+		await test.step("Verify the JSON LD element content", async () => {
+			const ldJsonContent = await ldJson.textContent();
+			const url = new URL(
+				`/posts/${blogPost.slug}`,
+				testInfo.project.use.baseURL,
+			);
 
-		expect(JSON.parse(ldJsonContent ?? "{}")).toEqual(
-			expect.objectContaining({
-				"@context": "https://schema.org",
-				"@type": "BlogPosting",
-				"@id": `${url}`,
-				name: blogPost.title,
-				url: `${url}`,
-				description: blogPost.brief,
-				author: expect.objectContaining({
-					"@type": "Person",
-					"@id": `${testInfo.project.use.baseURL}/`,
-					name: blogPost.author.name,
-					image: `${testInfo.project.use.baseURL}${blogPost.author.avatarImage.url}`,
+			expect(JSON.parse(ldJsonContent ?? "{}")).toEqual(
+				expect.objectContaining({
+					"@context": "https://schema.org",
+					"@type": "BlogPosting",
+					"@id": `${url}`,
+					name: blogPost.title,
+					url: `${url}`,
+					description: blogPost.brief,
+					author: expect.objectContaining({
+						"@type": "Person",
+						"@id": `${testInfo.project.use.baseURL}/`,
+						name: blogPost.author.name,
+						image: `${testInfo.project.use.baseURL}${blogPost.author.avatarImage.url}`,
+					}),
+					image: expect.objectContaining({
+						"@type": "ImageObject",
+						"@id": `${testInfo.project.use.baseURL}/posts/${blogPost.slug}/thumbnail.png`,
+						url: `${testInfo.project.use.baseURL}/posts/${blogPost.slug}/thumbnail.png`,
+						height: "1200",
+						width: "630",
+					}),
+					isPartOf: expect.objectContaining({
+						"@type": "Blog",
+						"@id": `${testInfo.project.use.baseURL}/`,
+						name: website.name,
+						url: `${testInfo.project.use.baseURL}/`,
+					}),
 				}),
-				image: expect.objectContaining({
-					"@type": "ImageObject",
-					"@id": `${testInfo.project.use.baseURL}/posts/${blogPost.slug}/thumbnail.png`,
-					url: `${testInfo.project.use.baseURL}/posts/${blogPost.slug}/thumbnail.png`,
-					height: "1200",
-					width: "630",
-				}),
-				isPartOf: expect.objectContaining({
-					"@type": "Blog",
-					"@id": `${testInfo.project.use.baseURL}/`,
-					name: website.name,
-					url: `${testInfo.project.use.baseURL}/`,
-				}),
-			}),
-		);
-	});
-});
+			);
+		});
+	},
+);
 
-test("Open Graph metadata", async ({ page }, testInfo) => {
-	let website: Awaited<ReturnType<typeof getWebsite>>;
+test(
+	"Open Graph metadata",
+	{ tag: ["@scenario:post.open-graph", "@area:metadata", "@priority:should"] },
+	async ({ page }, testInfo) => {
+		let website: Awaited<ReturnType<typeof getWebsite>>;
 
-	await test.step("Retrieve the website record", async () => {
-		website = await getWebsite({ page, testInfo });
-	});
+		await test.step("Retrieve the website record", async () => {
+			website = await getWebsite({ page, testInfo });
+		});
 
-	let blogPost: Awaited<ReturnType<typeof getExampleBlogPost>>;
+		let blogPost: Awaited<ReturnType<typeof getExampleBlogPost>>;
 
-	await test.step("Retrieve the example blog post record", async () => {
-		blogPost = await getExampleBlogPost({ page, testInfo });
-	});
+		await test.step("Retrieve the example blog post record", async () => {
+			blogPost = await getExampleBlogPost({ page, testInfo });
+		});
 
-	await test.step("Verify og:site_name", async () => {
-		await expect(page.locator('meta[property="og:site_name"]')).toHaveAttribute(
-			"content",
-			website.name,
-		);
-	});
+		await test.step("Verify og:site_name", async () => {
+			await expect(
+				page.locator('meta[property="og:site_name"]'),
+			).toHaveAttribute("content", website.name);
+		});
 
-	await test.step("Verify og:title", async () => {
-		await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
-			"content",
-			blogPost.title,
-		);
-	});
+		await test.step("Verify og:title", async () => {
+			await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+				"content",
+				blogPost.title,
+			);
+		});
 
-	await test.step("Verify og:description", async () => {
-		await expect(
-			page.locator('meta[property="og:description"]'),
-		).toHaveAttribute("content", blogPost.brief);
-	});
+		await test.step("Verify og:description", async () => {
+			await expect(
+				page.locator('meta[property="og:description"]'),
+			).toHaveAttribute("content", blogPost.brief);
+		});
 
-	await test.step("Verify og:type", async () => {
-		await expect(page.locator('meta[property="og:type"]')).toHaveAttribute(
-			"content",
-			"article",
-		);
-	});
+		await test.step("Verify og:type", async () => {
+			await expect(page.locator('meta[property="og:type"]')).toHaveAttribute(
+				"content",
+				"article",
+			);
+		});
 
-	await test.step("Verify og:locale", async () => {
-		await expect(page.locator('meta[property="og:locale"]')).toHaveAttribute(
-			"content",
-			"ja_JP",
-		);
-	});
+		await test.step("Verify og:locale", async () => {
+			await expect(page.locator('meta[property="og:locale"]')).toHaveAttribute(
+				"content",
+				"ja_JP",
+			);
+		});
 
-	await test.step("Verify og:url", async () => {
-		await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
-			"content",
-			`${testInfo.project.use.baseURL}/posts/${blogPost.slug}`,
-		);
-	});
-});
+		await test.step("Verify og:url", async () => {
+			await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
+				"content",
+				`${testInfo.project.use.baseURL}/posts/${blogPost.slug}`,
+			);
+		});
+	},
+);

@@ -45,6 +45,18 @@ Consistent names and locations are what let the runner discover route tests and 
 - MUST flag a multi-phase `test()` body that does not group its phases into `test.step()` calls per the project's e2e testing guidelines (structure rules) — short atomic tests may omit steps.
 - MUST flag a chained-locator chain that re-roots at `page.getByTestId(…)` mid-test instead of narrowing from a previously captured `Locator` — defeats the readability of the nesting pattern.
 
+## Scenario Coverage
+
+Scenario coverage tracks which real user journeys the e2e suite **asserts**, via the human-authored journey catalog (`e2e/scenarios.md`) and per-test `@scenario` tags — not e2e line coverage. Its denominator is the catalog itself, so review guards the catalog's completeness as much as the tests. See the project's e2e testing guidelines (scenario-coverage rules) for the mechanism.
+
+**Guidelines:**
+
+- MUST require scenario-coverage evidence when a change adds or alters a user-facing journey: the overall and per-priority `covered/total` from `npm run coverage:scenarios`, plus any newly surfaced gaps.
+- MUST flag a Major when a change adds a new user-facing journey without a corresponding `e2e/scenarios.md` row, per the catalog-completeness rule in the project's e2e testing guidelines (scenario-coverage rules).
+- MUST treat a new `must`-priority scenario as a blocker until a passing tagged test asserts it; `should` / `may` gaps are reported, not blocking.
+- MUST flag a stale or mistyped `@scenario` tag, an `@area`/`@priority` facet tag that disagrees with the catalog, and any tag placement that violates the tagging rules of the project's e2e testing guidelines (scenario-coverage rules) (e.g., a `@scenario` tag on a pass-through test).
+- SHOULD note surfaced `should` / `may` gaps as follow-up work rather than silently expanding the change's scope to close them.
+
 ## API Helpers
 
 Inline setup duplicated across tests drifts out of sync as the resource changes; a shared helper keeps every test on the same, current path.

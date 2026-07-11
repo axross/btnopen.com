@@ -8,6 +8,7 @@
 # testing
 /coverage/*
 /.playwright-results/*
+/e2e/.scenario-coverage/*
 
 # vercel
 /.vercel/*

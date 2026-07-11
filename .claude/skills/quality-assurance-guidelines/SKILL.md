@@ -1,6 +1,6 @@
 ---
 name: quality-assurance-guidelines
-description: Use this skill when reviewing whether a change has adequate verification evidence. Covers format/lint proof, e2e coverage under `e2e/tests/routes/...`, required `data-testid` hooks, intentional Playwright snapshot updates, flaky-test investigation, manual checks for draft/preview/not-found states, skipped checks, and residual risk. This is the reviewer's QA lens on top of development verification and e2e testing rules. Use for "are tests good", "did this break anything", or "should I bump snapshots".
+description: Use this skill when reviewing whether a change has adequate verification evidence. Covers format/lint proof, e2e coverage under `e2e/tests/routes/...`, required `data-testid` hooks, intentional Playwright snapshot updates, scenario-coverage evidence (the `e2e/scenarios.md` journey catalog, `@scenario`/`@area`/`@priority` tags, and `must`-priority gaps), flaky-test investigation, manual checks for draft/preview/not-found states, skipped checks, and residual risk. This is the reviewer's QA lens on top of development verification and e2e testing rules. Use for "are tests good", "did this break anything", "is the scenario catalog complete", or "should I bump snapshots".
 ---
 
 # Quality Assurance Guidelines
@@ -32,6 +32,7 @@ See [e2e-coverage.md](./references/e2e-coverage.md) for:
 - New visually distinct UI elements expose `data-testid` per the project's React component guidelines (testable-components rules)
 - Test files use the project's required locator and structure conventions per the project's e2e testing guidelines
 - API helpers under `e2e/helpers/api/` are used (not duplicated inline in the test file)
+- Scenario-coverage evidence: a new user-facing journey is cataloged in `e2e/scenarios.md` and tagged on the asserting test, and a `must`-priority gap blocks `npm run coverage:scenarios`
 
 ## Snapshot Handling
 
