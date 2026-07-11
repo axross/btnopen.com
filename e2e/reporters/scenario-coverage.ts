@@ -261,7 +261,7 @@ export default class ScenarioCoverageReporter implements Reporter {
 		this.print(summary);
 
 		// structural errors are always failures — they silently corrupt the metric.
-		// Fail the run regardless of gate phase (the `must` threshold gate lives in
+		// fail the run regardless of gate phase (the `must` threshold gate lives in
 		// the separate check script so the default run stays report-only for it).
 		const hasStructuralError =
 			summary.catalogErrors.length > 0 ||
