@@ -239,25 +239,13 @@ export interface BlogPost {
   author: number | User;
   publishedAt?: string | null;
   /**
-   * Summarized outline sentences — the post's goal/conclusion and its target reader. Authoring artifact for the agent-driven authoring loop.
-   */
-  summary?: string | null;
-  /**
    * Authoring outline for the agent-driven authoring loop. A single Markdown bullet-point list — only list items and inline elements are permitted; no paragraphs or other block types.
    */
   outline?: string | null;
   /**
-   * JSON state for the agent-driven authoring loop. Agents may persist any valid values here.
+   * Free-form Markdown notes that human and AI agents leave while authoring. Never reflected in the published blog post body.
    */
-  agenticStatus?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
+  authoringNotes?: string | null;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -579,9 +567,8 @@ export interface BlogPostsSelect<T extends boolean = true> {
   tags?: T;
   author?: T;
   publishedAt?: T;
-  summary?: T;
   outline?: T;
-  agenticStatus?: T;
+  authoringNotes?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;

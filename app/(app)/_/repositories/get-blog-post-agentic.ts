@@ -15,23 +15,19 @@ const logger = rootLogger.child({ module: "📥" });
 const BlogPostAgentic = z
 	.object({
 		title: PayloadNonEmptyString.describe("Localized blog post title."),
-		summary: z
-			.string()
-			.nullish()
-			.describe("Authoring summary text, or null when unset."),
 		outline: z
 			.string()
 			.nullish()
 			.describe("Authoring outline markdown, or null when unset."),
-		agenticStatus: z
-			.unknown()
-			.describe("Arbitrary authoring-loop JSON state, or null when unset."),
+		authoringNotes: z
+			.string()
+			.nullish()
+			.describe("Free-form authoring notes markdown, or null when unset."),
 	})
 	.transform((blogPost) => ({
 		title: blogPost.title,
-		summary: blogPost.summary ?? null,
 		outline: blogPost.outline ?? null,
-		agenticStatus: blogPost.agenticStatus ?? null,
+		authoringNotes: blogPost.authoringNotes ?? null,
 	}));
 
 export type BlogPostAgentic = z.infer<typeof BlogPostAgentic>;
@@ -59,9 +55,8 @@ export async function getBlogPostAgentic({
 		collection: "blog-posts",
 		select: {
 			title: true,
-			summary: true,
 			outline: true,
-			agenticStatus: true,
+			authoringNotes: true,
 		},
 		depth: 1,
 		where: {
@@ -116,11 +111,7 @@ export async function getBlogPostAgentic({
 }
 
 function hasEmptyAuthoringField(blogPost: BlogPostAgentic): boolean {
-	return (
-		!blogPost.summary?.trim() ||
-		!blogPost.outline?.trim() ||
-		blogPost.agenticStatus == null
-	);
+	return !blogPost.outline?.trim() || !blogPost.authoringNotes?.trim();
 }
 
 function mergeEmptyAuthoringFields(
@@ -129,9 +120,10 @@ function mergeEmptyAuthoringFields(
 ): BlogPostAgentic {
 	return {
 		title: draft.title,
-		summary: draft.summary?.trim() ? draft.summary : published.summary,
 		outline: draft.outline?.trim() ? draft.outline : published.outline,
-		agenticStatus: draft.agenticStatus ?? published.agenticStatus,
+		authoringNotes: draft.authoringNotes?.trim()
+			? draft.authoringNotes
+			: published.authoringNotes,
 	};
 }
 
@@ -149,9 +141,8 @@ async function findPublishedAgentic({
 	const result = await payload.find({
 		collection: "blog-posts",
 		select: {
-			summary: true,
 			outline: true,
-			agenticStatus: true,
+			authoringNotes: true,
 		},
 		depth: 1,
 		where: {
@@ -175,14 +166,14 @@ async function findPublishedAgentic({
 	}
 
 	return {
-		summary:
-			typeof published.summary === "string" && published.summary.trim()
-				? published.summary
-				: null,
 		outline:
 			typeof published.outline === "string" && published.outline.trim()
 				? published.outline
 				: null,
-		agenticStatus: published.agenticStatus ?? null,
+		authoringNotes:
+			typeof published.authoringNotes === "string" &&
+			published.authoringNotes.trim()
+				? published.authoringNotes
+				: null,
 	};
 }

@@ -7,6 +7,7 @@ import * as migration_20260531_234538 from './20260531_234538';
 import * as migration_20260601_040708 from './20260601_040708';
 import * as migration_20260711_033544 from './20260711_033544';
 import * as migration_20260711_225536_schema_agentic_fields from './20260711_225536_schema_agentic_fields';
+import * as migration_20260712_222856_authoring_notes_field from './20260712_222856_authoring_notes_field';
 
 export const migrations = [
   {
@@ -52,6 +53,11 @@ export const migrations = [
   {
     up: migration_20260711_225536_schema_agentic_fields.up,
     down: migration_20260711_225536_schema_agentic_fields.down,
-    name: '20260711_225536_schema_agentic_fields'
+    name: '20260711_225536_schema_agentic_fields',
+  },
+  {
+    up: migration_20260712_222856_authoring_notes_field.up,
+    down: migration_20260712_222856_authoring_notes_field.down,
+    name: '20260712_222856_authoring_notes_field'
   },
 ];

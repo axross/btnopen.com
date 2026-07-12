@@ -32,7 +32,7 @@ carries its `@scenario:<id>` tag. The reporter
 | posts.redirect | The /posts route redirects to the index route | posts | should |
 | post.header | A blog post page shows its title, date, cover image, author, and tags | posts | must |
 | post.content | A blog post page renders its Markdown content | posts | must |
-| post.agentic | A blog post's agentic view renders its summary, outline Markdown, and status JSON | posts | must |
+| post.agentic | A blog post's agentic view renders its outline Markdown and authoring notes | posts | must |
 | post.agentic.empty | The agentic view shows an empty state when the post has no authoring content | posts | should |
 | post.agentic.draft-fallback | The draft agentic view falls back to the published authoring fields when the draft version has none | posts | should |
 | post.avatar-fallback | The author avatar falls back to initials when the image fails to load | posts | may |

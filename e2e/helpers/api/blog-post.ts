@@ -43,17 +43,15 @@ export async function getExampleBlogPost({
 // slug/title and the optional agentic authoring fields. Pair every call with
 // `deleteBlogPost` (from the mcp helper) in teardown.
 export async function createDraftBlogPost({
-	summary,
 	outline,
-	agenticStatus,
+	authoringNotes,
 	page,
 	slug,
 	testInfo,
 	title,
 }: {
-	summary?: string;
 	outline?: string;
-	agenticStatus?: unknown;
+	authoringNotes?: string;
 	page: Page;
 	slug: string;
 	testInfo: TestInfo;
@@ -78,9 +76,8 @@ export async function createDraftBlogPost({
 			body: createMinimalBlogPostBody(),
 			author: userId,
 			_status: "draft",
-			...(summary === undefined ? {} : { summary }),
 			...(outline === undefined ? {} : { outline }),
-			...(agenticStatus === undefined ? {} : { agenticStatus }),
+			...(authoringNotes === undefined ? {} : { authoringNotes }),
 		},
 	});
 
@@ -108,17 +105,15 @@ export async function createDraftBlogPost({
 // the draft agentic view falls back to the published values. Pair with
 // `deleteBlogPost`.
 export async function createPublishedPostWithEmptyDraftAgentic({
-	summary,
 	outline,
-	agenticStatus,
+	authoringNotes,
 	page,
 	slug,
 	testInfo,
 	title,
 }: {
-	summary?: string;
 	outline?: string;
-	agenticStatus?: unknown;
+	authoringNotes?: string;
 	page: Page;
 	slug: string;
 	testInfo: TestInfo;
@@ -142,9 +137,8 @@ export async function createPublishedPostWithEmptyDraftAgentic({
 			brief: "Published post created by the agentic fallback e2e test.",
 			body: createMinimalBlogPostBody(),
 			author: userId,
-			...(summary === undefined ? {} : { summary }),
 			...(outline === undefined ? {} : { outline }),
-			...(agenticStatus === undefined ? {} : { agenticStatus }),
+			...(authoringNotes === undefined ? {} : { authoringNotes }),
 			_status: "published",
 			publishedAt: "2026-03-01T00:00:00Z",
 		},
@@ -176,9 +170,8 @@ export async function createPublishedPostWithEmptyDraftAgentic({
 			"content-type": "application/json",
 		},
 		data: {
-			summary: null,
 			outline: null,
-			agenticStatus: null,
+			authoringNotes: null,
 		},
 	});
 

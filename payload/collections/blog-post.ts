@@ -74,14 +74,6 @@ export const blogPostCollection: CollectionConfig = {
 					label: "Agentic",
 					fields: [
 						{
-							name: "summary",
-							type: "textarea",
-							admin: {
-								description:
-									"Summarized outline sentences — the post's goal/conclusion and its target reader. Authoring artifact for the agent-driven authoring loop.",
-							},
-						},
-						{
 							name: "outline",
 							type: "textarea",
 							admin: {
@@ -90,11 +82,11 @@ export const blogPostCollection: CollectionConfig = {
 							},
 						},
 						{
-							name: "agenticStatus",
-							type: "json",
+							name: "authoringNotes",
+							type: "textarea",
 							admin: {
 								description:
-									"JSON state for the agent-driven authoring loop. Agents may persist any valid values here.",
+									"Free-form Markdown notes that human and AI agents leave while authoring. Never reflected in the published blog post body.",
 							},
 						},
 					],
