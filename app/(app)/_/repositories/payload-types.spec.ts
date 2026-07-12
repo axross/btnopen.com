@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import type z from "zod";
-import { PayloadBlogPost } from "./payload-types";
+import { PayloadBlogPost, resolveThumbnailImage } from "./payload-types";
 
 type PayloadBlogPostInput = z.input<typeof PayloadBlogPost>;
 
@@ -68,5 +68,22 @@ describe("PayloadBlogPost", () => {
 				coverImage: coverImageWithoutSizes,
 			}),
 		).toThrow();
+	});
+});
+
+describe("resolveThumbnailImage", () => {
+	it("returns the Open Graph size when the post has a cover image", () => {
+		const { coverImage: parsedCoverImage } =
+			PayloadBlogPost.parse(baseBlogPost);
+
+		expect(resolveThumbnailImage(parsedCoverImage)).toEqual(
+			coverImage.sizes.og,
+		);
+	});
+
+	it("returns null when the post has no cover image", () => {
+		// the mapping the repositories rely on: an autosaved draft without a
+		// cover image yields a null thumbnail rather than throwing.
+		expect(resolveThumbnailImage(null)).toBeNull();
 	});
 });

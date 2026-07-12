@@ -5,7 +5,11 @@ import { getPayload } from "payload";
 import type z from "zod";
 import { rootLogger } from "@/logger";
 import { config } from "@/payload/config";
-import { PayloadBlogPost, type PayloadLocale } from "./payload-types";
+import {
+	PayloadBlogPost,
+	type PayloadLocale,
+	resolveThumbnailImage,
+} from "./payload-types";
 
 const logger = rootLogger.child({ module: "📥" });
 
@@ -14,7 +18,7 @@ const BlogPostDetail = PayloadBlogPost.transform((blogPost) => ({
 	title: blogPost.title,
 	brief: blogPost.brief,
 	tags: blogPost.tags,
-	thumbnailImage: blogPost.coverImage?.sizes.og ?? null,
+	thumbnailImage: resolveThumbnailImage(blogPost.coverImage),
 	author: blogPost.author,
 	publishedAt: blogPost.publishedAt ?? blogPost.createdAt,
 	updatedAt: blogPost.updatedAt,
