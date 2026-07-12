@@ -96,9 +96,9 @@ The overall gradient: **certainty about mechanisms, humility about judgments.** 
 
 ## Anti-Lexicon
 
-Wordings measured at zero across all 15 posts, which reliably signal drift away from the author's voice when they appear in a draft:
+Wordings measured at zero — or a single occurrence where noted — across all 15 posts, which reliably signal drift away from the author's voice when they appear in a draft:
 
-- とても, 非常に (as default intensifiers; 非常に appears once ever)
+- とても (zero), 非常に (once) — neither works as a default intensifier
 - おそらく, 恐らく, 〜と思われます, 〜でしょうね (impersonal or formal probability hedges)
 - しかしながら, 従って, したがって, ゆえに (formal connectors)
 - ですよね (reader-agreement fishing)

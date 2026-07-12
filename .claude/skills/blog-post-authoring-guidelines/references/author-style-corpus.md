@@ -139,7 +139,7 @@ Punctuation carries voice in this corpus. Recurring habits, all from the 2026-07
 
 - **Parenthetical asides carry candor and humor**, not citations: 「事情を説明して（というかゴネて）」, 「新しいクラスメイト（？）」, 「(書いたけど仕様を見直した結果ボツになっちゃったコードです...)」, 「（もちろん、FooModelクラスのファクトリコンストラクタは…）」. Both full-width （） and half-width () appear, sometimes in the same post; technical posts lean half-width.
 - **Trailing ellipsis marks emotion or a hedged plea**: 「良い人すぎでは…。」, 「皆様本当に申し訳ない…ありがとう…。」, 「知っている方がいればぜひご一報ください…。」, 「ビザのペナルティは人生レベルで響きます…。」. It softens strong statements and closes unresolved points.
-- **Quoted self-talk and dialogue drive narrative**: reactions land as quotes plus `となる/となり` (「ぐう…」となり, 「よっし向かうぞ！」となった) and paraphrased speech attaches with `って` (「君は飛行機を逃したよ」って言われて). Exclamation marks appear almost only inside these quotes.
+- **Quoted self-talk and dialogue drive narrative**: reactions land as quotes plus `となる/となり` (「ぐう…」となり, 「よっし向かうぞ！」となった) and paraphrased speech attaches with `って` (「君は飛行機を逃したよ」って言われて). The single exclamation mark in all 15 posts appears inside one of these quotes; none appears in the author's own narration.
 - **Approximate quantification with `くらい`** keeps numbers concrete but casual: 「車で9時間くらい」, 「$750くらいマイナス」, 「100台くらいあった」, 「バスで20分くらい」. Precise numbers appear where precision matters (86日間, 90日間, sha256 hashes).
 - **Emoji are rare and playful**: one 😋 in a food caption, a 🍣 as the shell prompt in code blocks. Titles and headings carry no emoji and no bracket decorations (no 【】).
 
