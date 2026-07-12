@@ -71,7 +71,7 @@ describe("PayloadBlogPost", () => {
 	});
 });
 
-describe("resolveThumbnailImage", () => {
+describe("resolveThumbnailImage()", () => {
 	it("returns the Open Graph size when the post has a cover image", () => {
 		const { coverImage: parsedCoverImage } =
 			PayloadBlogPost.parse(baseBlogPost);
