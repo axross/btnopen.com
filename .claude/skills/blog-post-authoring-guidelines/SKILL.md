@@ -37,14 +37,28 @@ See [author-style-corpus.md](./references/author-style-corpus.md) for:
 - measured sentence-ending tendencies and recurring expression patterns
 - common article shapes, tone profile, and broad-rewrite style regression checks
 
-## Author Voice Lexicon
+## Author Words And Terms
 
-See [author-voice-lexicon.md](./references/author-voice-lexicon.md) for:
+See [author-words-and-terms.md](./references/author-words-and-terms.md) for:
 
 - measured word-level vocabulary: first-person split, intensifiers, hedges, connectives, playful coinages, katakana loans
-- idiom and expression templates with verbatim evidence and counts
-- the tone-level map of how the voice modulates by situation
-- the anti-lexicon of wordings the author avoids
+- per-word evidence of where and when each term appears, contrasted with typical AI-assistant word choices
+- the anti-lexicon summary mapping drift-signal wordings to the author's alternatives
+
+## Author Expressions And Idioms
+
+See [author-expressions-and-idioms.md](./references/author-expressions-and-idioms.md) for:
+
+- recurring expression templates: openers, prohibit-then-alternative, hedged conclusions, cautions, approximations, closers
+- verbatim examples with where/when each idiom appears, contrasted with typical AI-assistant phrasings
+
+## Author Tones And Manners
+
+See [author-tones-and-manners.md](./references/author-tones-and-manners.md) for:
+
+- the overall tone gradient and the situation-to-tone map with per-situation evidence
+- emotion handling, humor, reader relationship, authority stance, and formality manners
+- per-manner contrasts with the tone habits of generic AI-assistant prose
 
 ## Post Structure
 

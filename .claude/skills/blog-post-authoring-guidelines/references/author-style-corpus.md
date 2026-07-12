@@ -1,6 +1,6 @@
 # Author Style Corpus
 
-This corpus summarizes the author's older public posts for style calibration. It is not a raw archive of article text. Use it to avoid drifting into generic documentation prose when drafting or refining btnopen blog posts. For word-, idiom-, and tone-level vocabulary evidence, see the companion [author-voice-lexicon.md](./author-voice-lexicon.md).
+This corpus summarizes the author's older public posts for style calibration. It is not a raw archive of article text. Use it to avoid drifting into generic documentation prose when drafting or refining btnopen blog posts. For word-, expression-, and tone-level evidence, see the companions [author-words-and-terms.md](./author-words-and-terms.md), [author-expressions-and-idioms.md](./author-expressions-and-idioms.md), and [author-tones-and-manners.md](./author-tones-and-manners.md).
 
 ## Source Snapshot
 

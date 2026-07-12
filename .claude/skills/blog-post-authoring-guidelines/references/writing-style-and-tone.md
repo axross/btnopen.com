@@ -14,7 +14,7 @@ This guidance is based on the author's older public Medium posts and btnopen pos
 - MUST NOT use sales copy, generic motivational phrasing, or filler transitions that do not add technical value.
 - MUST NOT invent personal history, production incidents, benchmarks, or opinions that are not supported by the current post or user request.
 - SHOULD write in a natural first-person or author-observational voice when the existing post uses it.
-- SHOULD calibrate word choice, idioms, and tone against [author-voice-lexicon.md](./author-voice-lexicon.md), including its anti-lexicon of wordings the author avoids.
+- SHOULD calibrate word choice against [author-words-and-terms.md](./author-words-and-terms.md) (including its anti-lexicon), phrasing against [author-expressions-and-idioms.md](./author-expressions-and-idioms.md), and tone against [author-tones-and-manners.md](./author-tones-and-manners.md).
 - SHOULD prefer concise paragraphs that each make one point.
 - SHOULD keep uncertainty explicit with phrases equivalent to "in this case", "at least for this project", or "when the constraint is ..." when the claim is contextual.
 
