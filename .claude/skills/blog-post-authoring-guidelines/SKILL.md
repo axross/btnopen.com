@@ -37,6 +37,15 @@ See [author-style-corpus.md](./references/author-style-corpus.md) for:
 - measured sentence-ending tendencies and recurring expression patterns
 - common article shapes, tone profile, and broad-rewrite style regression checks
 
+## Author Voice Lexicon
+
+See [author-voice-lexicon.md](./references/author-voice-lexicon.md) for:
+
+- measured word-level vocabulary: first-person split, intensifiers, hedges, connectives, playful coinages, katakana loans
+- idiom and expression templates with verbatim evidence and counts
+- the tone-level map of how the voice modulates by situation
+- the anti-lexicon of wordings the author never uses
+
 ## Post Structure
 
 See [post-structure.md](./references/post-structure.md) for:
