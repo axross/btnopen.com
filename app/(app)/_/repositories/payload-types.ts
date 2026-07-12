@@ -148,7 +148,11 @@ export const PayloadBlogPost = z
 			sizes: z.object({
 				og: PayloadUploadSize.describe("Open Graph cover image size."),
 			}),
-		}).describe("Cover image upload for the blog post."),
+		})
+			.nullable()
+			.describe(
+				"Cover image upload for the blog post; null on autosaved drafts that do not have one yet.",
+			),
 		author: PayloadUser.describe("Blog post author."),
 		publishedAt: z.iso
 			.datetime()
@@ -160,6 +164,18 @@ export const PayloadBlogPost = z
 	.describe("Payload blog post document.");
 
 export type PayloadBlogPost = z.infer<typeof PayloadBlogPost>;
+
+/**
+ * Selects the Open Graph thumbnail size from a blog post's cover image,
+ * returning null when the post has no cover image (autosaved drafts can lack
+ * one). Shared by the blog post repositories so both map the field the same
+ * null-tolerant way.
+ */
+export function resolveThumbnailImage(
+	coverImage: PayloadBlogPost["coverImage"],
+): PayloadUploadSize | null {
+	return coverImage?.sizes.og ?? null;
+}
 
 function isPayloadRichTextEditorState(
 	value: unknown,

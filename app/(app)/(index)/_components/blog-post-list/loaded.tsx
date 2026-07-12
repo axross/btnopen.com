@@ -36,9 +36,7 @@ export async function BlogPostListLoaded({
 							slug={blogPost.slug}
 							title={blogPost.title}
 							brief={blogPost.brief}
-							thumbnailImageUrl={blogPost.thumbnailImage.url}
-							thumbnailImageWidth={blogPost.thumbnailImage.width}
-							thumbnailImageHeight={blogPost.thumbnailImage.height}
+							thumbnailImage={blogPost.thumbnailImage}
 							publishedLabel={formatDistanceToNow(blogPost.publishedAt, {
 								addSuffix: true,
 								locale: dateFnsLocale,
@@ -55,9 +53,7 @@ function BlogPostListItem({
 	slug,
 	title,
 	brief,
-	thumbnailImageUrl,
-	thumbnailImageWidth,
-	thumbnailImageHeight,
+	thumbnailImage,
 	publishedLabel,
 	className,
 	...props
@@ -65,24 +61,26 @@ function BlogPostListItem({
 	slug: string;
 	title: string;
 	brief: string;
-	thumbnailImageUrl: string;
-	thumbnailImageWidth: number;
-	thumbnailImageHeight: number;
+	thumbnailImage: { url: string; width: number; height: number } | null;
 	publishedLabel: string;
 }): JSX.Element {
 	return (
 		<div className={clsx(css.blogPostListItem, className)} {...props}>
-			<ViewTransition name={`blog-post-${slug}-image`}>
-				<Image
-					src={thumbnailImageUrl}
-					alt={title}
-					width={thumbnailImageWidth}
-					height={thumbnailImageHeight}
-					loading="eager"
-					className={css.image}
-					data-testid="thumbnail-image"
-				/>
-			</ViewTransition>
+			{/* autosaved drafts can lack a cover image; omit the thumbnail rather
+			    than render a broken image in the draft preview list */}
+			{thumbnailImage ? (
+				<ViewTransition name={`blog-post-${slug}-image`}>
+					<Image
+						src={thumbnailImage.url}
+						alt={title}
+						width={thumbnailImage.width}
+						height={thumbnailImage.height}
+						loading="eager"
+						className={css.image}
+						data-testid="thumbnail-image"
+					/>
+				</ViewTransition>
+			) : null}
 
 			<ViewTransition name={`blog-post-${slug}-timestamp`}>
 				<div className={css.timestamp} data-testid="timestamp">

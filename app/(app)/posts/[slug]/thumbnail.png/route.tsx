@@ -38,19 +38,24 @@ export async function GET(
 		notFound();
 	}
 
-	let imageBuffer: ArrayBuffer;
-	try {
-		if (vercelBlobToken) {
-			imageBuffer = await retrieveImageFromVercelBlob(
-				blogPost.thumbnailImage.filename,
-			);
-		} else {
-			imageBuffer = await retrieveImageViaAPI(blogPost.thumbnailImage.url);
-		}
-	} catch (error) {
-		captureException(error);
+	// autosaved drafts can lack a cover image; fall back to the logo + title
+	// composition without the blurred background photo instead of failing.
+	const thumbnailImage = blogPost.thumbnailImage;
+	let backgroundImageBuffer: ArrayBuffer | null = null;
+	if (thumbnailImage) {
+		try {
+			if (vercelBlobToken) {
+				backgroundImageBuffer = await retrieveImageFromVercelBlob(
+					thumbnailImage.filename,
+				);
+			} else {
+				backgroundImageBuffer = await retrieveImageViaAPI(thumbnailImage.url);
+			}
+		} catch (error) {
+			captureException(error);
 
-		notFound();
+			notFound();
+		}
 	}
 
 	return new ImageResponse(
@@ -65,22 +70,27 @@ export async function GET(
 				padding: 32,
 				gap: 32,
 				overflow: "hidden",
+				// dark base so the light title stays legible when there is no
+				// cover image behind it (the background photo covers it otherwise).
+				backgroundColor: "#16002a",
 			}}
 		>
-			{/** biome-ignore lint/a11y/useAltText: this is just within the image generation. alt will be omitted in the rendered result. */}
-			{/** biome-ignore lint/performance/noImgElement: this is just within the image generation. Next <Image> dosen't fit in the image generation. */}
-			<img
-				src={toDataUrl(await manipulateImage(imageBuffer))}
-				width={blogPost.thumbnailImage.width}
-				height={blogPost.thumbnailImage.height}
-				style={{
-					position: "absolute",
-					top: 0,
-					left: 0,
-					objectFit: "cover",
-					filter: "brightness(0.125)",
-				}}
-			/>
+			{thumbnailImage && backgroundImageBuffer ? (
+				// biome-ignore lint/a11y/useAltText: this is just within the image generation. alt will be omitted in the rendered result.
+				// biome-ignore lint/performance/noImgElement: this is just within the image generation. Next <Image> dosen't fit in the image generation.
+				<img
+					src={toDataUrl(await manipulateImage(backgroundImageBuffer))}
+					width={thumbnailImage.width}
+					height={thumbnailImage.height}
+					style={{
+						position: "absolute",
+						top: 0,
+						left: 0,
+						objectFit: "cover",
+						filter: "brightness(0.125)",
+					}}
+				/>
+			) : null}
 
 			<div
 				style={{
