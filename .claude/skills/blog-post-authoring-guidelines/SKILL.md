@@ -1,6 +1,6 @@
 ---
 name: blog-post-authoring-guidelines
-description: Apply this skill when drafting, rewriting, refining, translating, or reviewing btnopen blog post content, titles, briefs, tags, structure, tone, grammar, or Markdown usage. Covers Japanese-primary pragmatic authoring, natural syntax coverage, metadata quality, translation/localization, and preserving the author's style. Use Payload CMS MCP separately when applying authored changes to existing CMS posts.
+description: Apply this skill when drafting, rewriting, refining, translating, or reviewing btnopen blog post content, titles, briefs, tags, structure, tone, grammar, references/citations, quotes, or Markdown usage. Covers Japanese-primary pragmatic authoring, natural syntax coverage, sparse evidence-first referencing, quote and attribution verification, metadata quality, translation/localization, and preserving the author's style. Use Payload CMS MCP separately when applying authored changes to existing CMS posts.
 ---
 
 # Blog Post Authoring Guidelines
@@ -44,6 +44,15 @@ See [post-structure.md](./references/post-structure.md) for:
 - using lists, tables, quotes, code, images, and embeds for reader value
 - making example-heavy posts read like real blog posts
 - adapting blogging and technical-writing best practices without losing the author's voice
+
+## References And Evidence
+
+See [references-and-evidence.md](./references/references-and-evidence.md) for:
+
+- choosing which inline links, citations, quotes, and numbers stay in a post
+- scoping strong or contested claims and pairing them with a single best source
+- verbatim-quote verification, paraphrase attribution, and origin claims
+- dating and re-verifying time-sensitive facts before publication
 
 ## Metadata And Taxonomy
 
