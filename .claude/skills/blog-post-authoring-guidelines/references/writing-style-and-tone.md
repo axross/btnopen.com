@@ -27,6 +27,7 @@ The author's older posts most often start from a concrete trigger: an interview 
 - MUST turn the trigger into reader value early: what the post helps the reader decide, understand, avoid, or try.
 - MUST keep the authority pattern experience-led: "I encountered this, investigated or tried this, and here is what changed."
 - MUST NOT replace firsthand context with generic industry framing such as broad market trends or motivational openings.
+- SHOULD open with one or two short trigger sentences plus an explicit intent declaration (`書いてみます`, `書いておきます`, `共有します`, `まとめてみます`) when it fits the post, matching the corpus's opening move.
 - SHOULD keep the author's candid self-assessment, especially around language skill, job search, interviews, platform behavior, and technical uncertainty.
 - SHOULD use memorable comparisons only when they clarify a real decision or constraint.
 
@@ -40,7 +41,9 @@ Japanese prose should read like public blog prose from the author, not like deta
 - MUST NOT over-normalize the author's Japanese into detached documentation prose.
 - MUST use `です/ます` as the default sentence-ending style for Japanese body prose in ordinary btnopen posts.
 - MUST reserve plain-form endings such as `〜する`, `〜ある`, `〜使う`, `〜残す`, and `〜しない` mostly for headings, table cells, short bullet fragments, quoted notes, code comments, or intentionally terse checklist labels.
-- MUST run a sentence-ending style pass after broad rewrites; paragraphs dominated by plain-form endings usually need to be converted toward `です/ます`.
+- MAY write an entire post in the corpus's plain-form diary register only when the user explicitly asks for a personal diary-style life log; see the register boundary in [author-style-corpus.md](./author-style-corpus.md).
+- MUST keep the chosen register consistent from title to closing; a mid-post register mix is a style regression in either direction.
+- MUST run a sentence-ending style pass after broad rewrites; audience-facing paragraphs dominated by plain-form endings usually need to be converted toward `です/ます`.
 - SHOULD keep long technical sentences split when a list, table, or code block would make the idea easier to scan.
 
 ## Japanese Voice Details
@@ -53,6 +56,9 @@ The author's Japanese has light conversational texture where it helps: first-per
 - SHOULD use reader-facing `あなた` or `皆さん` only when the post is directly advisory or closing with a broad reader address.
 - SHOULD preserve meaningful softeners such as `と思います`, `かもしれません`, `経験上`, `基本的に`, and `今のところ` when they express honest scope.
 - SHOULD use light casual expressions such as `ざっくり`, `めちゃくちゃ`, `まあまあ`, `という感じ`, or `なんにせよ` only when they fit the surrounding evidence and do not weaken clarity.
+- SHOULD keep reflective elongations (`〜なぁ`, `〜なー`) and quoted inline dialogue with `って` when retelling personal events, matching the corpus rather than normalizing them away.
+- SHOULD append a dated `追記` section for post-publication updates instead of silently rewriting, when the user wants an existing post amended.
+- SHOULD preserve the author's self-deprecating humor and playful coinages where the source has them; sanitizing them into neutral prose is a voice regression.
 - SHOULD use English technical terms inline when they are the natural names used by the target reader.
 
 ## Sentence-Ending Calibration

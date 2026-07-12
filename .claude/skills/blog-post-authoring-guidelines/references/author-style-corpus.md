@@ -4,45 +4,57 @@ This corpus summarizes the author's older public posts for style calibration. It
 
 ## Source Snapshot
 
-This corpus snapshot was refreshed on 2026-06-03. Profile, feed, home, and sitemap URLs are discovery aids only. They MUST NOT be treated as source rows for style calibration; source evidence should come from individual article pages.
+This corpus snapshot was refreshed on 2026-07-12. Profile, feed, home, and sitemap URLs are discovery aids only. They MUST NOT be treated as source rows for style calibration; source evidence should come from individual article pages.
 
-The following individual post pages were opened and read for this snapshot:
+The following individual article pages were opened and read in full for this snapshot. The author confirmed every Medium post below is hand-written by them.
 
 | Published | Individual article source | Article shape | Style evidence read |
 | --- | --- | --- | --- |
-| 2019-12-10 | [Content Security Policyを設定してウェブサイトをXSSから守る](https://medium.com/@axross/getting-started-with-content-security-policy-d096d54aad10) | Technical investigation | interview trigger, security configuration sections, screenshots, caveats, unresolved issue closing |
+| 2018-04-07 | [リモートワークへの努力とは何なのか](https://medium.com/@axross/%E3%83%AA%E3%83%A2%E3%83%BC%E3%83%88%E3%83%AF%E3%83%BC%E3%82%AF%E3%81%B8%E3%81%AE%E5%8A%AA%E5%8A%9B%E3%81%A8%E3%81%AF%E4%BD%95%E3%81%AA%E3%81%AE%E3%81%8B-d8d77592c157) | Opinion essay | early positioning disclaimer, company-case evidence, named concept (「喫煙所の決定」), generalization, thesis closing |
+| 2018-06-29 | [Kaizen Platformを退職しました](https://medium.com/@axross/kaizen-platform%E3%82%92%E9%80%80%E8%81%B7%E3%81%97%E3%81%BE%E3%81%97%E3%81%9F-4def1b30a700) | Milestone note (resignation) | four-paragraph shape, one-line announcement opener, gratitude and reflection, concrete what's-next closing |
+| 2018-08-06 | [アメリカに来て1ヶ月が経った](https://medium.com/@axross/%E3%82%A2%E3%83%A1%E3%83%AA%E3%82%AB%E3%81%AB%E6%9D%A5%E3%81%A61%E3%83%B6%E6%9C%88%E3%81%8C%E7%B5%8C%E3%81%A3%E3%81%9F-40fdd64a24c8) | Life log (photo-driven) | punchy opener (「なんとか生きてます。」), photo sequence with commentary captions, reporting-joke sign-off, forward-looking close |
+| 2018-09-29 | [紆余曲折あったけどバンクーバーに着いた](https://medium.com/@axross/%E7%B4%86%E4%BD%99%E6%9B%B2%E6%8A%98%E3%81%82%E3%82%8A%E3%81%BE%E3%81%97%E3%81%9F%E3%81%8C%E3%83%90%E3%83%B3%E3%82%AF%E3%83%BC%E3%83%90%E3%83%BC%E3%81%AB%E7%9D%80%E3%81%8D%E3%81%BE%E3%81%97%E3%81%9F-5d78f6ea253f) | Life log (diary register) | plain-form narrative throughout, quoted inline dialogue, chronological retelling, forward-looking close |
+| 2018-10-02 | [ESL（語学学校）の初日が終わった](https://medium.com/@axross/esl%E3%81%AE%E5%88%9D%E6%97%A5%E3%81%8C%E7%B5%82%E3%82%8F%E3%81%A3%E3%81%9F-cd7790acfa2d) | Life log (diary register) | plain-form prose, thinking-aloud endings (〜かな、頑張るぞい), dated 追記 addendum instead of silent rewrite |
+| 2018-10-05 | [バンクーバーの公共図書館が凄かった](https://medium.com/@axross/%E3%83%90%E3%83%B3%E3%82%AF%E3%83%BC%E3%83%90%E3%83%BC%E3%81%AE%E5%85%AC%E5%85%B1%E5%9B%B3%E6%9B%B8%E9%A4%A8%E3%81%8C%E5%87%84%E3%81%8B%E3%81%A3%E3%81%9F-6814aa553ee0) | Life log (diary register) | plain-form observation, playful coinages (オシャオシャ、めちゃでかい、かっけー), photo captions carrying commentary |
+| 2018-12-15 | [転職とエンジニア採用に関しての基礎](https://medium.com/@axross/%E8%BB%A2%E8%81%B7%E3%81%A8%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%8B%E3%82%A2%E6%8E%A1%E7%94%A8%E3%81%AB%E9%96%A2%E3%81%97%E3%81%A6%E3%81%AE%E5%9F%BA%E7%A4%8E-86e825c2578c) | Two-audience advice post | feedback-seeking purpose statement, 採用側/被採用側 audience sections, verb-phrase advice headings, hedged contextual claims |
+| 2018-12-19 | [アメリカのESTAとカナダへ/からの入出国にまつわるあれこれ](https://medium.com/@axross/%E3%82%A2%E3%83%A1%E3%83%AA%E3%82%AB%E3%81%AEesta%E3%81%A8%E3%82%AB%E3%83%8A%E3%83%80%E3%81%B8-%E3%81%8B%E3%82%89%E3%81%AE%E5%85%A5%E5%87%BA%E5%9B%BD%E3%81%AB%E3%81%BE%E3%81%A4%E3%82%8F%E3%82%8B%E3%81%82%E3%82%8C%E3%81%93%E3%82%8C-666e38dba619) | Procedural/logistics note | 備忘録 trigger, bullet fact summary before prose, mechanism explanation, personal-case section, high-stakes caution close |
+| 2018-12-31 | [2018年振り返り](https://medium.com/@axross/2018%E5%B9%B4%E6%8C%AF%E3%82%8A%E8%BF%94%E3%82%8A-de5133b89ed4) | Retrospective | occasion opener, life/work category sections, specific events and gratitude, reader well-wish closing |
+| 2018-12-31 | [Fish shellで気軽にjavaenv](https://medium.com/@axross/easy-javaenv-with-fish-shell-866cbb686ffe) | Small utility note | cross-language pairing link to the English version, command/output blocks, playful shell prompt (🍣), low-pressure closing |
+| 2019-01-02 | [scoped_modelやproviderでは型を明示しよう](https://medium.com/@axross/you-should-make-type-explicit-on-scoped-model-and-provider-12124830083b) | Technical pitfall note | 現象 → 解決法 → 解説 → 深掘り → ちなみに heading sequence, symptom before mechanism, edge-case coda |
+| 2019-11-28 | [TypeScriptでNext.js 9を触った感想](https://medium.com/@axross/7-tips-of-nextjs-9-with-typescript-cb5486cc8e5e) | Technical evaluation | project investigation trigger, practical headings, blockquoted definitions, deployment caveats |
+| 2019-11-29 | [Denoの始め方 / LeetCodeの解答数が100を超えました](https://medium.com/@axross/getting-started-on-deno-61eb23bf3a0a) | Two-topic note (progress + guide) | interview-prep trigger, pasted real test output, Deno overview, editor setup details |
+| 2019-11-29 | [Flutter製のテキサスホールデムポーカーの計算機をリリースしました](https://medium.com/@axross/first-flutter-app-launch-68b9aac44b6) | Product launch | what shipped, store/source links, implementation sections, release lessons |
+| 2019-12-10 | [Content Security Policyを設定してウェブサイトをXSSから守る](https://medium.com/@axross/getting-started-with-content-security-policy-d096d54aad10) | Technical investigation | interview trigger, security configuration sections, screenshots, caveats, unresolved-question closing |
+
+The refresh request listed 2018年振り返り twice; it is one post and appears once above. The three posts recorded as blocked in the 2026-06-03 snapshot (2018年振り返り, Fish shellで気軽にjavaenv, scoped_modelやproviderでは型を明示しよう) were all successfully read in this refresh, so no blocked candidates remain.
+
+The following rows were read during the 2026-06-03 refresh and are retained without re-reading (they were not part of the 2026-07-12 request):
+
+| Published | Individual article source | Article shape | Style evidence read |
+| --- | --- | --- | --- |
 | 2019-11-30 | [Launched an app for Texas Hold'em Poker made of Flutter!](https://medium.com/@axross/first-flutter-app-launch-4cc502183f9) | English product launch | shipped-app announcement, download links, implementation notes, platform observations |
-| 2019-11-29 | [Flutter製のテキサスホールデムポーカーの計算機をリリースしました](https://medium.com/@axross/first-flutter-app-launch-68b9aac44b6) | Japanese product launch | what shipped, store/source links, implementation sections, release lessons |
-| 2019-11-29 | [Denoの始め方 / LeetCodeの解答数が100を超えました](https://medium.com/@axross/getting-started-on-deno-61eb23bf3a0a) | Technical experiment note | interview-prep trigger, code output, Deno overview, editor setup details |
 | 2019-11-29 | [7 Tips of Next.js 9 with TypeScript](https://medium.com/@axross/7-tips-of-nextjs-9-with-typescript-da346eb9982f) | English technical evaluation | framework investigation trigger, list-style sections, code/config examples |
-| 2019-11-28 | [TypeScriptでNext.js 9を触った感想](https://medium.com/@axross/7-tips-of-nextjs-9-with-typescript-cb5486cc8e5e) | Japanese technical evaluation | project investigation trigger, practical headings, blockquoted definitions, deployment caveats |
 | 2019-01-01 | [Simple "javaenv" with Fish shell](https://medium.com/@axross/simple-javaenv-with-fish-shell-287ba4a84ba9) | English small utility note | command-oriented setup, concise caveats, practical shell workflow |
 | 2021-03-21 | [USの会社で働き始めて1年が経ちました](https://www.btnopen.com/posts/working-at-an-american-company) | Work-experience retrospective | company background, English self-assessment, position/stack notes, Q&A follow-up |
 | 2021-03-28 | [いつか海外を目指そうと思っているエンジニアへ](https://www.btnopen.com/posts/for-engineers-who-have-overseas-ambition) | Career/life guide | target reader assumptions, job-search phases, interview preparation, visa and English caveats |
-
-The Medium profile exposed three additional older post URLs, but their individual pages were blocked by Medium/Cloudflare during this refresh in the current automation environment. They are known corpus candidates, but they are not used for measured claims until their individual pages are read manually or through a reliable page-level fetch:
-
-- [scoped_modelやproviderでは型を明示しよう](https://medium.com/@axross/you-should-make-type-explicit-on-scoped-model-and-provider-12124830083b)
-- [Fish shellで気軽にjavaenv](https://medium.com/@axross/easy-javaenv-with-fish-shell-866cbb686ffe)
-- [2018年振り返り](https://medium.com/@axross/2018%E5%B9%B4%E6%8C%AF%E3%82%8A%E8%BF%94%E3%82%8A-de5133b89ed4)
 
 ## Observed Patterns
 
 These observations are directional, not a hard style linter. They come from individually opened article pages and should be refreshed when the public corpus changes materially.
 
-| Corpus slice | Japanese sentences | Sentence-ending tendency |
-| --- | ---: | --- |
-| Medium Japanese posts read from individual pages | qualitative sample | overwhelmingly `です/ます` polite form |
-| btnopen posts read from individual pages | qualitative sample | overwhelmingly `です/ます` polite form with more first-person framing |
-| Rewritten Markdown Example draft before this correction | qualitative comparison | mostly plain/assertive form, which was the main style mismatch |
+| Corpus slice | Posts | Sentence-ending tendency |
+| --- | --- | --- |
+| Audience-facing Japanese Medium posts (advice, technical, launch, essay, retrospective, logistics) | 12 of 15 read 2026-07-12 | consistently `です/ます` polite form |
+| Personal diary-register life logs (2018-09 〜 2018-10 relocation period) | 3 of 15 read 2026-07-12 | consistently plain form (`〜した`, `〜だった`, `〜たい`, `〜かな`) |
+| btnopen posts read from individual pages | 2 read 2026-06-03 | `です/ます` polite form with more first-person framing |
 
-The main mismatch was sentence endings. Older posts usually sound like public blog prose: `〜です`, `〜ます`, `〜ました`, `〜と思います`, `〜かもしれません`, and `〜という感じです`. The Markdown Example rewrite sounded like internal notes: `〜する`, `〜ある`, `〜使う`, `〜残す`, and `〜しない`.
+The 2026-07-12 refresh corrected an earlier claim. The corpus is not uniformly polite: the author keeps two distinct registers and stays consistent within each post. Posts written *for readers* — advice, technical notes, launches, essays, retrospectives, logistics — use `です/ます`. Short personal life logs written primarily *as a diary* (arriving in Vancouver, the first ESL day, a library visit) use plain form throughout, including their titles (「〜に着いた」「〜が終わった」「〜が凄かった」). The register is a deliberate per-post choice, never mixed mid-post.
 
 ## Sentence Ending Profile
 
-Default Japanese body prose should use polite form. Plain form can still appear in headings, table cells, short bullet fragments, quoted notes, code comments, and intentionally terse checklist labels.
+Default Japanese body prose for btnopen posts should use polite form. Plain form can still appear in headings, table cells, short bullet fragments, quoted notes, code comments, and intentionally terse checklist labels.
 
-**Preferred body endings:**
+**Preferred body endings (audience-facing posts, the btnopen default):**
 
 - `〜です`
 - `〜ます`
@@ -54,7 +66,11 @@ Default Japanese body prose should use polite form. Plain form can still appear 
 - `〜かもしれません`
 - `〜という感じです`
 
-**Use sparingly in body prose:**
+**Diary register (evidence-bounded exception):**
+
+The three 2018 relocation life logs use plain form consistently: `〜した`, `〜だった`, `〜ようにした`, `〜と思った`, `〜今に至る`, `〜たい`, `〜かな`, and playful closers like `頑張るぞい`. This register is part of the author's real voice, but it appears only in short personal diary posts, and each post stays in one register from title to closing. The normative rules for when the diary register is allowed live in [writing-style-and-tone.md](./writing-style-and-tone.md); this profile records the evidence.
+
+**Use sparingly in polite body prose:**
 
 - `〜する`
 - `〜ある`
@@ -64,7 +80,7 @@ Default Japanese body prose should use polite form. Plain form can still appear 
 - `〜しない`
 - `〜だ`
 
-Plain endings are not forbidden, but a paragraph dominated by them usually reads unlike the author's public posts.
+Plain endings are not forbidden, but an audience-facing paragraph dominated by them usually reads unlike the author's public posts.
 
 ## Voice And Grammar Patterns
 
@@ -75,15 +91,37 @@ Older posts tend to use an experience-led authority pattern:
 3. Share the practical conclusion with caveats.
 4. Keep the tone candid rather than universal.
 
+The opening move is remarkably consistent across the corpus: one or two short sentences naming the trigger or occasion, often followed by an explicit intent declaration. Examples read in this refresh:
+
+- 「もう今年も終わりですね。ということで振り返ってみます。」
+- 「今日が最終出社日でした。」
+- 「なんとか生きてます。」
+- 「色々あったけど、なんとかなった。」
+- 「自分の認識が違ったので備忘録として書いておこうかなと。」
+- 「この2つのパッケージにおけるハマりポイントなので書いておきます。」
+
 Common grammar and expression patterns include:
 
 - first-person framing with `僕` and `自分` when personal experience matters
-- candid uncertainty with `と思います`, `かもしれません`, `経験上`, and `基本的に`
-- conversational technical transitions like `という感じです`, `ちなみに`, `ざっくり`, `めちゃくちゃ`, and `まあ`
+- intent-declaration verbs in openers: `書いてみます`, `書いておきます`, `共有します`, `まとめてみます`, `振り返ってみます`
+- candid uncertainty with `と思います`, `かもしれません`, `経験上`, `基本的に`, and `〜気がします`
+- conversational technical transitions like `という感じです`, `ちなみに`, `ざっくり`, `めちゃくちゃ`, `いずれにせよ`, and `まあ`
+- reflective elongations `〜なぁ` / `〜なー` for thinking aloud (「色々あったなぁ」「対策しないとなー」)
+- quoted inline dialogue with `って` when retelling events (「君は飛行機を逃したよ」って言われて「ぐう…」となり)
 - practical verbs such as `試してみました`, `書いておきます`, `共有します`, `挙げておきます`, and `見ていきます`
+- dated `追記` addenda appended under a heading when new information arrives, instead of silently rewriting the post
 - contextual claims rather than universal claims, especially around hiring, language, platform behavior, and technical constraints
+- early positioning disclaimers when needed (「他のメンバーと見解が違うかもしれません」, 「2017年に書いたものをMediumに移したものです」)
+- purpose statements that invite feedback (「フィードバックを募ることの2つの意味で少し書いてみます」, 「知っている方がいればぜひご一報ください」)
 
-The grammar is not simply "casual Japanese." The posts often use long but controlled explanatory sentences joined by `ので`, `ですが`, `ただし`, `また`, and `という形です`, then reset the rhythm with short practical headings, lists, code blocks, or screenshots. Agents should preserve that pragmatic explanatory flow instead of flattening everything into short plain-form memo sentences.
+Closings are as patterned as openers:
+
+- reader address for audience-facing posts: 「皆さんも良いお年をお迎えください。」「皆さんも遊んでみると楽しいかもしれません。」
+- forward-looking intention for life logs and progress notes: 「残り2ヶ月で色々行けたらいいなーと思ってます」「慢心せずに頑張っていきたい」
+- unresolved-question ask when something stayed unsolved: 「これは僕も解決法を見つけていないので、知っている方がいればぜひご一報ください…。」
+- occasional reporting-style sign-off joke: 「現場からは以上です。」
+
+The grammar is not simply "casual Japanese." The posts often use long but controlled explanatory sentences joined by `ので`, `ですが`, `ただし`, `また`, and `という形です`, then reset the rhythm with short punchy fragments (「完全に観光です。」「めちゃでかい。」「素晴らしいことです。」), practical headings, lists, code blocks, or screenshots. Agents should preserve that pragmatic explanatory flow instead of flattening everything into short plain-form memo sentences.
 
 Avoid copying old mistakes or dated facts. Preserve the useful cadence and humility, not every historical wording choice.
 
@@ -96,6 +134,9 @@ The author's older Japanese posts are:
 - mildly conversational without becoming chatty
 - direct about what worked, what failed, and what the reader should watch for
 - comfortable mixing Japanese prose with exact English technical terms
+- lightly self-deprecating and playful when the topic is personal (「出世払いの利息が怖いです」, 「$750くらいマイナスになりました」, 「完全に観光です」)
+- fond of playful coinages and intensifiers in casual contexts (`オシャオシャ`, `めちゃでかい`, `かっけー`, `ガチ都会`), with rare but natural emoji (😋, a 🍣 shell prompt)
+- observational in image captions, which carry real commentary or humor rather than mechanical descriptions (「ハリウッドサインって意外と遠いことがわかった」)
 
 They are not:
 
@@ -114,16 +155,26 @@ Common structures:
 | Shape | Typical flow |
 | --- | --- |
 | Technical investigation | trigger, background, concrete sections, caveats, summary |
-| Pitfall note | short reason for writing, symptom, fix, mechanism, edge cases |
+| Pitfall note | short reason for writing, symptom, fix, mechanism, edge cases — canonically headed 現象 → 解決法 → 解説 → 深掘り → ちなみに |
 | Product launch | what shipped, download/source links, implementation notes, platform observations |
 | Career/life guide | author background, target reader, phases, resources, caveats, closing reflection |
-| Retrospective | occasion, life/work categories, specific events, grounded closing |
+| Two-audience advice post | purpose statement, one section per audience (e.g. 採用側/被採用側), verb-phrase advice headings, hedged contextual claims |
+| Opinion essay | personal context, concrete case, a named concept as the lens, generalization beyond the case, a one-sentence thesis near the close |
+| Retrospective | occasion, life/work categories, specific events, gratitude, reader well-wish closing |
+| Life log / milestone note | punchy occasion opener, chronological narrative or photo sequence, optional dated 追記, forward-looking close |
+| Procedural/logistics note | reason for writing, bullet fact summary, mechanism explanation, personal case, high-stakes caution close |
 
 Headings are usually descriptive and practical. They often name the topic directly rather than using abstract editorial labels:
 
 - technical posts use concept or decision headings, such as a setting name, framework file, API route, runtime behavior, or deployment constraint
+- pitfall notes use the fixed 現象/解決法/解説 progression with optional 深掘り and ちなみに codas
+- advice posts use verb-phrase directive headings (「どんな人が欲しいか明確にしておく」, 「常にアンテナを立てておく」)
 - product posts use launch workflow headings, such as download, implementation, platform-specific lessons, and feature behavior
 - career posts use phase or question headings, such as background, English, position, job search, documents, interviews, visa, and reader Q&A
+
+Titles usually match the body's register and are often verb-ended sentences rather than noun phrases: polite announcements for audience-facing milestones (「〜をリリースしました」「〜を退職しました」), plain form for diary logs (「〜に着いた」「〜が終わった」「〜が凄かった」), directives for pitfall notes (「〜では型を明示しよう」), and questions for essays (「〜とは何なのか」). A `/`-joined two-topic title exists where a post genuinely covers two things (「Denoの始め方 / LeetCodeの解答数が100を超えました」).
+
+Very short posts are authentic to the corpus: the resignation note is four paragraphs, and photo-driven life logs carry most content in captions. The author does not pad short notes with forced sections or conclusions.
 
 Longer career posts are more sectionized than older Medium notes. They often start by naming the author's exact situation, define the target reader or assumptions, then walk through phases with practical resources and caveats. This newer btnopen structure should influence current career/life posts more strongly than the shorter Medium technical notes.
 
@@ -131,11 +182,13 @@ Longer career posts are more sectionized than older Medium notes. They often sta
 
 Before finalizing a broad rewrite, inspect the draft against this checklist:
 
-- Does the first paragraph explain the concrete trigger or reason for writing?
-- Does the body mostly use `です/ます` endings when it is Japanese public prose?
+- Does the first paragraph explain the concrete trigger or reason for writing, ideally with a short punchy opener and an intent declaration?
+- Does the sentence-ending register match the post type: `です/ます` for audience-facing prose, the plain diary register only for explicitly requested personal life logs — and is it consistent from title to closing?
 - Does the post include the author's perspective when the topic is based on experience?
 - Are caveats expressed naturally with `と思います`, `かもしれません`, `経験上`, or equivalent wording when the claim is contextual?
 - Do headings describe reader-relevant topics rather than syntax elements or internal implementation chores?
+- Is the author's humor and playfulness preserved where the source has it, instead of being sanitized into neutral prose?
+- Do image captions carry observation or commentary rather than mechanical descriptions?
 - Would the post still make sense if syntax coverage, SEO, or fixture needs were ignored?
 - Are tables, lists, code, images, and embeds carrying actual explanation instead of proving renderer support?
 
