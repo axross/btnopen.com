@@ -42,13 +42,15 @@ The following rows were read during the 2026-06-03 refresh and are retained with
 
 These observations are directional, not a hard style linter. They come from individually opened article pages and should be refreshed when the public corpus changes materially.
 
-| Corpus slice | Posts | Sentence-ending tendency |
+| Corpus slice | Posts | Measured sentence endings (body prose) |
 | --- | --- | --- |
-| Audience-facing Japanese Medium posts (advice, technical, launch, essay, retrospective, logistics) | 12 of 15 read 2026-07-12 | consistently `です/ます` polite form |
-| Personal diary-register life logs (2018-09 〜 2018-10 relocation period) | 3 of 15 read 2026-07-12 | consistently plain form (`〜した`, `〜だった`, `〜たい`, `〜かな`) |
-| btnopen posts read from individual pages | 2 read 2026-06-03 | `です/ます` polite form with more first-person framing |
+| Audience-facing Japanese Medium posts (advice, technical, launch, essay, retrospective, logistics) | 12 of 15 read 2026-07-12 | 279 polite vs ~14 non-polite sentence endings (≈95% polite); most non-polite hits are sentence-final parentheticals or deliberate expressive interjections, and 7 of 12 posts measure 100% polite |
+| Personal diary-register life logs (2018-09 〜 2018-10 relocation period) | 3 of 15 read 2026-07-12 | 2 polite vs 72 plain sentence endings (0–5% polite per post) |
+| btnopen posts read from individual pages | 2 read 2026-06-03 | `です/ます` polite form with more first-person framing (qualitative) |
 
-The 2026-07-12 refresh corrected an earlier claim. The corpus is not uniformly polite: the author keeps two distinct registers and stays consistent within each post. Posts written *for readers* — advice, technical notes, launches, essays, retrospectives, logistics — use `です/ます`. Short personal life logs written primarily *as a diary* (arriving in Vancouver, the first ESL day, a library visit) use plain form throughout, including their titles (「〜に着いた」「〜が終わった」「〜が凄かった」). The register is a deliberate per-post choice, never mixed mid-post.
+The 2026-07-12 refresh corrected an earlier claim, and a same-day measured pass over every `[P]` body paragraph quantified it. The corpus is not uniformly polite: the author keeps two distinct registers and stays consistent within each post. Posts written *for readers* — advice, technical notes, launches, essays, retrospectives, logistics — use `です/ます`. Short personal life logs written primarily *as a diary* (arriving in Vancouver, the first ESL day, a library visit) use plain form throughout, including their titles (「〜に着いた」「〜が終わった」「〜が凄かった」). The register is a deliberate per-post choice, never mixed mid-post.
+
+Within polite posts, the rare plain endings are not register drift but **expressive interjections at emotional beats** — 「今年も色々あったなぁ。」, 「良い人すぎでは…。」, 「引っ越したら自炊を極めていきたい…。」 (all from the 2018 retrospective, an otherwise 87%-polite post). They are single sentences of feeling inside polite paragraphs, never explanatory prose.
 
 ## Sentence Ending Profile
 
@@ -69,6 +71,10 @@ Default Japanese body prose for btnopen posts should use polite form. Plain form
 **Diary register (evidence-bounded exception):**
 
 The three 2018 relocation life logs use plain form consistently: `〜した`, `〜だった`, `〜ようにした`, `〜と思った`, `〜今に至る`, `〜たい`, `〜かな`, and playful closers like `頑張るぞい`. This register is part of the author's real voice, but it appears only in short personal diary posts, and each post stays in one register from title to closing. The normative rules for when the diary register is allowed live in [writing-style-and-tone.md](./writing-style-and-tone.md); this profile records the evidence.
+
+**Expressive plain interjections inside polite posts:**
+
+Measured polite posts occasionally drop to plain form for exactly one sentence of raw feeling — `〜なぁ。`, `〜たい…。`, `〜では…。` — then return to polite explanation. The pattern marks emotion, not a register switch, and it never carries factual or instructional content.
 
 **Use sparingly in polite body prose:**
 
@@ -123,7 +129,31 @@ Closings are as patterned as openers:
 
 The grammar is not simply "casual Japanese." The posts often use long but controlled explanatory sentences joined by `ので`, `ですが`, `ただし`, `また`, and `という形です`, then reset the rhythm with short punchy fragments (「完全に観光です。」「めちゃでかい。」「素晴らしいことです。」), practical headings, lists, code blocks, or screenshots. Agents should preserve that pragmatic explanatory flow instead of flattening everything into short plain-form memo sentences.
 
+English words are freely inflected into Japanese grammar when they are the natural working vocabulary: 「Temporaryに入ることになって」, 「In-personに受けるもの」, 「結構エクストリームだなー」, 「stayってことになった」. This is different from tech-term preservation — everyday English adjectives and adverbs get particle-attached mid-sentence, giving the prose a bilingual working-life texture.
+
 Avoid copying old mistakes or dated facts. Preserve the useful cadence and humility, not every historical wording choice.
+
+## Rhythm And Punctuation
+
+Punctuation carries voice in this corpus. Recurring habits, all from the 2026-07-12 read:
+
+- **Parenthetical asides carry candor and humor**, not citations: 「事情を説明して（というかゴネて）」, 「新しいクラスメイト（？）」, 「(書いたけど仕様を見直した結果ボツになっちゃったコードです...)」, 「（もちろん、FooModelクラスのファクトリコンストラクタは…）」. Both full-width （） and half-width () appear, sometimes in the same post; technical posts lean half-width.
+- **Trailing ellipsis marks emotion or a hedged plea**: 「良い人すぎでは…。」, 「皆様本当に申し訳ない…ありがとう…。」, 「知っている方がいればぜひご一報ください…。」, 「ビザのペナルティは人生レベルで響きます…。」. It softens strong statements and closes unresolved points.
+- **Quoted self-talk and dialogue drive narrative**: reactions land as quotes plus `となる/となり` (「ぐう…」となり, 「よっし向かうぞ！」となった) and paraphrased speech attaches with `って` (「君は飛行機を逃したよ」って言われて). Exclamation marks appear almost only inside these quotes.
+- **Approximate quantification with `くらい`** keeps numbers concrete but casual: 「車で9時間くらい」, 「$750くらいマイナス」, 「100台くらいあった」, 「バスで20分くらい」. Precise numbers appear where precision matters (86日間, 90日間, sha256 hashes).
+- **Emoji are rare and playful**: one 😋 in a food caption, a 🍣 as the shell prompt in code blocks. Titles and headings carry no emoji and no bracket decorations (no 【】).
+
+## Explanation Techniques
+
+The instructional posts share a recognizable explanatory toolkit:
+
+- **Analogy to a familiar concept** when introducing something new: BCIDは「日本でいうところのマイナンバーカードみたいなもの」, Isolateは「Goのgoroutineと同じような感じ」, InheritedWidgetは「ReactのContextと同じ伝搬モデル」, 引っ越し先は所謂「ハッカーズハウス」っぽい感じ.
+- **Inline definitions in blockquotes** for load-bearing jargon, right where the reader first needs them (the Universal / Isomorphic definitions in the Next.js post).
+- **Distillation moves** that compress an argument into one plain statement: 「いずれにせよ、簡単に言うと『お金で解決できない』のです」, 「要するに、旅行が済んだら自国へ帰るのが原則です」.
+- **Explicit mechanism connectors** after recommendations: 「〜のためです」, 「〜が理由でこうなっています」, 「〜という形です」 — the *why* follows the *what* in the same section.
+- **Candid disclosure of discarded or failed work**: shipping a code sample labeled ボツになったコード, admitting an interview answer went badly, or closing with an unsolved problem. Imperfection is presented as evidence, not hidden.
+- **Proof-of-work output pasted at length**: the Deno post pastes a 100-test terminal run in full; the javaenv post pastes real command output. Long raw output is acceptable when it *is* the claim.
+- **Bullet fact summaries before prose** for rule-heavy topics: the ESTA post lists the known rules as bullets, then explains mechanisms and edge cases in paragraphs.
 
 ## Tone Profile
 
@@ -137,6 +167,8 @@ The author's older Japanese posts are:
 - lightly self-deprecating and playful when the topic is personal (「出世払いの利息が怖いです」, 「$750くらいマイナスになりました」, 「完全に観光です」)
 - fond of playful coinages and intensifiers in casual contexts (`オシャオシャ`, `めちゃでかい`, `かっけー`, `ガチ都会`), with rare but natural emoji (😋, a 🍣 shell prompt)
 - observational in image captions, which carry real commentary or humor rather than mechanical descriptions (「ハリウッドサインって意外と遠いことがわかった」)
+- openly grateful and apologetic in the same breath when people helped (「皆様本当に申し訳ない…ありがとう…」, 「なんだかんだやっていけてるのは人の繋がり…のおかげだなーと身にしみて感じます」)
+- prone to closing personal posts with a plain aspiration rather than a lesson (「頑張っていきたい」, 「自炊を極めていきたい…」, 「このまま200問、300問と続けていきたいです」)
 
 They are not:
 
@@ -167,10 +199,12 @@ Common structures:
 Headings are usually descriptive and practical. They often name the topic directly rather than using abstract editorial labels:
 
 - technical posts use concept or decision headings, such as a setting name, framework file, API route, runtime behavior, or deployment constraint
+- **evaluation-post headings are often the recommendation itself, phrased as a full opinion sentence**: 「_document.tsxと_app.tsxは書いた方がよい」, 「API Routesは便利だが用途をよく考えよう」, 「シングルトンも検討する」, 「script-src と default-src にの設定にはより注意」 — a scanning reader gets the advice from the table of contents alone
 - pitfall notes use the fixed 現象/解決法/解説 progression with optional 深掘り and ちなみに codas
 - advice posts use verb-phrase directive headings (「どんな人が欲しいか明確にしておく」, 「常にアンテナを立てておく」)
 - product posts use launch workflow headings, such as download, implementation, platform-specific lessons, and feature behavior
 - career posts use phase or question headings, such as background, English, position, job search, documents, interviews, visa, and reader Q&A
+- structure stays shallow: one H3 level with H4 subsections where needed, a dated 追記 lands as an H4, and the retrospective allows itself a one-word casual transition heading (「で」) before the closing reflection
 
 Titles usually match the body's register and are often verb-ended sentences rather than noun phrases: polite announcements for audience-facing milestones (「〜をリリースしました」「〜を退職しました」), plain form for diary logs (「〜に着いた」「〜が終わった」「〜が凄かった」), directives for pitfall notes (「〜では型を明示しよう」), and questions for essays (「〜とは何なのか」). A `/`-joined two-topic title exists where a post genuinely covers two things (「Denoの始め方 / LeetCodeの解答数が100を超えました」).
 

@@ -59,6 +59,8 @@ The author's Japanese has light conversational texture where it helps: first-per
 - SHOULD keep reflective elongations (`〜なぁ`, `〜なー`) and quoted inline dialogue with `って` when retelling personal events, matching the corpus rather than normalizing them away.
 - SHOULD append a dated `追記` section for post-publication updates instead of silently rewriting, when the user wants an existing post amended.
 - SHOULD preserve the author's self-deprecating humor and playful coinages where the source has them; sanitizing them into neutral prose is a voice regression.
+- SHOULD keep parenthetical asides that carry candor or humor (「（というかゴネて）」-style) and trailing ellipses that mark emotion or a hedged plea, per the corpus's rhythm-and-punctuation evidence.
+- SHOULD use approximate quantification with `くらい` for lived detail and exact figures only where precision matters, matching the corpus.
 - SHOULD use English technical terms inline when they are the natural names used by the target reader.
 
 ## Sentence-Ending Calibration
@@ -77,6 +79,7 @@ The strongest signal from the public corpus is that ordinary Japanese posts use 
 - MUST NOT let "implementation memo", "pragmatic", or "technical" goals override the author's usual public `です/ます` cadence.
 - SHOULD vary polite endings with `〜と思います`, `〜かもしれません`, `〜という感じです`, and `〜しておきます` when they match the claim.
 - SHOULD keep direct plain fragments in lists or tables when full polite sentences would make the artifact harder to scan.
+- MAY drop to plain form for a single expressive interjection at an emotional beat (`〜なぁ。`, `〜たい…。`) inside an otherwise polite post, per the corpus's measured pattern; explanatory prose stays polite.
 - SHOULD treat an all-plain-form draft as a style regression unless the user explicitly requested that voice.
 
 ## Technical Expression Pattern
@@ -89,6 +92,10 @@ The strongest technical posts do more than state an answer. They show the sympto
 - MUST keep exact examples, commands, identifiers, and links when they are part of the evidence.
 - SHOULD prefer "what failed / what fixed it / why that works / where it breaks" over generic tutorial flow for pitfall posts.
 - SHOULD include edge cases, platform constraints, or failure modes when they change the reader's decision.
+- SHOULD introduce an unfamiliar concept through an analogy to something the target reader already knows, matching the corpus's explanation technique (「日本でいうところの〜みたいなもの」, 「Goのgoroutineと同じような感じ」).
+- SHOULD compress a finished argument into one plain distillation sentence (「要するに〜」, 「簡単に言うと〜」) when the section has earned it.
+- SHOULD keep candid disclosures — discarded code, failed attempts, unsolved problems — visible as evidence rather than editing them out.
+- SHOULD paste real command output or logs at length only when the output itself is the claim being made.
 - SHOULD trim stacked caveats when they obscure the point, but keep caveats that prevent overclaiming.
 
 ## English Fallback

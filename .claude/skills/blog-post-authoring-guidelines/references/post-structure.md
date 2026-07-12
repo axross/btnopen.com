@@ -42,6 +42,7 @@ Use this for posts like framework version notes, security configuration, platfor
 - MUST start from the trigger: project need, interview question, migration, investigation, or local experiment.
 - MUST break the evaluation into concrete sections organized by reader decisions.
 - MUST connect every recommendation to operational consequences.
+- SHOULD phrase section headings as the recommendation itself when the post is opinion-led (「〜は書いた方がよい」, 「〜は便利だが用途をよく考えよう」), so scanning the headings yields the advice.
 - SHOULD include code, configuration, screenshots, links, or policy examples when they carry the explanation.
 - SHOULD end with a practical summary, caveat, or unresolved point.
 
