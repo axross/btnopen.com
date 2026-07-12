@@ -1,6 +1,6 @@
 # Author Voice Lexicon
 
-A word-, idiom-, and tone-level companion to [author-style-corpus.md](./author-style-corpus.md). The corpus records article shapes and register evidence; this file records the vocabulary the author actually reaches for — and, just as diagnostically, the common Japanese wordings he never uses.
+A word-, idiom-, and tone-level companion to [author-style-corpus.md](./author-style-corpus.md). The corpus records article shapes and register evidence; this file records the vocabulary the author actually reaches for — and, just as diagnostically, the common Japanese wordings he avoids.
 
 All counts come from the 15 Medium posts (2018–2019) read in full on 2026-07-12, measured across every body paragraph, list item, blockquote, caption, and heading. The two btnopen posts in the corpus snapshot were not part of these counts. Use this lexicon to calibrate drafts, not as a checklist to stuff — the corpus's warning against demo-like filler applies to vocabulary too. Normative style rules stay in [writing-style-and-tone.md](./writing-style-and-tone.md).
 

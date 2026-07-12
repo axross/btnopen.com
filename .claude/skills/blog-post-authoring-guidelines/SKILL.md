@@ -44,7 +44,7 @@ See [author-voice-lexicon.md](./references/author-voice-lexicon.md) for:
 - measured word-level vocabulary: first-person split, intensifiers, hedges, connectives, playful coinages, katakana loans
 - idiom and expression templates with verbatim evidence and counts
 - the tone-level map of how the voice modulates by situation
-- the anti-lexicon of wordings the author never uses
+- the anti-lexicon of wordings the author avoids
 
 ## Post Structure
 

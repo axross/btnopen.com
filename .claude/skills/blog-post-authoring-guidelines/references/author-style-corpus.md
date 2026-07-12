@@ -28,6 +28,8 @@ The following individual article pages were opened and read in full for this sna
 
 The refresh request listed 2018年振り返り twice; it is one post and appears once above. The three posts recorded as blocked in the 2026-06-03 snapshot (2018年振り返り, Fish shellで気軽にjavaenv, scoped_modelやproviderでは型を明示しよう) were all successfully read in this refresh, so no blocked candidates remain.
 
+Titles in this table are the live titles served by each article page (the `Post.title` field in Medium's server-rendered state) as of the read date, not the titles frozen in the URL slugs. The two can diverge when a post is retitled after publishing: the 2018-09-29 post's slug decodes to the polite 「紆余曲折ありましたがバンクーバーに着きました」, while its live title is the plain-form 「紆余曲折あったけどバンクーバーに着いた」 — the diary-register title claims in this corpus rest on the live titles.
+
 The following rows were read during the 2026-06-03 refresh and are retained without re-reading (they were not part of the 2026-07-12 request):
 
 | Published | Individual article source | Article shape | Style evidence read |
