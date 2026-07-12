@@ -43,7 +43,7 @@ Japanese prose should read like public blog prose from the author, not like deta
 - MUST use `です/ます` as the default sentence-ending style for Japanese body prose in ordinary btnopen posts.
 - MUST reserve plain-form endings such as `〜する`, `〜ある`, `〜使う`, `〜残す`, and `〜しない` mostly for headings, table cells, short bullet fragments, quoted notes, code comments, or intentionally terse checklist labels.
 - MAY write an entire post in the corpus's plain-form diary register only when the user explicitly asks for a personal diary-style life log; see the register boundary in [author-style-corpus.md](./author-style-corpus.md).
-- MUST keep the chosen register consistent from title to closing; a mid-post register mix is a style regression in either direction.
+- MUST keep the chosen register consistent from title to closing, aside from the single-sentence expressive plain-form interjection permitted in [Sentence-Ending Calibration](#sentence-ending-calibration); a broader mid-post register mix is a style regression in either direction.
 - MUST run a sentence-ending style pass after broad rewrites; audience-facing paragraphs dominated by plain-form endings usually need to be converted toward `です/ます`.
 - SHOULD keep long technical sentences split when a list, table, or code block would make the idea easier to scan.
 
