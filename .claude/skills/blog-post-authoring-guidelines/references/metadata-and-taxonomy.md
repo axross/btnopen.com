@@ -26,9 +26,12 @@ Experience-led posts should not hide the concrete topic behind only a personal m
 
 - MUST align the title, brief, and body around the same promise.
 - MUST avoid titles that could apply to many unrelated posts.
+- MUST match the title's register to the body's register: polite announcements for audience-facing milestones (「〜をリリースしました」), plain form only for diary-register life logs (「〜に着いた」), per the title evidence in [author-style-corpus.md](./author-style-corpus.md).
+- SHOULD prefer verb-ended sentence titles over abstract noun phrases when the corpus shape calls for it: announcements (「〜しました」), directives for pitfall notes (「〜では型を明示しよう」), and questions for essays (「〜とは何なのか」).
 - SHOULD combine the personal trigger with the reader outcome for career, life, and retrospective posts.
 - SHOULD combine the technology name with the decision, pitfall, or trade-off for technical posts.
 - SHOULD make briefs answer "what will I learn or be able to judge after reading this?"
+- MAY join two genuinely covered topics in one title with `/` (「Denoの始め方 / LeetCodeの解答数が100を超えました」), but only when the post truly serves both.
 
 ## Tags
 
