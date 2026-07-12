@@ -20,7 +20,7 @@ All author-side counts come from the 15 Medium posts (2018–2019) read in full 
 | Author's way | Count | Where/when it appears | AI default it replaces |
 | --- | ---: | --- | --- |
 | めちゃ / めっちゃ / めちゃくちゃ | 11 | the default strong intensifier in both registers (「めちゃでかい」「めっちゃ楽しかった」「めちゃくちゃ上手く動いてくれる」) | とても, 非常に |
-| 結構 | 6 | the moderate intensifier, diary-heavy (「結構エクストリームだなー」) | かなり as the moderate default |
+| 結構 | 6 | the moderate intensifier, diary-heavy (「結構エクストリームだなー」) | かなり as the moderate default (the author uses かなり once) |
 | 本当に | 4 | reserved for sincerity moments (「本当に楽しかったです」) | 本当に as filler emphasis |
 | すごく / 超 / わりと / かなり | 3 / 3 / 1 / 1 | occasional variety | — |
 
@@ -31,27 +31,29 @@ All author-side counts come from the 15 Medium posts (2018–2019) read in full 
 | Author's way | Count | Where/when it appears | AI default it replaces |
 | --- | ---: | --- | --- |
 | あまり(〜ない) | 11 | the workhorse soft negative (「あまり求人広告を見ません」) | それほど〜ない, 必ずしも〜ない |
-| 基本的に | 4 | scoping a generalization before stating it | 一般的に, 原則として |
-| かもしれない / かもしれません | 4 | personal possibility, attached to the author's own judgment | 可能性があります, 〜と考えられます |
+| 基本的に | 4 | scoping a generalization before stating it | 原則として |
+| かもしれない / かもしれません | 4 | personal possibility, attached to the author's own judgment | 可能性があります |
 | 〜気がします | 2 | soft personal impressions in advice prose | 〜と思われます |
 | ちょっと / たぶん / 大抵 / ざっくり | 1–2 each | light variety | おそらく, 恐らく |
 
-The pattern: hedges are **personal** (気がします, かもしれません — "I might be wrong") rather than **impersonal** (と思われます, 可能性があります — "the facts are uncertain"). おそらく, 〜と思われます, and 〜でしょうね are measured at zero.
+The pattern: hedges are **personal** (気がします, かもしれません — "I might be wrong") rather than **impersonal** (と思われます, 可能性があります — "the facts are uncertain"). おそらく, 〜と思われます, 〜でしょうね, and 可能性があります are measured at zero; 〜と考えられます appears once.
+
+A correction to the earlier single-file lexicon, which listed 一般的に and 個人的 among the hedge variety: both appear in the corpus (twice and once) but only as adjectives — 「一般的になりました」 ("became mainstream"), 「個人的な理由」 — never as sentence-scoping hedges, so they belong to neither column of this table.
 
 ## Connectives And Discourse Markers
 
 | Author's way | Count | Where/when it appears | AI default it replaces |
 | --- | ---: | --- | --- |
-| ですが / けど | 18 / 18 | the dominant contrast pair — ですが in polite prose, けど in diary prose and casual clauses | しかし, しかしながら |
-| なので | 7 | casual consequence, including sentence-initial | したがって, そのため |
+| ですが / けど | 18 / 18 | the dominant contrast pair — ですが in polite prose, けど in diary prose and casual clauses | しかしながら |
+| なので | 7 | casual consequence, including sentence-initial | したがって |
 | 代わりに | 10 | offering the alternative right after advising against something | 代替案として |
 | しかし / だけど | 5 / 5 | secondary contrast | — |
-| 例えば | 4 | example introduction | 例として |
+| 例えば / 例として | 4 / 3 | example introduction | — |
 | ちなみに | 3 | asides (also a coda heading in pitfall notes) | なお, 補足ですが |
-| いずれにせよ / 要するに / 簡単に言うと | 1–2 each | pivot into a distillation | つまり, すなわち |
-| ということで / とりあえず / むしろ / ひとまず / そんなこんなで / なんだかんだ | 1–3 each | casual glue between narrative beats | まず/次に/最後に scaffolding |
+| いずれにせよ / 要するに / 簡単に言うと | 1–2 each | pivot into a distillation | すなわち (つまり appears once) |
+| ということで / とりあえず / むしろ / ひとまず / そんなこんなで / なんだかんだ | 1–3 each | casual glue between narrative beats | rigid まず→次に→最後に scaffolding for non-sequential material (the author uses those words only literally: 2/2/1) |
 
-しかしながら, 従って, したがって, and ゆえに are measured at zero — the formal-connector register that generic assistants default to simply does not exist in this corpus.
+しかしながら, 従って, したがって, ゆえに, なお, and すなわち are measured at zero — the formal-connector register that generic assistants default to simply does not exist in this corpus. そのため appears four times, but mostly as the noun phrase そのための〜; its connective use is rare next to なので.
 
 ## Playful And Expressive Vocabulary
 

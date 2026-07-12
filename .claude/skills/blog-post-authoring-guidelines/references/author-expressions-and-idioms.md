@@ -30,7 +30,7 @@ Author-side counts come from the 15 Medium posts (2018–2019) read in full on 2
 > 「アピールしていく方が採用に繋がりやすい気がします。」
 > 「皆さんも遊んでみると楽しいかもしれません。」
 
-**AI default it replaces:** 「〜と言えるでしょう」「〜ではないでしょうか」「〜と考えられます」 — impersonal or rhetorical hedges that put distance between the writer and the claim. The author's hedges keep the claim owned: *I* think, *I* might be wrong.
+**AI default it replaces:** 「〜と言えるでしょう」「〜ではないでしょうか」 — impersonal or rhetorical hedges that put distance between the writer and the claim. The author's hedges keep the claim owned: *I* think, *I* might be wrong.
 
 ## Undesired-Consequence Cautions
 
@@ -52,7 +52,7 @@ Author-side counts come from the 15 Medium posts (2018–2019) read in full on 2
 
 **The author's way:** fuzziness is marked honestly with 〜っぽい (4), 〜みたいな (3), 〜という感じ / 〜って感じ (3), and quantities take くらい (17): 「所謂『ハッカーズハウス』っぽい感じ」「車で9時間くらい」. Precise numbers appear only where precision matters (86日間, sha256 hashes).
 
-**AI default it replaces:** 約/およそ/ほぼ for quantities and exact-sounding prose for impressions — generic assistants state approximations formally or not at all.
+**AI default it replaces:** formally hedged quantities (およそ〜, measured at zero in the corpus) and exact-sounding prose for impressions — generic assistants state approximations formally or not at all.
 
 ## Capability Statements
 
