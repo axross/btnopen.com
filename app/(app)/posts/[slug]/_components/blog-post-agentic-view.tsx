@@ -47,7 +47,6 @@ export async function BlogPostAgenticView({
 	return (
 		<article className={css.agenticView} data-testid="page">
 			<header className={css.header} data-testid="header">
-				<p className={css.eyebrow}>{t("label")}</p>
 				<h1 className={css.title} data-testid="title">
 					{post.title}
 				</h1>
@@ -99,9 +98,6 @@ export function BlogPostAgenticViewLoading(): JSX.Element {
 	return (
 		<article className={css.agenticView} data-testid="page-loading">
 			<header className={css.header} data-testid="header-loading">
-				<p className={css.eyebrow}>
-					<LoadingPlaceholderText sampleText="Agentic" maxLines={1} />
-				</p>
 				<h1 className={css.title}>
 					<LoadingPlaceholderText
 						sampleText="Lorem ipsum dolor sit amet"
