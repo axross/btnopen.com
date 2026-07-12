@@ -50,7 +50,7 @@ Author-side counts come from the 15 Medium posts (2018–2019) read in full on 2
 
 ## Try-And-See てみる
 
-**The author's way:** investigation is narrated as attempts — the てみる family appears 11 times: five opener intent verbs (書いてみます, 振り返ってみます, まとめてみます) and six mid-post try-and-see moves (「試してみました」「窓口で聞いてみたら…わかり」「部屋を出てみると誰もいなかった」「皆さんも遊んでみると楽しいかもしれません」). Actions are framed as experiments whose outcome was not known in advance, in both diaries and technical posts.
+**The author's way:** investigation is narrated as attempts — the てみる family (including でみる conjugations like 遊んでみる) appears 12 times: five opener intent verbs (書いてみます, 振り返ってみます, まとめてみます) and seven mid-post try-and-see moves (「試してみました」「窓口で聞いてみたら…わかり」「使ってみたくて」「皆さんも遊んでみると楽しいかもしれません」). Actions are framed as experiments whose outcome was not known in advance, in both diaries and technical posts.
 
 **AI default it replaces:** definite-sounding procedure narration (検証しました and 確認しました are measured at zero — the author's four 確認 uses are all reader-facing capability, 確認できます, never a narrated procedure step) that erases the tentative, lived texture of finding something out.
 
