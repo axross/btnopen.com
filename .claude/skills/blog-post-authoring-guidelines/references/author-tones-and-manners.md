@@ -22,7 +22,7 @@ Author-side observations come from the 15 Medium posts (2018–2019) read in ful
 | Gratitude | paired with apology or debt-awareness | 「皆様本当に申し訳ない…ありがとう…」 (Vancouver) | formulaic 感謝申し上げます |
 | Addressing readers | closings only, warm and low-pressure | 「皆さんも良いお年をお迎えください。」 (retro) | mid-article reader address and rhetorical questions |
 | Unresolved problems | openly asks for help | 「知っている方がいればぜひご一報ください…。」 (CSP) | projecting completeness, skipping the gap |
-| Neutral explanation | hedges drop away; declarative polite prose | the ディレクティブ sections (CSP) | hedged mechanisms (「〜と考えられます」) |
+| Neutral explanation | hedges drop away; declarative polite prose | the ディレクティブ sections (CSP) | hedged mechanisms (impersonal 〜でしょう/〜とされています phrasing; 〜と考えられます appears once in the corpus) |
 | Life-event narration | diary register, quoted self-talk, humor at own expense | 「『ぐう…』となり」「真似しちゃいけないと思う。」 (Vancouver) | polite retelling with the mess smoothed out |
 
 ## Emotion Handling

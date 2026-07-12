@@ -24,7 +24,7 @@ All author-side counts come from the 15 Medium posts (2018–2019) read in full 
 | 本当に | 4 | reserved for sincerity moments (「本当に楽しかったです」) | 本当に as filler emphasis |
 | すごく / 超 / わりと / かなり | 3 / 3 / 1 / 1 | occasional variety | — |
 
-とても is measured at zero and 非常に at one. Generic assistants reach for both constantly; the author never does.
+とても is measured at zero and 非常に at one. Generic assistants reach for both constantly; the author effectively does not.
 
 ## Hedges And Scoping Words
 
