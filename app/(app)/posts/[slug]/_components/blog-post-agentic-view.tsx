@@ -91,9 +91,9 @@ export async function BlogPostAgenticView({
 	);
 }
 
-// Loading placeholder that mirrors the agentic view's structure (label + title,
-// then the summary / outline / status sections) so the streamed skeleton matches
-// the content that replaces it, rather than the blog post's own header skeleton.
+// Loading placeholder that mirrors the agentic view's structure (title, then the
+// summary / outline / status sections) so the streamed skeleton matches the
+// content that replaces it, rather than the blog post's own header skeleton.
 export function BlogPostAgenticViewLoading(): JSX.Element {
 	return (
 		<article className={css.agenticView} data-testid="page-loading">
