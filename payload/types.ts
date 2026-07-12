@@ -218,15 +218,6 @@ export interface BlogPost {
   id: number;
   title: string;
   slug: string;
-  coverImage: string | CoverImage;
-  brief: string;
-  tags?: (number | Tag)[] | null;
-  author: number | User;
-  publishedAt?: string | null;
-  /**
-   * Authoring outline for the agent-driven authoring loop — bullet items or a free-form summary. Never rendered on the public site.
-   */
-  outline?: string | null;
   body: {
     root: {
       type: string;
@@ -242,6 +233,31 @@ export interface BlogPost {
     };
     [k: string]: unknown;
   };
+  brief: string;
+  coverImage: string | CoverImage;
+  tags?: (number | Tag)[] | null;
+  author: number | User;
+  publishedAt?: string | null;
+  /**
+   * Summarized outline sentences — the post's goal/conclusion and its target reader. Authoring artifact for the agent-driven authoring loop.
+   */
+  summary?: string | null;
+  /**
+   * Authoring outline for the agent-driven authoring loop. A single Markdown bullet-point list — only list items and inline elements are permitted; no paragraphs or other block types.
+   */
+  outline?: string | null;
+  /**
+   * JSON state for the agent-driven authoring loop. Agents may persist any valid values here.
+   */
+  agenticStatus?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -557,13 +573,15 @@ export interface UsersSelect<T extends boolean = true> {
 export interface BlogPostsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
-  coverImage?: T;
+  body?: T;
   brief?: T;
+  coverImage?: T;
   tags?: T;
   author?: T;
   publishedAt?: T;
+  summary?: T;
   outline?: T;
-  body?: T;
+  agenticStatus?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;

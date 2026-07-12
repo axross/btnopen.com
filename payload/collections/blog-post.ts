@@ -16,70 +16,90 @@ export const blogPostCollection: CollectionConfig = {
 			type: "text",
 			required: true,
 			unique: true,
-			admin: {
-				position: "sidebar",
-			},
 		},
 		{
-			name: "coverImage",
-			type: "upload",
-			relationTo: "cover-images",
-			required: true,
-			admin: {
-				position: "sidebar",
-			},
-		},
-		{
-			name: "brief",
-			type: "textarea",
-			required: true,
-			localized: true,
-			admin: {
-				position: "sidebar",
-			},
-		},
-		{
-			name: "tags",
-			type: "relationship",
-			relationTo: "tags",
-			hasMany: true,
-			admin: {
-				position: "sidebar",
-			},
-		},
-		{
-			name: "author",
-			type: "relationship",
-			relationTo: "users",
-			required: true,
-			admin: {
-				position: "sidebar",
-			},
-		},
-		{
-			name: "publishedAt",
-			type: "date",
-			admin: {
-				position: "sidebar",
-				date: {
-					pickerAppearance: "dayOnly",
-					displayFormat: "yyyy/MM/dd",
+			type: "tabs",
+			tabs: [
+				{
+					label: "Body",
+					fields: [
+						{
+							name: "body",
+							type: "richText",
+							required: true,
+							localized: true,
+						},
+					],
 				},
-			},
-		},
-		{
-			name: "outline",
-			type: "textarea",
-			admin: {
-				description:
-					"Authoring outline for the agent-driven authoring loop — bullet items or a free-form summary. Never rendered on the public site.",
-			},
-		},
-		{
-			name: "body",
-			type: "richText",
-			required: true,
-			localized: true,
+				{
+					label: "Metadata",
+					fields: [
+						{
+							name: "brief",
+							type: "textarea",
+							required: true,
+							localized: true,
+						},
+						{
+							name: "coverImage",
+							type: "upload",
+							relationTo: "cover-images",
+							required: true,
+						},
+						{
+							name: "tags",
+							type: "relationship",
+							relationTo: "tags",
+							hasMany: true,
+						},
+						{
+							name: "author",
+							type: "relationship",
+							relationTo: "users",
+							required: true,
+						},
+						{
+							name: "publishedAt",
+							type: "date",
+							admin: {
+								date: {
+									pickerAppearance: "dayOnly",
+									displayFormat: "yyyy/MM/dd",
+								},
+							},
+						},
+					],
+				},
+				{
+					label: "Agentic",
+					fields: [
+						{
+							name: "summary",
+							type: "textarea",
+							admin: {
+								description:
+									"Summarized outline sentences — the post's goal/conclusion and its target reader. Authoring artifact for the agent-driven authoring loop.",
+							},
+						},
+						{
+							name: "outline",
+							type: "textarea",
+							admin: {
+								description:
+									"Authoring outline for the agent-driven authoring loop. A single Markdown bullet-point list — only list items and inline elements are permitted; no paragraphs or other block types.",
+							},
+						},
+						{
+							name: "agenticStatus",
+							type: "json",
+							admin: {
+								description:
+									"JSON state for the agent-driven authoring loop. Agents may persist any valid values here.",
+							},
+						},
+					],
+				},
+			],
 		},
 	],
 	versions: {

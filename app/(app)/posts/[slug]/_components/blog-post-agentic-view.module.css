@@ -1,0 +1,105 @@
+@layer components {
+	@scope (.agenticView) {
+		:where(:scope) {
+			display: flex;
+			width: stretch;
+			container: page / inline-size;
+			flex-direction: column;
+			align-items: center;
+
+			--blog-post-content-negative-margin: var(--size-16);
+
+			@container (width > 30rem) {
+				--page-variant: "desktop";
+				--max-width: calc(30rem - var(--size-16) * 2);
+				--blog-post-content-negative-margin: 0;
+			}
+
+			@container (width > 50rem) {
+				--max-width: min(calc(50rem - var(--size-32) * 2), var(--measure));
+			}
+		}
+
+		.header {
+			display: flex;
+			width: stretch;
+			max-width: var(--max-width);
+			flex-direction: column;
+			gap: var(--size-8);
+			padding-inline: var(--size-16);
+
+			@container style(--page-variant: "desktop") {
+				padding-inline: unset;
+			}
+		}
+
+		.title {
+			color: var(--neutral-12);
+			font-size: var(--text-3xl);
+			font-weight: 700;
+			line-height: var(--leading-sm);
+			word-break: break-word;
+		}
+
+		.content {
+			display: flex;
+			width: stretch;
+			max-width: var(--max-width);
+			flex-direction: column;
+			gap: var(--size-32);
+			margin-block-start: var(--size-32);
+			padding-inline: var(--size-16);
+
+			@container style(--page-variant: "desktop") {
+				padding-inline: unset;
+			}
+		}
+
+		.section {
+			display: flex;
+			width: stretch;
+			flex-direction: column;
+			gap: var(--size-12);
+		}
+
+		.sectionHeading {
+			color: var(--neutral-12);
+			font-size: var(--text-xl);
+			font-weight: 700;
+		}
+
+		.summary {
+			color: var(--neutral-12);
+			font-size: var(--text-md);
+			line-height: var(--leading-lg);
+			/* the summary is authored plain text; honor its line breaks */
+			white-space: pre-line;
+		}
+
+		.status {
+			overflow-x: auto;
+			padding: var(--size-16);
+			border-radius: var(--radius-md);
+			background-color: var(--neutral-2);
+			color: var(--neutral-12);
+			font-family: var(--font-mono);
+			font-feature-settings: var(--font-mono-features);
+			font-size: var(--text-sm);
+			line-height: var(--leading-md);
+			tab-size: 2;
+		}
+
+		.empty {
+			color: var(--neutral-10);
+			font-size: var(--text-md);
+			line-height: var(--leading-lg);
+		}
+
+		.statusPlaceholder {
+			display: block;
+			width: stretch;
+			height: var(--size-160);
+			border-radius: var(--radius-md);
+		}
+	}
+}

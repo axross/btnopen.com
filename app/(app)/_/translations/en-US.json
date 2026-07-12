@@ -8,6 +8,13 @@
 		"page-description": "The page you are looking for was not found.",
 		"post-description": "The post you are looking for was not found."
 	},
+	"agentic": {
+		"label": "Agentic",
+		"summary-heading": "Summary",
+		"outline-heading": "Outline",
+		"status-heading": "Status",
+		"empty": "No authoring information yet."
+	},
 	"language-switcher": {
 		"label": "Switch language"
 	}

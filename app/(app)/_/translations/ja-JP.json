@@ -8,6 +8,13 @@
 		"page-description": "お探しのページは見つかりませんでした",
 		"post-description": "お探しの投稿は見つかりませんでした"
 	},
+	"agentic": {
+		"label": "エージェント",
+		"summary-heading": "サマリー",
+		"outline-heading": "アウトライン",
+		"status-heading": "ステータス",
+		"empty": "オーサリング情報はまだありません。"
+	},
 	"language-switcher": {
 		"label": "言語を切り替える"
 	}
