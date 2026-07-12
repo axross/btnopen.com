@@ -307,10 +307,14 @@ async function seedExampleBlogPost({
 			),
 		});
 
-		// the outline is a plain-text authoring field, so it holds the raw Markdown
-		// verbatim (no Lexical conversion, unlike the body).
+		// the outline and authoring notes are plain-text authoring fields, so they
+		// hold the raw Markdown verbatim (no Lexical conversion, unlike the body).
 		const outline = await readFile(
 			resolve(selfDirname, "./seed/outline.md"),
+			"utf-8",
+		);
+		const authoringNotes = await readFile(
+			resolve(selfDirname, "./seed/authoring-notes.md"),
 			"utf-8",
 		);
 
@@ -324,14 +328,8 @@ async function seedExampleBlogPost({
 					"Markdown の構文確認を、実装の制約と判断材料が残る実用的なブログ記事として組み直す。",
 				tags: [tag],
 				body,
-				summary:
-					"Markdown の構文確認を実用的なブログ記事として組み直し、開発者が構文を自分の記事に流用できる状態を目指す。",
 				outline,
-				agenticStatus: {
-					phase: "outline",
-					reviewed: false,
-					notes: "Seeded authoring-loop state for the example post.",
-				},
+				authoringNotes,
 				author,
 				publishedAt: "2026-03-22T17:00:00Z",
 			},

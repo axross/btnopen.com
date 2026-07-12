@@ -68,38 +68,16 @@
 			font-weight: 700;
 		}
 
-		.summary {
+		.placeholderText {
 			color: var(--neutral-12);
 			font-size: var(--text-md);
 			line-height: var(--leading-lg);
-			/* the summary is authored plain text; honor its line breaks */
-			white-space: pre-line;
-		}
-
-		.status {
-			overflow-x: auto;
-			padding: var(--size-16);
-			border-radius: var(--radius-md);
-			background-color: var(--neutral-2);
-			color: var(--neutral-12);
-			font-family: var(--font-mono);
-			font-feature-settings: var(--font-mono-features);
-			font-size: var(--text-sm);
-			line-height: var(--leading-md);
-			tab-size: 2;
 		}
 
 		.empty {
 			color: var(--neutral-10);
 			font-size: var(--text-md);
 			line-height: var(--leading-lg);
-		}
-
-		.statusPlaceholder {
-			display: block;
-			width: stretch;
-			height: var(--size-160);
-			border-radius: var(--radius-md);
 		}
 	}
 }

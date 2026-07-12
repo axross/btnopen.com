@@ -10,9 +10,8 @@
 	},
 	"agentic": {
 		"label": "Agentic",
-		"summary-heading": "Summary",
 		"outline-heading": "Outline",
-		"status-heading": "Status",
+		"authoring-notes-heading": "Authoring notes",
 		"empty": "No authoring information yet."
 	},
 	"language-switcher": {

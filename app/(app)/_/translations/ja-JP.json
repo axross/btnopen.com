@@ -10,9 +10,8 @@
 	},
 	"agentic": {
 		"label": "エージェント",
-		"summary-heading": "サマリー",
 		"outline-heading": "アウトライン",
-		"status-heading": "ステータス",
+		"authoring-notes-heading": "執筆ノート",
 		"empty": "オーサリング情報はまだありません。"
 	},
 	"language-switcher": {

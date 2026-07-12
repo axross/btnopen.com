@@ -13,7 +13,7 @@ const noindexPattern = /noindex/;
 test.use({ storageState: authenticatedStorageState });
 
 test(
-	"Agentic view renders the summary, outline, and status",
+	"Agentic view renders the outline and authoring notes",
 	{
 		tag: ["@scenario:post.agentic", "@area:posts", "@priority:must", "@smoke"],
 	},
@@ -38,10 +38,6 @@ test(
 
 		const content = root.getByTestId("content");
 
-		await test.step("Verify the summary text is rendered", async () => {
-			await expect(content.getByTestId("summary")).toContainText("Markdown");
-		});
-
 		await test.step("Verify the outline Markdown is rendered as a bullet list", async () => {
 			await expect(
 				content
@@ -59,8 +55,13 @@ test(
 			).toHaveAttribute("href", "https://www.markdownguide.org/");
 		});
 
-		await test.step("Verify the agenticStatus JSON is rendered", async () => {
-			await expect(content.getByTestId("status")).toContainText('"phase"');
+		await test.step("Verify the authoring notes Markdown is rendered", async () => {
+			await expect(
+				content
+					.getByTestId("authoring-notes")
+					.getByRole("listitem")
+					.filter({ hasText: "執筆メモ" }),
+			).toBeVisible();
 		});
 	},
 );
@@ -144,9 +145,8 @@ test(
 					slug,
 					testInfo,
 					title: "公開済み・下書きにオーサリング情報なし",
-					summary: "フォールバックのサマリー: 公開版の情報を表示する。",
 					outline: "- フォールバック項目: 公開版のアウトラインを表示する",
-					agenticStatus: { phase: "fallback" },
+					authoringNotes: "- フォールバックのノート: 公開版のノートを表示する",
 				}));
 			});
 
@@ -155,12 +155,6 @@ test(
 			});
 
 			const content = page.getByTestId("page").getByTestId("content");
-
-			await test.step("Verify the published summary is shown via fallback", async () => {
-				await expect(content.getByTestId("summary")).toContainText(
-					"フォールバックのサマリー",
-				);
-			});
 
 			await test.step("Verify the published outline is shown via fallback", async () => {
 				await expect(
@@ -171,8 +165,13 @@ test(
 				).toBeVisible();
 			});
 
-			await test.step("Verify the published status is shown via fallback", async () => {
-				await expect(content.getByTestId("status")).toContainText('"fallback"');
+			await test.step("Verify the published authoring notes are shown via fallback", async () => {
+				await expect(
+					content
+						.getByTestId("authoring-notes")
+						.getByRole("listitem")
+						.filter({ hasText: "フォールバックのノート" }),
+				).toBeVisible();
 			});
 		} finally {
 			if (createdId !== null) {

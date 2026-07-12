@@ -1,10 +1,7 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import type { JSX } from "react";
-import {
-	LoadingPlaceholderRect,
-	LoadingPlaceholderText,
-} from "@/components/loading-placeholder";
+import { LoadingPlaceholderText } from "@/components/loading-placeholder";
 import { Markdown } from "@/components/markdown";
 import { getActiveLocale } from "@/helpers/i18n";
 import { getBlogPostAgentic } from "@/repositories/get-blog-post-agentic";
@@ -33,16 +30,10 @@ export async function BlogPostAgenticView({
 		notFound();
 	}
 
-	const summary = post.summary?.trim();
 	const outline = post.outline?.trim();
-	// pretty-print the arbitrary authoring-loop JSON for a faithful, copyable view
-	// of any shape; `null` means the field is unset and the section is omitted.
-	const status =
-		post.agenticStatus == null
-			? null
-			: JSON.stringify(post.agenticStatus, null, 2);
+	const authoringNotes = post.authoringNotes?.trim();
 
-	const isEmpty = !summary && !outline && !status;
+	const isEmpty = !outline && !authoringNotes;
 
 	return (
 		<article className={css.agenticView} data-testid="page">
@@ -59,13 +50,6 @@ export async function BlogPostAgenticView({
 					</p>
 				) : (
 					<>
-						{summary ? (
-							<section className={css.section} data-testid="summary">
-								<h2 className={css.sectionHeading}>{t("summary-heading")}</h2>
-								<p className={css.summary}>{summary}</p>
-							</section>
-						) : null}
-
 						{outline ? (
 							<section className={css.section} data-testid="outline">
 								<h2 className={css.sectionHeading}>{t("outline-heading")}</h2>
@@ -78,10 +62,17 @@ export async function BlogPostAgenticView({
 							</section>
 						) : null}
 
-						{status ? (
-							<section className={css.section} data-testid="status">
-								<h2 className={css.sectionHeading}>{t("status-heading")}</h2>
-								<pre className={css.status}>{status}</pre>
+						{authoringNotes ? (
+							<section className={css.section} data-testid="authoring-notes">
+								<h2 className={css.sectionHeading}>
+									{t("authoring-notes-heading")}
+								</h2>
+								<div className={blogPostContentCss.blogPostContent}>
+									<Markdown
+										markdown={authoringNotes}
+										classNames={markdownClassNames}
+									/>
+								</div>
 							</section>
 						) : null}
 					</>
@@ -92,7 +83,7 @@ export async function BlogPostAgenticView({
 }
 
 // Loading placeholder that mirrors the agentic view's structure (title, then the
-// summary / outline / status sections) so the streamed skeleton matches the
+// outline / authoring-notes sections) so the streamed skeleton matches the
 // content that replaces it, rather than the blog post's own header skeleton.
 export function BlogPostAgenticViewLoading(): JSX.Element {
 	return (
@@ -107,23 +98,11 @@ export function BlogPostAgenticViewLoading(): JSX.Element {
 			</header>
 
 			<main className={css.content} data-testid="content">
-				<section className={css.section} data-testid="summary">
-					<h2 className={css.sectionHeading}>
-						<LoadingPlaceholderText sampleText="Summary" maxLines={1} />
-					</h2>
-					<p className={css.summary}>
-						<LoadingPlaceholderText
-							sampleText="Lorem ipsum dolor sit amet consectetur adipiscing elit sed do"
-							maxLines={3}
-						/>
-					</p>
-				</section>
-
 				<section className={css.section} data-testid="outline">
 					<h2 className={css.sectionHeading}>
 						<LoadingPlaceholderText sampleText="Outline" maxLines={1} />
 					</h2>
-					<p className={css.summary}>
+					<p className={css.placeholderText}>
 						<LoadingPlaceholderText
 							sampleText="Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt"
 							maxLines={4}
@@ -131,11 +110,16 @@ export function BlogPostAgenticViewLoading(): JSX.Element {
 					</p>
 				</section>
 
-				<section className={css.section} data-testid="status">
+				<section className={css.section} data-testid="authoring-notes">
 					<h2 className={css.sectionHeading}>
-						<LoadingPlaceholderText sampleText="Status" maxLines={1} />
+						<LoadingPlaceholderText sampleText="Authoring notes" maxLines={1} />
 					</h2>
-					<LoadingPlaceholderRect className={css.statusPlaceholder} />
+					<p className={css.placeholderText}>
+						<LoadingPlaceholderText
+							sampleText="Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore"
+							maxLines={4}
+						/>
+					</p>
 				</section>
 			</main>
 		</article>
