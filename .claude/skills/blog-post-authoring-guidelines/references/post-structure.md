@@ -104,8 +104,7 @@ Use this for short personal posts marking an event: a resignation, an arrival, a
 - SHOULD open with a single punchy occasion sentence (「今日が最終出社日でした。」「なんとか生きてます。」).
 - SHOULD let photos carry the narrative in travel and place posts, with captions that add observation or humor rather than mechanical descriptions.
 - SHOULD close with a concrete forward-looking intention instead of a summary.
-- SHOULD append a dated 追記 section when the situation changes after publishing, instead of rewriting the body.
-- MAY use the corpus's plain-form diary register when the user explicitly wants that voice; see the register boundary in [author-style-corpus.md](./author-style-corpus.md).
+- SHOULD follow [writing-style-and-tone.md](./writing-style-and-tone.md) for the dated 追記 addendum rule and the diary-register exception when this archetype needs them; [author-style-corpus.md](./author-style-corpus.md) records the register evidence.
 
 ### Procedural Or Logistics Note
 
