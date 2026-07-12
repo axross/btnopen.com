@@ -110,8 +110,8 @@ export function BlogPostAgenticViewLoading(): JSX.Element {
 				</h1>
 			</header>
 
-			<div className={css.content}>
-				<section className={css.section}>
+			<main className={css.content} data-testid="content">
+				<section className={css.section} data-testid="summary">
 					<h2 className={css.sectionHeading}>
 						<LoadingPlaceholderText sampleText="Summary" maxLines={1} />
 					</h2>
@@ -123,7 +123,7 @@ export function BlogPostAgenticViewLoading(): JSX.Element {
 					</p>
 				</section>
 
-				<section className={css.section}>
+				<section className={css.section} data-testid="outline">
 					<h2 className={css.sectionHeading}>
 						<LoadingPlaceholderText sampleText="Outline" maxLines={1} />
 					</h2>
@@ -135,13 +135,13 @@ export function BlogPostAgenticViewLoading(): JSX.Element {
 					</p>
 				</section>
 
-				<section className={css.section}>
+				<section className={css.section} data-testid="status">
 					<h2 className={css.sectionHeading}>
 						<LoadingPlaceholderText sampleText="Status" maxLines={1} />
 					</h2>
 					<LoadingPlaceholderRect className={css.statusPlaceholder} />
 				</section>
-			</div>
+			</main>
 		</article>
 	);
 }
