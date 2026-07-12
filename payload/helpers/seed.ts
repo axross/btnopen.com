@@ -327,6 +327,11 @@ async function seedExampleBlogPost({
 				summary:
 					"Markdown の構文確認を実用的なブログ記事として組み直し、開発者が構文を自分の記事に流用できる状態を目指す。",
 				outline,
+				agenticStatus: {
+					phase: "outline",
+					reviewed: false,
+					notes: "Seeded authoring-loop state for the example post.",
+				},
 				author,
 				publishedAt: "2026-03-22T17:00:00Z",
 			},

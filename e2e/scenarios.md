@@ -32,9 +32,9 @@ carries its `@scenario:<id>` tag. The reporter
 | posts.redirect | The /posts route redirects to the index route | posts | should |
 | post.header | A blog post page shows its title, date, cover image, author, and tags | posts | must |
 | post.content | A blog post page renders its Markdown content | posts | must |
-| post.outline | A blog post's outline preview renders its outline as Markdown | posts | must |
-| post.outline.empty | The outline preview shows an empty state when the post has no outline | posts | should |
-| post.outline.draft-fallback | The draft outline preview falls back to the published outline when the draft version has none | posts | should |
+| post.agentic | A blog post's agentic view renders its summary, outline Markdown, and status JSON | posts | must |
+| post.agentic.empty | The agentic view shows an empty state when the post has no authoring content | posts | should |
+| post.agentic.draft-fallback | The draft agentic view falls back to the published authoring fields when the draft version has none | posts | should |
 | post.avatar-fallback | The author avatar falls back to initials when the image fails to load | posts | may |
 | post.table.narrow-fits | A narrow content table fits the reading column | posts | should |
 | post.table.wide-scrolls | A wide content table overflows and scrolls horizontally | posts | should |
@@ -43,7 +43,7 @@ carries its `@scenario:<id>` tag. The reporter
 | post.table.edge-fades | A wide content table's edge fades track the scroll position | posts | may |
 | not-found.status | An unknown route responds with a 404 status | not-found | must |
 | post.not-found | An unknown post slug shows the not-found page | not-found | must |
-| post.outline.not-found | An unknown slug on the outline route shows the not-found page | not-found | should |
+| post.agentic.not-found | An unknown slug on the agentic view shows the not-found page | not-found | should |
 | not-found.ui | The global not-found page shows its header and home link | not-found | should |
 | not-found.home-link | The global not-found page's home link returns to the index route | not-found | should |
 | post.not-found.home-link | The post not-found page's home link returns to the index route | not-found | should |
@@ -58,6 +58,6 @@ carries its `@scenario:<id>` tag. The reporter
 | index.open-graph | The index page emits Open Graph metadata | metadata | should |
 | post.json-ld | A blog post page emits BlogPosting JSON-LD structured data | metadata | should |
 | post.open-graph | A blog post page emits Open Graph metadata | metadata | should |
-| post.outline.noindex | The outline preview opts out of search indexing | metadata | should |
+| post.agentic.noindex | The agentic view opts out of search indexing | metadata | should |
 | index.thumbnail | The index Open Graph thumbnail image endpoint renders | metadata | should |
 | post.thumbnail | A blog post's Open Graph thumbnail image endpoint renders | metadata | should |

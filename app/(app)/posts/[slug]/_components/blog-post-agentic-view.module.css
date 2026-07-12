@@ -1,5 +1,5 @@
 @layer components {
-	@scope (.outlinePage) {
+	@scope (.agenticView) {
 		:where(:scope) {
 			display: flex;
 			width: stretch;
@@ -52,14 +52,55 @@
 		}
 
 		.content {
+			display: flex;
 			width: stretch;
 			max-width: var(--max-width);
+			flex-direction: column;
+			gap: var(--size-32);
 			margin-block-start: var(--size-32);
 			padding-inline: var(--size-16);
 
 			@container style(--page-variant: "desktop") {
 				padding-inline: unset;
 			}
+		}
+
+		.section {
+			display: flex;
+			width: stretch;
+			flex-direction: column;
+			gap: var(--size-12);
+		}
+
+		.sectionHeading {
+			color: var(--accent-11);
+			font-family: var(--font-mono);
+			font-feature-settings: var(--font-mono-features);
+			font-size: var(--text-sm);
+			font-weight: 500;
+			letter-spacing: 0.04em;
+			text-transform: uppercase;
+		}
+
+		.summary {
+			color: var(--neutral-12);
+			font-size: var(--text-md);
+			line-height: var(--leading-lg);
+			/* the summary is authored plain text; honor its line breaks */
+			white-space: pre-line;
+		}
+
+		.status {
+			overflow-x: auto;
+			padding: var(--size-16);
+			border-radius: var(--radius-md);
+			background-color: var(--neutral-2);
+			color: var(--neutral-12);
+			font-family: var(--font-mono);
+			font-feature-settings: var(--font-mono-features);
+			font-size: var(--text-sm);
+			line-height: var(--leading-md);
+			tab-size: 2;
 		}
 
 		.empty {

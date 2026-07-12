@@ -40,16 +40,20 @@ export async function getExampleBlogPost({
 
 // Creates a draft blog post through the authenticated REST API, reusing the
 // seeded cover image and current test user so the caller only supplies the
-// slug/title and an optional outline. Pair every call with `deleteBlogPost`
-// (from the mcp helper) in teardown.
+// slug/title and the optional agentic authoring fields. Pair every call with
+// `deleteBlogPost` (from the mcp helper) in teardown.
 export async function createDraftBlogPost({
+	summary,
 	outline,
+	agenticStatus,
 	page,
 	slug,
 	testInfo,
 	title,
 }: {
+	summary?: string;
 	outline?: string;
+	agenticStatus?: unknown;
 	page: Page;
 	slug: string;
 	testInfo: TestInfo;
@@ -70,11 +74,13 @@ export async function createDraftBlogPost({
 			title,
 			slug,
 			coverImage: coverImageId,
-			brief: "Draft post created by the outline e2e test.",
+			brief: "Draft post created by the agentic view e2e test.",
 			body: createMinimalBlogPostBody(),
 			author: userId,
 			_status: "draft",
+			...(summary === undefined ? {} : { summary }),
 			...(outline === undefined ? {} : { outline }),
+			...(agenticStatus === undefined ? {} : { agenticStatus }),
 		},
 	});
 
@@ -96,18 +102,23 @@ export async function createDraftBlogPost({
 	return { id, slug };
 }
 
-// Creates a PUBLISHED post carrying an outline, then writes a draft version that
-// clears the outline — reproducing the state where the published document has an
-// outline but the post's draft version does not. Used to verify the draft
-// preview falls back to the published outline. Pair with `deleteBlogPost`.
-export async function createPublishedPostWithEmptyDraftOutline({
+// Creates a PUBLISHED post carrying the agentic authoring fields, then writes a
+// draft version that clears them — reproducing the state where the published
+// document has the fields but the post's draft version does not. Used to verify
+// the draft agentic view falls back to the published values. Pair with
+// `deleteBlogPost`.
+export async function createPublishedPostWithEmptyDraftAgentic({
+	summary,
 	outline,
+	agenticStatus,
 	page,
 	slug,
 	testInfo,
 	title,
 }: {
-	outline: string;
+	summary?: string;
+	outline?: string;
+	agenticStatus?: unknown;
 	page: Page;
 	slug: string;
 	testInfo: TestInfo;
@@ -128,10 +139,12 @@ export async function createPublishedPostWithEmptyDraftOutline({
 			title,
 			slug,
 			coverImage: coverImageId,
-			brief: "Published post created by the outline fallback e2e test.",
+			brief: "Published post created by the agentic fallback e2e test.",
 			body: createMinimalBlogPostBody(),
 			author: userId,
-			outline,
+			...(summary === undefined ? {} : { summary }),
+			...(outline === undefined ? {} : { outline }),
+			...(agenticStatus === undefined ? {} : { agenticStatus }),
 			_status: "published",
 			publishedAt: "2026-03-01T00:00:00Z",
 		},
@@ -163,13 +176,15 @@ export async function createPublishedPostWithEmptyDraftOutline({
 			"content-type": "application/json",
 		},
 		data: {
+			summary: null,
 			outline: null,
+			agenticStatus: null,
 		},
 	});
 
 	if (!draftResponse.ok()) {
 		throw new Error(
-			`Failed to clear the draft outline: ${draftResponse.status()} ${await draftResponse.text()}`,
+			`Failed to clear the draft agentic fields: ${draftResponse.status()} ${await draftResponse.text()}`,
 		);
 	}
 
