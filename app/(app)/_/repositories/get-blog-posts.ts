@@ -13,7 +13,7 @@ const BlogPostSummary = PayloadBlogPost.transform((blogPost) => ({
 	slug: blogPost.slug,
 	title: blogPost.title,
 	brief: blogPost.brief,
-	thumbnailImage: blogPost.coverImage.sizes.og,
+	thumbnailImage: blogPost.coverImage?.sizes.og ?? null,
 	publishedAt: blogPost.publishedAt ?? blogPost.createdAt,
 	updatedAt: blogPost.updatedAt,
 }));

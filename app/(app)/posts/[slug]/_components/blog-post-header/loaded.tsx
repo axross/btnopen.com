@@ -34,17 +34,21 @@ export async function BlogPostHeaderLoaded({
 
 	return (
 		<header className={clsx(css.blogPostHeaderLoaded, className)} {...props}>
-			<ViewTransition name={`blog-post-${blogPost.slug}-image`}>
-				<Image
-					alt={blogPost.title}
-					src={blogPost.thumbnailImage.url}
-					width={blogPost.thumbnailImage.width}
-					height={blogPost.thumbnailImage.height}
-					loading="eager"
-					className={css.coverImage}
-					data-testid="cover-image"
-				/>
-			</ViewTransition>
+			{/* autosaved drafts can lack a cover image; omit it rather than
+			    render a broken image while the post is still being authored */}
+			{blogPost.thumbnailImage ? (
+				<ViewTransition name={`blog-post-${blogPost.slug}-image`}>
+					<Image
+						alt={blogPost.title}
+						src={blogPost.thumbnailImage.url}
+						width={blogPost.thumbnailImage.width}
+						height={blogPost.thumbnailImage.height}
+						loading="eager"
+						className={css.coverImage}
+						data-testid="cover-image"
+					/>
+				</ViewTransition>
+			) : null}
 
 			<ViewTransition name={`blog-post-${blogPost.slug}-timestamp`}>
 				<div className={css.timestamp} data-testid="timestamp">

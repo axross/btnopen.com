@@ -148,7 +148,11 @@ export const PayloadBlogPost = z
 			sizes: z.object({
 				og: PayloadUploadSize.describe("Open Graph cover image size."),
 			}),
-		}).describe("Cover image upload for the blog post."),
+		})
+			.nullable()
+			.describe(
+				"Cover image upload for the blog post; null on autosaved drafts that do not have one yet.",
+			),
 		author: PayloadUser.describe("Blog post author."),
 		publishedAt: z.iso
 			.datetime()

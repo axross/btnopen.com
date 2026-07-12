@@ -14,7 +14,7 @@ const BlogPostDetail = PayloadBlogPost.transform((blogPost) => ({
 	title: blogPost.title,
 	brief: blogPost.brief,
 	tags: blogPost.tags,
-	thumbnailImage: blogPost.coverImage.sizes.og,
+	thumbnailImage: blogPost.coverImage?.sizes.og ?? null,
 	author: blogPost.author,
 	publishedAt: blogPost.publishedAt ?? blogPost.createdAt,
 	updatedAt: blogPost.updatedAt,

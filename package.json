@@ -22,9 +22,9 @@
     "test:unit": "jest --config jest.config.cjs",
     "build": "next build | pino-pretty",
     "start": "next start | pino-pretty",
-    "migrate:status": "payload migrate:status | pino-pretty",
-    "migrate:create": "payload migrate:create | pino-pretty",
-    "migrate:up": "payload migrate | pino-pretty",
+    "migrate:status": "bash -o pipefail -c 'payload migrate:status | pino-pretty'",
+    "migrate:create": "bash -o pipefail -c 'payload migrate:create | pino-pretty'",
+    "migrate:up": "bash -o pipefail -c 'payload migrate | pino-pretty'",
     "lint": "biome check",
     "format": "biome format --write"
   },
