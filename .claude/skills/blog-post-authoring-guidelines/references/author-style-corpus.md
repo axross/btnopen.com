@@ -129,7 +129,7 @@ Closings are as patterned as openers:
 - unresolved-question ask when something stayed unsolved: 「これは僕も解決法を見つけていないので、知っている方がいればぜひご一報ください…。」
 - occasional reporting-style sign-off joke: 「現場からは以上です。」
 
-The grammar is not simply "casual Japanese." The posts often use long but controlled explanatory sentences joined by `ので`, `ですが`, `ただし`, `また`, and `という形です`, then reset the rhythm with short punchy fragments (「完全に観光です。」「めちゃでかい。」「素晴らしいことです。」), practical headings, lists, code blocks, or screenshots. Agents should preserve that pragmatic explanatory flow instead of flattening everything into short plain-form memo sentences.
+The grammar is not simply "casual Japanese." The posts often use long but controlled explanatory sentences joined by `ので`, `ですが`, concessive `のですが`, `また`, and `という形です`, then reset the rhythm with short punchy fragments (「完全に観光です。」「めちゃでかい。」「素晴らしいことです。」), practical headings, lists, code blocks, or screenshots. Agents should preserve that pragmatic explanatory flow instead of flattening everything into short plain-form memo sentences.
 
 English words are freely inflected into Japanese grammar when they are the natural working vocabulary: 「Temporaryに入ることになって」, 「In-personに受けるもの」, 「結構エクストリームだなー」, 「stayってことになった」. This is different from tech-term preservation — everyday English adjectives and adverbs get particle-attached mid-sentence, giving the prose a bilingual working-life texture.
 
@@ -141,9 +141,10 @@ Punctuation carries voice in this corpus. Recurring habits, all from the 2026-07
 
 - **Parenthetical asides carry candor and humor**, not citations: 「事情を説明して（というかゴネて）」, 「新しいクラスメイト（？）」, 「(書いたけど仕様を見直した結果ボツになっちゃったコードです...)」, 「（もちろん、FooModelクラスのファクトリコンストラクタは…）」. Both full-width （） and half-width () appear, sometimes in the same post; technical posts lean half-width.
 - **Trailing ellipsis marks emotion or a hedged plea**: 「良い人すぎでは…。」, 「皆様本当に申し訳ない…ありがとう…。」, 「知っている方がいればぜひご一報ください…。」, 「ビザのペナルティは人生レベルで響きます…。」. It softens strong statements and closes unresolved points.
-- **Quoted self-talk and dialogue drive narrative**: reactions land as quotes plus `となる/となり` (「ぐう…」となり, 「よっし向かうぞ！」となった) and paraphrased speech attaches with `って` (「君は飛行機を逃したよ」って言われて). The single exclamation mark in all 15 posts appears inside one of these quotes; none appears in the author's own narration.
+- **Quoted self-talk and dialogue drive narrative**: reactions land as quotes plus `となる/となり` (「ぐう…」となり, 「よっし向かうぞ！」となった) and paraphrased speech attaches with `って` (「君は飛行機を逃したよ」って言われて). The single full-width `！` in all 15 posts appears inside one of these quotes; none appears in the author's own narration (half-width `!` occurs only as code tokens, e.g. TypeScript non-null assertions).
 - **Approximate quantification with `くらい`** keeps numbers concrete but casual: 「車で9時間くらい」, 「$750くらいマイナス」, 「100台くらいあった」, 「バスで20分くらい」. Precise numbers appear where precision matters (86日間, 90日間, sha256 hashes).
 - **Emoji are rare and playful**: one 😋 in a food caption, a 🍣 as the shell prompt in code blocks. Titles and headings carry no emoji and no bracket decorations (no 【】).
+- **Sentence length scales with technicality** (measured 2026-07-12): personal narrative posts average roughly 34–40 characters per sentence, while advice and technical prose climbs to 46–83 (the CSP post is the longest at 83). Comma density stays low everywhere (roughly 0.4–1.2 `、` per sentence) — long sentences are built from clause connectors like ので/ですが rather than comma chains. A draft whose diary sentences run long, or whose technical sentences are chopped uniformly short, drifts from the corpus.
 
 ## Explanation Techniques
 
@@ -193,7 +194,7 @@ Common structures:
 | Product launch | what shipped, download/source links, implementation notes, platform observations |
 | Career/life guide | author background, target reader, phases, resources, caveats, closing reflection |
 | Two-audience advice post | purpose statement, one section per audience (e.g. 採用側/被採用側), verb-phrase advice headings, hedged contextual claims |
-| Opinion essay | personal context, concrete case, a named concept as the lens, generalization beyond the case, a one-sentence thesis near the close |
+| Opinion essay | personal context, concrete case, a named concept as the lens, generalization beyond the case, a one-sentence thesis near the close — under a closing heading that repeats the exact title question (「リモートワークへの努力とは何なのか」) |
 | Retrospective | occasion, life/work categories, specific events, gratitude, reader well-wish closing |
 | Life log / milestone note | punchy occasion opener, chronological narrative or photo sequence, optional dated 追記, forward-looking close |
 | Procedural/logistics note | reason for writing, bullet fact summary, mechanism explanation, personal case, high-stakes caution close |
@@ -206,6 +207,7 @@ Headings are usually descriptive and practical. They often name the topic direct
 - advice posts use verb-phrase directive headings (「どんな人が欲しいか明確にしておく」, 「常にアンテナを立てておく」)
 - product posts use launch workflow headings, such as download, implementation, platform-specific lessons, and feature behavior
 - career posts use phase or question headings, such as background, English, position, job search, documents, interviews, visa, and reader Q&A
+- an edge-case or FAQ-like section may take a casual plain-form question heading even inside a polite post (「カナダ永住者とかどうなるの？」 in the ESTA logistics note) — the corpus's only heading that ends in `？`
 - structure stays shallow: one H3 level with H4 subsections where needed, a dated 追記 lands as an H4, and the retrospective allows itself a one-word casual transition heading (「で」) before the closing reflection
 
 Titles usually match the body's register and are often verb-ended sentences rather than noun phrases: polite announcements for audience-facing milestones (「〜をリリースしました」「〜を退職しました」), plain form for diary logs (「〜に着いた」「〜が終わった」「〜が凄かった」), directives for pitfall notes (「〜では型を明示しよう」), and questions for essays (「〜とは何なのか」). A `/`-joined two-topic title exists where a post genuinely covers two things (「Denoの始め方 / LeetCodeの解答数が100を超えました」).

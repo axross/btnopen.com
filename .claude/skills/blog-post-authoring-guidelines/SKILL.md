@@ -41,7 +41,7 @@ See [author-style-corpus.md](./references/author-style-corpus.md) for:
 
 See [author-words-and-terms.md](./references/author-words-and-terms.md) for:
 
-- measured word-level vocabulary: first-person split, intensifiers, hedges, connectives, playful coinages, katakana loans
+- measured word-level vocabulary: first-person split, intensifiers, hedges, connectives, playful coinages, katakana loans, kanji-kana orthography choices
 - per-word evidence of where and when each term appears, contrasted with typical AI-assistant word choices
 - the anti-lexicon summary mapping drift-signal wordings to the author's alternatives
 

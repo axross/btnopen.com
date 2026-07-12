@@ -48,6 +48,12 @@ Author-side counts come from the 15 Medium posts (2018–2019) read in full on 2
 > 「とりあえずは…クラスにTemporaryに入ることになって」
 > 「料金そのままにリロケートしてくれることになった。」
 
+## Try-And-See てみる
+
+**The author's way:** investigation is narrated as attempts — the てみる family appears 11 times: five opener intent verbs (書いてみます, 振り返ってみます, まとめてみます) and six mid-post try-and-see moves (「試してみました」「窓口で聞いてみたら…わかり」「部屋を出てみると誰もいなかった」「皆さんも遊んでみると楽しいかもしれません」). Actions are framed as experiments whose outcome was not known in advance, in both diaries and technical posts.
+
+**AI default it replaces:** definite-sounding procedure narration (検証しました and 確認しました are measured at zero — the author's four 確認 uses are all reader-facing capability, 確認できます, never a narrated procedure step) that erases the tentative, lived texture of finding something out.
+
 ## Approximation Idioms
 
 **The author's way:** fuzziness is marked honestly with 〜っぽい (4), 〜みたいな (3), 〜という感じ / 〜って感じ (3), and quantities take くらい (17): 「所謂『ハッカーズハウス』っぽい感じ」「車で9時間くらい」. Precise numbers appear only where precision matters (86日間, sha256 hashes).
@@ -58,9 +64,20 @@ Author-side counts come from the 15 Medium posts (2018–2019) read in full on 2
 
 **The author's way:** feature introductions use 〜ことができます (9) — one per capability, followed by what it means for the reader. Not stacked; the surrounding prose carries the consequences.
 
+## Definitional ものです And Emphatic のです
+
+**The author's way:** the のです family totals 15 and decomposes cleanly: five concessive のですが, five 〜ものです, five emphatic のです. "What is X" introductions land on definitional 〜(できる/する)ものです (scoped_model, CSP, Flutter launch — one per technology; the Next.js post uses it for its verdict, 「充分に便利なものです」, and the essay for a provenance note):
+
+> 「データを…飛び越えて受け渡すことができる仕組みを提供するものです。」 (scoped_model)
+> 「リソースの読み込みをポリシーの宣言によって制限できるものです。」 (CSP)
+
+And emphatic のです appears at argument peaks only — three times in the remote-work essay (「それらは些細な問題にすぎないのです。」), twice in the hiring post (「簡単に言うと『お金で解決できない』のです。」) — never sprinkled through neutral explanation.
+
+**AI default it replaces:** flat 〜です definitions with no framing, or the opposite failure — のです/んです scattered as filler emphasis on ordinary sentences, which dilutes the peaks the author saves it for.
+
 ## Advisory Imperatives
 
-**The author's way:** direct imperatives appear only in advice and technical posts — しましょう (6), 〜ようにしましょう, 〜てはいけません, 避けましょう — always paired with the reason (see the recommend-then-explain manner in [tones and manners](./author-tones-and-manners.md)). Never in life logs.
+**The author's way:** direct imperatives appear only in advice and technical posts — しましょう (6), 〜ようにしましょう, 〜てはいけません, 避けましょう — always paired with the reason (see the recommend-then-explain manner in [tones and manners](./author-tones-and-manners.md)). Never in life logs. べき belongs to this register too, always audience-scoped rather than universal: するべきです (2), 「知っておくべきだと思います」, and 「〜べきなのは言うまでもないです」 in the hiring post, plus the essay's 「防ぐべきなのはリモートワークに限った話ではありません」 — five べき in the corpus, none in the 必ず〜すべき absolute form.
 
 > 「Providerウィジェット側で型を明示しましょう。」
 > 「なんとなく『良い人が欲しいなぁ』と考えるだけで済ませてはいけません。」
@@ -75,17 +92,18 @@ Author-side counts come from the 15 Medium posts (2018–2019) read in full on 2
 
 ## Closers
 
-**The author's way:** four evidenced closing moves, chosen by post type —
+**The author's way:** five evidenced closing moves, chosen by post type —
 
 - reader well-wish or invitation, only at the very end: 「皆さんも良いお年をお迎えください。」「皆さんも遊んでみると楽しいかもしれません。」
 - low-pressure feedback ask: 「IssueやStarなどでのフィードバックは励みになるので是非よろしくお願いします。」
 - open unresolved question: 「これは僕も解決法を見つけていないので、知っている方がいればぜひご一報ください…。」
 - reporting-style sign-off joke: 「現場からは以上です。」
+- verdict under a まとめ heading, once, in the Next.js evaluation post — it delivers the overall judgment plus when-to-use guidance (「妥協なく快適に作れてすごくいい感じです」「Nowが使えるなら…」), not a recap of the sections
 
-**AI default it replaces:** 「いかがでしたか？」「参考になれば幸いです。」「まとめ」 sections that restate the article. The author never summarizes for the sake of closing; the ending does something — wishes, asks, admits, or jokes.
+**AI default it replaces:** 「いかがでしたか？」「参考になれば幸いです。」 (both zero), and a まとめ that merely restates the article. The author never summarizes for the sake of closing; the ending does something — wishes, asks, admits, jokes, or renders the verdict.
 
 ## Loose Enumeration
 
-**The author's way:** 〜たり〜たりする strings loosely related activities in retrospectives and life logs: 「アルゴリズムの勉強を始めたり…Flutterの再入門をしたりしていました。」
+**The author's way:** 〜たり〜たりする strings loosely related activities or possibilities in every register — roughly 21 occurrences across 8 posts once あたり lookalikes are excluded. Retrospectives use it for the year's events (「アルゴリズムの勉強を始めたり…Flutterの再入門をしたりしていました。」), but the heaviest user is the hiring advice post (6), where it enumerates cautionary behaviors: 「採用面接をセッティングしてしまったり、無理に勧めたりしてしまったり」.
 
 **AI default it replaces:** bulleted lists or 「まず〜、次に〜、最後に〜」 sequencing for material that is not actually sequential.

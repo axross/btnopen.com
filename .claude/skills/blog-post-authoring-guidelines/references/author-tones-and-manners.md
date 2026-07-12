@@ -22,12 +22,12 @@ Author-side observations come from the 15 Medium posts (2018–2019) read in ful
 | Gratitude | paired with apology or debt-awareness | 「皆様本当に申し訳ない…ありがとう…」 (Vancouver) | formulaic 感謝申し上げます |
 | Addressing readers | closings only, warm and low-pressure | 「皆さんも良いお年をお迎えください。」 (retro) | mid-article reader address and rhetorical questions |
 | Unresolved problems | openly asks for help | 「知っている方がいればぜひご一報ください…。」 (CSP) | projecting completeness, skipping the gap |
-| Neutral explanation | hedges drop away; declarative polite prose | the ディレクティブ sections (CSP) | hedged mechanisms (impersonal 〜でしょう/〜とされています phrasing; 〜と考えられます appears once in the corpus) |
+| Neutral explanation | hedges drop away; declarative polite prose | the ディレクティブ sections (CSP) | hedged mechanisms (impersonal 〜とされています phrasing, measured at zero; 〜と考えられます and predictive 〜でしょう each appear once in the corpus) |
 | Life-event narration | diary register, quoted self-talk, humor at own expense | 「『ぐう…』となり」「真似しちゃいけないと思う。」 (Vancouver) | polite retelling with the mess smoothed out |
 
 ## Emotion Handling
 
-**The author's way:** emotional peaks get exactly one short expressive sentence — sometimes dropping to plain form inside a polite post (「今年も色々あったなぁ。」) — then the prose returns to baseline. Emotion is carried by trailing ellipses (「良い人すぎでは…。」「響きます…。」), not exclamation marks: the single ！ in all 15 posts sits inside quoted self-talk (「よっし向かうぞ！」), zero in narration. Emoji are nearly absent (one 😋 caption, a 🍣 shell prompt).
+**The author's way:** emotional peaks get exactly one short expressive sentence — sometimes dropping to plain form inside a polite post (「今年も色々あったなぁ。」) — then the prose returns to baseline. Emotion is carried by trailing ellipses (「良い人すぎでは…。」「響きます…。」), not exclamation marks: the single full-width ！ in all 15 posts sits inside quoted self-talk (「よっし向かうぞ！」), zero in narration (half-width `!` occurs only as code tokens). Emoji are nearly absent (one 😋 caption, a 🍣 shell prompt).
 
 **AI default it replaces:** sustained enthusiasm across paragraphs, exclamation marks in narration, and emoji sprinkled for friendliness. Generic warmth is even; the author's warmth spikes and recedes.
 
@@ -39,7 +39,7 @@ Author-side observations come from the 15 Medium posts (2018–2019) read in ful
 
 ## Reader Relationship
 
-**The author's way:** the reader is a peer who might hit the same problem. No agreement-fishing (ですよね: zero), no rhetorical reader questions, no mid-article addresses. Asks are low-pressure and concrete (feedback via Issue/Star, information about an unsolved problem). Advice defines who it applies to and admits its scope (「見解が違うかもしれません」).
+**The author's way:** the reader is a peer who might hit the same problem. No agreement-fishing (ですよね: zero — soft ですね appears twice, as an occasion opener and a parenthetical aside), no reader-directed rhetorical questions (〜ではないでしょうか: zero), no mid-article addresses. The remote-work essay poses one problem-framing question to itself (「その議事録は誰が書くのでしょうか。」) and answers it with the argument — nothing is fished at the reader. Asks are low-pressure and concrete (feedback via Issue/Star, information about an unsolved problem). Advice defines who it applies to and admits its scope (「見解が違うかもしれません」).
 
 **AI default it replaces:** service-industry framing — 「いかがでしたか？」「〜な方も多いのではないでしょうか」「参考になれば幸いです」 — which positions the reader as a customer to be satisfied rather than a peer to be informed.
 
@@ -51,6 +51,6 @@ Author-side observations come from the 15 Medium posts (2018–2019) read in ful
 
 ## Formality Manners
 
-**The author's way:** presentation stays plain — no 【】brackets or emoji in titles and headings, headings that say something concrete (sometimes a full recommendation sentence), polite prose that stays conversational rather than 敬語-formal (〜でございます and 〜いたします are both measured at zero; the politest set phrase is 「よろしくお願いします」), and dated 追記 sections instead of silent edits when facts change.
+**The author's way:** presentation stays plain — no 【】brackets or emoji in titles and headings, headings that say something concrete (sometimes a full recommendation sentence), polite prose that stays conversational rather than 敬語-formal (〜でございます, 〜いたします, and the receiving-honorific いただく are all measured at zero — favors are narrated with plain-polite 〜てもらう; the politest set phrase is 「よろしくお願いします」), and dated 追記 sections instead of silent edits when facts change.
 
 **AI default it replaces:** decorated titles (【完全版】〜まとめ✨), formal business register (お世話になっております調), and silently rewritten content. The author's formality sits one notch casual of standard blog politeness, and corrections stay visible.
