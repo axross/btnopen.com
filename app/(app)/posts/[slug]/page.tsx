@@ -12,58 +12,41 @@ import { getBlogPost } from "@/repositories/get-blog-post";
 import { getBlogPostAgentic } from "@/repositories/get-blog-post-agentic";
 import { getWebsite } from "@/repositories/get-website";
 import { urlOrigin } from "@/runtime";
-import { BlogPostAgenticView } from "./_components/blog-post-agentic-view";
+import {
+	BlogPostAgenticView,
+	BlogPostAgenticViewLoading,
+} from "./_components/blog-post-agentic-view";
 import { BlogPostContent } from "./_components/blog-post-content";
 import { BlogPostHeader } from "./_components/blog-post-header";
-import { BlogPostHeaderLoading } from "./_components/blog-post-header/loading";
 import { BlogPostingJsonLd } from "./_components/blog-posting-json-ld";
 import { PayloadLivePreview } from "./_components/payload-live-preview";
 import css from "./page.module.css";
 import type { PageProps } from "./page-props";
 
-export default function BlogPostPage({
+export default async function BlogPostPage({
 	params,
 	searchParams,
-}: PageProps): JSX.Element {
+}: PageProps): Promise<JSX.Element> {
+	// resolve `searchParams` up front to pick the branch, so each branch can
+	// stream its own matching loading skeleton (the agentic view and the post
+	// have different shapes, so a single shared fallback would mismatch one of
+	// them). This opts the route into dynamic rendering.
+	const { agentic, draft: draftParam } = await searchParams;
 	const slug = params.then((p) => p.slug);
-	const draft = searchParams.then((p) => p.draft === "true");
-	const preview = searchParams.then((p) => p.preview === "true");
-	const agentic = searchParams.then((p) => p.agentic === "true");
+	const draft = Promise.resolve(draftParam === "true");
 
-	// the agentic decision reads `searchParams`, so resolve it inside a Suspense
-	// boundary rather than at the top of the route — this keeps the partially
-	// prerendered shell (the header skeleton below) static instead of forcing the
-	// whole route dynamic.
-	return (
-		<Suspense fallback={<BlogPostPageShell />}>
-			<BlogPostPageBody
-				slug={slug}
-				draft={draft}
-				preview={preview}
-				agentic={agentic}
-			/>
-		</Suspense>
-	);
-}
-
-async function BlogPostPageBody({
-	slug,
-	draft,
-	preview,
-	agentic,
-}: {
-	slug: Promise<string>;
-	draft: Promise<boolean>;
-	preview: Promise<boolean>;
-	agentic: Promise<boolean>;
-}): Promise<JSX.Element> {
-	if (await agentic) {
-		return <BlogPostAgenticView slug={slug} draft={draft} />;
+	if (agentic === "true") {
+		return (
+			<Suspense fallback={<BlogPostAgenticViewLoading />}>
+				<BlogPostAgenticView slug={slug} draft={draft} />
+			</Suspense>
+		);
 	}
 
+	const preview = searchParams.then((p) => p.preview === "true");
 	// resolve the locale inside the promise callback (not as an eagerly
 	// evaluated argument) so the dynamic cookie read happens within the Suspense
-	// boundaries that await `blogPost`, not at the top of the route.
+	// boundaries that await `blogPost`.
 	const blogPost = Promise.all([slug, draft]).then(async ([s, d]) =>
 		getBlogPost({ slug: s, draft: d, locale: await getActiveLocale() }),
 	);
@@ -92,19 +75,6 @@ async function BlogPostPageBody({
 				<MaybePayloadLivePreview slug={slug} preview={preview} />
 			</Suspense>
 		</>
-	);
-}
-
-function BlogPostPageShell(): JSX.Element {
-	return (
-		<article className={css.blogPostPage} data-testid="page">
-			<BlogPostHeaderLoading
-				className={css.header}
-				data-testid="header-loading"
-			/>
-
-			<main className={css.content} data-testid="content" />
-		</article>
 	);
 }
 

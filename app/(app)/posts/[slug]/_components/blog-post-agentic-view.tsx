@@ -1,6 +1,10 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import type { JSX } from "react";
+import {
+	LoadingPlaceholderRect,
+	LoadingPlaceholderText,
+} from "@/components/loading-placeholder";
 import { Markdown } from "@/components/markdown";
 import { getActiveLocale } from "@/helpers/i18n";
 import { getBlogPostAgentic } from "@/repositories/get-blog-post-agentic";
@@ -84,6 +88,60 @@ export async function BlogPostAgenticView({
 					</>
 				)}
 			</main>
+		</article>
+	);
+}
+
+// Loading placeholder that mirrors the agentic view's structure (label + title,
+// then the summary / outline / status sections) so the streamed skeleton matches
+// the content that replaces it, rather than the blog post's own header skeleton.
+export function BlogPostAgenticViewLoading(): JSX.Element {
+	return (
+		<article className={css.agenticView} data-testid="page-loading">
+			<header className={css.header} data-testid="header-loading">
+				<p className={css.eyebrow}>
+					<LoadingPlaceholderText sampleText="Agentic" maxLines={1} />
+				</p>
+				<h1 className={css.title}>
+					<LoadingPlaceholderText
+						sampleText="Lorem ipsum dolor sit amet"
+						maxLines={2}
+					/>
+				</h1>
+			</header>
+
+			<div className={css.content}>
+				<section className={css.section}>
+					<h2 className={css.sectionHeading}>
+						<LoadingPlaceholderText sampleText="Summary" maxLines={1} />
+					</h2>
+					<p className={css.summary}>
+						<LoadingPlaceholderText
+							sampleText="Lorem ipsum dolor sit amet consectetur adipiscing elit sed do"
+							maxLines={3}
+						/>
+					</p>
+				</section>
+
+				<section className={css.section}>
+					<h2 className={css.sectionHeading}>
+						<LoadingPlaceholderText sampleText="Outline" maxLines={1} />
+					</h2>
+					<p className={css.summary}>
+						<LoadingPlaceholderText
+							sampleText="Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt"
+							maxLines={4}
+						/>
+					</p>
+				</section>
+
+				<section className={css.section}>
+					<h2 className={css.sectionHeading}>
+						<LoadingPlaceholderText sampleText="Status" maxLines={1} />
+					</h2>
+					<LoadingPlaceholderRect className={css.statusPlaceholder} />
+				</section>
+			</div>
 		</article>
 	);
 }

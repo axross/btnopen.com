@@ -104,5 +104,12 @@
 			font-size: var(--text-md);
 			line-height: var(--leading-lg);
 		}
+
+		.statusPlaceholder {
+			display: block;
+			width: stretch;
+			height: var(--size-160);
+			border-radius: var(--radius-md);
+		}
 	}
 }
