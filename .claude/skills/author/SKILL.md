@@ -16,17 +16,17 @@ This skill orchestrates existing project skills; it does not restate their rules
 
 The `blog-posts` collection carries two non-localized authoring artifacts that are never rendered on the public site. Together they are the loop's durable state: the author seeds them in the Payload admin (or asks you to), and you write every revision back, so a fresh session can resume the loop from CMS state alone.
 
-- `outline` — a single Markdown bullet list holding **only the direct mapping of the article body structure**: one top-level bullet per body section, in body order, with that section's content summary and load-bearing links.
-- `authoringNotes` — free-form Markdown for everything meta: ねらい (aims), 結論 (conclusion), 対象読者 (target reader), 編集方針 (editorial policy), 進行状態 (progress/state), and the 公開前チェックリスト (pre-publication checklist, merged with remaining work).
+- `outline` — a single Markdown bullet list mapping the article body structure, and nothing else.
+- `authoringNotes` — free-form Markdown for everything meta about the writing; meta content never goes into `outline`.
 
-Content placement, format contracts, and sync rules for both fields are owned by [Blog Post Authoring Guidelines › authoring-artifacts](../blog-post-authoring-guidelines/references/authoring-artifacts.md); follow that reference for every write to either field. Meta content never goes into `outline`.
+Before writing either field, follow the placement, format, and sync rules owned by the project's blog-post authoring guidelines (its authoring-artifacts reference).
 
 ## Argument resolution
 
 | Argument | Meaning | Entry |
 | -------- | ------- | ----- |
 | `<post slug or URL>` | An existing post — a `slug`, or the `slug` parsed from a `/posts/<slug>` URL. | By CMS state, below |
-| `<idea summary>` | A new post from a described idea. | Condense the idea into a structure-only outline plus the meta notes (ねらい, 対象読者) per the authoring-artifacts reference, create a minimal **draft** post through MCP to hold them, write the `outline` and `authoringNotes` fields, and enter the research loop. |
+| `<idea summary>` | A new post from a described idea. | Condense the idea into a structure-only outline plus starting meta notes, create a minimal **draft** post through MCP to hold them, write the `outline` and `authoringNotes` fields per the authoring guidelines' placement rules, and enter the research loop. |
 
 For an existing post, choose the entry from its current state:
 
@@ -47,7 +47,7 @@ Each round:
 2. **Audit every item**: mistakes, misunderstandings, misleading or confusing points. Investigate rather than assume; ask the author via `AskUserQuestion` when an item is genuinely interpretable in multiple ways.
 3. **Strengthen the structure**: propose new item candidates, and find study articles, evidence, or resources that prove or support the items (with links). When web research is unavailable or fails, report which items lack sourced evidence instead of blocking the round.
 4. **Take the reader's perspective**: note what a developer or tech-minded reader would additionally want covered.
-5. Share the audited outline with per-item findings in-session, then write the revisions back split by field per the authoring-artifacts reference: structural changes to the `outline` field, and meta findings — aims or reader adjustments, editorial-policy decisions, evidence memos, checklist items, progress — to `authoringNotes`. Verify both writes by re-reading.
+5. Share the audited outline with per-item findings in-session, then write the revisions back — structural changes to `outline`, meta findings to `authoringNotes`, split per the authoring guidelines' placement rules — and verify both writes by re-reading.
 6. **Go-sign gate**: ask via `AskUserQuestion` — go to drafting, run another research round, or apply specific direction. MUST NOT enter Phase 2 without the author's explicit go.
 
 ## Phase 2 — Drafting loop (repeat until the author is satisfied)
