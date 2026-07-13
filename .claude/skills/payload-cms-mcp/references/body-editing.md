@@ -187,6 +187,49 @@ Full body replacement is a metadata-style update to the `body` field, not a cust
 - SHOULD prefer targeted append/delete replacement over full body replacement for ordinary refinement.
 - SHOULD ask for confirmation before full body replacement on a published post.
 
+## Markdown-to-Lexical Full Body Write
+
+When a whole `body` is drafted as Markdown, convert it in one pass instead of hand-authoring the Lexical node tree, which is slow and easy to get wrong. The conversion must reuse the exact path the seeder uses in `payload/helpers/seed.ts` — `convertMarkdownToLexical` fed an editor config built from the project `config` and `editor` — so the produced editor state matches what Payload itself would persist for the same Markdown. Run the conversion as a session-local one-off script, never as committed tooling.
+
+**Procedure:**
+
+1. Draft the body as Markdown in a scratch file, using only code-fence languages the editor registers (listed below); any other fence language yields an invalid `code` block.
+2. Convert with the seed-identical call inside a script executed through `npx payload run <script>.ts`:
+
+   ```ts
+   import {
+   	convertMarkdownToLexical,
+   	editorConfigFactory,
+   } from "@payloadcms/richtext-lexical";
+   import { config } from "@/payload/config";
+   import { editor } from "@/payload/editor";
+
+   const body = convertMarkdownToLexical({
+   	editorConfig: await editorConfigFactory.fromEditor({
+   		config: await config,
+   		editor,
+   	}),
+   	markdown,
+   });
+   ```
+
+3. Inspect the converter output before writing: top-level node count and types, `code` block languages, and link count. Run the [Normalize Rich Text Relationships](#normalize-rich-text-relationships) check for populated `upload`/`relationship` values.
+4. Write once with `updateBlogPosts`, choosing `draft` and `locale` intentionally and narrowing `select` to keep the response small, per [Full Body Replacement](#full-body-replacement).
+5. Verify by re-reading `body` through MCP at `depth: 0` and deep-comparing it against the converter output with key-order-insensitive canonicalization; a byte-identical match is achievable and is stronger than spot-checking beginning/middle/end nodes.
+6. Delete the one-off script.
+
+**Editor-supported code-fence languages** (the `CodeBlock` feature in `payload/helpers/editor.ts`): `plaintext`, `js`, `ts`, `tsx`, `jsx`, `html`, `css`.
+
+**Guidelines:**
+
+- MUST build the editor state with `convertMarkdownToLexical` and an `editorConfigFactory.fromEditor` config from the project `config` and `editor`, matching `payload/helpers/seed.ts`, so a documented body is identical to a seeded one.
+- MUST restrict Markdown code fences to the languages `payload/helpers/editor.ts` registers, and fix any other fence language in the source before converting.
+- MUST run the conversion as a session-local `npx payload run` script and delete it afterward; never commit conversion tooling.
+- MUST apply the [Full Body Replacement](#full-body-replacement) and [Normalize Rich Text Relationships](#normalize-rich-text-relationships) guardrails to the converter output before the single `updateBlogPosts` write, rather than restating those invariants here.
+- MUST verify the persisted body by canonical, key-order-insensitive deep comparison against the converter output, not by spot-checking representative nodes alone.
+- SHOULD set `draft` and `locale` explicitly on the write to target the intended document and translation.
+- SHOULD narrow the `updateBlogPosts` `select` to `body` and identifying fields so the write and verification responses stay small.
+
 ## Lexical Node Construction
 
 Payload Lexical nodes carry structural fields that affect rendering and editor compatibility. Use existing nodes as templates, and keep new nodes simple unless the target format requires more.
