@@ -84,8 +84,20 @@ The two fields change at different rhythms: the outline is a mirror of the body'
 
 ## Worked Example
 
-**Better (outline maps structure as a nested tree; notes carry the meta):**
+The Better pair below is the target shape end to end: a hypothetical post's body heading skeleton, the `outline` tree that maps it, and the `authoringNotes` that carry the meta. Use it as the template when writing the artifacts from scratch. Each Risky variant after it isolates one failure mode to avoid. (The links to `example.com` are placeholders standing in for real sources.)
 
+**Better (outline maps the body's heading tree; notes carry the meta):**
+
+> Body heading skeleton being mapped:
+>
+> ```markdown
+> ## 導入
+> ## 本文
+> ### 表の使いどころ
+> ### コードの示し方
+> ## まとめ
+> ```
+>
 > `outline`:
 >
 > ```markdown
@@ -93,13 +105,31 @@ The two fields change at different rhythms: the outline is a mirror of the body'
 >     - なぜ構文確認を記事の形で残すのか
 >     - 想定する読み手と前提を1段落で示す
 > - **本文**
->     - 見出し・リスト・コード・表・引用を判断材料とともに提示する
+>     - 見出し・リスト・コード・表・引用を、採用判断の材料とともに提示する
 >         - 裏付け: 構文の基準は [Markdown Guide](https://www.markdownguide.org/) の一覧に合わせる
->     - 表は横スクロールが発生する条件も添える
+>     - 表の使いどころ
+>         - 表の型ごとに列の並べ方を変える
+>             - 対応表は「変換前 → 変換後」の2列に絞る
+>             - 比較表は判断軸を左端の列に置く
+>             - 数値表は右揃えで桁をそろえる
+>         - 横に長い表はモバイル幅で横スクロールになる、という注意も添える
+>     - コードの示し方
+>         - 実際の境界を写した最小の断片にする
+>             - 根拠: 長い断片は読み飛ばされやすいという [計測記事](https://example.com/code-length-study)
+>             - 批判: 断片化は文脈を失うという [反論](https://example.com/against-snippets) には、直前の段落で前提を書いて応える
 > - **まとめ**
 >     - 再利用する際の注意点
 >     - 確認しきれていない構文の扱い
+>         - 参考: 未確認分の洗い出しには [GFM Spec](https://github.github.com/gfm/) の目次を使う
 > ```
+>
+> What the outline demonstrates:
+>
+> - One top-level bullet per h2, bold-led, in body order; the h3 subsections (表の使いどころ / コードの示し方) nest under 本文 instead of surfacing as top-level bullets.
+> - Each point's developments — cautions, follow-on conclusions, concrete detail — are child bullets rather than sentences appended to the parent line.
+> - Every piece of support is a labeled child (裏付け: / 根拠: / 批判: / 参考:) holding its load-bearing link; the claims themselves stay in the parent bullets.
+> - The three table types expand into one child bullet each instead of an inline 「・」 chain.
+> - Depth goes exactly as deep as the content needs (four levels here) — and no deeper.
 >
 > `authoringNotes`:
 >
@@ -107,12 +137,26 @@ The two fields change at different rhythms: the outline is a mirror of the body'
 > ## ねらい
 > Markdown の構文確認を、実装メモとして読める記事に組み直す。
 >
+> ## 結論
+> 構文は網羅するのではなく、採用判断の材料とともに残してこそ再利用できる。
+>
 > ## 対象読者
 > あとで自分の記事に構文を流用したい開発者。
 >
+> ## 編集方針
+> - 構文ごとに「使う・使わない」の判断を必ず添える
+> - リンクは判断の根拠になるものだけを置き、装飾的なリンクは張らない
+>
+> ## 進行状態
+> - 研究ラウンド完了、ドラフト2ラウンド目
+> - 表のセクションまで本文化済み。コードの節から未着手
+>
 > ## 公開前チェックリスト
 > - 表とコードブロックの表示をモバイル幅で確認する
+> - コードブロックの言語指定が抜けていないか確認する
 > ```
+>
+> The notes use the full recommended section set because this post has content for every section; a section with nothing to say is omitted, not left as an empty heading.
 
 **Risky (each section crammed into one line):**
 
@@ -123,6 +167,26 @@ The two fields change at different rhythms: the outline is a mirror of the body'
 > ```
 >
 > Every top-level bullet carries its whole section in a single line, and the load-bearing link is buried mid-sentence instead of living in a labeled evidence child bullet.
+
+**Risky (nested, but evidence and enumerations still crammed inline):**
+
+> ```markdown
+> - **本文**
+>     - コードは実際の境界を写した最小の断片にする(根拠: [計測記事](https://example.com/code-length-study)。ただし [反論](https://example.com/against-snippets) もある)
+>     - 表は対応表・比較表・数値表を使い分け、型ごとに列の並べ方を変える
+> ```
+>
+> The tree exists, but the evidence hides inside a parenthesis instead of standing as 根拠: and 批判: children, and the three table types ride one line as an inline chain instead of one child bullet each. Nesting is about where substance lives, not just indentation.
+
+**Risky (subsections promoted to top level):**
+
+> ```markdown
+> - **本文** — 見出し・リスト・コード・表・引用を提示する
+> - **表の使いどころ** — 型ごとに列の並べ方を変える
+> - **コードの示し方** — 実際の境界を写した最小の断片にする
+> ```
+>
+> 表の使いどころ and コードの示し方 are h3 subsections of 本文, so their bullets belong nested under 本文's top-level bullet; promoting them to top level breaks the one-top-level-bullet-per-h2 mapping that makes the outline a faithful structure map.
 
 **Risky (meta content mixed into the outline):**
 
