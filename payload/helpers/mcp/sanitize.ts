@@ -191,6 +191,9 @@ const McpPayloadBlogPostInput = PayloadBlogPost.partial()
 	.extend({
 		id: PayloadDocumentId.optional(),
 		_status: PayloadDocumentStatus.optional(),
+		// PayloadBlogPost does not declare authoringNotes, so type it here for the
+		// decode map instead of relying on the `.catchall(z.unknown())` below.
+		authoringNotes: z.string().nullish(),
 		tags: z.array(McpPayloadTagInput).nullable().optional(),
 		coverImage: McpPayloadUploadInput.optional(),
 		author: McpPayloadUserInput.optional(),
@@ -211,6 +214,9 @@ const McpSanitizedBlogPostOutput = PayloadBlogPost.pick({
 	.extend({
 		id: PayloadDocumentId.optional(),
 		status: PayloadDocumentStatus.optional(),
+		// PayloadBlogPost does not declare authoringNotes, so extend it in rather
+		// than adding it to the `pick` list above.
+		authoringNotes: z.string().nullish(),
 		tags: z.array(McpSanitizedTagOutput).optional(),
 		coverImage: McpSanitizedUploadOutput.optional(),
 		author: McpSanitizedUserOutput.optional(),
@@ -230,6 +236,7 @@ export const McpSanitizedBlogPost = z.codec(
 			title: blogPost.title,
 			brief: blogPost.brief,
 			outline: blogPost.outline,
+			authoringNotes: blogPost.authoringNotes,
 			body: blogPost.body,
 			status: blogPost._status,
 			publishedAt: blogPost.publishedAt,
@@ -247,6 +254,7 @@ export const McpSanitizedBlogPost = z.codec(
 			title: blogPost.title,
 			brief: blogPost.brief,
 			outline: blogPost.outline,
+			authoringNotes: blogPost.authoringNotes,
 			body: blogPost.body,
 			_status: blogPost.status,
 			publishedAt: blogPost.publishedAt,

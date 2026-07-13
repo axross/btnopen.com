@@ -150,6 +150,7 @@ describe("McpSanitizedBlogPost", () => {
 			title: "Hello",
 			brief: "Brief",
 			outline: "- first point\n- second point",
+			authoringNotes: "draft notes",
 			body: emptyBody,
 			_status: "published",
 			publishedAt: "2026-01-01T00:00:00.000Z",
@@ -167,6 +168,7 @@ describe("McpSanitizedBlogPost", () => {
 			title: "Hello",
 			brief: "Brief",
 			outline: "- first point\n- second point",
+			authoringNotes: "draft notes",
 			body: emptyBody,
 			status: "published",
 			publishedAt: "2026-01-01T00:00:00.000Z",
@@ -192,15 +194,30 @@ describe("McpSanitizedBlogPost", () => {
 		expect(z.encode(McpSanitizedBlogPost, decoded).outline).toBe(
 			"- first point\n- second point",
 		);
+		expect(z.encode(McpSanitizedBlogPost, decoded).authoringNotes).toBe(
+			"draft notes",
+		);
 	});
 
-	it("leaves outline undefined when input omits it", () => {
-		expect(
-			z.decode(McpSanitizedBlogPost, {
-				id: 11,
-				slug: "no-outline",
-			}).outline,
-		).toBeUndefined();
+	it("leaves outline and authoringNotes undefined when input omits them", () => {
+		const decoded = z.decode(McpSanitizedBlogPost, {
+			id: 11,
+			slug: "no-outline",
+		});
+
+		expect(decoded.outline).toBeUndefined();
+		expect(decoded.authoringNotes).toBeUndefined();
+	});
+
+	it("round-trips a null authoringNotes when input sets it to null", () => {
+		const decoded = z.decode(McpSanitizedBlogPost, {
+			id: 12,
+			slug: "null-notes",
+			authoringNotes: null,
+		});
+
+		expect(decoded.authoringNotes).toBeNull();
+		expect(z.encode(McpSanitizedBlogPost, decoded).authoringNotes).toBeNull();
 	});
 });
 
