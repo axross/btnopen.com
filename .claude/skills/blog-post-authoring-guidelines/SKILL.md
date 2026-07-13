@@ -1,7 +1,7 @@
 ---
 name: blog-post-authoring-guidelines
-description: The editorial rules for btnopen blog post content — Japanese-primary pragmatic authoring, natural syntax coverage, metadata (titles, briefs, tags) quality, translation/localization, and preserving the author's style. Apply Payload CMS MCP separately when writing authored changes back to existing CMS posts.
-when_to_use: Apply when drafting, rewriting, refining, translating, or reviewing btnopen blog post content, titles, briefs, tags, structure, tone, grammar, or Markdown usage.
+description: The editorial rules for btnopen blog post content — Japanese-primary pragmatic authoring, natural syntax coverage, metadata (titles, briefs, tags) quality, authoring-artifact placement (what belongs in `outline` vs `authoringNotes`), translation/localization, and preserving the author's style. Apply Payload CMS MCP separately when writing authored changes back to existing CMS posts.
+when_to_use: Apply when drafting, rewriting, refining, translating, or reviewing btnopen blog post content, titles, briefs, tags, structure, tone, grammar, Markdown usage, or the `outline` / `authoringNotes` authoring artifacts.
 user-invocable: false
 ---
 
@@ -78,6 +78,15 @@ See [metadata-and-taxonomy.md](./references/metadata-and-taxonomy.md) for:
 - combining personal context with reader value in metadata
 - localized metadata expectations and fallback handling
 - deciding when a metadata change needs Payload MCP capability
+
+## Authoring Artifacts
+
+See [authoring-artifacts.md](./references/authoring-artifacts.md) for:
+
+- deciding which content belongs in the `outline` field versus `authoringNotes`
+- the outline's structure-mapping rule and single-bullet-list format contract
+- the recommended `authoringNotes` section set and checklist merging
+- keeping the artifacts in sync with the body across authoring rounds
 
 ## Markdown Coverage
 
