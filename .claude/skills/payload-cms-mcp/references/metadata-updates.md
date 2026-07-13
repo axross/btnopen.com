@@ -1,6 +1,8 @@
 # Metadata Updates
 
-Blog post metadata includes fields outside the Lexical body: `title`, `brief`, `outline`, `slug`, `tags`, `coverImage`, `publishedAt`, and `_status`. The custom body tools do not update these fields.
+Blog post metadata includes fields outside the Lexical body: `title`, `brief`, `outline`, `authoringNotes`, `slug`, `tags`, `coverImage`, `publishedAt`, and `_status`. The custom body tools do not update these fields.
+
+Which content belongs in the `outline` versus `authoringNotes` authoring artifacts is an editorial decision owned by the blog-post authoring guidelines (its authoring-artifacts reference); this file covers only the mutation mechanics.
 
 **Guidelines:**
 
@@ -92,7 +94,7 @@ Slug, `publishedAt`, and `_status` changes affect public URLs, caches, SEO metad
 
 ## Localized Metadata
 
-`title` and `brief` are localized fields. A metadata update must target the right locale. `outline` is intentionally not localized — it is an authoring artifact shared across locales, so no `locale` targeting applies to it.
+`title` and `brief` are localized fields. A metadata update must target the right locale. `outline` and `authoringNotes` are intentionally not localized — they are authoring artifacts shared across locales, so no `locale` targeting applies to them.
 
 **Guidelines:**
 

@@ -12,16 +12,21 @@ Target: `$ARGUMENTS`
 
 This skill orchestrates existing project skills; it does not restate their rules. Own the editorial decisions with [Blog Post Authoring Guidelines](../blog-post-authoring-guidelines/SKILL.md), the review lens with [Code Review Guideline](../code-review-guideline/SKILL.md), the exact supported syntax with [Markdown Processing Guidelines](../markdown-processing-guidelines/SKILL.md), and every CMS read/write with [Payload CMS MCP](../payload-cms-mcp/SKILL.md). Follow [Development Guidelines](../development-guidelines/SKILL.md) and the [Response Approach](../../../AGENTS.md) throughout.
 
-## The outline field
+## The authoring-artifact fields
 
-The `blog-posts` collection carries an `outline` textarea — a non-localized authoring artifact (bullet items or a free-form summary) that is never rendered on the public site. It is the loop's durable state: the author seeds it in the Payload admin (or asks you to), and you write every revised outline back to it, so a fresh session can resume the loop from CMS state alone.
+The `blog-posts` collection carries two non-localized authoring artifacts that are never rendered on the public site. Together they are the loop's durable state: the author seeds them in the Payload admin (or asks you to), and you write every revision back, so a fresh session can resume the loop from CMS state alone.
+
+- `outline` — a single Markdown bullet list holding **only the direct mapping of the article body structure**: one top-level bullet per body section, in body order, with that section's content summary and load-bearing links.
+- `authoringNotes` — free-form Markdown for everything meta: ねらい (aims), 結論 (conclusion), 対象読者 (target reader), 編集方針 (editorial policy), 進行状態 (progress/state), and the 公開前チェックリスト (pre-publication checklist, merged with remaining work).
+
+Content placement, format contracts, and sync rules for both fields are owned by [Blog Post Authoring Guidelines › authoring-artifacts](../blog-post-authoring-guidelines/references/authoring-artifacts.md); follow that reference for every write to either field. Meta content never goes into `outline`.
 
 ## Argument resolution
 
 | Argument | Meaning | Entry |
 | -------- | ------- | ----- |
 | `<post slug or URL>` | An existing post — a `slug`, or the `slug` parsed from a `/posts/<slug>` URL. | By CMS state, below |
-| `<idea summary>` | A new post from a described idea. | Condense the idea into a bullet-point outline, create a minimal **draft** post through MCP to hold it, write the `outline` field, and enter the research loop. |
+| `<idea summary>` | A new post from a described idea. | Condense the idea into a structure-only outline plus the meta notes (ねらい, 対象読者) per the authoring-artifacts reference, create a minimal **draft** post through MCP to hold them, write the `outline` and `authoringNotes` fields, and enter the research loop. |
 
 For an existing post, choose the entry from its current state:
 
@@ -38,11 +43,11 @@ For an existing post, choose the entry from its current state:
 
 Each round:
 
-1. Re-read the `outline` field (`draft: true` for draft posts).
+1. Re-read the `outline` and `authoringNotes` fields (`draft: true` for draft posts).
 2. **Audit every item**: mistakes, misunderstandings, misleading or confusing points. Investigate rather than assume; ask the author via `AskUserQuestion` when an item is genuinely interpretable in multiple ways.
 3. **Strengthen the structure**: propose new item candidates, and find study articles, evidence, or resources that prove or support the items (with links). When web research is unavailable or fails, report which items lack sourced evidence instead of blocking the round.
 4. **Take the reader's perspective**: note what a developer or tech-minded reader would additionally want covered.
-5. Share the audited outline with per-item findings in-session, write the revised outline back to the `outline` field, and verify the write by re-reading.
+5. Share the audited outline with per-item findings in-session, then write the revisions back split by field per the authoring-artifacts reference: structural changes to the `outline` field, and meta findings — aims or reader adjustments, editorial-policy decisions, evidence memos, checklist items, progress — to `authoringNotes`. Verify both writes by re-reading.
 6. **Go-sign gate**: ask via `AskUserQuestion` — go to drafting, run another research round, or apply specific direction. MUST NOT enter Phase 2 without the author's explicit go.
 
 ## Phase 2 — Drafting loop (repeat until the author is satisfied)
@@ -59,7 +64,7 @@ Each round:
 
 - MUST keep all writes draft-scoped: never publish, unpublish, or set `publishedAt`/`_status`, and never mutate a published document directly.
 - MUST get explicit confirmation via `AskUserQuestion` before wholesale replacement of an existing non-empty body — even when it follows an approved outline.
-- MUST NOT write anything besides the `outline` field during Phase 1 (the new-post entry's minimal draft creation happens once, before the loop starts); body and metadata writes belong to Phase 2, behind the go sign.
+- MUST NOT write anything besides the `outline` and `authoringNotes` fields during Phase 1 (the new-post entry's minimal draft creation happens once, before the loop starts); body and metadata writes belong to Phase 2, behind the go sign.
 - MUST keep content Japanese-primary; English is an on-request follow-up, never automatic.
 - MUST verify every mutation by re-reading through MCP, and MUST NOT edit seed markdown files as a substitute for CMS writes.
 - MUST ask via `AskUserQuestion` for genuine gaps instead of guessing; when the question UI is unavailable, present the question in text, end the turn, and wait — never proceed on an assumed answer.
