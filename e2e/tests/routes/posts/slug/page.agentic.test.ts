@@ -43,7 +43,7 @@ test(
 				content
 					.getByTestId("outline")
 					.getByRole("listitem")
-					.filter({ hasText: "ねらい" }),
+					.filter({ hasText: "導入" }),
 			).toBeVisible();
 		});
 
@@ -61,6 +61,15 @@ test(
 					.getByTestId("authoring-notes")
 					.getByRole("listitem")
 					.filter({ hasText: "執筆メモ" }),
+			).toBeVisible();
+		});
+
+		await test.step("Verify the meta content lives in the authoring notes", async () => {
+			await expect(
+				content
+					.getByTestId("authoring-notes")
+					.getByRole("listitem")
+					.filter({ hasText: "ねらい" }),
 			).toBeVisible();
 		});
 	},
