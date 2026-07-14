@@ -84,7 +84,7 @@ See [metadata-and-taxonomy.md](./references/metadata-and-taxonomy.md) for:
 See [authoring-artifacts.md](./references/authoring-artifacts.md) for:
 
 - deciding which content belongs in the `outline` field versus `authoringNotes`
-- the outline's structure-mapping rule and single-bullet-list format contract
+- the outline's nested-tree structure mapping and single-bullet-list format contract
 - the recommended `authoringNotes` section set and checklist merging
 - keeping the artifacts in sync with the body across authoring rounds
 

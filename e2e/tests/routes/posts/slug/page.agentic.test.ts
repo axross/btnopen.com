@@ -9,6 +9,7 @@ import {
 import { deleteBlogPost } from "@/e2e/helpers/api/mcp";
 
 const noindexPattern = /noindex/;
+const evidenceChildPattern = /^裏付け:/;
 
 test.use({ storageState: authenticatedStorageState });
 
@@ -53,6 +54,20 @@ test(
 					name: "Markdown Guide",
 				}),
 			).toHaveAttribute("href", "https://www.markdownguide.org/");
+		});
+
+		await test.step("Verify nested outline bullets render as a nested list", async () => {
+			// the labeled evidence child (裏付け:) nests inside the 本文 top-level
+			// item, so finding it as a list item within a list item pins that the
+			// outline's nested Markdown renders as a nested list.
+			await expect(
+				content
+					.getByTestId("outline")
+					.getByRole("listitem")
+					.filter({ hasText: "本文" })
+					.getByRole("listitem")
+					.filter({ hasText: evidenceChildPattern }),
+			).toBeVisible();
 		});
 
 		await test.step("Verify the authoring notes Markdown is rendered", async () => {
