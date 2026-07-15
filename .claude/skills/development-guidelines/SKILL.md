@@ -37,6 +37,14 @@ See [verification.md](./references/verification.md) for:
 - How to maintain test coverage and respond to failures
 - CI pipeline behavior
 
+## Production Deployments
+
+See [production-deployments.md](./references/production-deployments.md) for:
+
+- how `check-and-deploy.yaml` applies pending Payload migrations to production before promoting new code
+- the migrate-before-promote ordering and its expand/contract implication for destructive schema changes
+- the fail-loud guards (credential verification, `bash -o pipefail`) and where the production credentials come from
+
 ## Preview Deployments
 
 See [preview-deployments.md](./references/preview-deployments.md) for:
