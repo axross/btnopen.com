@@ -11,7 +11,7 @@ import {
 	McpUploadResponse,
 } from "./sanitize";
 
-const emptyBody: z.input<typeof McpSanitizedBlogPost>["body"] = {
+const emptyBody = {
 	root: {
 		type: "root",
 		children: [],
@@ -90,11 +90,22 @@ describe("McpSanitizedUser", () => {
 				id: "avatar-1",
 				filename: "avatar.png",
 				url: "/avatar.png",
-				mimeType: undefined,
-				width: undefined,
-				height: undefined,
-				sizes: undefined,
 			},
+		});
+	});
+
+	it("keeps the public bio rich text when input includes one", () => {
+		expect(
+			z.decode(McpSanitizedUser, {
+				id: 1,
+				name: "Author",
+				bio: emptyBody,
+				email: "hidden@example.com",
+			}),
+		).toEqual({
+			id: 1,
+			name: "Author",
+			bio: emptyBody,
 		});
 	});
 });
@@ -136,8 +147,19 @@ describe("McpSanitizedWebsite", () => {
 			creator: {
 				id: 1,
 				name: "Author",
-				avatarImage: undefined,
 			},
+		});
+	});
+
+	it("exposes the creator bio when input includes one", () => {
+		expect(
+			z.decode(McpSanitizedWebsite, {
+				name: "btnopen",
+				creator: { id: 1, name: "Author", bio: emptyBody, salt: "hidden" },
+			}),
+		).toEqual({
+			name: "btnopen",
+			creator: { id: 1, name: "Author", bio: emptyBody },
 		});
 	});
 });
@@ -175,38 +197,23 @@ describe("McpSanitizedBlogPost", () => {
 			createdAt: "2026-01-01T00:00:00.000Z",
 			updatedAt: "2026-01-02T00:00:00.000Z",
 			tags: [{ id: 1, slug: "typescript", name: "TypeScript" }],
-			coverImage: {
-				id: "cover-1",
-				filename: "cover.png",
-				url: "/cover.png",
-				mimeType: undefined,
-				width: undefined,
-				height: undefined,
-				sizes: undefined,
-			},
-			author: {
-				id: 1,
-				name: "Author",
-				avatarImage: undefined,
-			},
+			coverImage: { id: "cover-1", filename: "cover.png", url: "/cover.png" },
+			author: { id: 1, name: "Author" },
 		});
-		expect(z.encode(McpSanitizedBlogPost, decoded)._status).toBe("published");
-		expect(z.encode(McpSanitizedBlogPost, decoded).outline).toBe(
-			"- first point\n- second point",
-		);
-		expect(z.encode(McpSanitizedBlogPost, decoded).authoringNotes).toBe(
-			"draft notes",
-		);
+		expect(z.encode(McpSanitizedBlogPost, decoded)).toMatchObject({
+			_status: "published",
+			outline: "- first point\n- second point",
+			authoringNotes: "draft notes",
+		});
 	});
 
-	it("leaves outline and authoringNotes undefined when input omits them", () => {
-		const decoded = z.decode(McpSanitizedBlogPost, {
+	it("leaves outline and authoringNotes absent when input omits them", () => {
+		expect(
+			z.decode(McpSanitizedBlogPost, { id: 11, slug: "no-outline" }),
+		).toEqual({
 			id: 11,
 			slug: "no-outline",
 		});
-
-		expect(decoded.outline).toBeUndefined();
-		expect(decoded.authoringNotes).toBeUndefined();
 	});
 
 	it("round-trips a null authoringNotes when input sets it to null", () => {
@@ -216,8 +223,51 @@ describe("McpSanitizedBlogPost", () => {
 			authoringNotes: null,
 		});
 
-		expect(decoded.authoringNotes).toBeNull();
-		expect(z.encode(McpSanitizedBlogPost, decoded).authoringNotes).toBeNull();
+		expect(decoded).toEqual({
+			id: 12,
+			slug: "null-notes",
+			authoringNotes: null,
+		});
+		expect(z.encode(McpSanitizedBlogPost, decoded)).toMatchObject({
+			authoringNotes: null,
+		});
+	});
+
+	it("passes per-locale value objects through when input comes from a locale-all read", () => {
+		expect(
+			z.decode(McpSanitizedBlogPost, {
+				id: 13,
+				slug: "localized",
+				title: { "ja-JP": "こんにちは", "en-US": "Hello" },
+				brief: { "ja-JP": "概要" },
+				body: { "ja-JP": emptyBody },
+				salt: "hidden",
+			}),
+		).toEqual({
+			id: 13,
+			slug: "localized",
+			title: { "ja-JP": "こんにちは", "en-US": "Hello" },
+			brief: { "ja-JP": "概要" },
+			body: { "ja-JP": emptyBody },
+		});
+	});
+
+	it("passes tag relation ids through when input was read with depth 0", () => {
+		expect(
+			z.decode(McpSanitizedBlogPost, {
+				id: 14,
+				slug: "shallow",
+				tags: [1, 2],
+				coverImage: 7,
+				author: 1,
+			}),
+		).toEqual({
+			id: 14,
+			slug: "shallow",
+			tags: [1, 2],
+			coverImage: 7,
+			author: 1,
+		});
 	});
 });
 
@@ -237,23 +287,7 @@ describe("McpBlogPostResponse", () => {
 			limit: 10,
 			page: 1,
 			totalPages: 1,
-			docs: [
-				{
-					id: 1,
-					slug: "hello",
-					title: undefined,
-					brief: undefined,
-					outline: undefined,
-					body: undefined,
-					status: "draft",
-					publishedAt: undefined,
-					createdAt: undefined,
-					updatedAt: undefined,
-					tags: undefined,
-					coverImage: undefined,
-					author: undefined,
-				},
-			],
+			docs: [{ id: 1, slug: "hello", status: "draft" }],
 		});
 	});
 
@@ -263,6 +297,31 @@ describe("McpBlogPostResponse", () => {
 		).toMatchObject({
 			slug: "single",
 		});
+	});
+
+	it("keeps every doc when a draft in the list carries empty or partial values", () => {
+		expect(
+			z.decode(McpBlogPostResponse, {
+				totalDocs: 2,
+				docs: [
+					// a live autosaved draft: empty brief, missing publish date, id-only
+					// cover image — shapes the previous validating sanitizer rejected.
+					{ id: 1, slug: "draft-post", brief: "", publishedAt: null },
+					{ id: 2, slug: "published-post", brief: "Brief", coverImage: 7 },
+				],
+			}),
+		).toEqual({
+			totalDocs: 2,
+			docs: [
+				{ id: 1, slug: "draft-post", brief: "", publishedAt: null },
+				{ id: 2, slug: "published-post", brief: "Brief", coverImage: 7 },
+			],
+		});
+	});
+
+	it("never throws when input is not a record at all", () => {
+		expect(z.decode(McpBlogPostResponse, null)).toBeNull();
+		expect(z.decode(McpBlogPostResponse, "unexpected")).toBe("unexpected");
 	});
 });
 
@@ -275,9 +334,6 @@ describe("McpTagResponse", () => {
 			}),
 		).toEqual({
 			totalDocs: 1,
-			limit: undefined,
-			page: undefined,
-			totalPages: undefined,
 			docs: [{ id: 1, slug: "typescript", name: "TypeScript" }],
 		});
 	});
@@ -292,20 +348,7 @@ describe("McpUploadResponse", () => {
 			}),
 		).toEqual({
 			totalDocs: 1,
-			limit: undefined,
-			page: undefined,
-			totalPages: undefined,
-			docs: [
-				{
-					id: "media-1",
-					filename: "image.png",
-					url: "/image.png",
-					mimeType: undefined,
-					width: undefined,
-					height: undefined,
-					sizes: undefined,
-				},
-			],
+			docs: [{ id: "media-1", filename: "image.png", url: "/image.png" }],
 		});
 	});
 });
