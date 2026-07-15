@@ -45,6 +45,7 @@ export async function getExampleBlogPost({
 export async function createDraftBlogPost({
 	outline,
 	authoringNotes,
+	body,
 	page,
 	slug,
 	testInfo,
@@ -52,6 +53,9 @@ export async function createDraftBlogPost({
 }: {
 	outline?: string;
 	authoringNotes?: string;
+	// Lexical body override (defaults to a minimal placeholder body). Pass a
+	// custom body to exercise how specific content renders on the post page.
+	body?: unknown;
 	page: Page;
 	slug: string;
 	testInfo: TestInfo;
@@ -73,7 +77,7 @@ export async function createDraftBlogPost({
 			slug,
 			coverImage: coverImageId,
 			brief: "Draft post created by the agentic view e2e test.",
-			body: createMinimalBlogPostBody(),
+			body: body ?? createMinimalBlogPostBody(),
 			author: userId,
 			_status: "draft",
 			...(outline === undefined ? {} : { outline }),

@@ -12,6 +12,8 @@ Markdown string
   → remarkDirective      (enables directive syntax)
   → remarkPartialGfm     (GFM: strikethrough, tables)
   → remarkEmbeds         (link paragraphs → webembed directives)
+  → remarkLiteralizeUnhandledDirectives
+                         (text/container directives → verbatim source text)
   → remarkRehype         (MDAST → HAST, with custom directive handler)
   → rehypeShiki           (syntax highlighting on code blocks)
   → rehypeUnnestPre      (flatten pre>code nesting)
