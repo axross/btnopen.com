@@ -23,9 +23,13 @@ export function Embed({
 	type?: string;
 	options?: string;
 }): JSX.Element | null {
-	if (typeof url !== "string" || !URL.canParse(url)) {
+	// restrict every rendered href to http(s) so a dangerous protocol (e.g.
+	// javascript:) authored into content can never reach an anchor.
+	if (typeof url !== "string" || !isHttpUrl(url)) {
 		captureException(
-			new Error(`Rendered an embed without a valid url (type: ${type}).`),
+			new Error(
+				`Rendered an embed without a valid http(s) url (type: ${type}).`,
+			),
 		);
 
 		return null;
@@ -61,4 +65,14 @@ export function Embed({
 			/>
 		</Suspense>
 	);
+}
+
+function isHttpUrl(value: string): boolean {
+	if (!URL.canParse(value)) {
+		return false;
+	}
+
+	const { protocol } = new URL(value);
+
+	return protocol === "http:" || protocol === "https:";
 }

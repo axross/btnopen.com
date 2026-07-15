@@ -177,7 +177,7 @@ test("Blog post embed block", {
 
 	await test.step("Verify the embed card isolates the external link", async () => {
 		await expect(embedCard).toHaveAttribute("target", "_blank");
-		await expect(embedCard).toHaveAttribute("rel", /noopener/);
+		await expect(embedCard).toHaveAttribute("rel", "noopener noreferrer");
 	});
 });
 
