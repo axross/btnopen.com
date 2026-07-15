@@ -22,6 +22,23 @@ The project defines one custom node type: `leafDirective` with name `"webembed"`
 
 - MUST preserve the existing `leafDirective` / `"webembed"` node shape unless the markdown pipeline, React mapping, and tests are updated together.
 
+## Text and Container Directives
+
+`remark-directive` recognizes three directive kinds from author markdown, not just the leaf directives the pipeline treats as a feature:
+
+- `leafDirective` — `::name{…}` on its own line. Handled as a feature (see `webembed` above).
+- `textDirective` — an inline `:name`, which fires on any prose colon-word such as `TypeScript:strict` or a `:embed` mention.
+- `containerDirective` — a `:::name … :::` fenced block.
+
+Text and container directives are almost always incidental author prose, not intentional directives. If they reach `remarkRehype` unregistered, they fall to `unknownHandler`, which drops the node — silently erasing the author's text from the rendered post.
+
+The `remarkLiteralizeUnhandledDirectives` plugin (in `app/(app)/_/helpers/markdown.ts`, before `remarkRehype`) prevents this: it visits every `textDirective` / `containerDirective` and replaces it with a plain text node carrying the **verbatim source** — sliced from the original markdown via the node's `position` offsets (`String(file.value)`), so name, attributes, and fences render exactly as written. Because the conversion happens before `remarkRehype`, these kinds never reach `unknownHandler`, so they emit no Sentry event.
+
+**Guidelines:**
+
+- MUST preserve unhandled `textDirective` / `containerDirective` nodes as their literal source text rather than letting them reach `unknownHandler` — content preservation over strictness.
+- MUST NOT report text or container directives to Sentry; they are expected author input, not pipeline anomalies. Genuinely unknown node *types* still report.
+
 ## Adding a New Custom Directive
 
 When adding a new custom directive, you MUST complete all three steps:
