@@ -1,5 +1,7 @@
 // biome-ignore-all lint/style/noProcessEnv: only place accessing env vars in public realm
 
+import { resolveUrlOrigin } from "@/helpers/url-origin";
+
 let resolvedRuntimeType: "client" | "node" | "edge" | "unknown" = "unknown";
 
 if (typeof globalThis.window !== "undefined") {
@@ -16,13 +18,12 @@ export const vercelEnvironment =
 
 export const sha = process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? "unknown";
 
-export let urlOrigin: string;
-
-if (vercelEnvironment === "production") {
-	urlOrigin = `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
-} else {
-	urlOrigin = "http://localhost:3000";
-}
+export const urlOrigin = resolveUrlOrigin({
+	vercelEnvironment: process.env.NEXT_PUBLIC_VERCEL_ENV,
+	productionUrl: process.env.VERCEL_PROJECT_PRODUCTION_URL,
+	branchUrl: process.env.VERCEL_BRANCH_URL,
+	deploymentUrl: process.env.VERCEL_URL,
+});
 
 export const isLocalhost = urlOrigin.includes("localhost");
 
