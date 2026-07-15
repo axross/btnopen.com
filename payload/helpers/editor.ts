@@ -5,6 +5,7 @@ import {
 	lexicalEditor,
 	UploadFeature,
 } from "@payloadcms/richtext-lexical";
+import { embedBlock } from "./embed-block";
 
 export const editor = lexicalEditor({
 	features: ({ defaultFeatures }) => [
@@ -37,6 +38,7 @@ export const editor = lexicalEditor({
 						css: "CSS",
 					},
 				}),
+				embedBlock,
 			],
 		}),
 		EXPERIMENTAL_TableFeature(),
