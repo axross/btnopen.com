@@ -102,7 +102,7 @@ export async function renderPostBody({
 | --- | --- | --- | --- | --- | --- | --- |
 | 見出し | `## 見出し` | heading node | `## 見出し` | `h2` | 階層を飛ばさない | セクション分割 |
 | リスト | `- item` | list node | `- item` | `ul` / `ol` | 子リストは 4 スペース | 手順と判断材料 |
-| 画像 | `[media:id]()` | upload node | `![alt](/api/media/file/...)` | `Media` | 先頭の `!` で upload node になる | スクリーンショット |
+| 画像 | `[media:id]()` | upload node | `![alt](/api/media/file/...)` | `Media` | 先頭の ! で upload node になる | スクリーンショット |
 | コード | fenced block | code block | fenced block | `Snippet` | 言語名は Shiki に渡る | 最小コード例 |
 | 表 | pipe table | table node | pipe table | `Table` | alignment は往復で落ちる | 比較と棚卸し |
 | 埋め込み | directive | paragraph text | directive | `WebEmbed` | 外部取得に失敗する可能性 | 参考リンク |
