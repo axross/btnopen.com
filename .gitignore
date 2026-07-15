@@ -4,6 +4,7 @@
 # next.js
 /.next/*
 /next-env.d.ts
+/tsconfig.tsbuildinfo
 
 # testing
 /coverage/*
