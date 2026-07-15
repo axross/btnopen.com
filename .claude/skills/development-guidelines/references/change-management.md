@@ -55,4 +55,5 @@ A schema change without its migration leaves every other environment on the old 
 
 - MUST run `npm run migrate:create` immediately after changing any Payload CMS collection schema, then `npm run migrate:up` to apply the migration locally before testing (see [dev-commands.md](./dev-commands.md)).
 - MUST NOT modify an already-applied migration file. Create a new migration instead.
+- SHOULD rely on the production deploy to apply a merged migration to production automatically, before the new code serves traffic, rather than migrating production by hand; sequence a destructive schema change as expand/contract per [production-deployments.md](./production-deployments.md).
 - MUST NOT modify files under `app/(payload)/`; they will be overwritten on upgrades.
