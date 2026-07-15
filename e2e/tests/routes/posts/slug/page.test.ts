@@ -169,10 +169,11 @@ test("Blog post embed block", {
 	tag: ["@scenario:post.embed", "@area:posts", "@priority:should"],
 }, async ({ page }) => {
 	const content = page.getByTestId("page").getByTestId("content");
-	const embedCard = content.locator(`a[href="${seedEmbedUrl}"]`);
+	const embedCard = content.getByTestId("embed");
 
 	await test.step("Verify the embed card links to the embedded URL", async () => {
 		await expect(embedCard).toBeVisible();
+		await expect(embedCard).toHaveAttribute("href", seedEmbedUrl);
 	});
 
 	await test.step("Verify the embed card isolates the external link", async () => {

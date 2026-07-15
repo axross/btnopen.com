@@ -53,7 +53,7 @@
   border-radius: 999px;
   background-color: var(--theme-elevation-100);
   color: var(--theme-elevation-600);
-  font-family: var(--font-mono, monospace);
+  font-family: monospace;
   font-size: 0.7rem;
   font-weight: 400;
 }
@@ -61,7 +61,7 @@
 .embed-block-card__url {
   overflow: hidden;
   color: var(--theme-elevation-500);
-  font-family: var(--font-mono, monospace);
+  font-family: monospace;
   font-size: 0.75rem;
   text-overflow: ellipsis;
   white-space: nowrap;

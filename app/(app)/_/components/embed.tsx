@@ -48,6 +48,7 @@ export function Embed({
 				target="_blank"
 				rel="noopener noreferrer"
 				className={className}
+				data-testid="embed"
 				{...props}
 			>
 				{url}
@@ -56,11 +57,20 @@ export function Embed({
 	}
 
 	return (
-		<Suspense fallback={<WebEmbedLoading className={className} {...props} />}>
+		<Suspense
+			fallback={
+				<WebEmbedLoading
+					className={className}
+					data-testid="embed-loading"
+					{...props}
+				/>
+			}
+		>
 			<WebEmbedLoaded
 				href={url}
 				title={title}
 				className={className}
+				data-testid="embed"
 				{...props}
 			/>
 		</Suspense>

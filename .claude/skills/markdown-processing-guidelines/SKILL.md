@@ -41,7 +41,7 @@ See [custom-plugins.md](./references/custom-plugins.md) for:
 
 ## Custom MDAST Node Types
 
-How custom directive nodes (e.g., `webembed`) are defined and registered.
+How custom directive nodes (e.g., `embed`) are defined and registered.
 
 See [custom-mdast-node-types.md](./references/custom-mdast-node-types.md) for:
 
