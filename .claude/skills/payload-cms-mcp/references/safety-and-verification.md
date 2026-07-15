@@ -44,7 +44,7 @@ A successful tool response is not enough. Re-read the document to verify final p
 
 - MUST re-read the mutated post after every body edit or metadata update.
 - MUST, once a `body` or reader-facing metadata mutation verifies, hand back the rendered post URL for the mutated variant so the human can inspect it — `/posts/<slug>?draft=true` for a `draft: true` edit; the live `/posts/<slug>` for a published/main-document edit.
-- This reference is the single source for the content-write handback; an `outline` / `authoringNotes` write hands back the agentic view URL instead, per the blog-post authoring guidelines' authoring-artifacts reference.
+- MUST NOT duplicate this handback rule elsewhere: an `outline` / `authoringNotes` write hands back the agentic view URL instead, per the blog-post authoring guidelines' authoring-artifacts reference.
 - MAY additionally offer the Payload live preview (`/posts/<slug>?preview=true&draft=true`) for a draft edit.
 - MUST verify both the intended change and the absence of obvious adjacent damage.
 - MUST verify rich-text upload references by checking `type`, `relationTo`, the exact `value` type, and caption fields.

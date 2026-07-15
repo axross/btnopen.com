@@ -14,7 +14,7 @@ Both fields are textareas on the `blog-posts` collection's Agentic tab, and they
 - MUST treat both fields as non-localized: they are shared across locales, so no `locale` targeting applies to writes.
 - MUST write them through the Payload MCP server and verify each write by re-reading, per the Payload CMS MCP skill.
 - MUST, after verifying a write to `outline` or `authoringNotes`, hand back the agentic view URL — `/posts/<slug>?agentic=true`, with `&draft=true` for a draft post — as the only surface that renders these fields.
-- This reference is the single source for the artifact-write handback; a body or reader-facing write hands back the rendered post URL instead, per the Payload CMS MCP skill's safety-and-verification reference.
+- MUST NOT duplicate this handback rule elsewhere: a body or reader-facing write hands back the rendered post URL instead, per the Payload CMS MCP skill's safety-and-verification reference.
 - MUST NOT copy artifact content into the published body, brief, or other reader-facing fields as a side effect of authoring.
 
 ## Format Contracts
