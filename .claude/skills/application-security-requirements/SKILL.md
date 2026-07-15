@@ -52,7 +52,7 @@ See [xss-in-markdown.md](./references/xss-in-markdown.md) for:
 
 - The markdown pipeline's rendering of CMS-authored content does not pass user-controlled values into `dangerouslySetInnerHTML` or unsanitized attributes
 - Dangerous URL protocols (e.g., `javascript:`) are neutralized before reaching a rendered attribute
-- Custom directive nodes (currently `webembed`) only emit attributes that React will encode
+- Custom directive nodes (currently `embed`) only emit attributes that React will encode
 - `rehypeReact` is not bypassed (no manual string interpolation of untrusted content into markup)
 
 ## SSRF and Embed Fetching

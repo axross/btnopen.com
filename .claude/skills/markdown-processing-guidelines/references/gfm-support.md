@@ -25,12 +25,12 @@ Missing any level causes parsing failures or silent data loss.
 
 ## Standard MDAST Nodes vs Custom Nodes
 
-GFM table nodes (`table`, `tableRow`, `tableCell`) are **standard MDAST node types** with built-in handlers in `remarkRehype` (via `mdast-util-to-hast`). They do NOT need `passThrough` or custom `handlers` registration — unlike custom directive nodes (e.g., `webembed`) which require explicit registration. See [custom-mdast-node-types.md](./custom-mdast-node-types.md) for the custom node registration process.
+GFM table nodes (`table`, `tableRow`, `tableCell`) are **standard MDAST node types** with built-in handlers in `remarkRehype` (via `mdast-util-to-hast`). They do NOT need `passThrough` or custom `handlers` registration — unlike custom directive nodes (e.g., `embed`) which require explicit registration. See [custom-mdast-node-types.md](./custom-mdast-node-types.md) for the custom node registration process.
 
 **Guidelines:**
 
 - MUST NOT register `passThrough` or custom `handlers` for standard GFM table nodes.
-- SHOULD follow [custom-mdast-node-types.md](./custom-mdast-node-types.md) only for custom directive nodes such as `webembed`.
+- SHOULD follow [custom-mdast-node-types.md](./custom-mdast-node-types.md) only for custom directive nodes such as `embed`.
 
 ## Table Rendering
 
