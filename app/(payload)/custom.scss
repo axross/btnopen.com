@@ -6,3 +6,63 @@
 #custom-css::after {
   content: 'custom-css';
 }
+
+/* card-preview presentation for the `embed` rich-text block
+   (payload/components/embed-block-card.tsx) */
+.embed-block-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  padding-block: 0.25rem;
+}
+
+.embed-block-card__glyph {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 4px;
+  background-color: var(--theme-elevation-100);
+  color: var(--theme-elevation-600);
+}
+
+.embed-block-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.embed-block-card__headline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.embed-block-card__no-url {
+  color: var(--theme-elevation-400);
+  font-weight: 400;
+}
+
+.embed-block-card__type {
+  padding: 0.05rem 0.55rem;
+  border-radius: 999px;
+  background-color: var(--theme-elevation-100);
+  color: var(--theme-elevation-600);
+  font-family: monospace;
+  font-size: 0.7rem;
+  font-weight: 400;
+}
+
+.embed-block-card__url {
+  overflow: hidden;
+  color: var(--theme-elevation-500);
+  font-family: monospace;
+  font-size: 0.75rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

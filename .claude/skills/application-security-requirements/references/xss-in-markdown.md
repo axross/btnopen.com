@@ -21,11 +21,11 @@ Raw-HTML sinks bypass the one defense the rendering layer provides — React's a
 **Guidelines:**
 
 - MUST flag a Critical when a new component added to `defaultComponents` in `app/(app)/_/components/markdown.tsx` uses `dangerouslySetInnerHTML` for any prop derived from the markdown content.
-- MUST flag a Critical when a new custom MDAST directive's HAST handler emits an `element` with `properties` that include event handlers (`onClick`, `onError`, etc.). Currently the only directive is `webembed`, whose handler in `markdown.ts` only forwards `node.attributes` (`href`, `title`) — those are safe scalar strings. A new directive that copies arbitrary attributes is unsafe.
+- MUST flag a Critical when a new custom MDAST directive's HAST handler emits an `element` with `properties` that include event handlers (`onClick`, `onError`, etc.). Currently the only directive is `embed`, whose handler in `markdown.ts` only forwards `node.attributes` (`url`, `type`, `title`, `options`) — those are safe scalar strings, and the `Embed` component never spreads `options` into the DOM. A new directive that copies arbitrary attributes is unsafe.
 - MUST flag a Critical when a new HAST element is rendered through `String.raw`, manual string concatenation, or any non-React path that bypasses JSX encoding.
 - MUST flag a Major when `allowDangerousProtocol: true` stays enabled but its compensating control is weakened or removed — with the dangerous-protocol setting on, there MUST be either a hand-rolled URL allowlist or a rendering path proven to neutralize dangerous protocols (currently React's attribute encoding). Legitimate markdown content needs `mailto:` and `tel:` links, so the safe path is an allowlist, not a blanket allow.
 
-## `webembed` and Future Directives
+## `embed` and Future Directives
 
 Every custom directive hand-generates markup outside the pipeline's normal path, so it re-assumes responsibility for encoding guarantees the pipeline otherwise provides for free.
 

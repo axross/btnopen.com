@@ -158,6 +158,30 @@ test("Blog post content", {
 	});
 });
 
+// the seed post carries one `::embed{…}` block pointing at this URL; the
+// loaded card is an anchor with that exact href, so the assertion holds even
+// when the embedded page's live metadata is unreachable and the card falls
+// back to its illustration.
+const seedEmbedUrl =
+	"https://zenn.dev/uma002/articles/architecture-abstraction-patterns";
+
+test("Blog post embed block", {
+	tag: ["@scenario:post.embed", "@area:posts", "@priority:should"],
+}, async ({ page }) => {
+	const content = page.getByTestId("page").getByTestId("content");
+	const embedCard = content.getByTestId("embed");
+
+	await test.step("Verify the embed card links to the embedded URL", async () => {
+		await expect(embedCard).toBeVisible();
+		await expect(embedCard).toHaveAttribute("href", seedEmbedUrl);
+	});
+
+	await test.step("Verify the embed card isolates the external link", async () => {
+		await expect(embedCard).toHaveAttribute("target", "_blank");
+		await expect(embedCard).toHaveAttribute("rel", "noopener noreferrer");
+	});
+});
+
 // seed post (`payload/helpers/seed/blog-post.md`) emits seven GFM tables in
 // this authored order: small reference, wide comparison, metrics, inline
 // content, header-only template, single-column runtimes, sparse cells. On the

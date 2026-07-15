@@ -11,7 +11,7 @@ Markdown string
   → remarkParse          (markdown → MDAST)
   → remarkDirective      (enables directive syntax)
   → remarkPartialGfm     (GFM: strikethrough, tables)
-  → remarkEmbeds         (link paragraphs → webembed directives)
+  → remarkEmbeds         (link paragraphs → embed directives)
   → remarkLiteralizeUnhandledDirectives
                          (text/container directives → verbatim source text)
   → remarkRehype         (MDAST → HAST, with custom directive handler)
@@ -59,7 +59,8 @@ See [react-component-mapping.md](./react-component-mapping.md) for the mapping r
 | `app/(app)/_/repositories/get-blog-post-markdown.ts` | Fetches Lexical data and converts to markdown |
 | `app/(app)/_/components/media.tsx` | Custom `img` renderer (Payload media with Next.js Image) |
 | `app/(app)/_/components/snippet.tsx` | Custom `pre` renderer (code block wrapper) |
-| `app/(app)/_/components/webembed.tsx` | Custom webembed renderer (rich link card with Suspense) |
+| `app/(app)/_/components/embed.tsx` | Custom embed renderer dispatching on `type` (webpage → rich link card with Suspense) |
+| `payload/helpers/embed-block.ts` | Payload `embed` rich-text block whose `jsx` converter round-trips `::embed{…}` lines |
 
 **Guidelines:**
 

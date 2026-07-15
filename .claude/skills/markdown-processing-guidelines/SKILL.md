@@ -1,7 +1,7 @@
 ---
 name: markdown-processing-guidelines
-description: The conventions for this project's markdown rendering pipeline — `app/(app)/_/helpers/markdown.ts`, `app/(app)/_/components/markdown.tsx`, Shiki setup, and the `Markdown`/`renderMarkdown` server components. Covers the unified pipeline (remarkParse → remarkDirective → remarkPartialGfm → remarkEmbeds → remarkRehype → rehypeShiki → rehypeUnnestPre → rehypeReact), plugin-ordering rules, custom-plugin conventions, adding custom MDAST directive nodes (passThrough + handler + React component, all three levels), partial-GFM three-level registration, HAST→React component mapping, Shiki singleton usage, server-only execution with `"use cache"`, Payload-Lexical content source, and Sentry-based unknown-node handling.
-when_to_use: Use when writing, reviewing, or modifying any markdown-pipeline code, even when the user only mentions "remark", "rehype", "mdast", "syntax highlighting", "blog post rendering", "webembed", or a markdown bug.
+description: The conventions for this project's markdown rendering pipeline — `app/(app)/_/helpers/markdown.ts`, `app/(app)/_/components/markdown.tsx`, Shiki setup, and the `Markdown`/`renderMarkdown` server components. Covers the unified pipeline (remarkParse → remarkDirective → remarkPartialGfm → remarkEmbeds → remarkRehype → rehypeShiki → rehypeUnnestPre → rehypeReact), plugin-ordering rules, custom-plugin conventions, adding custom MDAST directive nodes (passThrough + handler + React component, all three levels), the `embed` directive and its Payload rich-text block with directive-form `jsx` markdown converters, partial-GFM three-level registration, HAST→React component mapping, Shiki singleton usage, server-only execution with `"use cache"`, Payload-Lexical content source, and Sentry-based unknown-node handling.
+when_to_use: Use when writing, reviewing, or modifying any markdown-pipeline code, even when the user only mentions "remark", "rehype", "mdast", "syntax highlighting", "blog post rendering", "embed", "webembed", "rich-text block", or a markdown bug.
 user-invocable: false
 ---
 
@@ -41,14 +41,24 @@ See [custom-plugins.md](./references/custom-plugins.md) for:
 
 ## Custom MDAST Node Types
 
-How custom directive nodes (e.g., `webembed`) are defined and registered.
+How custom directive nodes (e.g., `embed`) are defined and registered.
 
 See [custom-mdast-node-types.md](./references/custom-mdast-node-types.md) for:
 
 - Standard MDAST nodes (built-in handlers) vs custom nodes (need explicit registration)
-- Existing `leafDirective` / `webembed` node type
+- Existing `leafDirective` / `embed` node type (`url` / `type` / `title` / `options`) and its two producers
 - Three-step process to add a new custom directive (passThrough, handler, React component)
 - Unknown node type handling via Sentry
+
+## Lexical Rich-Text Blocks
+
+How custom Payload rich-text blocks reach the markdown pipeline.
+
+See [lexical-blocks.md](./references/lexical-blocks.md) for:
+
+- The `jsx` converter requirement — blocks without one are silently dropped by `convertLexicalToMarkdown`
+- Directive-form serialization convention (`::embed{…}`) and its round-trip unit-test expectations
+- Admin block components under `payload/components/` and importMap regeneration
 
 ## GFM Support
 
@@ -79,7 +89,7 @@ Mapping HTML tags and custom directives to React components.
 See [react-component-mapping.md](./references/react-component-mapping.md) for:
 
 - `defaultComponents` mapping and `classNames` override mechanism
-- Required component mappings (`img` → Media, `pre` → Snippet, `webembed` → WebEmbed, `table` → Table, `th` → TableHeaderCell)
+- Required component mappings (`img` → Media, `pre` → Snippet, `embed` → Embed, `table` → Table, `th` → TableHeaderCell)
 - Fallback behavior for unmapped tags (native HTML, no class names)
 - Type-only sentinel key pattern (N-channel; `tableWrapper` and `tableScrollArea` are both sentinels on the `Table` component) for multi-element components that need independent class channels per nested element
 - `className` prop requirement for new components

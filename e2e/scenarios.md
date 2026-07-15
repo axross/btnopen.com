@@ -32,6 +32,7 @@ carries its `@scenario:<id>` tag. The reporter
 | posts.redirect | The /posts route redirects to the index route | posts | should |
 | post.header | A blog post page shows its title, date, cover image, author, and tags | posts | must |
 | post.content | A blog post page renders its Markdown content | posts | must |
+| post.embed | A blog post page renders an embed block as a web-embed card linking to the embedded URL | posts | should |
 | post.content.directives | Text and container directives render verbatim instead of vanishing | posts | must |
 | post.agentic | A blog post's agentic view renders its outline Markdown and authoring notes | posts | must |
 | post.agentic.empty | The agentic view shows an empty state when the post has no authoring content | posts | should |
