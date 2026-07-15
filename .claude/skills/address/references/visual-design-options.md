@@ -4,17 +4,17 @@ Apply this reference during `/address` Phase 1 whenever the run's work is UI-bea
 
 ## When the Exhibit Is Required
 
-"UI-bearing" is the Response Approach classification already made at the start of Phase 1 — this reference adds no second taxonomy. The exhibit is about *visual presentation*: it is required when what a person sees changes in shape, arrangement, or treatment on any human-facing surface — the public website's appearance (layout, hierarchy, styling, imagery, motion), the application UI (pages, components, navigation, interactive states), or the admin presentation (Payload admin panel surfaces a human operates). It is not required when nothing visual changes: implementation-only refactors, data or content edits, behavior-only fixes with unchanged rendering, or pure copy rewording inside an unchanged layout.
+The exhibit triggers on the *visual axis* of the Response Approach's UI-bearing classification: it is required when what a person sees changes in shape, arrangement, or treatment on any human-facing surface — the public website's appearance (layout, hierarchy, styling, imagery, motion), the application UI (pages, components, navigation, interactive states), or the admin presentation (Payload admin panel surfaces a human operates). A plan can be UI-bearing without triggering the exhibit: pure copy rewording inside an unchanged layout still needs the UI design section's copy constraints, but presents no visual directions to choose between. Nothing-visual changes — implementation-only refactors, data or content edits, behavior-only fixes with unchanged rendering — never trigger it.
 
 **Guidelines:**
 
-- MUST present the options exhibit for every UI-bearing plan, regardless of how small the visual change is — a spacing or color tweak still gets three directions, scaled down (three small sketches, a line of rationale each).
-- SHOULD treat a change as UI-bearing when in doubt; a superfluous exhibit costs minutes, while an unchosen design costs a review round.
-- MUST state the classification outcome in the plan either way: the UI design section opens the exhibit for UI-bearing work, and the plan's note explaining an omitted UI design section records that the work is not UI-bearing — so the reviewer sees the classification was made deliberately, not skipped.
+- MUST present the options exhibit for every plan whose work changes visual presentation — shape, arrangement, or treatment — regardless of how small the change is: a spacing or color tweak still gets three directions, scaled down (three small sketches, a line of rationale each).
+- SHOULD treat a change as visually-presenting when in doubt; a superfluous exhibit costs minutes, while an unchosen design costs a review round.
+- MUST state the exhibit decision in the plan either way: the UI design section opens the exhibit when the trigger is met, and otherwise records why the exhibit is omitted (no visual change, or a UI design section omitted entirely for non-UI work) — so the reviewer sees the decision was made deliberately, not skipped.
 
 ## Constructing the Options
 
-Three options exist to give the human a real decision, so distinctness is the quality bar: options that vary only accent color or corner radius are one design shown three times.
+These rules govern an *options round* — the first design round (wireframe, or high-fidelity under the skip condition below) and any later round that re-opens the direction. A confirmation round that renders an already-decided direction follows the confirmation rules in [High-Fidelity Round](#high-fidelity-round) instead. Three options exist to give the human a real decision, so distinctness is the quality bar: options that vary only accent color or corner radius are one design shown three times.
 
 **Example (option skeleton inside the UI design section):**
 
@@ -29,7 +29,7 @@ Trade-offs: … (what it costs relative to Options A and C)
 
 **Guidelines:**
 
-- MUST present at least three options, labeled sequentially (`Option A — <short name>`, `Option B — …`), each differing in at least one structural axis — hierarchy, layout, or visual treatment — not merely in decoration.
+- MUST present at least three options in every options round, labeled sequentially (`Option A — <short name>`, `Option B — …`), each differing in at least one structural axis — hierarchy, layout, or visual treatment — not merely in decoration.
 - MUST give every option a sketch, a rationale of a few sentences, and its trade-offs relative to the other options.
 - MUST mark exactly one option **(Recommended)** in its heading and justify the recommendation in its rationale.
 - MUST ground every option in the project's UI design principles — visual identity, color tokens, spacing, motion, and theme behavior; an option that violates the design system is not a valid choice.
@@ -48,7 +48,7 @@ The first options round is at wireframe fidelity unless the skip condition below
 | header: title …                  |
 +------------+---------------------+
 | cover      | tags · date         |
-| image      | brief                |
+| image      | brief               |
 +------------+---------------------+
 | body …                           |
 +----------------------------------+
@@ -63,22 +63,24 @@ The first options round is at wireframe fidelity unless the skip condition below
 
 ## High-Fidelity Round
 
-After the human decides the wireframe-level direction — or immediately, under the skip condition above — the run confirms the direction with high-fidelity designs presented the same way: recorded in the issue, decided through the plan-approval gate. The artifacts are rendered images (mockups, or screenshots of throwaway local renders), produced without touching the repository:
+After the human decides the wireframe-level direction — or immediately, under the skip condition above — the run confirms the direction with high-fidelity designs presented the same way: recorded in the issue, decided through the plan-approval gate. The artifacts are rendered images (mockups, or screenshots of throwaway local renders), produced without touching the repository and attached by the human, because the session cannot upload issue attachments itself:
 
 1. Build the mockup in a scratch location outside the repository checkout (the harness scratchpad).
 2. Render or screenshot it, covering both themes and the viewports where the design differs.
-3. Deliver the image files to the human in the turn output with self-describing filenames (`issue-79-option-b-dark-mobile.png`).
-4. Ask the human, in the same message, to attach the files to the tracking issue.
-5. After the human attaches them, reference each attachment URL from the UI design section under the option it belongs to, and check that each reference renders.
+3. Deliver the image files to the human through the harness's file-delivery mechanism (in Claude Code, send the files in the turn output) with self-describing filenames (`issue-79-option-b-dark-mobile.png`), and in the same message ask the human to attach them to the tracking issue and resume with `/address continue` — pasting the generated attachment URLs in the resume message when the attachment landed anywhere other than the issue itself.
+4. Set the status block to `awaiting attachment (design round N)` and end the turn — attachment is a human action; never poll or schedule a wake-up for it.
+5. On resume, collect the attachment URLs (from wherever in the issue the human attached them, or from the resume message), verify the set, and reference each URL from the UI design section under the option it belongs to.
 
 **Guidelines:**
 
 - MUST carry high-fidelity artifacts as GitHub issue attachments only; MUST NOT commit design artifacts to the repository on any branch, and MUST NOT leave mockup or render files in the working tree.
-- MUST route attachment upload through the human — the session cannot upload issue attachments itself — by delivering the files and requesting the attachment in one turn output.
-- MUST reference every attachment URL from the issue's UI design section under its option heading; an artifact only delivered in chat, or attached but never referenced, does not count as presented.
-- MUST re-enter the plan-approval gate after the high-fidelity round lands in the issue — high fidelity exists to be approved, not merely displayed.
-- SHOULD render at least the recommended option in both light and dark themes, and at the viewport widths where its layout changes, per the project's UI design principles.
-- SHOULD scale the round to the decision: confirming one decided direction needs one faithful rendering per meaningful variant, not three new directions.
+- MUST route attachment upload through the human by delivering the files and requesting the attachment in one turn output, then going dormant in the `awaiting attachment (design round N)` status-block state.
+- MUST treat a bare `/address continue` received in the awaiting-attachment state as "files attached" — collect and verify the URLs and update the issue — never as approval of a round that is not yet recorded there.
+- MUST verify the attached set against the delivered filenames, and re-request any missing or mismatched file before referencing the URLs.
+- MUST reference every attachment URL from the issue's UI design section under its option heading, and verify each referenced URL is a GitHub attachment URL that appears in the updated issue; an artifact only delivered in chat, or attached but never referenced, does not count as presented.
+- MUST re-enter the plan-approval gate once the round is recorded in the issue — high fidelity exists to be approved, not merely displayed.
+- MUST present a confirmation round — one that renders an already-decided direction — as that direction's renderings only: one faithful rendering per meaningful variant, no new options, no `(Recommended)` marker; bare `/address continue` approves the confirmation.
+- SHOULD render at least the chosen (or recommended) option in both light and dark themes, and at the viewport widths where its layout changes, per the project's UI design principles.
 
 ## Recording the Choice and Revisions
 
@@ -89,8 +91,9 @@ The issue is the single design record. Anyone — the maintainer, the independen
 - MUST record the outcome in the UI design section when the human approves: mark the chosen option (`**Chosen:** Option B — <name>`) and keep its sketch or artifacts as the section's current design.
 - MUST update the UI design section in place on every design revision during the plan phase, so the section always shows the current design state.
 - MUST move superseded options and rounds into one collapsed `<details>` subsection titled `Design history` inside the UI design section, labeled by round (`Round 1 — wireframes`, `Round 2 — high fidelity`), and MUST NOT delete them.
-- MUST keep the run's status block current with the pending design round (for example, `awaiting plan approval (design round 2: high fidelity)`).
-- MUST re-enter the plan-approval gate after every revision: update the issue first, then stop and wait for `/address continue`.
+- MUST keep the run's status block current with the pending design state (for example, `awaiting plan approval (design round 2: high fidelity)` or `awaiting attachment (design round 2)`).
+- MUST re-enter the plan-approval gate after every plan-phase revision: update the issue first, then stop and wait for `/address continue`.
+- MUST apply these same recording rules when a design revision arises after the pull request exists (for example, from human review comments): update the issue's UI design section in place, preserve the history, route new artifacts through the human, refresh the pull request's design links — and run the change as a Phase 4 round (back to draft if flipped, fresh independent review) rather than a plan-phase stop.
 
 ## Design Links in the Pull Request
 
