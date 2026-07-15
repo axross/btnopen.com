@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { shouldInvalidatePostCaches } from "@/helpers/post-cache-invalidation";
 import { urlOrigin } from "@/runtime";
 import { logger } from "../helpers/logger";
 
@@ -104,18 +105,32 @@ export const blogPostCollection: CollectionConfig = {
 	trash: true,
 	hooks: {
 		afterOperation: [
-			async ({ operation, result }) => {
+			async ({ operation, args, result }) => {
 				// skip the invalidation for the example blog post creation
 				if (operation === "create" && result.slug === "markdown-example") {
 					return;
 				}
 
-				if (
-					operation === "update" ||
-					operation === "create" ||
-					operation === "delete" ||
-					operation === "updateByID"
-				) {
+				const draft = "draft" in args ? args.draft : undefined;
+
+				// Draft and autosave writes never change publicly cached output, so
+				// skip the cache-busting round-trips entirely; only publish, unpublish,
+				// and delete affect the published pages.
+				if (!shouldInvalidatePostCaches({ operation, draft })) {
+					return;
+				}
+
+				let docs: { slug?: string | null }[] = [];
+
+				if (Array.isArray(result.docs)) {
+					docs = result.docs;
+				} else {
+					docs = [result];
+				}
+
+				// A cache-invalidation miss must never fail the content write, so the
+				// fetches are guarded and reported to Sentry instead of thrown.
+				try {
 					logger.info(
 						{ operation },
 						"Started requesting to clear all blog post caches.",
@@ -129,14 +144,6 @@ export const blogPostCollection: CollectionConfig = {
 						{ operation },
 						"Finished requesting to clear all blog post caches.",
 					);
-
-					let docs: { slug?: string | null }[] = [];
-
-					if (Array.isArray(result.docs)) {
-						docs = result.docs;
-					} else {
-						docs = [result];
-					}
 
 					await Promise.all(
 						docs.map(async (doc) => {
@@ -157,6 +164,12 @@ export const blogPostCollection: CollectionConfig = {
 							}
 						}),
 					);
+				} catch (error) {
+					// dynamic import keeps `@sentry/nextjs` out of this module's static
+					// graph, which the Payload CLI loads directly (outside Next's bundler,
+					// where the package's named exports do not resolve).
+					const { captureException } = await import("@sentry/nextjs");
+					captureException(error);
 				}
 			},
 		],
