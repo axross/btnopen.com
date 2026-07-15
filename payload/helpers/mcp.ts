@@ -4,6 +4,7 @@ import z from "zod";
 import { configureMcpApiKeyField } from "./mcp/api-key-fields";
 import { appendNodeInBlogPostBodyTool } from "./mcp/append-node-in-blog-post-body";
 import { deleteNodeInBlogPostBodyTool } from "./mcp/delete-node-in-blog-post-body";
+import { getErrorMessage } from "./mcp/errors";
 import { mcpLogger } from "./mcp/logger";
 import type { McpEvent } from "./mcp/mcp-types";
 import { isRecord } from "./mcp/records";
@@ -34,7 +35,7 @@ function sanitizedResponse(
 		text = JSON.stringify(z.decode(codec, doc) ?? null, null, 2);
 	} catch (error) {
 		mcpLogger.warn(
-			{ error: error instanceof Error ? error.message : String(error) },
+			{ error: getErrorMessage(error) },
 			"Failed to sanitize an MCP response payload.",
 		);
 
