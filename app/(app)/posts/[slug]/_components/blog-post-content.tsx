@@ -59,5 +59,5 @@ export const markdownClassNames = {
 	tr: css.tr,
 	th: css.th,
 	td: css.td,
-	webembed: css.webembed,
+	embed: css.embed,
 };

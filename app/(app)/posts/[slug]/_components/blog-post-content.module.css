@@ -29,7 +29,7 @@
 						.img,
 					.media,
 					.snippet,
-					.webembed,
+					.embed,
 					.tableWrapper
 				):first-child {
 				margin-block-start: unset;
@@ -52,7 +52,7 @@
 						.img,
 					.media,
 					.snippet,
-					.webembed,
+					.embed,
 					.tableWrapper
 				):last-child {
 				margin-block-end: unset;
@@ -375,7 +375,7 @@
 		}
 	}
 
-	.webembed {
+	.embed {
 		margin-block: var(--chunk-block-margin);
 	}
 

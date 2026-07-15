@@ -116,8 +116,8 @@ function remarkEmbeds() {
 
 			parent.children.splice(index, 1, {
 				type: "leafDirective",
-				name: "webembed",
-				attributes: { href, title },
+				name: "embed",
+				attributes: { url: href, type: "webpage", title },
 				children: [],
 			});
 		});

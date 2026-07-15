@@ -5,10 +5,10 @@ import { cacheLife } from "next/cache";
 import { createElement, type ElementType, Fragment, memo } from "react";
 import jsxRuntime from "react/jsx-runtime";
 import type { Options as RehypeReactOptions } from "rehype-react";
+import { Embed } from "@/components/embed";
 import { Media } from "@/components/media";
 import { Snippet } from "@/components/snippet";
 import { Table, TableHeaderCell } from "@/components/table";
-import { WebEmbed } from "@/components/webembed";
 import { renderMarkdown } from "@/helpers/markdown";
 
 const defaultComponents = {
@@ -52,7 +52,7 @@ const defaultComponents = {
 	td: "td",
 	img: Media,
 	pre: Snippet,
-	webembed: WebEmbed,
+	embed: Embed,
 } satisfies Record<string, ElementType>;
 
 const fallbackClassNames = {};
