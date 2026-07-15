@@ -47,7 +47,7 @@ Each round:
 2. **Audit every item**: mistakes, misunderstandings, misleading or confusing points. Investigate rather than assume; ask the author via `AskUserQuestion` when an item is genuinely interpretable in multiple ways.
 3. **Strengthen the structure**: propose new item candidates, and find study articles, evidence, or resources that prove or support the items (with links). When web research is unavailable or fails, report which items lack sourced evidence instead of blocking the round.
 4. **Take the reader's perspective**: note what a developer or tech-minded reader would additionally want covered.
-5. Share the audited outline with per-item findings in-session, then write the revisions back — structural changes to `outline`, meta findings to `authoringNotes`, split per the authoring guidelines' placement rules — and verify both writes by re-reading.
+5. Share the audited outline with per-item findings in-session, then write the revisions back — structural changes to `outline`, meta findings to `authoringNotes`, split per the authoring guidelines' placement rules — verify both writes by re-reading, and hand back the agentic view URL per the authoring guidelines' authoring-artifacts reference (the only surface that renders these fields).
 6. **Go-sign gate**: ask via `AskUserQuestion` — go to drafting, run another research round, or apply specific direction. MUST NOT enter Phase 2 without the author's explicit go.
 
 ## Phase 2 — Drafting loop (repeat until the author is satisfied)
@@ -57,7 +57,7 @@ Each round:
 1. Write or update the **draft** body from the approved outline per [Blog Post Authoring Guidelines](../blog-post-authoring-guidelines/SKILL.md) — Japanese-primary (`ja-JP`), covering supported Markdown naturally per [Markdown Processing Guidelines](../markdown-processing-guidelines/SKILL.md). Body writes use the serialized-Lexical conventions in [Payload CMS MCP](../payload-cms-mcp/SKILL.md); prefer local block-level edits for targeted feedback, and suggest-then-apply for anything destructive.
 2. For a new post, resolve the required relationships as part of the first round: the site's single author resolved from existing data (never an invented ID), tags matched through `findTags` (report unmatched candidates rather than inventing), and the cover image chosen by the author via `AskUserQuestion` from `findCoverImages` options — **ask on every run**, never guess.
 3. Verify every mutation by re-reading the affected fields through MCP.
-4. Hand back the draft preview URL — `<site origin>/posts/<slug>?draft=true` (rendered draft) and `<site origin>/posts/<slug>?preview=true&draft=true` (Payload live preview) — and summarize what changed this round.
+4. Hand back the preview(s) matching what changed this round, then summarize the change: a body or reader-facing edit hands back the rendered draft (optionally the Payload live preview) per the Payload CMS MCP skill's safety-and-verification reference; an artifact-only round hands back the agentic view per the authoring guidelines' authoring-artifacts reference.
 5. Take the author's questions and requests into the next round; clarify ambiguous feedback via `AskUserQuestion` rather than guessing.
 
 ## Guardrails
