@@ -101,6 +101,6 @@ Code review checks the diff against the intended design; preview-environment deb
 
 **Guidelines:**
 
-- MUST link the chosen design from the pull request description when the work is UI-bearing: the tracking issue's UI design section and the chosen option's current attachment URL(s).
+- MUST link the chosen design from the pull request description when the plan presented the options exhibit: the tracking issue's UI design section and the chosen option's current attachment URL(s). A plan whose exhibit was legitimately omitted has no design to link, and this section does not apply.
 - MUST name the chosen option in the pull request body (for example, `Implements Option B — <name> from #<issue>`) so the reviewer knows which direction to hold the diff against.
 - MUST update those links whenever a later design revision changes the chosen design after the pull request exists.
