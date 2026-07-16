@@ -323,7 +323,6 @@ export interface Comment {
   authorAvatarUrl?: string | null;
   updatedAt: string;
   createdAt: string;
-  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -629,7 +628,6 @@ export interface CommentsSelect<T extends boolean = true> {
   authorAvatarUrl?: T;
   updatedAt?: T;
   createdAt?: T;
-  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

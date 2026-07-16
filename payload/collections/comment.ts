@@ -126,7 +126,10 @@ export const commentCollection: CollectionConfig = {
 		{ name: "authorGithubUsername", type: "text" },
 		{ name: "authorAvatarUrl", type: "text" },
 	],
-	trash: true,
+	// No soft-delete: moderation is expressed through `status` (a rejected
+	// comment is hidden but kept), and deleting a post hard-deletes its comments
+	// via the blog-post `beforeDelete` hook, so a lingering trashed row can never
+	// block that deletion against the required (NOT NULL) blogPost foreign key.
 	hooks: {
 		afterChange: [
 			async ({ doc, previousDoc, req }) => {

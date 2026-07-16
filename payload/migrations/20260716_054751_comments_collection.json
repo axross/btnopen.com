@@ -1180,13 +1180,6 @@
           "notNull": true,
           "autoincrement": false,
           "default": "(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))"
-        },
-        "deleted_at": {
-          "name": "deleted_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
         }
       },
       "indexes": {
@@ -1229,13 +1222,6 @@
           "name": "comments_created_at_idx",
           "columns": [
             "created_at"
-          ],
-          "isUnique": false
-        },
-        "comments_deleted_at_idx": {
-          "name": "comments_deleted_at_idx",
-          "columns": [
-            "deleted_at"
           ],
           "isUnique": false
         }
@@ -2998,6 +2984,6 @@
   "internal": {
     "indexes": {}
   },
-  "id": "5aa7e515-bd9e-4109-b7ad-5d99f4816e7a",
+  "id": "de3c9fa3-3581-40be-8f82-8470263b6bdd",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

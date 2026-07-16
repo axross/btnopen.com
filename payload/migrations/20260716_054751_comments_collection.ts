@@ -14,7 +14,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	\`author_avatar_url\` text,
   	\`updated_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
   	\`created_at\` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
-  	\`deleted_at\` text,
   	FOREIGN KEY (\`blog_post_id\`) REFERENCES \`blog_posts\`(\`id\`) ON UPDATE no action ON DELETE set null,
   	FOREIGN KEY (\`parent_id\`) REFERENCES \`comments\`(\`id\`) ON UPDATE no action ON DELETE set null
   );
@@ -25,7 +24,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.run(sql`CREATE INDEX \`comments_author_provider_id_idx\` ON \`comments\` (\`author_provider_id\`);`)
   await db.run(sql`CREATE INDEX \`comments_updated_at_idx\` ON \`comments\` (\`updated_at\`);`)
   await db.run(sql`CREATE INDEX \`comments_created_at_idx\` ON \`comments\` (\`created_at\`);`)
-  await db.run(sql`CREATE INDEX \`comments_deleted_at_idx\` ON \`comments\` (\`deleted_at\`);`)
   await db.run(sql`ALTER TABLE \`blog_posts\` ADD \`comments_enabled\` integer DEFAULT true;`)
   await db.run(sql`ALTER TABLE \`_blog_posts_v\` ADD \`version_comments_enabled\` integer DEFAULT true;`)
   await db.run(sql`ALTER TABLE \`payload_locked_documents_rels\` ADD \`comments_id\` integer REFERENCES comments(id);`)
