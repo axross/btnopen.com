@@ -16,7 +16,8 @@
 			color: var(--neutral-12);
 			font-size: var(--text-md);
 			font-style: italic;
-			font-weight: 700;
+			/* match the site blockquote's weight */
+			font-weight: 500;
 			line-height: var(--leading-lg);
 		}
 
