@@ -112,7 +112,7 @@ function CommentItem({
 		>
 			{comment.authorAvatarUrl ? (
 				<Image
-					className={css.avatar}
+					className={clsx(css.avatar, comment.isAuthor && css.authorAvatar)}
 					src={comment.authorAvatarUrl}
 					alt={comment.authorName}
 					width={40}

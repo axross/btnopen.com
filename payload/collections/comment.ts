@@ -51,19 +51,27 @@ export const commentCollection: CollectionConfig = {
 					return true;
 				}
 
-				let parentId: string | null = null;
+				// A relationship value arrives as the raw id (string or number) or,
+				// for polymorphic relations, as a `{ relationTo, value }` pair. Comment
+				// ids are numbers here, so `number` must be handled too — otherwise the
+				// check silently no-ops and a reply-to-a-reply slips through.
+				let parentId: string | number | null = null;
 
-				if (typeof value === "string") {
+				if (typeof value === "string" || typeof value === "number") {
 					parentId = value;
 				} else if (
 					typeof value === "object" &&
 					value !== null &&
 					"value" in value
 				) {
-					parentId = String((value as { value: unknown }).value);
+					const inner = (value as { value: unknown }).value;
+
+					if (typeof inner === "string" || typeof inner === "number") {
+						parentId = inner;
+					}
 				}
 
-				if (!parentId) {
+				if (parentId === null || parentId === "") {
 					return true;
 				}
 

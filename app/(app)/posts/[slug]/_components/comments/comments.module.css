@@ -64,6 +64,7 @@
 			border-radius: var(--radius-sm);
 			padding-block: var(--size-12);
 			padding-inline: var(--size-12);
+			outline: none;
 
 			&::placeholder {
 				color: var(--neutral-11);
@@ -99,6 +100,7 @@
 			padding-block: var(--size-8);
 			padding-inline: var(--size-16);
 			cursor: pointer;
+			outline: none;
 
 			&:disabled {
 				opacity: 0.5;
@@ -166,6 +168,13 @@
 			}
 		}
 
+		/* The site author's avatar stays true-color — Author avatars are kept
+		 * unfiltered by the brand-hue grade per the UI design system. */
+		.authorAvatar {
+			background-color: unset;
+			filter: none;
+		}
+
 		.avatarFallback {
 			display: flex;
 			align-items: center;
@@ -205,6 +214,7 @@
 			font-size: var(--text-xs);
 			color: var(--neutral-11);
 			text-decoration: none;
+			outline: none;
 
 			&:hover {
 				text-decoration: underline;
