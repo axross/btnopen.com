@@ -90,13 +90,13 @@ async function MaybeComments({
 	blogPost: Promise<BlogPostDetail | null>;
 	slug: Promise<string>;
 }): Promise<JSX.Element | null> {
-	const post = await blogPost;
+	const [post, resolvedSlug] = await Promise.all([blogPost, slug]);
 
 	if (!post?.commentsEnabled) {
 		return null;
 	}
 
-	return <Comments slug={await slug} />;
+	return <Comments slug={resolvedSlug} />;
 }
 
 async function MaybePayloadLivePreview({

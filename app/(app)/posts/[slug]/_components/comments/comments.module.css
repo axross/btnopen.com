@@ -71,7 +71,7 @@
 
 			&:focus-visible {
 				outline: var(--accent-5) solid var(--size-3);
-				outline-offset: var(--size-2);
+				outline-offset: var(--size-3);
 			}
 		}
 
@@ -212,7 +212,7 @@
 
 			&:focus-visible {
 				outline: var(--accent-5) solid var(--size-3);
-				outline-offset: var(--size-2);
+				outline-offset: var(--size-3);
 			}
 		}
 
