@@ -154,7 +154,12 @@ test("Blog post content", {
 	});
 
 	await test.step("Verify the blog post content", async () => {
-		await expect(content).toHaveScreenshot("content.png");
+		await expect(content).toHaveScreenshot("content.png", {
+			// both embed cards fetch live data at render time (web-page metadata and
+			// tweet syndication), so mask them to keep the content snapshot
+			// deterministic regardless of upstream availability.
+			mask: [content.getByTestId("embed")],
+		});
 	});
 });
 
@@ -169,7 +174,11 @@ test("Blog post embed block", {
 	tag: ["@scenario:post.embed", "@area:posts", "@priority:should"],
 }, async ({ page }) => {
 	const content = page.getByTestId("page").getByTestId("content");
-	const embedCard = content.getByTestId("embed");
+	// the seed post also carries an x.com embed with the same `embed` testid, so
+	// scope to the web-embed card by its href.
+	const embedCard = content.locator(
+		`[data-testid="embed"][href="${seedEmbedUrl}"]`,
+	);
 
 	await test.step("Verify the embed card links to the embedded URL", async () => {
 		await expect(embedCard).toBeVisible();
