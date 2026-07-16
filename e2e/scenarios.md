@@ -46,6 +46,7 @@ carries its `@scenario:<id>` tag. The reporter
 | post.table.edge-fades | A wide content table's edge fades track the scroll position | posts | may |
 | post.comments.section | A post shows the comments section with its approved comments and count | posts | should |
 | post.comments.disabled | A post with comments disabled renders no comments section | posts | should |
+| post.comments.csrf | The comment endpoint rejects a write without a CSRF token | posts | should |
 | post.comments.unavailable-hidden | A comments-enabled post with no comments hides the section when Clerk is unavailable | posts | should |
 | post.comments.author-reply | An author reply renders nested one level under a comment with an Author badge | posts | should |
 | post.comments.sign-in | A signed-out reader sees the Sign in with GitHub affordance (needs Clerk test tokens) | posts | may |

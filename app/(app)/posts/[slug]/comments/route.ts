@@ -1,6 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import type { NextRequest } from "next/server";
 import { getPayload } from "payload";
+import { hasMatchingCommentCsrfToken } from "@/helpers/comment-csrf";
 import { CommentSubmission } from "@/helpers/comments";
 import { isSameSiteRequest } from "@/helpers/request-origin";
 import { rootLogger } from "@/logger";
@@ -28,6 +29,17 @@ export async function POST(
 	// driven from another origin against a signed-in reader's browser (CSRF).
 	if (!isSameSiteRequest(request)) {
 		return Response.json({ error: "Cross-site request." }, { status: 403 });
+	}
+
+	// Defense in depth on top of the same-site check: require a double-submit
+	// token issued by `GET .../comments/token`. A cross-site page can read
+	// neither the token nor (under SameSite=Strict) the cookie, so it cannot
+	// present a matching pair.
+	if (!hasMatchingCommentCsrfToken(request)) {
+		return Response.json(
+			{ error: "Invalid or missing CSRF token." },
+			{ status: 403 },
+		);
 	}
 
 	if (!isClerkEnabled) {
@@ -65,14 +77,14 @@ export async function POST(
 			slug: { equals: slug },
 			_status: { equals: "published" },
 		},
-		select: { slug: true, commentsEnabled: true },
+		select: { slug: true, isCommentsEnabled: true },
 		depth: 0,
 		limit: 1,
 	});
 
 	const post = postResult.docs[0];
 
-	if (!post || post.commentsEnabled === false) {
+	if (!post || post.isCommentsEnabled === false) {
 		return Response.json(
 			{ error: "Comments are closed for this post." },
 			{ status: 404 },

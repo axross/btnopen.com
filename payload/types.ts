@@ -243,7 +243,7 @@ export interface BlogPost {
   /**
    * Show the reader comments section at the bottom of this post.
    */
-  commentsEnabled?: boolean | null;
+  isCommentsEnabled?: boolean | null;
   /**
    * Authoring outline for the agent-driven authoring loop. A single Markdown bullet-point list — only list items and inline elements are permitted; no paragraphs or other block types.
    */
@@ -604,7 +604,7 @@ export interface BlogPostsSelect<T extends boolean = true> {
   tags?: T;
   author?: T;
   publishedAt?: T;
-  commentsEnabled?: T;
+  isCommentsEnabled?: T;
   outline?: T;
   authoringNotes?: T;
   updatedAt?: T;

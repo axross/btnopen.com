@@ -4,7 +4,8 @@ import { SignInButton, useUser } from "@clerk/nextjs";
 import { clsx } from "clsx";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { type FormEvent, type JSX, useState } from "react";
+import { type FormEvent, type JSX, useRef, useState } from "react";
+import { COMMENT_CSRF_HEADER } from "@/helpers/comment-csrf";
 import { MAX_COMMENT_BODY_LENGTH } from "@/helpers/comments";
 import css from "./comments.module.css";
 
@@ -23,6 +24,7 @@ export function CommentComposer({ slug }: { slug: string }): JSX.Element {
 	const { isLoaded, isSignedIn, user } = useUser();
 	const [body, setBody] = useState("");
 	const [state, setState] = useState<SubmitState>("idle");
+	const csrfTokenRef = useRef<string | null>(null);
 
 	if (!isLoaded) {
 		return (
@@ -55,6 +57,27 @@ export function CommentComposer({ slug }: { slug: string }): JSX.Element {
 		);
 	}
 
+	// Fetches (once, then memoizes) the double-submit CSRF token the POST
+	// endpoint requires. The same request pins the matching cookie in the
+	// browser, so the token and cookie always originate together.
+	async function ensureCsrfToken(): Promise<string | null> {
+		if (csrfTokenRef.current) {
+			return csrfTokenRef.current;
+		}
+
+		const response = await fetch(`/posts/${slug}/comments/token`);
+
+		if (!response.ok) {
+			return null;
+		}
+
+		const { token } = (await response.json()) as { token?: string };
+
+		csrfTokenRef.current = token ?? null;
+
+		return csrfTokenRef.current;
+	}
+
 	async function handleSubmit(
 		event: FormEvent<HTMLFormElement>,
 	): Promise<void> {
@@ -69,9 +92,20 @@ export function CommentComposer({ slug }: { slug: string }): JSX.Element {
 		setState("submitting");
 
 		try {
+			const csrfToken = await ensureCsrfToken();
+
+			if (!csrfToken) {
+				setState("error");
+
+				return;
+			}
+
 			const response = await fetch(`/posts/${slug}/comments`, {
 				method: "POST",
-				headers: { "content-type": "application/json" },
+				headers: {
+					"content-type": "application/json",
+					[COMMENT_CSRF_HEADER]: csrfToken,
+				},
 				body: JSON.stringify({ body: trimmed }),
 			});
 

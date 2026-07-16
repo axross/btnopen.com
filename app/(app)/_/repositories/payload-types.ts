@@ -154,7 +154,7 @@ export const PayloadBlogPost = z
 				"Cover image upload for the blog post; null on autosaved drafts that do not have one yet.",
 			),
 		author: PayloadUser.describe("Blog post author."),
-		commentsEnabled: z
+		isCommentsEnabled: z
 			.boolean()
 			.nullish()
 			.transform((value) => value ?? true)

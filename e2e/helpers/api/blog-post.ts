@@ -189,16 +189,16 @@ export async function createPublishedPostWithEmptyDraftAgentic({
 }
 
 // Creates a PUBLISHED post (so it is publicly visible), reusing the seeded
-// cover image and current test user. `commentsEnabled` toggles the per-post
+// cover image and current test user. `isCommentsEnabled` toggles the per-post
 // comments section. Pair every call with `deleteBlogPost` in teardown.
 export async function createPublishedBlogPost({
-	commentsEnabled = true,
+	isCommentsEnabled = true,
 	page,
 	slug,
 	testInfo,
 	title,
 }: {
-	commentsEnabled?: boolean;
+	isCommentsEnabled?: boolean;
 	page: Page;
 	slug: string;
 	testInfo: TestInfo;
@@ -222,7 +222,7 @@ export async function createPublishedBlogPost({
 			brief: "Published post created by the comments e2e test.",
 			body: createMinimalBlogPostBody(),
 			author: userId,
-			commentsEnabled,
+			isCommentsEnabled,
 			_status: "published",
 			publishedAt: "2026-03-01T00:00:00Z",
 		},

@@ -92,7 +92,7 @@ async function MaybeComments({
 }): Promise<JSX.Element | null> {
 	const [post, resolvedSlug] = await Promise.all([blogPost, slug]);
 
-	if (!post?.commentsEnabled) {
+	if (!post?.isCommentsEnabled) {
 		return null;
 	}
 

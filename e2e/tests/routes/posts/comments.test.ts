@@ -6,6 +6,8 @@ import { deleteBlogPost } from "@/e2e/helpers/api/mcp";
 
 test.use({ storageState: authenticatedStorageState });
 
+const forbiddenStatus = 403;
+
 function uniqueSlug(prefix: string, repeat: number, worker: number): string {
 	return `${prefix}-${repeat}-${worker}-${Date.now()}`;
 }
@@ -123,6 +125,28 @@ test(
 );
 
 test(
+	"The comment endpoint rejects a write without a CSRF token",
+	{
+		tag: ["@scenario:post.comments.csrf", "@area:posts", "@priority:should"],
+	},
+	async ({ page }, testInfo) => {
+		// The double-submit CSRF check runs before auth and post lookup, so a
+		// tokenless write is rejected regardless of slug or Clerk configuration.
+		const url = new URL(
+			"/posts/any-slug/comments",
+			testInfo.project.use.baseURL,
+		);
+
+		const response = await page.request.post(`${url}`, {
+			headers: { "content-type": "application/json" },
+			data: { body: "CSRF テスト" },
+		});
+
+		expect(response.status()).toBe(forbiddenStatus);
+	},
+);
+
+test(
 	"A post with comments disabled renders no comments section",
 	{
 		tag: [
@@ -143,7 +167,7 @@ test(
 
 			await test.step("Create a published post with comments disabled", async () => {
 				({ id: postId } = await createPublishedBlogPost({
-					commentsEnabled: false,
+					isCommentsEnabled: false,
 					page,
 					slug,
 					testInfo,

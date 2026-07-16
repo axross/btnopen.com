@@ -70,7 +70,7 @@ export const blogPostCollection: CollectionConfig = {
 							},
 						},
 						{
-							name: "commentsEnabled",
+							name: "isCommentsEnabled",
 							type: "checkbox",
 							defaultValue: true,
 							admin: {
