@@ -164,6 +164,12 @@ async function bustCommentCache(
 	doc: { blogPost?: unknown },
 	req: PayloadRequest,
 ): Promise<void> {
+	// Skip when a cascading post delete already owns the invalidation, so a post
+	// with N comments does not fan out N identical cache-bust round-trips.
+	if (req.context?.skipCommentCacheBust) {
+		return;
+	}
+
 	try {
 		const blogPostId =
 			typeof doc.blogPost === "object" && doc.blogPost !== null

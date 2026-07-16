@@ -120,6 +120,12 @@ export const blogPostCollection: CollectionConfig = {
 				// otherwise the FK's ON DELETE set null would violate that NOT NULL
 				// column and block the deletion. Comments have no trash, so this is a
 				// hard delete. Fires only on permanent delete, not on trashing.
+				//
+				// The post (and its cached comment threads) is going away entirely, so
+				// each cascaded comment's own cache-bust is redundant — signal the
+				// comment hook to skip it rather than fan out one round-trip per row.
+				req.context.skipCommentCacheBust = true;
+
 				await req.payload.delete({
 					collection: "comments",
 					where: { blogPost: { equals: id } },
