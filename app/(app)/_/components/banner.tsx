@@ -37,7 +37,7 @@ export function Banner({
 		<div
 			className={clsx(css.banner, className)}
 			data-banner-type={variant}
-			data-testid="banner"
+			data-testid={`banner-${variant}`}
 			{...props}
 		>
 			<div aria-hidden="true" className={css.tile}>

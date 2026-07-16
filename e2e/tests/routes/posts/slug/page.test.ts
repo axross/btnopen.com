@@ -188,16 +188,12 @@ test("Blog post banner blocks", {
 	tag: ["@scenario:post.banner", "@area:posts", "@priority:should"],
 }, async ({ page }) => {
 	const content = page.getByTestId("page").getByTestId("content");
-	const banners = content.getByTestId("banner");
-	const noteBanner = content.locator(
-		'[data-testid="banner"][data-banner-type="note"]',
-	);
-	const warningBanner = content.locator(
-		'[data-testid="banner"][data-banner-type="warning"]',
-	);
+	const noteBanner = content.getByTestId("banner-note");
+	const warningBanner = content.getByTestId("banner-warning");
 
 	await test.step("Verify both banner types render as callouts", async () => {
-		await expect(banners).toHaveCount(2);
+		await expect(noteBanner).toHaveCount(1);
+		await expect(warningBanner).toHaveCount(1);
 		await expect(noteBanner).toBeVisible();
 		await expect(warningBanner).toBeVisible();
 	});
