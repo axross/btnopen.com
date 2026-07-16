@@ -12,9 +12,22 @@ The exhibit triggers on the *visual axis* of the Response Approach's UI-bearing 
 - SHOULD treat a change as visually-presenting when in doubt; a superfluous exhibit costs minutes, while an unchosen design costs a review round.
 - MUST state the exhibit decision in the plan either way: the UI design section opens the exhibit when the trigger is met, and otherwise records why the exhibit is omitted (no visual change, or a UI design section omitted entirely for non-UI work) — so the reviewer sees the decision was made deliberately, not skipped.
 
+## Two Kinds of Design Round
+
+Every design round is either an **options round** or a **confirmation round**, and which of the two applies is set by **what the human asked to see**, not merely by whether a direction has already been picked:
+
+- An **options round** presents at least three distinct candidates for the human to choose between (see [Constructing the Options](#constructing-the-options)). It covers the first design round (wireframe, or high fidelity under the skip condition) **and** any later round the human opens by asking to see candidates, examples, options, or alternatives at a fidelity or comparison axis not yet decided — even after they picked a direction at a lower fidelity. Asking to "see hi-fi examples" of a direction chosen only as a wireframe re-opens the decision at a fidelity the human has not yet compared, so it is an options round.
+- A **confirmation round** renders a single already-approved direction to confirm it (see [High-Fidelity Round](#high-fidelity-round)). A round is a confirmation **only when** it renders the exact direction the human already approved **and** no new fidelity or comparison decision is being requested.
+
+**Guidelines:**
+
+- MUST classify a round as options-or-confirmation by what the human asked for: a request to compare candidates, examples, options, or alternatives at a fidelity or axis not yet decided is an options round (at least three candidates), regardless of whether a direction was already chosen at a lower fidelity.
+- MUST treat a round as a confirmation only when it renders the exact already-approved direction and no new fidelity or comparison decision is on the table.
+- **When in doubt whether a round is options or confirmation, present at least three candidates.** A superfluous option costs minutes; a missing one costs a round.
+
 ## Constructing the Options
 
-These rules govern an *options round* — the first design round (wireframe, or high-fidelity under the skip condition below) and any later round that re-opens the direction. A confirmation round that renders an already-decided direction follows the confirmation rules in [High-Fidelity Round](#high-fidelity-round) instead. Three options exist to give the human a real decision, so distinctness is the quality bar: options that vary only accent color or corner radius are one design shown three times.
+These rules govern an *options round*; see [Two Kinds of Design Round](#two-kinds-of-design-round) for what makes a round an options round rather than a confirmation round. Three options exist to give the human a real decision, so distinctness is the quality bar: options that vary only accent color or corner radius are one design shown three times.
 
 **Example (option skeleton inside the UI design section):**
 
@@ -63,7 +76,7 @@ The first options round is at wireframe fidelity unless the skip condition below
 
 ## High-Fidelity Round
 
-After the human decides the wireframe-level direction — or immediately, under the skip condition above — the run confirms the direction with high-fidelity designs presented the same way: recorded in the issue, decided through the plan-approval gate. The artifacts are rendered images (mockups, or screenshots of throwaway local renders), produced without touching the repository and attached by the human, because the session cannot upload issue attachments itself:
+After the human decides the wireframe-level direction — or immediately, under the skip condition above — the run renders the direction at high fidelity, presented the same way: recorded in the issue, decided through the plan-approval gate. The default ladder is a **wireframe options round (at least three) → pick a direction → high-fidelity confirmation (one render of the chosen direction)**. But the high-fidelity round is equally a first-class **options round** — at least three rendered candidates — when the human wants to compare the real treatment (type, color, spacing, density) across directions before committing; wireframes deliberately hide exactly those, so this is often the fidelity where the comparison matters most. Which shape a given high-fidelity round takes follows [Two Kinds of Design Round](#two-kinds-of-design-round). The artifacts are rendered images (mockups, or screenshots of throwaway local renders), produced without touching the repository and attached by the human, because the session cannot upload issue attachments itself:
 
 1. Build the mockup in a scratch location outside the repository checkout (the harness scratchpad).
 2. Render or screenshot it, covering both themes and the viewports where the design differs.
@@ -79,7 +92,9 @@ After the human decides the wireframe-level direction — or immediately, under 
 - MUST verify the attached set against the delivered filenames, and re-request any missing or mismatched file before referencing the URLs.
 - MUST reference every attachment URL from the issue's UI design section under its option heading, and verify each referenced URL is a GitHub attachment URL that appears in the updated issue; an artifact only delivered in chat, or attached but never referenced, does not count as presented.
 - MUST re-enter the plan-approval gate once the round is recorded in the issue — high fidelity exists to be approved, not merely displayed.
-- MUST present a confirmation round — one that renders an already-decided direction — as that direction's renderings only: one faithful rendering per meaningful variant, no new options, no `(Recommended)` marker; bare `/address continue` approves the confirmation.
+- MUST, at the wireframe-approval gate, tell the human that the next round will confirm the single chosen direction at high fidelity, and offer the alternative of a high-fidelity options round (at least three rendered candidates) — so the human opts into a single confirmation knowingly rather than by silent default.
+- MUST run the high-fidelity round as an options round (at least three rendered candidates, one marked `(Recommended)`, per [Constructing the Options](#constructing-the-options)) whenever the human asks to compare directions, candidates, or examples at high fidelity — even after choosing a direction at wireframe fidelity — and record and approve the choice by the same rules as any options round.
+- MUST present a confirmation round — one that renders an already-decided direction with no new fidelity or comparison decision requested — as that direction's renderings only: one faithful rendering per meaningful variant, no new options, no `(Recommended)` marker; bare `/address continue` approves the confirmation.
 - SHOULD render at least the chosen (or recommended) option in both light and dark themes, and at the viewport widths where its layout changes, per the project's UI design principles.
 
 ## Recording the Choice and Revisions
