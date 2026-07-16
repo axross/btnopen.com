@@ -43,6 +43,11 @@ carries its `@scenario:<id>` tag. The reporter
 | post.table.keyboard-scroll | A wide content table is keyboard-scrollable | posts | should |
 | post.table.scrollbar | Only an overflowing content table renders a scrollbar | posts | may |
 | post.table.edge-fades | A wide content table's edge fades track the scroll position | posts | may |
+| post.comments.section | A post shows the comments section with its approved comments and count | posts | should |
+| post.comments.disabled | A post with comments disabled renders no comments section | posts | should |
+| post.comments.author-reply | An author reply renders nested one level under a comment with an Author badge | posts | should |
+| post.comments.sign-in | A signed-out reader sees the Sign in with GitHub affordance (needs Clerk test tokens) | posts | may |
+| post.comments.submit | A signed-in reader submits a comment that stays pending until approved (needs Clerk test tokens) | posts | may |
 | not-found.status | An unknown route responds with a 404 status | not-found | must |
 | post.not-found | An unknown post slug shows the not-found page | not-found | must |
 | post.agentic.not-found | An unknown slug on the agentic view shows the not-found page | not-found | should |

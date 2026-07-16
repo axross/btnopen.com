@@ -6,6 +6,7 @@ import { buildConfig } from "payload";
 import sharp from "sharp";
 import { avatarImageCollection } from "./collections/avatar-image";
 import { blogPostCollection } from "./collections/blog-post";
+import { commentCollection } from "./collections/comment";
 import { coverImageCollection } from "./collections/cover-image";
 import { mediaCollection } from "./collections/media";
 import { tagCollection } from "./collections/tag";
@@ -33,6 +34,7 @@ export const config = buildConfig({
 	collections: [
 		userCollection,
 		blogPostCollection,
+		commentCollection,
 		tagCollection,
 		mediaCollection,
 		coverImageCollection,

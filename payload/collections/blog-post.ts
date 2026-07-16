@@ -69,6 +69,15 @@ export const blogPostCollection: CollectionConfig = {
 								},
 							},
 						},
+						{
+							name: "commentsEnabled",
+							type: "checkbox",
+							defaultValue: true,
+							admin: {
+								description:
+									"Show the reader comments section at the bottom of this post.",
+							},
+						},
 					],
 				},
 				{

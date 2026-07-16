@@ -154,6 +154,11 @@ export const PayloadBlogPost = z
 				"Cover image upload for the blog post; null on autosaved drafts that do not have one yet.",
 			),
 		author: PayloadUser.describe("Blog post author."),
+		commentsEnabled: z
+			.boolean()
+			.nullish()
+			.transform((value) => value ?? true)
+			.describe("Whether the reader comments section shows on this post."),
 		publishedAt: z.iso
 			.datetime()
 			.nullable()
@@ -164,6 +169,55 @@ export const PayloadBlogPost = z
 	.describe("Payload blog post document.");
 
 export type PayloadBlogPost = z.infer<typeof PayloadBlogPost>;
+
+/** Moderation status of a comment; only `approved` is publicly visible. */
+export const PayloadCommentStatus = z
+	.enum(["pending", "approved", "rejected"])
+	.describe("Comment moderation status.");
+
+export type PayloadCommentStatus = z.infer<typeof PayloadCommentStatus>;
+
+/**
+ * A relationship id from Payload, which may arrive as a scalar id or a populated
+ * object depending on query depth. Normalized to a string id.
+ */
+const PayloadRelationId = z
+	.union([
+		z.string(),
+		z.number(),
+		z.object({ id: z.union([z.string(), z.number()]) }),
+	])
+	.transform((value) =>
+		typeof value === "object" ? String(value.id) : String(value),
+	);
+
+export const PayloadComment = z
+	.object({
+		id: z.union([z.string(), z.number()]).transform(String),
+		parent: PayloadRelationId.nullish().transform((value) => value ?? null),
+		authorReply: z
+			.boolean()
+			.nullish()
+			.transform((value) => value ?? false),
+		status: PayloadCommentStatus,
+		body: PayloadNonEmptyString,
+		authorName: z
+			.string()
+			.nullish()
+			.transform((value) => value ?? null),
+		authorGithubUsername: z
+			.string()
+			.nullish()
+			.transform((value) => value ?? null),
+		authorAvatarUrl: z
+			.string()
+			.nullish()
+			.transform((value) => value ?? null),
+		createdAt: z.iso.datetime().describe("Creation timestamp."),
+	})
+	.describe("Payload comment document.");
+
+export type PayloadComment = z.infer<typeof PayloadComment>;
 
 /**
  * Selects the Open Graph thumbnail size from a blog post's cover image,
