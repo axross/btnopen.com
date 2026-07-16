@@ -73,11 +73,11 @@ jobs:
     timeout-minutes: 20
     permissions:
       contents: read
-      # `issues: write` is required for the github-script comment steps: PR
-      # comments post through the Issues API (issues.createComment /
-      # updateComment), which is scoped under `issues`, not `pull-requests`.
-      # With an explicit permissions block, every unlisted scope defaults to
-      # `none`, so omitting it would 403 and fail the job.
+      # `issues: write` is required for the github-script comment step: PR
+      # comments post through the Issues API (issues.createComment), which is
+      # scoped under `issues`, not `pull-requests`. With an explicit permissions
+      # block, every unlisted scope defaults to `none`, so omitting it would 403
+      # and fail the job.
       issues: write
       pull-requests: write
     env:
@@ -154,42 +154,61 @@ jobs:
             --build-env LIBSQL_PAYLOAD_TURSO_DATABASE_URL="${LIBSQL_URL}" \
             --build-env LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN="${LIBSQL_TOKEN}" | tail -n1)"
           echo "url=${url}" >> "${GITHUB_OUTPUT}"
+      - name: Assign Stable Preview Alias
+        id: alias
+        # `vercel deploy` returns a per-commit URL (…-<hash>-<scope>.vercel.app)
+        # that changes on every push. Re-point a deterministic per-PR alias at
+        # this deployment so the pull request's preview URL stays stable across
+        # pushes and always serves the newest build. The alias label defaults to
+        # the sanitized repository name and can be overridden with the optional
+        # `VERCEL_PREVIEW_ALIAS_PREFIX` variable. Aliasing is scoped by the same
+        # VERCEL_ORG_ID / VERCEL_PROJECT_ID the deploy step relies on. Fail loud
+        # if it fails: a stable URL is the whole point, so silently falling back
+        # to the per-commit URL would defeat the change.
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
+          ALIAS_PREFIX: ${{ vars.VERCEL_PREVIEW_ALIAS_PREFIX }}
+          REPOSITORY_NAME: ${{ github.event.repository.name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          prefix="${ALIAS_PREFIX}"
+          if [ -z "${prefix}" ]; then
+            # Reduce the repository name to a valid .vercel.app label: lowercase,
+            # runs of non-alphanumerics collapsed to a single `-`, ends trimmed.
+            prefix="$(printf '%s' "${REPOSITORY_NAME}" \
+              | tr '[:upper:]' '[:lower:]' \
+              | sed 's/[^a-z0-9]\+/-/g; s/^-//; s/-$//')"
+          fi
+          alias="${prefix}-pr-${PR_NUMBER}.vercel.app"
+          vercel alias set "${DEPLOYMENT_URL}" "${alias}" --token="${{ secrets.VERCEL_TOKEN }}"
+          echo "url=https://${alias}" >> "${GITHUB_OUTPUT}"
       - name: Comment Preview URL
         uses: actions/github-script@v7
+        env:
+          # The stable per-PR alias, not the per-commit deployment URL.
+          PREVIEW_URL: ${{ steps.alias.outputs.url }}
         with:
           script: |
-            const marker = "<!-- preview-deploy -->";
-            const url = ${{ toJSON(steps.deploy.outputs.url) }};
+            const url = process.env.PREVIEW_URL;
             const database = `preview-pr-${context.issue.number}`;
+            const sha = context.payload.pull_request.head.sha.slice(0, 7);
+            // Post a new comment on every deploy (never edit a prior one), so
+            // each build lands a fresh, timeline-visible entry. The URL is
+            // stable, so the short SHA records which commit this entry deployed.
             const body = [
-              marker,
               "### 🚀 Preview deployment",
               "",
               url,
               "",
-              `Served by an isolated Turso branch database (\`${database}\`) branched from production. It is destroyed automatically when this pull request closes.`,
+              `Deployed \`${sha}\`. Served by an isolated Turso branch database (\`${database}\`) branched from production and destroyed automatically when this pull request closes. This URL is stable for the pull request and always serves the latest preview.`,
             ].join("\n");
-            const { data: comments } = await github.rest.issues.listComments({
+            await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
+              body,
             });
-            const existing = comments.find((c) => c.body && c.body.includes(marker));
-            if (existing) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existing.id,
-                body,
-              });
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body,
-              });
-            }
 
   teardown:
     name: Teardown Preview
@@ -199,11 +218,11 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: read
-      # `issues: write` is required for the github-script comment steps: PR
-      # comments post through the Issues API (issues.createComment /
-      # updateComment), which is scoped under `issues`, not `pull-requests`.
-      # With an explicit permissions block, every unlisted scope defaults to
-      # `none`, so omitting it would 403 and fail the job.
+      # `issues: write` is required for the github-script comment step: PR
+      # comments post through the Issues API (issues.createComment), which is
+      # scoped under `issues`, not `pull-requests`. With an explicit permissions
+      # block, every unlisted scope defaults to `none`, so omitting it would 403
+      # and fail the job.
       issues: write
       pull-requests: write
     env:
@@ -221,29 +240,22 @@ jobs:
           set -euo pipefail
           database="preview-pr-${{ github.event.pull_request.number }}"
           turso db destroy "${database}" --yes || echo "::notice::${database} was already absent."
-      - name: Update Preview Comment
+      - name: Comment Preview Torn Down
         uses: actions/github-script@v7
         with:
           script: |
-            const marker = "<!-- preview-deploy -->";
             const database = `preview-pr-${context.issue.number}`;
+            // Post a distinct teardown comment rather than editing a prior
+            // preview comment, consistent with the append-a-comment-per-deploy
+            // model: the timeline keeps the full deploy-then-teardown history.
             const body = [
-              marker,
               "### 🚀 Preview deployment",
               "",
               `Torn down — the isolated Turso branch database (\`${database}\`) for this pull request was destroyed when it closed.`,
             ].join("\n");
-            const { data: comments } = await github.rest.issues.listComments({
+            await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
+              body,
             });
-            const existing = comments.find((c) => c.body && c.body.includes(marker));
-            if (existing) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existing.id,
-                body,
-              });
-            }
