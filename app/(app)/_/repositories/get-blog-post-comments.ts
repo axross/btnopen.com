@@ -129,25 +129,41 @@ export async function getBlogPostComments({
 		limit: 1000,
 	});
 
-	const rows: CommentRow[] = commentsResult.docs.map((doc) => {
-		const parsed = PayloadComment.parse(doc);
-		const isAuthor = parsed.authorReply;
+	// Parse each row defensively: a single malformed comment is skipped and
+	// reported rather than failing the whole section (matching the other
+	// list-returning repositories).
+	const rows: CommentRow[] = commentsResult.docs.flatMap((doc) => {
+		const parsed = PayloadComment.safeParse(doc);
 
-		return {
-			id: parsed.id,
-			parentId: parsed.parent,
-			status: parsed.status,
-			body: parsed.body,
-			authorName: isAuthor
-				? (parsed.authorName ?? siteAuthorName ?? "Author")
-				: (parsed.authorName ?? "Anonymous"),
-			authorGithubUsername: parsed.authorGithubUsername,
-			authorAvatarUrl: isAuthor
-				? (parsed.authorAvatarUrl ?? siteAuthorAvatarUrl)
-				: parsed.authorAvatarUrl,
-			isAuthor,
-			createdAt: parsed.createdAt,
-		};
+		if (!parsed.success) {
+			logger.warn(
+				{ slug },
+				"Skipped a comment row that did not match the expected shape.",
+			);
+
+			return [];
+		}
+
+		const comment = parsed.data;
+		const isAuthor = comment.authorReply;
+
+		return [
+			{
+				id: comment.id,
+				parentId: comment.parent,
+				status: comment.status,
+				body: comment.body,
+				authorName: isAuthor
+					? (comment.authorName ?? siteAuthorName ?? "Author")
+					: (comment.authorName ?? "Anonymous"),
+				authorGithubUsername: comment.authorGithubUsername,
+				authorAvatarUrl: isAuthor
+					? (comment.authorAvatarUrl ?? siteAuthorAvatarUrl)
+					: comment.authorAvatarUrl,
+				isAuthor,
+				createdAt: comment.createdAt,
+			},
+		];
 	});
 
 	const threads = buildCommentThreads(rows).map((thread) => ({
