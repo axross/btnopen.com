@@ -50,6 +50,17 @@ Trade-offs: … (what it costs relative to Options A and C)
 - SHOULD keep each option compact enough to compare side by side — a heading, a sketch, and a handful of sentences.
 - SHOULD note per option any accessibility or responsive implication that materially distinguishes it; the full accessibility and responsive intent is written for the chosen direction per the project's product requirement guidelines once the choice lands.
 
+## Presenting Designs as Artifacts
+
+Every design round — wireframe and high fidelity alike — is shown to the human as a published **Artifact** (the harness's hosted-page feature; in Claude Code, the `Artifact` tool), so the human sees the design rendered rather than reading a raw sketch or waiting on a manual upload. The Artifact is the *presentation* surface only; the tracking issue stays the *durable record* (see [Recording the Choice and Revisions](#recording-the-choice-and-revisions)), because an Artifact is a private-by-default page that the independent reviewer's separate session and later preview-debugging agents cannot open. The two always travel together: publish the Artifact to show the human, and keep the reviewer-accessible copy in the issue.
+
+**Guidelines:**
+
+- MUST present every design round as a published Artifact — at both wireframe and high fidelity, for options rounds and confirmation rounds alike — and consult the harness's artifact-design guidance (in Claude Code, the `artifact-design` skill) before building the page.
+- MUST shape the Artifact to the round: an options round renders its at-least-three candidates so they compare side by side, each labeled and carrying its rationale and trade-offs; a confirmation round renders the single already-approved direction. Cover both light and dark themes and the viewports where the design differs, and hold a wireframe Artifact to the same breadboard fidelity as its embedded sketch — regions, hierarchy, flow, not colors or final type.
+- MUST keep the GitHub issue the durable record alongside the Artifact: embed the wireframe (ASCII or Mermaid) or attach the high-fidelity screenshot in the issue, and reference the Artifact URL from the UI design section next to it. An Artifact link alone does not satisfy the recording rules — the reviewer bot and preview-debug agents must be able to see the design without a claude.ai account.
+- MUST NOT treat publishing or viewing the Artifact as design approval; the plan-approval gate always runs against the design recorded in the issue, per [Recording the Choice and Revisions](#recording-the-choice-and-revisions).
+
 ## Wireframe Round
 
 The first options round is at wireframe fidelity unless the skip condition below applies. A wireframe shows places, affordances, and flow — regions and their arrangement — not fonts, exact spacing, or final copy.
@@ -69,24 +80,24 @@ The first options round is at wireframe fidelity unless the skip condition below
 
 **Guidelines:**
 
-- MUST embed every wireframe directly in the issue body, inside the UI design section, in a form GitHub renders without attachments: an ASCII sketch in a fenced code block or a Mermaid diagram (`flowchart` or `block-beta`), whichever draws the layout more clearly.
-- MUST keep wireframes at breadboard fidelity — regions, hierarchy, flow; MUST NOT spend the wireframe round on colors, exact typography, or final copy.
+- MUST embed every wireframe directly in the issue body, inside the UI design section, in a form GitHub renders without attachments: an ASCII sketch in a fenced code block or a Mermaid diagram (`flowchart` or `block-beta`), whichever draws the layout more clearly. This embedded sketch is the round's durable record; also publish the wireframe as an Artifact for presentation, per [Presenting Designs as Artifacts](#presenting-designs-as-artifacts).
+- MUST keep wireframes at breadboard fidelity — regions, hierarchy, flow — in both the embedded sketch and the Artifact; MUST NOT spend the wireframe round on colors, exact typography, or final copy.
 - SHOULD add a one-line note per option on how its layout reflows at narrow viewports when the options genuinely differ there.
 - MAY skip straight to a high-fidelity options round when the structural/layout pattern is already fixed (for example, the change restyles an existing arrangement) and the design-system/component context pins down what high fidelity looks like; MUST state in the UI design section that the wireframe round was skipped and why.
 
 ## High-Fidelity Round
 
-After the human decides the wireframe-level direction — or immediately, under the skip condition above — the run renders the direction at high fidelity, presented the same way: recorded in the issue, decided through the plan-approval gate. The default ladder is a **wireframe options round (at least three) → pick a direction → high-fidelity confirmation (one render of the chosen direction)**. But the high-fidelity round is equally a first-class **options round** — at least three rendered candidates — when the human wants to compare the real treatment (type, color, spacing, density) across directions before committing; wireframes deliberately hide exactly those, so this is often the fidelity where the comparison matters most. Which shape a given high-fidelity round takes follows [Two Kinds of Design Round](#two-kinds-of-design-round). The artifacts are rendered images (mockups, or screenshots of throwaway local renders), produced without touching the repository and attached by the human, because the session cannot upload issue attachments itself:
+After the human decides the wireframe-level direction — or immediately, under the skip condition above — the run renders the direction at high fidelity, presented the same way: recorded in the issue, decided through the plan-approval gate. The default ladder is a **wireframe options round (at least three) → pick a direction → high-fidelity confirmation (one render of the chosen direction)**. But the high-fidelity round is equally a first-class **options round** — at least three rendered candidates — when the human wants to compare the real treatment (type, color, spacing, density) across directions before committing; wireframes deliberately hide exactly those, so this is often the fidelity where the comparison matters most. Which shape a given high-fidelity round takes follows [Two Kinds of Design Round](#two-kinds-of-design-round). The design is published as an Artifact for live presentation, per [Presenting Designs as Artifacts](#presenting-designs-as-artifacts), and the issue's durable record is a rendered image (a mockup, or a screenshot of a throwaway local render) — produced without touching the repository and attached by the human, because the session cannot upload issue attachments itself:
 
-1. Build the mockup in a scratch location outside the repository checkout (the harness scratchpad).
-2. Render or screenshot it, covering both themes and the viewports where the design differs.
-3. Deliver the image files to the human through the harness's file-delivery mechanism (in Claude Code, send the files in the turn output) with self-describing filenames (`issue-79-option-b-dark-mobile.png`), and in the same message ask the human to attach them to the tracking issue and resume with `/address continue` — pasting the generated attachment URLs in the resume message when the attachment landed anywhere other than the issue itself.
+1. Build the mockup as a self-contained page in a scratch location outside the repository checkout (the harness scratchpad), following the harness's artifact-design guidance.
+2. Publish it as an Artifact and present it to the human (in Claude Code, the `Artifact` tool) — the live presentation surface — covering both themes and the viewports where the design differs.
+3. Screenshot the same page for the issue's durable record, then deliver the image files to the human through the harness's file-delivery mechanism (in Claude Code, send the files in the turn output) with self-describing filenames (`issue-79-option-b-dark-mobile.png`), and in the same message ask the human to attach them to the tracking issue and resume with `/address continue` — pasting the generated attachment URLs (and the Artifact URL) in the resume message when the attachment landed anywhere other than the issue itself.
 4. Set the status block to `awaiting attachment (design round N)` and end the turn — attachment is a human action; never poll or schedule a wake-up for it.
-5. On resume, collect the attachment URLs (from wherever in the issue the human attached them, or from the resume message), verify the set, and reference each URL from the UI design section under the option it belongs to.
+5. On resume, collect the attachment URLs (from wherever in the issue the human attached them, or from the resume message), verify the set, and reference each URL — alongside the round's Artifact URL — from the UI design section under the option it belongs to.
 
 **Guidelines:**
 
-- MUST carry high-fidelity artifacts as GitHub issue attachments only; MUST NOT commit design artifacts to the repository on any branch, and MUST NOT leave mockup or render files in the working tree.
+- MUST carry the high-fidelity durable record as GitHub issue attachments only; MUST NOT commit design mockups or renders to the repository on any branch, and MUST NOT leave mockup or render files in the working tree. (The published Artifact is the hosted-page presentation, not a repository file — publishing it is expected and is not a repository commit.)
 - MUST route attachment upload through the human by delivering the files and requesting the attachment in one turn output, then going dormant in the `awaiting attachment (design round N)` status-block state.
 - MUST treat a bare `/address continue` received in the awaiting-attachment state as "files attached" — collect and verify the URLs and update the issue — never as approval of a round that is not yet recorded there.
 - MUST verify the attached set against the delivered filenames, and re-request any missing or mismatched file before referencing the URLs.
@@ -103,12 +114,12 @@ The issue is the single design record. Anyone — the maintainer, the independen
 
 **Guidelines:**
 
-- MUST record the outcome in the UI design section when the human approves: mark the chosen option (`**Chosen:** Option B — <name>`) and keep its sketch or artifacts as the section's current design.
+- MUST record the outcome in the UI design section when the human approves: mark the chosen option (`**Chosen:** Option B — <name>`) and keep its embedded sketch or attached render as the section's current design, with the round's Artifact URL referenced beside it.
 - MUST update the UI design section in place on every design revision during the plan phase, so the section always shows the current design state.
 - MUST move superseded options and rounds into one collapsed `<details>` subsection titled `Design history` inside the UI design section, labeled by round (`Round 1 — wireframes`, `Round 2 — high fidelity`), and MUST NOT delete them.
 - MUST keep the run's status block current with the pending design state (for example, `awaiting plan approval (design round 2: high fidelity)` or `awaiting attachment (design round 2)`).
 - MUST re-enter the plan-approval gate after every plan-phase revision: update the issue first, then stop and wait for `/address continue`.
-- MUST apply these same recording rules when a design revision arises after the pull request exists (for example, from human review comments): update the issue's UI design section in place, preserve the history, route new artifacts through the human, refresh the pull request's design links — and run the change as a Phase 4 round (back to draft if flipped, fresh independent review) rather than a plan-phase stop.
+- MUST apply these same recording rules when a design revision arises after the pull request exists (for example, from human review comments): update the issue's UI design section in place, preserve the history, route new renders through the human, update the Artifact so the linked page matches the current design, refresh the pull request's design links — and run the change as a Phase 4 round (back to draft if flipped, fresh independent review) rather than a plan-phase stop.
 
 ## Design Links in the Pull Request
 
@@ -116,6 +127,6 @@ Code review checks the diff against the intended design; preview-environment deb
 
 **Guidelines:**
 
-- MUST link the chosen design from the pull request description when the plan presented the options exhibit: the tracking issue's UI design section and the chosen option's current attachment URL(s). A plan whose exhibit was legitimately omitted has no design to link, and this section does not apply.
+- MUST link the chosen design from the pull request description when the plan presented the options exhibit: the tracking issue's UI design section, the chosen option's current attachment URL(s), and its Artifact URL. A plan whose exhibit was legitimately omitted has no design to link, and this section does not apply.
 - MUST name the chosen option in the pull request body (for example, `Implements Option B — <name> from #<issue>`) so the reviewer knows which direction to hold the diff against.
 - MUST update those links whenever a later design revision changes the chosen design after the pull request exists.
