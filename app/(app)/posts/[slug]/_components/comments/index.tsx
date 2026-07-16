@@ -15,20 +15,28 @@ import css from "./comments.module.css";
 
 /**
  * The reader comments section rendered at the bottom of a post: a muted
- * heading, the composer (or a disabled placeholder when Clerk is not
- * configured), and the approved comment threads with the author's one-level
- * replies.
+ * heading, the composer (only when Clerk is configured), and the approved
+ * comment threads with the author's one-level replies.
+ *
+ * The whole section is omitted when there is nothing to show and nothing can
+ * be posted — no visible comments and Clerk unavailable — so an unconfigured
+ * deployment renders no dead comment UI. Existing approved comments still
+ * render read-only when Clerk is unavailable, only the composer drops out.
  */
 export async function Comments({
 	slug,
 }: {
 	slug: string;
-}): Promise<JSX.Element> {
+}): Promise<JSX.Element | null> {
 	const [locale, t] = await Promise.all([
 		getActiveLocale(),
 		getTranslations("comments"),
 	]);
 	const { count, threads } = await getBlogPostComments({ slug, locale });
+
+	if (!isClerkEnabled && count === 0) {
+		return null;
+	}
 
 	return (
 		<section
@@ -41,13 +49,7 @@ export async function Comments({
 				<span className={css.count}>{`(${count})`}</span>
 			</div>
 
-			{isClerkEnabled ? (
-				<CommentComposer slug={slug} />
-			) : (
-				<p className={css.hint} data-testid="composer">
-					{t("unavailable")}
-				</p>
-			)}
+			{isClerkEnabled ? <CommentComposer slug={slug} /> : null}
 
 			{threads.length === 0 ? (
 				<p className={css.empty}>{t("empty")}</p>

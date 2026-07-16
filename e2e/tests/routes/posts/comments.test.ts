@@ -170,3 +170,58 @@ test(
 		}
 	},
 );
+
+// This scenario only holds when Clerk is genuinely unconfigured (local, CI, or
+// a preview without Clerk keys); with Clerk on, the same post renders the
+// section with a composer and an empty state. Define it only in that case
+// rather than skipping at runtime, matching the suite's env-gated helpers.
+// biome-ignore lint/style/noProcessEnv: env-driven gate mirroring runtime `isClerkEnabled`
+if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+	test(
+		"A comments-enabled post with no comments hides the section when Clerk is unavailable",
+		{
+			tag: [
+				"@scenario:post.comments.unavailable-hidden",
+				"@area:posts",
+				"@priority:should",
+			],
+		},
+		async ({ page }, testInfo) => {
+			let postId: number | null = null;
+
+			try {
+				const slug = uniqueSlug(
+					"comments-no-clerk",
+					testInfo.repeatEachIndex,
+					testInfo.workerIndex,
+				);
+
+				await test.step("Create a published post with comments enabled and no comments", async () => {
+					({ id: postId } = await createPublishedBlogPost({
+						page,
+						slug,
+						testInfo,
+						title: "コメントのない有効な投稿",
+					}));
+				});
+
+				await test.step("Navigate to the post", async () => {
+					await page.goto(`/posts/${slug}`);
+				});
+
+				await test.step("Verify the post renders but the comments section does not", async () => {
+					await expect(page.getByTestId("page")).toBeVisible();
+					await expect(page.getByTestId("comments")).toHaveCount(0);
+				});
+			} finally {
+				if (postId !== null) {
+					const id = postId;
+
+					await test.step("Clean up the post", async () => {
+						await deleteBlogPost({ id, page, testInfo });
+					});
+				}
+			}
+		},
+	);
+}
