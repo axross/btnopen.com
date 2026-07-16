@@ -1,0 +1,77 @@
+@layer components {
+	@scope (.tweet) {
+		:scope {
+			display: flex;
+			flex-direction: column;
+			gap: var(--size-16);
+			/* reset the UA blockquote inline margin; the surrounding `.embed`
+			   class owns the block spacing between post chunks. */
+			margin-inline: 0;
+			padding-block: var(--size-8);
+			padding-inline: var(--size-16);
+			border-inline-start: var(--size-4) solid var(--accent-7);
+		}
+
+		.body {
+			color: var(--neutral-12);
+			font-size: var(--text-md);
+			font-style: italic;
+			font-weight: 500;
+			line-height: var(--leading-lg);
+		}
+
+		.link {
+			color: var(--accent-11);
+			text-decoration: underline;
+			text-underline-offset: 0.15em;
+		}
+
+		.cite {
+			display: flex;
+			align-items: baseline;
+			flex-wrap: wrap;
+			gap: var(--size-8);
+			color: var(--neutral-10);
+			font-size: var(--text-sm);
+		}
+
+		.name {
+			min-width: 0;
+			overflow-wrap: anywhere;
+			color: var(--neutral-11);
+			font-size: var(--text-md);
+			font-weight: 600;
+		}
+
+		.handle {
+			min-width: 0;
+			overflow-wrap: anywhere;
+		}
+
+		.separator {
+			opacity: 0.55;
+		}
+
+		.view {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.3em;
+			/* pin the affordance to the far end of the citation row, kept intact */
+			margin-inline-start: auto;
+			flex-shrink: 0;
+			color: var(--neutral-10);
+			font-style: normal;
+			text-decoration: none;
+			white-space: nowrap;
+
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+
+		.viewIcon {
+			inline-size: 0.95em;
+			block-size: 0.95em;
+		}
+	}
+}

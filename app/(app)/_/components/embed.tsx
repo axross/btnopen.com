@@ -1,15 +1,17 @@
 import { captureException } from "@sentry/nextjs";
 import type { ComponentProps, JSX } from "react";
 import { Suspense } from "react";
+import { TweetEmbedLoaded } from "./tweetembed/loaded";
+import { TweetEmbedLoading } from "./tweetembed/loading";
 import { WebEmbedLoaded } from "./webembed/loaded";
 import { WebEmbedLoading } from "./webembed/loading";
 
 /**
  * Renders an `embed` markdown leaf directive, dispatching on its `type`
- * attribute. The "webpage" type renders the web-embed card; an unknown type
- * degrades to a plain external link and a missing/invalid URL renders nothing,
- * both reported to Sentry so authoring faults surface without breaking the
- * post.
+ * attribute. The "webpage" type renders the web-embed card and "x.com" renders
+ * the first-party tweet card; an unknown type degrades to a plain external link
+ * and a missing/invalid URL renders nothing, both reported to Sentry so
+ * authoring faults surface without breaking the post.
  */
 export function Embed({
 	url,
@@ -33,6 +35,25 @@ export function Embed({
 		);
 
 		return null;
+	}
+
+	if (type === "x.com") {
+		return (
+			<Suspense
+				fallback={
+					<TweetEmbedLoading
+						className={className}
+						data-testid="embed-loading"
+					/>
+				}
+			>
+				<TweetEmbedLoaded
+					href={url}
+					className={className}
+					data-testid="embed"
+				/>
+			</Suspense>
+		);
 	}
 
 	if (type !== "webpage") {
