@@ -140,9 +140,14 @@ jobs:
         # and runtime, so they override the project's Preview environment for
         # this deploy alone. The production credentials must be scoped to the
         # Production environment in Vercel and are never passed here.
+        #
+        # `BLOB_PAYLOAD_PREFIX` namespaces this PR's uploaded media under a
+        # `pr-<n>/` path in the Blob store so a preview's media is isolated and
+        # can be pruned wholesale on teardown (production leaves this unset).
         env:
           LIBSQL_URL: ${{ steps.turso.outputs.url }}
           LIBSQL_TOKEN: ${{ steps.turso.outputs.token }}
+          BLOB_PREFIX: pr-${{ github.event.pull_request.number }}
         run: |
           set -euo pipefail
           # `vercel deploy` prints progress to stderr and the deployment URL to
@@ -151,8 +156,10 @@ jobs:
             --token="${{ secrets.VERCEL_TOKEN }}" \
             --env LIBSQL_PAYLOAD_TURSO_DATABASE_URL="${LIBSQL_URL}" \
             --env LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN="${LIBSQL_TOKEN}" \
+            --env BLOB_PAYLOAD_PREFIX="${BLOB_PREFIX}" \
             --build-env LIBSQL_PAYLOAD_TURSO_DATABASE_URL="${LIBSQL_URL}" \
-            --build-env LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN="${LIBSQL_TOKEN}" | tail -n1)"
+            --build-env LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN="${LIBSQL_TOKEN}" \
+            --build-env BLOB_PAYLOAD_PREFIX="${BLOB_PREFIX}" | tail -n1)"
           echo "url=${url}" >> "${GITHUB_OUTPUT}"
       - name: Assign Stable Preview Alias
         id: alias

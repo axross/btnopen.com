@@ -198,6 +198,7 @@ export interface User {
  */
 export interface AvatarImage {
   id: string;
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -257,6 +258,7 @@ export interface BlogPost {
  */
 export interface CoverImage {
   id: string;
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -298,6 +300,7 @@ export interface Tag {
 export interface Media {
   id: string;
   alt?: string | null;
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -592,6 +595,7 @@ export interface TagsSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   id?: T;
   alt?: T;
+  prefix?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -610,6 +614,7 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface CoverImagesSelect<T extends boolean = true> {
   id?: T;
+  prefix?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -642,6 +647,7 @@ export interface CoverImagesSelect<T extends boolean = true> {
  */
 export interface AvatarImagesSelect<T extends boolean = true> {
   id?: T;
+  prefix?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

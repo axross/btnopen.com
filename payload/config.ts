@@ -21,6 +21,7 @@ const payloadSecret = process.env.PAYLOAD_SECRET ?? "local";
 const libsqlUrl = process.env.LIBSQL_PAYLOAD_TURSO_DATABASE_URL;
 const libsqlToken = process.env.LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN;
 const vercelBlobToken = process.env.BLOB_PAYLOAD_READ_WRITE_TOKEN;
+const blobPrefix = process.env.BLOB_PAYLOAD_PREFIX ?? "";
 const testUserEmail = process.env.PAYLOAD_TEST_USER_EMAIL;
 const testUserPassword = process.env.PAYLOAD_TEST_USER_PASSWORD;
 // biome-ignore-end lint/style/noProcessEnv: only place accessing env vars in payload realm
@@ -95,19 +96,24 @@ export const config = buildConfig({
 	},
 	plugins: [
 		payloadMcpPlugin,
-		...(vercelBlobToken
-			? [
-					vercelBlobStorage({
-						enabled: true,
-						collections: {
-							media: true,
-							"avatar-images": true,
-							"cover-images": true,
-						},
-						token: vercelBlobToken,
-					}),
-				]
-			: []),
+		// Blob storage is active only when a token is present (production and
+		// preview); locally, uploads fall back to disk. The plugin is loaded
+		// unconditionally with `alwaysInsertFields` so the `prefix` field stays in
+		// the schema in every environment, keeping generated migrations
+		// deterministic regardless of whether a token is set. `blobPrefix`
+		// (`BLOB_PAYLOAD_PREFIX`, empty in production) namespaces every stored file
+		// under that path so a preview can isolate its media and delete the whole
+		// prefix on teardown.
+		vercelBlobStorage({
+			enabled: Boolean(vercelBlobToken),
+			alwaysInsertFields: true,
+			collections: {
+				media: { prefix: blobPrefix },
+				"avatar-images": { prefix: blobPrefix },
+				"cover-images": { prefix: blobPrefix },
+			},
+			token: vercelBlobToken ?? "",
+		}),
 	],
 	onInit: async (payload) => {
 		if (testUserEmail && testUserPassword) {

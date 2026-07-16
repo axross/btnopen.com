@@ -74,5 +74,15 @@ End-to-end pipeline behavior depends on live Turso and Vercel accounts, so it is
 **Guidelines:**
 
 - SHOULD remove orphaned branch databases (e.g. from a PR closed while a run was cancelled) with `turso db destroy preview-pr-<n> --yes`; each open PR otherwise holds one extra database until close.
-- SHOULD treat media (Vercel Blob) as not isolated by this pipeline — database isolation is the scoped goal; point Preview at a separate blob store if preview write-flows are needed.
 - MUST NOT assume concurrent PRs interfere: each gets its own branch and preview.
+
+## Media Isolation via Blob Prefix
+
+`BLOB_PAYLOAD_PREFIX` (read in [`payload/config.ts`](../../../../payload/config.ts)) namespaces every uploaded file under that path in the Vercel Blob store. The deploy job injects `pr-<n>` for each preview, so a PR's media lives under `pr-<n>/…` and never collides with production (which leaves the prefix unset, keeping its keys flat) or with another PR. The `prefix` field the storage plugin persists per document is what makes an uploaded file's URL reproducible, so it is added to the schema in every environment (`alwaysInsertFields`) to keep generated migrations deterministic even though local development and production run with an empty prefix.
+
+**Guidelines:**
+
+- MUST keep `BLOB_PAYLOAD_PREFIX` empty (unset) in production and local development so existing media keys stay flat; only preview deployments set it.
+- MUST generate migrations with `BLOB_PAYLOAD_PREFIX` unset so the `prefix` column's default stays a stable `''` rather than baking a preview value into the schema.
+- SHOULD prune a closed PR's media on teardown by deleting everything under its `pr-<n>/` prefix — `@vercel/blob`'s `list({ prefix: "pr-<n>/" })` + `del(urls)` paginated to exhaustion, or `vercel blob list --prefix "pr-<n>/"` piped into `vercel blob del`. Wiring this into the `teardown` job requires the preview store's read/write token available as a CI secret; until then, prune orphaned prefixes manually.
+- SHOULD point Preview at a Blob store separate from production for defence in depth; the prefix isolates keys within whichever store is configured, and a dedicated preview store additionally isolates credentials.
