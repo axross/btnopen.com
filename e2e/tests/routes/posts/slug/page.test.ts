@@ -182,6 +182,36 @@ test("Blog post embed block", {
 	});
 });
 
+// the seed post carries one `:::banner{type="note"}` and one
+// `:::banner{type="warning"}` container directive, each wrapping rich text.
+test("Blog post banner blocks", {
+	tag: ["@scenario:post.banner", "@area:posts", "@priority:should"],
+}, async ({ page }) => {
+	const content = page.getByTestId("page").getByTestId("content");
+	const banners = content.getByTestId("banner");
+	const noteBanner = content.locator(
+		'[data-testid="banner"][data-banner-type="note"]',
+	);
+	const warningBanner = content.locator(
+		'[data-testid="banner"][data-banner-type="warning"]',
+	);
+
+	await test.step("Verify both banner types render as callouts", async () => {
+		await expect(banners).toHaveCount(2);
+		await expect(noteBanner).toBeVisible();
+		await expect(warningBanner).toBeVisible();
+	});
+
+	await test.step("Verify each banner shows its type label (not color alone)", async () => {
+		await expect(noteBanner).toContainText("Note");
+		await expect(warningBanner).toContainText("Warning");
+	});
+
+	await test.step("Verify the banner body preserves rich text", async () => {
+		await expect(noteBanner.getByRole("link")).toBeVisible();
+	});
+});
+
 // seed post (`payload/helpers/seed/blog-post.md`) emits seven GFM tables in
 // this authored order: small reference, wide comparison, metrics, inline
 // content, header-only template, single-column runtimes, sparse cells. On the

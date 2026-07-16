@@ -2,7 +2,7 @@
 
 import { captureException } from "@sentry/nextjs";
 import rehypeShikiFromHighlighter from "@shikijs/rehype/core";
-import type { Root as HastRoot } from "hast";
+import type { ElementContent, Root as HastRoot } from "hast";
 import type {
 	Node as MdastNode,
 	Paragraph as MdastParagraph,
@@ -49,13 +49,26 @@ async function renderMarkdown({
 		.use(remarkEmbeds)
 		.use(remarkLiteralizeUnhandledDirectives, markdown)
 		.use(remarkRehype, {
-			passThrough: ["leafDirective"],
+			passThrough: ["leafDirective", "containerDirective"],
 			handlers: {
 				leafDirective: (_state: unknown, node: LeafDirective) => ({
 					type: "element",
 					tagName: node.name,
 					properties: node.attributes,
 					children: node.children,
+				}),
+				// a container directive (e.g. `:::banner{…}`) wraps block-level
+				// content, so its children are real mdast nodes that must be
+				// recursively converted to HAST via `state.all` — unlike the leaf
+				// directive above, whose children are always empty.
+				containerDirective: (
+					state: { all: (node: ContainerDirective) => ElementContent[] },
+					node: ContainerDirective,
+				) => ({
+					type: "element",
+					tagName: node.name,
+					properties: node.attributes ?? {},
+					children: state.all(node),
 				}),
 			},
 			unknownHandler: (_state: unknown, node: MdastNode) => {
@@ -166,6 +179,13 @@ function remarkLiteralizeUnhandledDirectives(source: string) {
 
 		visit(tree, "containerDirective", (node, index, parent) => {
 			if (parent === undefined || index === undefined) {
+				return;
+			}
+
+			// `banner` is a handled container directive rendered downstream (see the
+			// `containerDirective` handler in `renderMarkdown`); leave it intact
+			// instead of literalizing it to plain text.
+			if (node.name === "banner") {
 				return;
 			}
 
