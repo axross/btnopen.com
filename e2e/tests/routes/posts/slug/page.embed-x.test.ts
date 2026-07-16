@@ -62,7 +62,7 @@ function createBody(children: LexicalNode[]): unknown {
 	};
 }
 
-// A stable, public tweet ("just setting up my twttr"). The card's "View on X"
+// A stable, public tweet ("just setting up my twttr"). The card's timestamp
 // link and the degraded fallback link both point at this /status/20 URL, so the
 // assertion holds whether or not the live syndication endpoint is reachable.
 const tweetUrl = "https://x.com/jack/status/20";
@@ -106,8 +106,8 @@ test(
 			});
 
 			await test.step("Verify it links out to the tweet, not an iframe or widget", async () => {
-				// success renders a "View on X" link; the fallback renders the URL as a
-				// plain anchor — both expose an anchor to the /status/20 URL.
+				// success renders the timestamp as the tweet link; the fallback renders
+				// the URL as a plain anchor — both expose an anchor to the /status/20 URL.
 				await expect(
 					content.locator('a[href*="/status/20"]').first(),
 				).toBeVisible();
