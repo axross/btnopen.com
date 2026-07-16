@@ -95,6 +95,15 @@ describe("exportEmbedDirective()", () => {
 		);
 	});
 
+	it("emits the x.com type", () => {
+		expect(
+			exportEmbedDirective({
+				url: "https://x.com/axross/status/42",
+				type: "x.com",
+			}),
+		).toBe('::embed{url="https://x.com/axross/status/42" type="x.com"}');
+	});
+
 	it("returns false when the url is missing", () => {
 		expect(exportEmbedDirective({ type: "webpage" })).toBe(false);
 		expect(exportEmbedDirective({ url: "" })).toBe(false);
@@ -136,6 +145,20 @@ describe("importEmbedDirective()", () => {
 		).toMatchObject({ type: "webpage" });
 	});
 
+	it("parses the x.com type", () => {
+		expect(
+			importEmbedDirective(
+				matchDirectiveLine(
+					'::embed{url="https://x.com/axross/status/42" type="x.com"}',
+				),
+			),
+		).toEqual({
+			url: "https://x.com/axross/status/42",
+			type: "x.com",
+			options: null,
+		});
+	});
+
 	it("degrades malformed options JSON to null", () => {
 		expect(
 			importEmbedDirective(
@@ -164,5 +187,31 @@ describe("importEmbedDirective()", () => {
 		expect(
 			importEmbedDirective(matchDirectiveLine(directive as string)),
 		).toEqual(fields);
+	});
+
+	it("round-trips an x.com embed", () => {
+		const fields = {
+			url: "https://x.com/axross/status/42",
+			type: "x.com",
+			options: null,
+		};
+
+		const directive = exportEmbedDirective(fields);
+
+		expect(directive).not.toBe(false);
+		expect(
+			importEmbedDirective(matchDirectiveLine(directive as string)),
+		).toEqual(fields);
+	});
+});
+
+describe("embedBlock", () => {
+	it("offers x.com as a selectable type option alongside webpage", () => {
+		const typeField = embedBlock.fields.find(
+			(field) => "name" in field && field.name === "type",
+		);
+
+		expect(JSON.stringify(typeField)).toContain('"value":"x.com"');
+		expect(JSON.stringify(typeField)).toContain('"value":"webpage"');
 	});
 });

@@ -122,7 +122,7 @@ export function importEmbedDirective(
 
 /**
  * The `embed` rich-text block for blog post bodies: an explicit, typed web
- * embed with a URL, an embed type (only "webpage" today), and per-type JSON
+ * embed with a URL, an embed type ("webpage" or "x.com"), and per-type JSON
  * options. The `jsx` converter round-trips the block through markdown as a
  * `::embed{…}` leaf-directive line — without it, `convertLexicalToMarkdown`
  * would silently drop the block.
@@ -151,14 +151,17 @@ export const embedBlock: Block = {
 			type: "select",
 			required: true,
 			defaultValue: defaultEmbedType,
-			options: [{ label: "Web Page", value: "webpage" }],
+			options: [
+				{ label: "Web Page", value: "webpage" },
+				{ label: "X (post)", value: "x.com" },
+			],
 		},
 		{
 			name: "options",
 			type: "json",
 			admin: {
 				description:
-					"Embedding options for the selected type. Ignored for Web Page; reserved for future embed types.",
+					"Embedding options for the selected type. Ignored for Web Page and X; reserved for future embed types.",
 			},
 		},
 	],

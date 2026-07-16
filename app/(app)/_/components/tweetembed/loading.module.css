@@ -1,0 +1,22 @@
+@layer components {
+	@scope (.tweet) {
+		:scope {
+			display: flex;
+			flex-direction: column;
+			gap: var(--size-16);
+			padding-block: var(--size-8);
+			padding-inline: var(--size-16);
+			border-inline-start: var(--size-4) solid var(--accent-7);
+		}
+
+		.body {
+			font-size: var(--text-md);
+			line-height: var(--leading-lg);
+		}
+
+		.cite {
+			font-size: var(--text-sm);
+			line-height: var(--leading-lg);
+		}
+	}
+}
