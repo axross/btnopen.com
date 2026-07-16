@@ -16,7 +16,7 @@
 			color: var(--neutral-12);
 			font-size: var(--text-md);
 			font-style: italic;
-			font-weight: 500;
+			font-weight: 700;
 			line-height: var(--leading-lg);
 		}
 
@@ -40,7 +40,7 @@
 			overflow-wrap: anywhere;
 			color: var(--neutral-11);
 			font-size: var(--text-md);
-			font-weight: 600;
+			font-weight: 400;
 		}
 
 		.handle {
@@ -52,26 +52,16 @@
 			opacity: 0.55;
 		}
 
-		.view {
-			display: inline-flex;
-			align-items: center;
-			gap: 0.3em;
-			/* pin the affordance to the far end of the citation row, kept intact */
-			margin-inline-start: auto;
+		.date {
 			flex-shrink: 0;
-			color: var(--neutral-10);
-			font-style: normal;
-			text-decoration: none;
+			/* the timestamp is the muted link out to the tweet */
+			color: inherit;
 			white-space: nowrap;
+			text-decoration: none;
 
 			&:hover {
 				text-decoration: underline;
 			}
-		}
-
-		.viewIcon {
-			inline-size: 0.95em;
-			block-size: 0.95em;
 		}
 	}
 }

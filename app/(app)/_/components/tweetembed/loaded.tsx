@@ -1,6 +1,6 @@
 import { captureException } from "@sentry/nextjs";
 import { clsx } from "clsx";
-import type { ComponentProps, JSX } from "react";
+import type { JSX } from "react";
 import { getTweet } from "@/repositories/get-tweet";
 import type { TweetSegment } from "@/repositories/tweet";
 import css from "./loaded.module.css";
@@ -59,18 +59,16 @@ export async function TweetEmbedLoaded({
 				<span className={css.separator} aria-hidden="true">
 					{"·"}
 				</span>
-				<time className={css.date} dateTime={tweet.createdAt}>
-					{dateFormatter.format(new Date(tweet.createdAt))}
-				</time>
+				{/* the timestamp is the link out to the tweet on X */}
 				<a
-					className={css.view}
+					className={css.date}
 					href={tweet.url}
 					target="_blank"
 					rel="noopener noreferrer"
-					aria-label="View on X"
 				>
-					<span aria-hidden="true">{"View on "}</span>
-					<XLogo className={css.viewIcon} />
+					<time dateTime={tweet.createdAt}>
+						{dateFormatter.format(new Date(tweet.createdAt))}
+					</time>
 				</a>
 			</footer>
 		</blockquote>
@@ -96,20 +94,5 @@ function renderSegment(
 		>
 			{segment.value}
 		</a>
-	);
-}
-
-function XLogo({ className, ...props }: ComponentProps<"svg">): JSX.Element {
-	return (
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			viewBox="0 0 24 24"
-			fill="currentColor"
-			aria-hidden="true"
-			className={className}
-			{...props}
-		>
-			<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-		</svg>
 	);
 }
