@@ -26,22 +26,18 @@ export function CommentComposer({ slug }: { slug: string }): JSX.Element {
 
 	if (!isLoaded) {
 		return (
-			<div
-				className={css.composer}
-				data-testid="comment-composer"
-				aria-busy="true"
-			/>
+			<div className={css.composer} data-testid="composer" aria-busy="true" />
 		);
 	}
 
 	if (!isSignedIn) {
 		return (
-			<div className={css.composer} data-testid="comment-composer">
+			<div className={css.composer} data-testid="composer">
 				<SignInButton mode="modal">
 					<button
 						type="button"
 						className={clsx(css.submit, css.signIn)}
-						data-testid="comment-sign-in"
+						data-testid="sign-in"
 					>
 						<GitHubIcon className={css.signInIcon} />
 						{t("sign-in")}
@@ -53,7 +49,7 @@ export function CommentComposer({ slug }: { slug: string }): JSX.Element {
 
 	if (state === "submitted") {
 		return (
-			<p className={css.hint} role="status" data-testid="comment-submitted">
+			<p className={css.hint} role="status" data-testid="submitted">
 				{t("submitted")}
 			</p>
 		);
@@ -96,13 +92,13 @@ export function CommentComposer({ slug }: { slug: string }): JSX.Element {
 		<form
 			className={css.composer}
 			onSubmit={handleSubmit}
-			data-testid="comment-composer"
+			data-testid="composer"
 		>
 			{user.imageUrl ? (
 				<Image
 					className={css.avatar}
 					src={user.imageUrl}
-					alt=""
+					alt={user.fullName ?? user.username ?? ""}
 					width={40}
 					height={40}
 				/>
@@ -119,7 +115,7 @@ export function CommentComposer({ slug }: { slug: string }): JSX.Element {
 					placeholder={t("placeholder")}
 					aria-label={t("placeholder")}
 					disabled={state === "submitting"}
-					data-testid="comment-textarea"
+					data-testid="textarea"
 				/>
 
 				<div className={css.composerRow}>
@@ -131,7 +127,7 @@ export function CommentComposer({ slug }: { slug: string }): JSX.Element {
 						type="submit"
 						className={css.submit}
 						disabled={state === "submitting" || body.trim().length === 0}
-						data-testid="comment-submit"
+						data-testid="submit"
 					>
 						{t("submit")}
 					</button>

@@ -2,6 +2,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import type { NextRequest } from "next/server";
 import { getPayload } from "payload";
 import { CommentSubmission } from "@/helpers/comments";
+import { isSameSiteRequest } from "@/helpers/request-origin";
 import { rootLogger } from "@/logger";
 import { config } from "@/payload/config";
 import { isClerkEnabled } from "@/runtime";
@@ -22,6 +23,12 @@ export async function POST(
 	{ params }: { params: Promise<{ slug: string }> },
 ): Promise<Response> {
 	const { slug } = await params;
+
+	// Reject cross-site writes: this authenticated mutation could otherwise be
+	// driven from another origin against a signed-in reader's browser (CSRF).
+	if (!isSameSiteRequest(request)) {
+		return Response.json({ error: "Cross-site request." }, { status: 403 });
+	}
 
 	if (!isClerkEnabled) {
 		return Response.json(

@@ -188,6 +188,63 @@ export async function createPublishedPostWithEmptyDraftAgentic({
 	return { id, slug };
 }
 
+// Creates a PUBLISHED post (so it is publicly visible), reusing the seeded
+// cover image and current test user. `commentsEnabled` toggles the per-post
+// comments section. Pair every call with `deleteBlogPost` in teardown.
+export async function createPublishedBlogPost({
+	commentsEnabled = true,
+	page,
+	slug,
+	testInfo,
+	title,
+}: {
+	commentsEnabled?: boolean;
+	page: Page;
+	slug: string;
+	testInfo: TestInfo;
+	title: string;
+}): Promise<{ id: number; slug: string }> {
+	const [coverImageId, userId] = await Promise.all([
+		getExampleCoverImageId({ page, testInfo }),
+		getCurrentUserId({ page, testInfo }),
+	]);
+	const url = new URL("/api/blog-posts", testInfo.project.use.baseURL);
+	url.searchParams.set("locale", "ja-JP");
+
+	const response = await page.request.post(`${url}`, {
+		headers: {
+			"content-type": "application/json",
+		},
+		data: {
+			title,
+			slug,
+			coverImage: coverImageId,
+			brief: "Published post created by the comments e2e test.",
+			body: createMinimalBlogPostBody(),
+			author: userId,
+			commentsEnabled,
+			_status: "published",
+			publishedAt: "2026-03-01T00:00:00Z",
+		},
+	});
+
+	if (!response.ok()) {
+		throw new Error(
+			`Failed to create published blog post: ${response.status()} ${await response.text()}`,
+		);
+	}
+
+	const id = getCreatedDocId(await response.json());
+
+	if (id === null) {
+		throw new Error(
+			"Failed to create published blog post because no ID was returned.",
+		);
+	}
+
+	return { id, slug };
+}
+
 async function getExampleCoverImageId({
 	page,
 	testInfo,

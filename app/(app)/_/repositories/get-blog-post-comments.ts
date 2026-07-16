@@ -12,6 +12,7 @@ import {
 	PayloadComment,
 	type PayloadCommentStatus,
 	type PayloadLocale,
+	PayloadUser,
 } from "./payload-types";
 
 const logger = rootLogger.child({ module: "📥" });
@@ -91,19 +92,38 @@ export async function getBlogPostComments({
 		return EMPTY;
 	}
 
-	const author =
-		typeof post.author === "object" && post.author !== null
-			? (post.author as {
-					name?: string | null;
-					avatarImage?: { url?: string | null } | null;
-				})
-			: null;
-	const siteAuthorName = author?.name ?? null;
-	const siteAuthorAvatarUrl = author?.avatarImage?.url ?? null;
+	// Author replies render the site author's identity; parse it through the
+	// shared schema (as the other repositories do) rather than casting.
+	let siteAuthorName: string | null = null;
+	let siteAuthorAvatarUrl: string | null = null;
+
+	if (typeof post.author === "object" && post.author !== null) {
+		const parsedAuthor = PayloadUser.safeParse(post.author);
+
+		if (parsedAuthor.success) {
+			siteAuthorName = parsedAuthor.data.name;
+			siteAuthorAvatarUrl = parsedAuthor.data.avatarImage.url;
+		} else {
+			logger.warn(
+				{ slug },
+				"Blog post author did not match the expected shape; author replies fall back to stored fields.",
+			);
+		}
+	}
 
 	const commentsResult = await payload.find({
 		collection: "comments",
 		where: { blogPost: { equals: post.id } },
+		select: {
+			parent: true,
+			authorReply: true,
+			status: true,
+			body: true,
+			authorName: true,
+			authorGithubUsername: true,
+			authorAvatarUrl: true,
+			createdAt: true,
+		},
 		sort: "createdAt",
 		depth: 0,
 		limit: 1000,

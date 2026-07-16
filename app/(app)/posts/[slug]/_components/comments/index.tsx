@@ -44,7 +44,7 @@ export async function Comments({
 			{isClerkEnabled ? (
 				<CommentComposer slug={slug} />
 			) : (
-				<p className={css.hint} data-testid="comment-composer">
+				<p className={css.hint} data-testid="composer">
 					{t("unavailable")}
 				</p>
 			)}
@@ -52,7 +52,7 @@ export async function Comments({
 			{threads.length === 0 ? (
 				<p className={css.empty}>{t("empty")}</p>
 			) : (
-				<ol className={css.list} data-testid="comment-list">
+				<ol className={css.list} data-testid="list">
 					{threads.map((thread) => (
 						<li key={thread.id}>
 							{thread.comment ? (
@@ -62,13 +62,13 @@ export async function Comments({
 									authorLabel={t("author")}
 								/>
 							) : (
-								<p className={css.tombstone} data-testid="comment-removed">
+								<p className={css.tombstone} data-testid="removed">
 									{t("removed")}
 								</p>
 							)}
 
 							{thread.replies.length > 0 ? (
-								<ol className={css.replies} data-testid="comment-replies">
+								<ol className={css.replies} data-testid="replies">
 									{thread.replies.map((reply) => (
 										<li key={reply.id}>
 											<CommentItem
@@ -114,7 +114,7 @@ function CommentItem({
 				<Image
 					className={css.avatar}
 					src={comment.authorAvatarUrl}
-					alt=""
+					alt={comment.authorName}
 					width={40}
 					height={40}
 				/>
@@ -140,7 +140,7 @@ function CommentItem({
 					) : null}
 
 					{comment.isAuthor ? (
-						<span className={css.badge} data-testid="comment-author-badge">
+						<span className={css.badge} data-testid="author-badge">
 							{authorLabel}
 						</span>
 					) : null}
