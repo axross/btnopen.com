@@ -30,6 +30,7 @@
 					.media,
 					.snippet,
 					.embed,
+					.banner,
 					.tableWrapper
 				):first-child {
 				margin-block-start: unset;
@@ -53,6 +54,7 @@
 					.media,
 					.snippet,
 					.embed,
+					.banner,
 					.tableWrapper
 				):last-child {
 				margin-block-end: unset;
@@ -376,6 +378,10 @@
 	}
 
 	.embed {
+		margin-block: var(--chunk-block-margin);
+	}
+
+	.banner {
 		margin-block: var(--chunk-block-margin);
 	}
 
