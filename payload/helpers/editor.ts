@@ -5,6 +5,7 @@ import {
 	lexicalEditor,
 	UploadFeature,
 } from "@payloadcms/richtext-lexical";
+import { bannerBlock } from "./banner-block";
 import { embedBlock } from "./embed-block";
 
 export const editor = lexicalEditor({
@@ -39,6 +40,7 @@ export const editor = lexicalEditor({
 					},
 				}),
 				embedBlock,
+				bannerBlock,
 			],
 		}),
 		EXPERIMENTAL_TableFeature(),
