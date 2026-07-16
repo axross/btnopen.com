@@ -4,7 +4,7 @@ import { SignInButton, useUser } from "@clerk/nextjs";
 import { clsx } from "clsx";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { type FormEvent, type JSX, useRef, useState } from "react";
+import { type FormEvent, type JSX, useState } from "react";
 import { COMMENT_CSRF_HEADER } from "@/helpers/comment-csrf";
 import { MAX_COMMENT_BODY_LENGTH } from "@/helpers/comments";
 import css from "./comments.module.css";
@@ -24,7 +24,6 @@ export function CommentComposer({ slug }: { slug: string }): JSX.Element {
 	const { isLoaded, isSignedIn, user } = useUser();
 	const [body, setBody] = useState("");
 	const [state, setState] = useState<SubmitState>("idle");
-	const csrfTokenRef = useRef<string | null>(null);
 
 	if (!isLoaded) {
 		return (
@@ -57,14 +56,11 @@ export function CommentComposer({ slug }: { slug: string }): JSX.Element {
 		);
 	}
 
-	// Fetches (once, then memoizes) the double-submit CSRF token the POST
-	// endpoint requires. The same request pins the matching cookie in the
-	// browser, so the token and cookie always originate together.
-	async function ensureCsrfToken(): Promise<string | null> {
-		if (csrfTokenRef.current) {
-			return csrfTokenRef.current;
-		}
-
+	// Fetches a fresh double-submit CSRF token for each submit. The same request
+	// re-pins the matching cookie in the browser, so the token and cookie always
+	// originate together and neither goes stale between attempts (the cookie has
+	// a one-hour lifetime, so a cached token would eventually outlive it).
+	async function fetchCsrfToken(): Promise<string | null> {
 		const response = await fetch(`/posts/${slug}/comments/token`);
 
 		if (!response.ok) {
@@ -73,9 +69,7 @@ export function CommentComposer({ slug }: { slug: string }): JSX.Element {
 
 		const { token } = (await response.json()) as { token?: string };
 
-		csrfTokenRef.current = token ?? null;
-
-		return csrfTokenRef.current;
+		return token ?? null;
 	}
 
 	async function handleSubmit(
@@ -92,7 +86,7 @@ export function CommentComposer({ slug }: { slug: string }): JSX.Element {
 		setState("submitting");
 
 		try {
-			const csrfToken = await ensureCsrfToken();
+			const csrfToken = await fetchCsrfToken();
 
 			if (!csrfToken) {
 				setState("error");
