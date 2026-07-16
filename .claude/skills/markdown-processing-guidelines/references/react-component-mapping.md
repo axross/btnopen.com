@@ -13,11 +13,11 @@ Each component in the map is wrapped with `memo` to inject a `className` prop fr
 
 ## Required Mappings
 
-Required Mappings sets the required project default: map `img` to the `Media` component, `pre` to the `Snippet` component, and `embed` to the `Embed` component.
+Required Mappings sets the required project default: map `img` to the `Media` component, `pre` to the `Snippet` component, `embed` to the `Embed` component, and `banner` to the `Banner` component.
 
 **Guidelines:**
 
-- MUST map `img` to the `Media` component, `pre` to the `Snippet` component, and `embed` to the `Embed` component.
+- MUST map `img` to the `Media` component, `pre` to the `Snippet` component, `embed` to the `Embed` component, and `banner` to the `Banner` component.
 - MUST add a new tag or directive component to `defaultComponents`.
 - MUST make each mapped component accept `className` as a prop so the `classNames` override mechanism works.
 - MUST NOT use `dangerouslySetInnerHTML` in any markdown-rendered component.

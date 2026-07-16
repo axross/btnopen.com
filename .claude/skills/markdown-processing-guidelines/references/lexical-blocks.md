@@ -4,7 +4,7 @@ Blog post bodies are Payload Lexical documents rendered through `convertLexicalT
 
 ## The `jsx` Converter Requirement
 
-`convertLexicalToMarkdown` and `convertMarkdownToLexical` build their block transformers from each block's `jsx` property (`export`, `import`, and optional `customStartRegex` / `customEndRegex`). A block **without** a `jsx` converter is **silently dropped** from markdown output — no error, no Sentry report. The premade `CodeBlock` (fenced code) and the project's `embed` block (`payload/helpers/embed-block.ts`) are the two in-repo examples.
+`convertLexicalToMarkdown` and `convertMarkdownToLexical` build their block transformers from each block's `jsx` property (`export`, `import`, and optional `customStartRegex` / `customEndRegex`). A block **without** a `jsx` converter is **silently dropped** from markdown output — no error, no Sentry report. The premade `CodeBlock` (fenced code), the project's `embed` block (`payload/helpers/embed-block.ts`, leaf-directive form), and its `banner` block (`payload/helpers/banner-block.ts`, container-directive form with a nested rich-text body) are the in-repo examples.
 
 **Guidelines:**
 
@@ -22,6 +22,20 @@ The default `jsx` serialization is a JSX tag (`<slug …/>`), but the public ren
 
 - MUST serialize a new block to a directive (or another plain-markdown form the pipeline already parses), never to a raw JSX/HTML tag the remark pipeline would drop.
 - MUST keep the block's exported attribute vocabulary identical to what the rendering pipeline's directive handler and React component consume.
+
+## Blocks with a Nested Rich-Text Field (Container-Directive Form)
+
+A block that carries a nested `richText` field (e.g. the `banner` block's `body`) serializes to a **container directive** — `:::banner{type="…"}` … `:::` — rather than a single leaf-directive line. The `jsx.export` receives `lexicalToMarkdown` and the `import` receives `markdownToLexical` (plus `children`, the fenced body); use them to convert the nested editor state to/from markdown (`lexicalToMarkdown({ editorState: fields.body })` and `markdownToLexical({ markdown: children })`). Give the nested field a plain `lexicalEditor()` (default features only, **no `BlocksFeature`**) so its body can never contain another block/`:::` fence that collides with the container's own fences.
+
+Two non-obvious requirements:
+
+- **Blank lines are mandatory inside the fences.** `convertMarkdownToLexical` only recognizes the container when the opening and closing fences are separated from the body by blank lines (`:::banner{…}` ⏎⏎ body ⏎⏎ `:::`). Adjacent fence/body lines get merged into a paragraph and the block is silently lost, so `export` and any seed/authored markdown MUST emit the blank-line-padded form.
+- Keep the pure converter functions and the block's start/end regexes in a module that does **not** import `lexicalEditor` as a value, so the colocated `*.spec.ts` can unit-test them without loading the ESM-only Lexical editor into Jest. The `banner` block splits `banner-directive.ts` (pure, tested) from `banner-block.ts` (the `Block` config, which imports `lexicalEditor`).
+
+**Guidelines:**
+
+- MUST pad a nested-body container directive's body with blank lines in `export` and in seed/authored markdown, or `convertMarkdownToLexical` drops the block.
+- MUST keep a block's pure markdown-converter logic free of `@payloadcms/richtext-lexical` value imports so it stays Jest-testable; put the `lexicalEditor()`-bearing `Block` config in a separate module.
 
 ## Admin Components and the Import Map
 
