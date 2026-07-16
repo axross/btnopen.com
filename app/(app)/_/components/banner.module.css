@@ -1,0 +1,63 @@
+@layer components {
+	@scope (.banner) {
+		:where(:scope) {
+			display: grid;
+			grid-template-columns: auto 1fr;
+			column-gap: var(--size-14);
+			align-items: start;
+			padding: var(--size-16);
+			border-radius: var(--radius-md);
+			background-color: var(--panel);
+
+			/* Type differentiation stays on the single accent hue: the tile is
+			   identical across types, and severity is carried by the glyph, the
+			   label weight, and a one-step panel tint. */
+			--panel: var(--accent-2);
+			--tile: var(--accent-5);
+			--label-weight: 600;
+		}
+
+		:where(:scope)[data-banner-type="warning"] {
+			--panel: var(--accent-3);
+			--label-weight: 700;
+		}
+
+		.tile {
+			display: grid;
+			place-items: center;
+			inline-size: var(--size-40);
+			block-size: var(--size-40);
+			border-radius: var(--radius-sm);
+			background-color: var(--tile);
+			color: var(--accent-12);
+		}
+
+		.tile > svg {
+			inline-size: var(--size-20);
+			block-size: var(--size-20);
+		}
+
+		.content {
+			/* allow the body text to wrap/truncate instead of forcing the grid
+			   column wider than the reading container. */
+			min-inline-size: 0;
+		}
+
+		.label {
+			display: block;
+			margin-block-end: var(--size-4);
+			color: var(--accent-12);
+			font-weight: var(--label-weight);
+		}
+
+		/* collapse the first/last body block margins so the panel padding sets the
+		   inner rhythm rather than the authored paragraph margins. */
+		.body > :first-child {
+			margin-block-start: 0;
+		}
+
+		.body > :last-child {
+			margin-block-end: 0;
+		}
+	}
+}

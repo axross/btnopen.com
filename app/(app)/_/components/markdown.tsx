@@ -5,6 +5,7 @@ import { cacheLife } from "next/cache";
 import { createElement, type ElementType, Fragment, memo } from "react";
 import jsxRuntime from "react/jsx-runtime";
 import type { Options as RehypeReactOptions } from "rehype-react";
+import { Banner } from "@/components/banner";
 import { Embed } from "@/components/embed";
 import { Media } from "@/components/media";
 import { Snippet } from "@/components/snippet";
@@ -53,6 +54,7 @@ const defaultComponents = {
 	img: Media,
 	pre: Snippet,
 	embed: Embed,
+	banner: Banner,
 } satisfies Record<string, ElementType>;
 
 const fallbackClassNames = {};
