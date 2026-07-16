@@ -26,7 +26,9 @@ export async function TweetEmbedLoaded({
 	// reported so authoring or upstream faults surface without breaking the post.
 	if (tweet === null) {
 		captureException(
-			new Error("Rendered an x.com embed without a resolvable tweet."),
+			new Error(
+				`Rendered an x.com embed without a resolvable tweet (href: ${href}).`,
+			),
 		);
 
 		return (

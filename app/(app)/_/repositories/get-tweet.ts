@@ -73,7 +73,9 @@ export async function getTweet({
 
 		payload = await response.json();
 	} catch (error) {
-		logger.warn({ id, error }, "Tweet fetch failed.");
+		// `err` (not `error`) is the key Pino's built-in Error serializer keys on;
+		// a plain `error` key would serialize the Error to `{}`.
+		logger.warn({ id, err: error }, "Tweet fetch failed.");
 
 		return null;
 	}
