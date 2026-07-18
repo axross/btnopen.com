@@ -73,6 +73,13 @@ jobs:
     needs: preflight
     if: ${{ needs.preflight.outputs.ready == 'true' && github.event.action != 'closed' }}
     runs-on: ubuntu-latest
+    # The `PAYLOAD_TEST_USER_*` seed credentials are environment-scoped secrets
+    # with a Preview-specific value (distinct from Production), so this job
+    # declares the `Preview` environment to read them and inject them into the
+    # deployment below. Repository-level secrets (VERCEL_*, TURSO_API_TOKEN)
+    # stay available. Keep the `Preview` environment free of protection rules
+    # that would gate auto-deploys.
+    environment: Preview
     timeout-minutes: 20
     permissions:
       contents: read
@@ -141,13 +148,13 @@ jobs:
         run: npm install --global vercel@latest
       - name: Deploy Preview to Vercel
         id: deploy
-        # Inject this PR's database credentials for this deployment only, at
-        # both build and runtime, so they override the project's Preview
-        # environment for this deploy alone. The production credentials must be
-        # scoped to the Production environment in Vercel and are never passed
-        # here. The Preview environment supplies the rest (a distinct
-        # PAYLOAD_SECRET, the PAYLOAD_TEST_USER_* seed credentials, and the
-        # dedicated preview Blob store token).
+        # Inject this PR's credentials for this deployment only, at both build
+        # and runtime, so they override the project's Preview environment for
+        # this deploy alone: the per-PR database credentials, the media prefix,
+        # and the Preview-scoped PAYLOAD_TEST_USER_* seed credentials (read from
+        # the `Preview` GitHub environment declared on this job). The production
+        # credentials must be scoped to the Production environment in Vercel and
+        # are never passed here.
         #
         # `BLOB_PAYLOAD_PREFIX` namespaces this PR's uploaded media under a
         # `pr-<n>/` path in the Blob store so a preview's media is isolated and
@@ -156,6 +163,8 @@ jobs:
           LIBSQL_URL: ${{ steps.turso.outputs.url }}
           LIBSQL_TOKEN: ${{ steps.turso.outputs.token }}
           BLOB_PREFIX: pr-${{ github.event.pull_request.number }}
+          TEST_USER_EMAIL: ${{ secrets.PAYLOAD_TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.PAYLOAD_TEST_USER_PASSWORD }}
         run: |
           set -euo pipefail
           # `vercel deploy` prints progress to stderr and the deployment URL to
@@ -165,9 +174,13 @@ jobs:
             --env LIBSQL_PAYLOAD_TURSO_DATABASE_URL="${LIBSQL_URL}" \
             --env LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN="${LIBSQL_TOKEN}" \
             --env BLOB_PAYLOAD_PREFIX="${BLOB_PREFIX}" \
+            --env PAYLOAD_TEST_USER_EMAIL="${TEST_USER_EMAIL}" \
+            --env PAYLOAD_TEST_USER_PASSWORD="${TEST_USER_PASSWORD}" \
             --build-env LIBSQL_PAYLOAD_TURSO_DATABASE_URL="${LIBSQL_URL}" \
             --build-env LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN="${LIBSQL_TOKEN}" \
-            --build-env BLOB_PAYLOAD_PREFIX="${BLOB_PREFIX}" | tail -n1)"
+            --build-env BLOB_PAYLOAD_PREFIX="${BLOB_PREFIX}" \
+            --build-env PAYLOAD_TEST_USER_EMAIL="${TEST_USER_EMAIL}" \
+            --build-env PAYLOAD_TEST_USER_PASSWORD="${TEST_USER_PASSWORD}" | tail -n1)"
           echo "url=${url}" >> "${GITHUB_OUTPUT}"
       - name: Assign Stable Preview Alias
         id: alias
