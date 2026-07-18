@@ -117,26 +117,33 @@ jobs:
         # `payload migrate` loads env from root-level `.env*` files only, so the
         # variables `vercel pull` caches under `.vercel/` never reach it.
         run: vercel env pull .env.local --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-      - name: Verify Production Database Credentials
-        # the sqlite adapter requires both the url and the auth token to be
-        # non-empty; otherwise it silently falls back to a local file and
-        # migrations never reach the production database. both values come
-        # from the `Production` github environment because the auth token is
-        # a sensitive vercel variable, which `vercel env pull` writes to
-        # .env.local as an empty string. the pulled lines are deleted so the
-        # env-file loader can never shadow the credentials passed to the
-        # migration step through the process environment.
+      - name: Verify Production Credentials
+        # `payload migrate` builds the entire Payload config, so it needs both
+        # the sqlite database credentials and the Vercel Blob token: the sqlite
+        # adapter silently falls back to a local file when the url or auth token
+        # is empty (migrations never reach the production database), and the blob
+        # adapter validates its token format at config-build time and throws on a
+        # non-conforming value (aborting the command before it migrates). The
+        # auth token and blob token are sensitive vercel variables that
+        # `vercel env pull` cannot retrieve — it writes an unusable value (empty
+        # or a non-conforming placeholder) to .env.local — so all three are
+        # sourced from the `Production` github environment instead. The pulled
+        # lines are deleted so the env-file loader can never shadow the values
+        # passed to the migration step through the process environment.
         env:
           LIBSQL_PAYLOAD_TURSO_DATABASE_URL: ${{ vars.LIBSQL_PAYLOAD_TURSO_DATABASE_URL }}
           LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN: ${{ secrets.LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN }}
+          BLOB_PAYLOAD_READ_WRITE_TOKEN: ${{ secrets.BLOB_PAYLOAD_READ_WRITE_TOKEN }}
         run: |
           test -n "${LIBSQL_PAYLOAD_TURSO_DATABASE_URL}"
           test -n "${LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN}"
-          sed --in-place --regexp-extended '/^LIBSQL_PAYLOAD_TURSO_(DATABASE_URL|AUTH_TOKEN)=/d' .env.local
+          test -n "${BLOB_PAYLOAD_READ_WRITE_TOKEN}"
+          sed --in-place --regexp-extended '/^(LIBSQL_PAYLOAD_TURSO_(DATABASE_URL|AUTH_TOKEN)|BLOB_PAYLOAD_READ_WRITE_TOKEN)=/d' .env.local
       - name: Push Database Migrations
         env:
           LIBSQL_PAYLOAD_TURSO_DATABASE_URL: ${{ vars.LIBSQL_PAYLOAD_TURSO_DATABASE_URL }}
           LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN: ${{ secrets.LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN }}
+          BLOB_PAYLOAD_READ_WRITE_TOKEN: ${{ secrets.BLOB_PAYLOAD_READ_WRITE_TOKEN }}
         run: npm run migrate:up
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
