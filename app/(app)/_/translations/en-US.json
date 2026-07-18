@@ -16,5 +16,17 @@
 	},
 	"language-switcher": {
 		"label": "Switch language"
+	},
+	"comments": {
+		"heading": "Comments",
+		"empty": "No comments yet.",
+		"sign-in": "Sign in with GitHub to comment",
+		"placeholder": "Write a comment…",
+		"hint": "Published after review",
+		"submit": "Post",
+		"submitted": "Thanks — your comment will be published after review.",
+		"error": "Something went wrong. Please try again.",
+		"author": "Author",
+		"removed": "This comment was removed."
 	}
 }

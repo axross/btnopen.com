@@ -20,6 +20,10 @@ const nextConfig: NextConfig = {
 		remotePatterns: [
 			new URL("http://localhost:3000/api/**"),
 			new URL("https://cdn.hashnode.com/res/hashnode/**"),
+			// Commenter avatars: Clerk serves/proxies them from img.clerk.com;
+			// GitHub's own avatar host is allowed for snapshots that point there.
+			new URL("https://img.clerk.com/**"),
+			new URL("https://avatars.githubusercontent.com/**"),
 		],
 	},
 	serverExternalPackages: ["re2", "pino", "pino-pretty"],

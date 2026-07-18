@@ -8,7 +8,9 @@ import * as migration_20260601_040708 from './20260601_040708';
 import * as migration_20260711_033544 from './20260711_033544';
 import * as migration_20260711_225536_schema_agentic_fields from './20260711_225536_schema_agentic_fields';
 import * as migration_20260712_222856_authoring_notes_field from './20260712_222856_authoring_notes_field';
-import * as migration_20260716_154858_blob_prefix_field from './20260716_154858_blob_prefix_field';
+import * as migration_20260716_041641_comments_collection from './20260716_041641_comments_collection';
+import * as migration_20260716_185233_rename_is_comments_enabled from './20260716_185233_rename_is_comments_enabled';
+import * as migration_20260718_091804_blob_prefix_field from './20260718_091804_blob_prefix_field';
 
 export const migrations = [
   {
@@ -62,8 +64,18 @@ export const migrations = [
     name: '20260712_222856_authoring_notes_field',
   },
   {
-    up: migration_20260716_154858_blob_prefix_field.up,
-    down: migration_20260716_154858_blob_prefix_field.down,
-    name: '20260716_154858_blob_prefix_field'
+    up: migration_20260716_041641_comments_collection.up,
+    down: migration_20260716_041641_comments_collection.down,
+    name: '20260716_041641_comments_collection',
+  },
+  {
+    up: migration_20260716_185233_rename_is_comments_enabled.up,
+    down: migration_20260716_185233_rename_is_comments_enabled.down,
+    name: '20260716_185233_rename_is_comments_enabled',
+  },
+  {
+    up: migration_20260718_091804_blob_prefix_field.up,
+    down: migration_20260718_091804_blob_prefix_field.down,
+    name: '20260718_091804_blob_prefix_field'
   },
 ];

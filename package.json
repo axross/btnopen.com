@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
+    "@clerk/nextjs": "^7.5.19",
     "@payloadcms/db-sqlite": "^3.81.0",
     "@payloadcms/live-preview-react": "^3.81.0",
     "@payloadcms/next": "^3.81.0",

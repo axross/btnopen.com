@@ -2,6 +2,7 @@ import "./layers.css";
 import "./globals.css";
 import "./variables.css";
 
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata, Viewport } from "next";
 import {
 	IBM_Plex_Sans,
@@ -12,7 +13,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { type ReactNode, Suspense } from "react";
 import { getActiveLocale, htmlLangByLocale } from "@/helpers/i18n";
 import { getWebsite } from "@/repositories/get-website";
-import { sha, urlOrigin, vercelEnvironment } from "@/runtime";
+import { isClerkAvailable, sha, urlOrigin, vercelEnvironment } from "@/runtime";
 import { Header } from "./_components/header";
 import { PageViewTracking } from "./_components/page-view-tracking";
 
@@ -93,16 +94,33 @@ async function Document({
 			<body
 				className={`${ibmPlexSans.variable} ${ibmPlexSansJp.variable} ${jetBrainsMono.variable}`}
 			>
-				<NextIntlClientProvider>
-					<Header />
+				<AuthProvider>
+					<NextIntlClientProvider>
+						<Header />
 
-					{children}
+						{children}
 
-					<Suspense>
-						<PageViewTracking />
-					</Suspense>
-				</NextIntlClientProvider>
+						<Suspense>
+							<PageViewTracking />
+						</Suspense>
+					</NextIntlClientProvider>
+				</AuthProvider>
 			</body>
 		</html>
 	);
+}
+
+/**
+ * Wraps the app in Clerk's provider only when Clerk is configured. Without it
+ * (local dev without setup, CI, forked-PR previews) the tree renders unchanged
+ * and the comment composer degrades to a disabled state.
+ */
+function AuthProvider({
+	children,
+}: Readonly<{ children: ReactNode }>): ReactNode {
+	if (!isClerkAvailable) {
+		return children;
+	}
+
+	return <ClerkProvider>{children}</ClerkProvider>;
 }

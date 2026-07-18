@@ -33,6 +33,7 @@ carries its `@scenario:<id>` tag. The reporter
 | post.header | A blog post page shows its title, date, cover image, author, and tags | posts | must |
 | post.content | A blog post page renders its Markdown content | posts | must |
 | post.embed | A blog post page renders an embed block as a web-embed card linking to the embedded URL | posts | should |
+| post.embed.x | A blog post page renders an `x.com` embed block as a first-party tweet card that links out to the tweet without an iframe or X widget | posts | should |
 | post.banner | A blog post page renders note and warning banner blocks as callouts with a type label and rich-text body | posts | should |
 | post.content.directives | Text and container directives render verbatim instead of vanishing | posts | must |
 | post.agentic | A blog post's agentic view renders its outline Markdown and authoring notes | posts | must |
@@ -44,6 +45,13 @@ carries its `@scenario:<id>` tag. The reporter
 | post.table.keyboard-scroll | A wide content table is keyboard-scrollable | posts | should |
 | post.table.scrollbar | Only an overflowing content table renders a scrollbar | posts | may |
 | post.table.edge-fades | A wide content table's edge fades track the scroll position | posts | may |
+| post.comments.section | A post shows the comments section with its approved comments and count | posts | should |
+| post.comments.disabled | A post with comments disabled renders no comments section | posts | should |
+| post.comments.csrf | The comment endpoint rejects a write without a CSRF token | posts | should |
+| post.comments.unavailable-hidden | A comments-enabled post with no comments hides the section when Clerk is unavailable | posts | should |
+| post.comments.author-reply | An author reply renders nested one level under a comment with an Author badge | posts | should |
+| post.comments.sign-in | A signed-out reader sees the Sign in with GitHub affordance (needs Clerk test tokens) | posts | may |
+| post.comments.submit | A signed-in reader submits a comment that stays pending until approved (needs Clerk test tokens) | posts | may |
 | not-found.status | An unknown route responds with a 404 status | not-found | must |
 | post.not-found | An unknown post slug shows the not-found page | not-found | must |
 | post.agentic.not-found | An unknown slug on the agentic view shows the not-found page | not-found | should |

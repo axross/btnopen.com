@@ -16,5 +16,17 @@
 	},
 	"language-switcher": {
 		"label": "言語を切り替える"
+	},
+	"comments": {
+		"heading": "コメント",
+		"empty": "まだコメントはありません。",
+		"sign-in": "GitHubでログインしてコメント",
+		"placeholder": "コメントを書く…",
+		"hint": "確認後に公開されます",
+		"submit": "投稿",
+		"submitted": "コメントを受け付けました。確認後に公開されます。",
+		"error": "送信に失敗しました。時間をおいて再度お試しください。",
+		"author": "著者",
+		"removed": "このコメントは削除されました。"
 	}
 }
