@@ -109,7 +109,7 @@ jobs:
           set -euo pipefail
           curl --silent --show-error --location --fail https://get.tur.so/install.sh | bash
           echo "${HOME}/.turso" >> "${GITHUB_PATH}"
-      - name: Provision Turso Database
+      - name: Provision Turso Branch Database
         id: turso
         # Create a fresh, empty database for this PR — never branched from
         # production, so no production data or credentials can reach the
@@ -275,7 +275,7 @@ jobs:
           set -euo pipefail
           curl --silent --show-error --location --fail https://get.tur.so/install.sh | bash
           echo "${HOME}/.turso" >> "${GITHUB_PATH}"
-      - name: Destroy Turso Database
+      - name: Destroy Turso Branch Database
         # Tolerate an already-absent database so re-runs and manual cleanups do
         # not fail the job.
         run: |
