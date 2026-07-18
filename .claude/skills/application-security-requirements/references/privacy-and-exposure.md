@@ -33,7 +33,7 @@ Per-PR preview deployments run on a fresh, empty Turso database seeded from the 
 - MUST flag a Major when a change would route production `LIBSQL_*` credentials to a preview deployment, branch or copy the production database into a preview, or otherwise let a preview reach the production database.
 - MUST flag a Major when a change would point a preview's `BLOB_PAYLOAD_READ_WRITE_TOKEN` at the production Blob store, so preview CMS writes cannot mutate or read production media.
 - MUST require a distinct Preview `PAYLOAD_SECRET` (see [secret-handling](./secret-handling.md)) so preview session cookies and tokens cannot interoperate with production.
-- MUST treat the `PAYLOAD_TEST_USER_*` seed credentials as Preview-only: a public preview intentionally exposes a known throwaway admin login, but those variables set in Production would seed a real admin user — flag a Major if they can reach Production.
+- MUST treat the shared `PAYLOAD_TEST_USER_*` seed credential as a production secret: it is set with the same value across all environments and provisions an admin account, so the login reachable through the public preview admin also unlocks the Production admin. Flag a Major if it is a weak or throwaway value, is committed to the repository, or is written to logs; it MUST be a strong secret managed like any production credential.
 - SHOULD verify preview media stays namespaced under the per-PR `pr-<n>/` prefix and is pruned on teardown, so one preview cannot read or clobber another's uploads within the shared preview store.
 
 ## Analytics and Error Reporting Exposure

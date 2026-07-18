@@ -230,6 +230,12 @@ jobs:
     needs: preflight
     if: ${{ needs.preflight.outputs.ready == 'true' && github.event.action == 'closed' }}
     runs-on: ubuntu-latest
+    # The media-prune step reads BLOB_PAYLOAD_READ_WRITE_TOKEN, which is scoped
+    # to the `Preview` GitHub Actions environment, so this job must declare that
+    # environment to access it. Repository-level secrets (TURSO_API_TOKEN) stay
+    # available. Keep the `Preview` environment free of protection rules that
+    # would gate teardown (it runs on PR close and must not require approval).
+    environment: Preview
     timeout-minutes: 10
     permissions:
       contents: read
