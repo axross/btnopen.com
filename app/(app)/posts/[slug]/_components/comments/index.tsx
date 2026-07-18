@@ -9,7 +9,7 @@ import {
 	getBlogPostComments,
 } from "@/repositories/get-blog-post-comments";
 import type { PayloadLocale } from "@/repositories/payload-types";
-import { isClerkEnabled } from "@/runtime";
+import { isClerkAvailable } from "@/runtime";
 import { CommentComposer } from "./comment-composer";
 import css from "./comments.module.css";
 
@@ -34,7 +34,7 @@ export async function Comments({
 	]);
 	const { count, threads } = await getBlogPostComments({ slug, locale });
 
-	if (!isClerkEnabled && count === 0) {
+	if (!isClerkAvailable && count === 0) {
 		return null;
 	}
 
@@ -49,7 +49,7 @@ export async function Comments({
 				<span className={css.count}>{`(${count})`}</span>
 			</div>
 
-			{isClerkEnabled ? <CommentComposer slug={slug} /> : null}
+			{isClerkAvailable ? <CommentComposer slug={slug} /> : null}
 
 			{threads.length === 0 ? (
 				<p className={css.empty}>{t("empty")}</p>

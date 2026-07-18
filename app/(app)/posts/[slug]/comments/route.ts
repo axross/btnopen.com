@@ -6,7 +6,7 @@ import { CommentSubmission } from "@/helpers/comments";
 import { isSameSiteRequest } from "@/helpers/request-origin";
 import { rootLogger } from "@/logger";
 import { config } from "@/payload/config";
-import { isClerkEnabled } from "@/runtime";
+import { isClerkAvailable } from "@/runtime";
 
 const logger = rootLogger.child({ module: "💬" });
 
@@ -42,7 +42,7 @@ export async function POST(
 		);
 	}
 
-	if (!isClerkEnabled) {
+	if (!isClerkAvailable) {
 		return Response.json(
 			{ error: "Comments are not available." },
 			{ status: 503 },

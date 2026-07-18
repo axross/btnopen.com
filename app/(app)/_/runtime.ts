@@ -42,4 +42,4 @@ export const isMixpanelEnabled = !!mixpanelToken;
 // and unconfigured previews green without Clerk credentials.
 export const clerkPublishableKey =
 	process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || null;
-export const isClerkEnabled = !!clerkPublishableKey;
+export const isClerkAvailable = !!clerkPublishableKey;

@@ -13,7 +13,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { type ReactNode, Suspense } from "react";
 import { getActiveLocale, htmlLangByLocale } from "@/helpers/i18n";
 import { getWebsite } from "@/repositories/get-website";
-import { isClerkEnabled, sha, urlOrigin, vercelEnvironment } from "@/runtime";
+import { isClerkAvailable, sha, urlOrigin, vercelEnvironment } from "@/runtime";
 import { Header } from "./_components/header";
 import { PageViewTracking } from "./_components/page-view-tracking";
 
@@ -118,7 +118,7 @@ async function Document({
 function AuthProvider({
 	children,
 }: Readonly<{ children: ReactNode }>): ReactNode {
-	if (!isClerkEnabled) {
+	if (!isClerkAvailable) {
 		return children;
 	}
 

@@ -199,7 +199,7 @@ test(
 // a preview without Clerk keys); with Clerk on, the same post renders the
 // section with a composer and an empty state. Define it only in that case
 // rather than skipping at runtime, matching the suite's env-gated helpers.
-// biome-ignore lint/style/noProcessEnv: env-driven gate mirroring runtime `isClerkEnabled`
+// biome-ignore lint/style/noProcessEnv: env-driven gate mirroring runtime `isClerkAvailable`
 if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
 	test(
 		"A comments-enabled post with no comments hides the section when Clerk is unavailable",
