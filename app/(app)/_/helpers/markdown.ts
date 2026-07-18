@@ -27,6 +27,10 @@ import {
 } from "micromark-util-combine-extensions";
 import type { JSX } from "react";
 import rehypeReact, { type Options as RehypeReactOptions } from "rehype-react";
+// the `parseOnly` entry point adds only the micromark parse-side extension; this
+// pipeline compiles to React via `rehypeReact` and never serializes back to
+// markdown, so the package's serializer half would be dead weight.
+import remarkCjkFriendly from "remark-cjk-friendly/parseOnly";
 import remarkDirective from "remark-directive";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
@@ -44,6 +48,11 @@ async function renderMarkdown({
 	const highlighter = await getSingletonHighlighter();
 	const file = await unified()
 		.use(remarkParse, { allowDangerousProtocol: true })
+		// amends CommonMark emphasis flanking rules so `**bold**` still closes when
+		// the delimiter neighbours CJK punctuation (e.g. `**…。**続き`), which the
+		// Lexical→markdown serializer emits verbatim for Japanese prose. must run
+		// after `remarkParse` (it extends the parser) and before `remarkRehype`.
+		.use(remarkCjkFriendly)
 		.use(remarkDirective)
 		.use(remarkPartialGfm)
 		.use(remarkEmbeds)
