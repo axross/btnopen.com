@@ -113,20 +113,30 @@ jobs:
         id: turso
         # Create a fresh, empty database for this PR — never branched from
         # production, so no production data or credentials can reach the
-        # preview. Creation is idempotent across `synchronize` events: the
-        # database is reused across pushes (so edits made in the preview
-        # survive re-deploys) and its schema is (re-)applied below.
+        # preview. Idempotent across `synchronize` events: `turso db create`
+        # is attempted every run and only its "already exists" error is
+        # tolerated, so an existing database is reused (edits made in the
+        # preview survive re-deploys) and its schema is (re-)applied below.
+        # This mirrors the teardown's `destroy … || …` idempotency and, unlike
+        # a `turso db show` pre-check, cannot misfire into a spurious create
+        # when `show` times out or errors transiently. Any other create error
+        # still fails the step loudly.
         env:
           TURSO_GROUP: ${{ vars.TURSO_GROUP }}
         run: |
           set -euo pipefail
           database="preview-pr-${{ github.event.pull_request.number }}"
-          if ! turso db show "${database}" >/dev/null 2>&1; then
-            if [ -n "${TURSO_GROUP}" ]; then
-              turso db create "${database}" --group "${TURSO_GROUP}"
-            else
-              turso db create "${database}"
-            fi
+          create=(turso db create "${database}")
+          if [ -n "${TURSO_GROUP}" ]; then
+            create+=(--group "${TURSO_GROUP}")
+          fi
+          if output="$("${create[@]}" 2>&1)"; then
+            echo "::notice::Created database ${database}."
+          elif printf '%s\n' "${output}" | grep -qi 'already exists'; then
+            echo "::notice::Database ${database} already exists; reusing it."
+          else
+            printf '%s\n' "${output}" >&2
+            exit 1
           fi
           url="$(turso db show "${database}" --url)"
           token="$(turso db tokens create "${database}")"
