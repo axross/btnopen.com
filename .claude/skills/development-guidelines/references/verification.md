@@ -79,7 +79,7 @@ Three workflows run automatically:
 
 - `merge-checks.yaml` — the fast merge-gating CI: lint (`npm run lint`) and unit tests (`npm run test:unit`) on every pull request and on pushes to `main`.
 - `check-and-deploy.yaml` — the heavier pipeline on pushes to `main`: lint → Playwright e2e tests → Vercel production deployment. The deploy job applies pending Payload migrations to the production database before promoting new code, and fails loudly rather than serving drifted code; see [production-deployments.md](./production-deployments.md).
-- `preview-deploy.yaml` — the per-PR preview deployment, backed by an isolated Turso branch database so it never touches production; see [preview-deployments.md](./preview-deployments.md).
+- `preview-deploy.yaml` — the per-PR preview deployment, backed by a fresh, isolated Turso database seeded from repository fixtures so it never touches production; see [preview-deployments.md](./preview-deployments.md).
 
 - CI runs E2E tests against `http://localhost:3000` (the app is started locally within the CI runner), not against a deployed Vercel URL. The `PLAYWRIGHT_BASE_URL` environment variable can override this.
 - CI runs tests with `--update-snapshots` and auto-creates a PR for any snapshot differences. Snapshot changes still require review — an auto-created snapshot PR does not mean the visual change is acceptable.

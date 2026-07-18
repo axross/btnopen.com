@@ -4,7 +4,7 @@ Apply these guidelines when working on the production deploy pipeline, when reas
 
 This exists because it once did not: production repeatedly served code whose Payload schema outran the production database, and core queries failed with `SQLite input error: no such column: …` until the migration was applied by hand (Sentry BTNOPEN-4G on Jul 6, BTNOPEN-4H on Jul 10). The steps below are what close those drift windows; keep them intact.
 
-The per-pull-request preview pipeline is the sibling of this flow and migrates an isolated Turso branch instead of production; see [preview-deployments.md](./preview-deployments.md). The migration commands themselves are owned by [dev-commands.md](./dev-commands.md).
+The per-pull-request preview pipeline is the sibling of this flow and migrates a fresh, isolated Turso database seeded from fixtures instead of production; see [preview-deployments.md](./preview-deployments.md). The migration commands themselves are owned by [dev-commands.md](./dev-commands.md).
 
 ## Pipeline Overview
 
@@ -63,4 +63,4 @@ The production database URL and auth token live in the `Production` GitHub envir
 
 - MUST provide `LIBSQL_PAYLOAD_TURSO_DATABASE_URL` and `LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN` to the migration step from the `Production` GitHub environment, not from `vercel env pull` output.
 - MUST delete the pulled `LIBSQL_*` lines from `.env.local` before migrating (the workflow's `sed` step) so the empty sensitive value cannot shadow the process-environment credentials.
-- MUST NOT expose the production `LIBSQL_*` credentials to any job other than `deployment`; the preview pipeline uses isolated Turso branch credentials instead (see [preview-deployments.md](./preview-deployments.md)).
+- MUST NOT expose the production `LIBSQL_*` credentials to any job other than `deployment`; the preview pipeline uses isolated per-PR database credentials instead (see [preview-deployments.md](./preview-deployments.md)).

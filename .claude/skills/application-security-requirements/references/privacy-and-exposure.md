@@ -26,14 +26,15 @@ Values sent to the browser are public. The `NEXT_PUBLIC_*` prefix is a release d
 
 ## Preview Environment Data Exposure
 
-Per-PR preview deployments branch the production Turso database (see the project's development guidelines, preview-deployments rules, for the pipeline). A branch is a full copy of production content, so it also copies sensitive rows — `users` (including hashed passwords) and `payload-mcp-api-keys` — into a database served from a publicly reachable preview URL whose Payload admin and MCP endpoints are live.
+Per-PR preview deployments run on a fresh, empty Turso database seeded from the repository's own fixtures, and write media to a dedicated preview Blob store (see the project's development guidelines, preview-deployments rules, for the pipeline). By construction a preview holds no production content — no production `users`, `payload-mcp-api-keys`, or blog data — even though its Payload admin and MCP endpoints are live on a publicly reachable URL. The exposure to guard is therefore a regression that reintroduces production data or credentials into a preview, not the steady state.
 
 **Guidelines:**
 
-- MUST flag a Major when a change would route production `LIBSQL_*` credentials to a preview/branch deployment, or otherwise let a preview reach the production database.
+- MUST flag a Major when a change would route production `LIBSQL_*` credentials to a preview deployment, branch or copy the production database into a preview, or otherwise let a preview reach the production database.
+- MUST flag a Major when a change would point a preview's `BLOB_PAYLOAD_READ_WRITE_TOKEN` at the production Blob store, so preview CMS writes cannot mutate or read production media.
 - MUST require a distinct Preview `PAYLOAD_SECRET` (see [secret-handling](./secret-handling.md)) so preview session cookies and tokens cannot interoperate with production.
-- SHOULD prefer a read-only branch token, or sanitizing `users` / `payload-mcp-api-keys` after branching, when a preview only needs to render the public site rather than exercise write flows.
-- SHOULD verify the Preview Vercel Blob token does not point at the production blob store, so preview CMS writes cannot mutate production media.
+- MUST keep the preview `PAYLOAD_TEST_USER_*` seed credential **distinct from Production's**: the values are environment-scoped secrets (the preview value lives in the `Preview` GitHub Actions environment and is injected at deploy), and the preview admin login is publicly reachable, so reusing the Production value for Preview would expose Production admin access. Flag a Major if the same `PAYLOAD_TEST_USER_*` value is used for both Preview and Production, or if the credential is committed to the repository or written to logs.
+- SHOULD verify preview media stays namespaced under the per-PR `pr-<n>/` prefix and is pruned on teardown, so one preview cannot read or clobber another's uploads within the shared preview store.
 
 ## Analytics and Error Reporting Exposure
 

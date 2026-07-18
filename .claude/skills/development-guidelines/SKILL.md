@@ -1,7 +1,7 @@
 ---
 name: development-guidelines
-description: The project's baseline working rules. Covers the Biome format/lint loop, scoped change management, current-docs lookup triggers, npm run-scripts, TypeScript type-safety discipline, source-comment and doc-comment conventions, verification requirements, Payload migration handling, Playwright e2e expectations, Conventional Commits, pull request descriptions, the production-deploy migration pipeline, and the per-PR Turso-branch preview-deployment pipeline.
-when_to_use: Apply at the start of EVERY task in this project, even when the user does not mention formatting, linting, testing, type casts, comments, doc-comments, dependencies, migrations, docs, commands, commit wording, pull request bodies, branch/preview deploys, or Turso database branching.
+description: The project's baseline working rules. Covers the Biome format/lint loop, scoped change management, current-docs lookup triggers, npm run-scripts, TypeScript type-safety discipline, source-comment and doc-comment conventions, verification requirements, Payload migration handling, Playwright e2e expectations, Conventional Commits, pull request descriptions, the production-deploy migration pipeline, and the per-PR seeded preview-deployment pipeline.
+when_to_use: Apply at the start of EVERY task in this project, even when the user does not mention formatting, linting, testing, type casts, comments, doc-comments, dependencies, migrations, docs, commands, commit wording, pull request bodies, preview deploys, or Turso preview databases.
 user-invocable: false
 ---
 
@@ -49,7 +49,7 @@ See [production-deployments.md](./references/production-deployments.md) for:
 
 See [preview-deployments.md](./references/preview-deployments.md) for:
 
-- the per-PR Turso-branch preview-deployment pipeline (`preview-deploy.yaml`) and how it isolates production
+- the per-PR seeded preview-deployment pipeline (`preview-deploy.yaml`) and how it isolates production
 - the one-time Turso/GitHub/Vercel setup, including scoping production credentials to the Production environment
 - first-run verification, orphan cleanup, cost, and the media-isolation limitation
 
