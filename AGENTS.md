@@ -27,7 +27,7 @@ Apply these keywords consistently in this document and the documents linked from
 | Skill | When to apply |
 | ----- | ------------- |
 | [Agent Skills Best Practices](.claude/skills/agent-skills-best-practices/SKILL.md) | Creating, refining, splitting, renaming, deleting, or auditing project skills or this skill index |
-| [Application Security Requirements](.claude/skills/application-security-requirements/SKILL.md) | Reviewing secrets, environment variables, validation, Payload access control, markdown XSS, SSRF/embed fetching, auth/session behavior, privacy exposure, preview/branch deployment data exposure, analytics/error-reporting data, or npm dependency risk |
+| [Application Security Requirements](.claude/skills/application-security-requirements/SKILL.md) | Reviewing secrets, environment variables, validation, Payload access control, markdown XSS, SSRF/embed fetching, auth/session behavior, privacy exposure, preview deployment data exposure, analytics/error-reporting data, or npm dependency risk |
 | [Blog Post Authoring Guidelines](.claude/skills/blog-post-authoring-guidelines/SKILL.md) | Drafting, rewriting, refining, translating, or reviewing blog post content, titles, briefs, tags, structure, tone, grammar, the `outline` / `authoringNotes` authoring artifacts, and authorial style |
 | [Code Review Guideline](.claude/skills/code-review-guideline/SKILL.md) | Reviewing a diff, pull request, local change, or post-implementation self-review |
 | [Development Guidelines](.claude/skills/development-guidelines/SKILL.md) | Implementing, refactoring, running commands, preparing commits, writing pull request descriptions, adding dependencies, checking current docs, changing migrations, or working on the preview-deployment pipeline |

@@ -1,6 +1,6 @@
 ---
 name: application-security-requirements
-description: The security and privacy review lens for changes in this Next.js + Payload CMS + Vercel project. Covers secrets/env vars, the `NEXT_PUBLIC_*` boundary, input validation, Payload access control and drafts, public exposure, preview/branch deployment data exposure, markdown XSS, SSRF/webembed/OG fetching, auth/session settings, Sentry/Mixpanel data capture, and npm dependency supply-chain risk.
+description: The security and privacy review lens for changes in this Next.js + Payload CMS + Vercel project. Covers secrets/env vars, the `NEXT_PUBLIC_*` boundary, input validation, Payload access control and drafts, public exposure, preview deployment data exposure, markdown XSS, SSRF/webembed/OG fetching, auth/session settings, Sentry/Mixpanel data capture, and npm dependency supply-chain risk.
 when_to_use: Use when reviewing security or privacy implications of a change — "is this safe", "security", "auth", "admin", "secret", "privacy", "PII", "XSS", "SSRF", "preview deployment", or dependency reviews.
 user-invocable: false
 ---
@@ -44,7 +44,7 @@ See [privacy-and-exposure.md](./references/privacy-and-exposure.md) for:
 - Public media URLs expose only intentionally public assets and do not reveal private storage tokens or internal identifiers
 - Sentry and Mixpanel changes do not capture unnecessary PII, secrets, draft content, or CMS-authored private fields
 - Client-exposed environment variables, analytics event properties, and error context are intentionally public
-- Preview/branch deployments do not receive production database credentials, and branching production copies sensitive rows into a publicly reachable preview
+- Preview deployments run on a fresh seeded database and a dedicated media store, receiving no production credentials or data; the risk to guard is a regression that reintroduces production data or credentials into a publicly reachable preview
 
 ## XSS in Markdown Rendering
 
