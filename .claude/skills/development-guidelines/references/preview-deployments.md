@@ -1,12 +1,12 @@
 # Preview Deployments
 
-Apply these guidelines when working on the per-pull-request preview-deployment pipeline, or when configuring, verifying, or reasoning about branch deployments. The pipeline lets a reviewer see a PR's actual look and feel on a live Vercel URL without any risk to the production database, because Payload runs on a single Turso (SQLite) database that a naive preview could corrupt.
+Apply these guidelines when working on the per-pull-request preview-deployment pipeline, or when configuring, verifying, or reasoning about preview deployments. The pipeline lets a reviewer see a PR's actual look and feel on a live Vercel URL. Each preview runs on its own fresh, empty Turso (SQLite) database seeded from the repository's own fixtures and writes uploaded media to a dedicated preview Blob store — so no production data, and no production credentials, ever reach a preview.
 
-The security trade-offs of this design (branching copies production content into a publicly reachable preview) are owned by the project's application-security requirements (privacy-and-exposure rules); consult it before changing what data a preview receives or who can reach it.
+The security trade-offs of this design (a publicly reachable preview serving fixture content, not production data) are owned by the project's application-security requirements (privacy-and-exposure rules); consult it before changing what data a preview receives or who can reach it.
 
 ## Pipeline Overview
 
-The workflow is [`.github/workflows/preview-deploy.yaml`](../../../../.github/workflows/preview-deploy.yaml), triggered on `pull_request` `[opened, synchronize, reopened, closed]` and concurrency-grouped per PR. Each PR is served by an isolated Turso child database branched from production, migrated, wired into a Vercel preview deployment, and destroyed when the PR closes.
+The workflow is [`.github/workflows/preview-deploy.yaml`](../../../../.github/workflows/preview-deploy.yaml), triggered on `pull_request` `[opened, synchronize, reopened, closed]` and concurrency-grouped per PR. Each PR is served by a fresh, empty Turso database, migrated in CI, wired into a Vercel preview deployment that self-seeds from fixtures on first boot, with media in a dedicated preview store under a `pr-<n>/` prefix; the database and that media are destroyed when the PR closes.
 
 ```text
 pull_request (opened / synchronize / reopened)
@@ -16,23 +16,37 @@ pull_request (opened / synchronize / reopened)
         │ present
         ▼
   deploy
-   1. branch  preview-pr-<n>  from production   (isolated copy, own storage)
-   2. run the PR's migrations against it          (never touches production)
-   3. vercel deploy (preview), injecting the branch creds at build + runtime
+   1. create  preview-pr-<n>  as a fresh, empty database (never from production)
+   2. run the repo's migrations against it            (schema built from scratch)
+   3. vercel deploy (preview), injecting the DB creds + BLOB_PAYLOAD_PREFIX=pr-<n>
+      at build + runtime; the app self-seeds from fixtures on first boot
    4. alias a stable per-PR URL to that deployment, then post a new comment
       with it (a fresh comment each deploy — prior ones are left intact)
 
-pull_request (closed) ──▶ teardown: turso db destroy preview-pr-<n>; post a teardown comment
+pull_request (closed) ──▶ teardown: turso db destroy preview-pr-<n>;
+                          prune every blob under pr-<n>/; post a teardown comment
 ```
 
 **Guidelines:**
 
-- MUST keep the production `LIBSQL_*` credentials out of every preview: the workflow injects only the per-PR branch credentials via `vercel deploy --env` / `--build-env`, never the production ones.
+- MUST provision each preview as a **fresh, empty** database — never branched from production — so no production row ever reaches a publicly reachable preview. Content comes only from the app's `onInit` seed (`payload/helpers/seed.ts`) running against that empty database on first boot.
+- MUST keep the production `LIBSQL_*` credentials out of every preview: the workflow injects only the per-PR database credentials via `vercel deploy --env` / `--build-env`, never the production ones.
+- MUST run schema **migrations in CI** (`npm run migrate:up` against the fresh database) so the schema exists before traffic; only data seeding happens at runtime.
 - MUST keep the pipeline inert until setup exists — the `preflight` job gates `deploy`/`teardown` on the required secrets/vars so unconfigured and forked PRs stay green rather than failing.
-- MUST keep branch provisioning idempotent across `synchronize` events (create the branch only if absent; re-running migrations is a no-op when the branch already carries production's applied migration state).
+- MUST keep provisioning idempotent across `synchronize` events (create the database only if absent; re-running migrations is a no-op once applied), so the per-PR database persists across pushes and edits made in the preview survive re-deploys.
 - MUST surface a **stable per-PR URL**, not the per-commit `vercel deploy` URL: after deploying, re-point a deterministic alias (`<prefix>-pr-<n>.vercel.app`) at the new deployment with `vercel alias set`, so the pull request's preview link stays constant across pushes and always serves the newest build. The alias step fails the job on error rather than falling back to the per-commit URL.
 - MUST post a **new** comment on each deploy (and a distinct teardown comment on close) rather than editing one sticky comment — a fresh comment re-surfaces the deploy in the PR timeline, and each carries the deployed short SHA so the appended history stays meaningful even though the URL is constant.
 - SHOULD grant `issues: write` to any job whose `github-script` step posts a PR comment — PR comments post through the Issues API, and an explicit `permissions:` block defaults every unlisted scope to `none`.
+
+## Seeding
+
+A preview's content is not copied from anywhere — it is generated by the app's own idempotent `onInit` seed, the same one local development and the e2e suite use, gated on `PAYLOAD_TEST_USER_EMAIL` / `PAYLOAD_TEST_USER_PASSWORD`.
+
+**Guidelines:**
+
+- MUST set `PAYLOAD_TEST_USER_EMAIL` and `PAYLOAD_TEST_USER_PASSWORD` in the Vercel **Preview** environment so the app self-seeds on first boot; MUST keep both **unset** in Production so production never seeds a test user.
+- MUST run migrations in CI (not rely on runtime schema push): the runtime seed only creates data, against the already-migrated schema.
+- SHOULD accept that the `onInit` seed is idempotent but not concurrency-safe — two simultaneous cold starts could race it. For a single-reviewer preview this is low risk; a dedicated CI seed step (booting Payload against the database before deploy) is the fallback if double-seeding ever appears.
 
 ## Required One-Time Setup
 
@@ -43,19 +57,22 @@ These steps touch the GitHub and Turso/Vercel accounts and cannot be performed f
 | Kind | Name | Value |
 |---|---|---|
 | GitHub secret | `TURSO_API_TOKEN` | a CI token minted with `turso auth api-tokens mint <name>` |
-| GitHub variable | `TURSO_PARENT_DATABASE` | the production database name to branch from |
-| GitHub variable | `TURSO_GROUP` | *(optional)* the group the branch is created in |
+| GitHub secret | `BLOB_PAYLOAD_READ_WRITE_TOKEN` | the **dedicated preview** Blob store's read/write token, used by `teardown` to prune `pr-<n>/` media |
+| GitHub variable | `TURSO_GROUP` | *(optional)* the group the database is created in |
 | GitHub variable | `VERCEL_PREVIEW_ALIAS_PREFIX` | *(optional)* the `.vercel.app` label to prefix the stable per-PR alias; defaults to the sanitized repository name (e.g. `btnopen-com`), yielding `<prefix>-pr-<n>.vercel.app` |
 
-`VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` already exist for the production deploy and are reused as-is.
+`VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` already exist for the production deploy and are reused as-is. No parent-database variable is needed — previews are seeded, not branched.
 
 **Vercel project settings:** in the Vercel dashboard, under Settings → Environment Variables:
 
 **Guidelines:**
 
 - MUST scope the production `LIBSQL_PAYLOAD_TURSO_DATABASE_URL` and `LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN` to the **Production** environment only — this is the critical safety measure: with the production credentials absent from Preview, no preview build can reach production even if the workflow is bypassed (Payload falls back to a local file).
-- MUST NOT set the `LIBSQL_*` variables for the Preview environment; the workflow injects the branch credentials per deployment.
-- MUST configure the Preview environment's non-database variables (`PAYLOAD_SECRET`, the Vercel Blob token, Sentry variables) so a preview can build and run.
+- MUST NOT set the `LIBSQL_*` variables for the Preview environment; the workflow injects the per-PR database credentials per deployment.
+- MUST point the Preview environment's `BLOB_PAYLOAD_READ_WRITE_TOKEN` at a **dedicated preview Blob store**, separate from production, and scope the production store token to **Production** only — so a preview shares neither media nor credentials with production. Use that same preview store token for the `BLOB_PAYLOAD_READ_WRITE_TOKEN` GitHub secret above so teardown can prune it.
+- MUST set `PAYLOAD_TEST_USER_EMAIL` / `PAYLOAD_TEST_USER_PASSWORD` in the Preview environment (throwaway credentials) and keep them unset in Production (see [Seeding](#seeding)).
+- MUST configure the Preview environment's other non-database variables (`PAYLOAD_SECRET`, Sentry variables) so a preview can build and run.
+- MUST NOT set `BLOB_PAYLOAD_PREFIX` in any environment by hand — the workflow injects `pr-<n>` per preview, and production/local intentionally leave it empty (see [Media Isolation via Blob Prefix](#media-isolation-via-blob-prefix)).
 - SHOULD use a distinct Preview `PAYLOAD_SECRET` per the project's application-security requirements (privacy-and-exposure rules).
 
 ## First-Run Verification
@@ -64,17 +81,18 @@ End-to-end pipeline behavior depends on live Turso and Vercel accounts, so it is
 
 **Guidelines:**
 
-- MUST, after completing setup, open a throwaway PR and confirm the `deploy` job runs (not skipped), a `preview-pr-<n>` database appears in `turso db list`, a comment posts a working `<prefix>-pr-<n>.vercel.app` URL, and the site renders with production-like content.
+- MUST, after completing setup, open a throwaway PR and confirm the `deploy` job runs (not skipped), a `preview-pr-<n>` database appears in `turso db list`, a comment posts a working `<prefix>-pr-<n>.vercel.app` URL, and the site renders with the **seeded fixture content** (not production content).
 - MUST confirm that pushing a second commit appends a **new** comment (not an edit of the first) and that the stable URL still resolves to the latest deployment.
-- MUST confirm `LIBSQL_*` never appears unmasked in the workflow logs.
-- MUST confirm that closing the PR runs `teardown`, posts a teardown comment, and removes `preview-pr-<n>` from `turso db list`.
+- MUST confirm neither `LIBSQL_*` nor the preview Blob token appears unmasked in the workflow logs.
+- MUST confirm that closing the PR runs `teardown`, posts a teardown comment, removes `preview-pr-<n>` from `turso db list`, and leaves no blobs under `pr-<n>/` in the preview store.
 
 ## Cost, Cleanup, and Limitations
 
 **Guidelines:**
 
-- SHOULD remove orphaned branch databases (e.g. from a PR closed while a run was cancelled) with `turso db destroy preview-pr-<n> --yes`; each open PR otherwise holds one extra database until close.
-- MUST NOT assume concurrent PRs interfere: each gets its own branch and preview.
+- SHOULD remove orphaned preview databases (e.g. from a PR closed while a run was cancelled) with `turso db destroy preview-pr-<n> --yes`; each open PR otherwise holds one extra database until close.
+- SHOULD manually prune orphaned `pr-<n>/` media the same way when the automatic prune could not run — the `teardown` prune step is skipped when the `BLOB_PAYLOAD_READ_WRITE_TOKEN` secret is absent.
+- MUST NOT assume concurrent PRs interfere: each gets its own database, preview, and `pr-<n>/` media prefix.
 
 ## Media Isolation via Blob Prefix
 
@@ -84,5 +102,5 @@ End-to-end pipeline behavior depends on live Turso and Vercel accounts, so it is
 
 - MUST keep `BLOB_PAYLOAD_PREFIX` empty (unset) in production and local development so existing media keys stay flat; only preview deployments set it.
 - MUST generate migrations with `BLOB_PAYLOAD_PREFIX` unset so the `prefix` column's default stays a stable `''` rather than baking a preview value into the schema.
-- SHOULD prune a closed PR's media on teardown by deleting everything under its `pr-<n>/` prefix — `@vercel/blob`'s `list({ prefix: "pr-<n>/" })` + `del(urls)` paginated to exhaustion, or `vercel blob list --prefix "pr-<n>/"` piped into `vercel blob del`. Wiring this into the `teardown` job requires the preview store's read/write token available as a CI secret; until then, prune orphaned prefixes manually.
-- SHOULD point Preview at a Blob store separate from production for defence in depth; the prefix isolates keys within whichever store is configured, and a dedicated preview store additionally isolates credentials.
+- MUST prune a closed PR's media on teardown by deleting everything under its `pr-<n>/` prefix — the `teardown` job runs [`scripts/prune-preview-blobs.mjs`](../../../../scripts/prune-preview-blobs.mjs) (`@vercel/blob` `list` + `del`, paginated) against the preview store, from a throwaway directory with a standalone install so it never depends on the repository lockfile. The step is a clean skip when the `BLOB_PAYLOAD_READ_WRITE_TOKEN` secret is absent.
+- MUST keep preview media in a store **dedicated** to previews (see [Required One-Time Setup](#required-one-time-setup)); the prefix isolates keys within that store, and the dedicated store additionally isolates credentials from production.

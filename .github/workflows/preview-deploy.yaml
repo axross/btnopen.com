@@ -1,10 +1,13 @@
 name: Preview Deploy
 
 # Per-pull-request Vercel preview deployments backed by an isolated Turso
-# branch database, so the maintainer can review the actual look and feel of a
-# change without any risk to the production database. Each PR gets a child
-# database branched from production; that branch is migrated, wired into a
-# Vercel preview deployment, and destroyed when the PR closes. See
+# database seeded from the repository's own fixtures, so the maintainer can
+# review the actual look and feel of a change without any production data — or
+# production credentials — ever reaching a preview. Each PR gets a fresh, empty
+# database created from scratch; that database is migrated, wired into a Vercel
+# preview deployment (which self-seeds from `payload/helpers/seed.ts` on first
+# boot), and destroyed when the PR closes. Uploaded media goes to a dedicated
+# preview Blob store under a per-PR `pr-<n>/` prefix, pruned on close. See
 # .claude/skills/development-guidelines/references/preview-deployments.md for
 # the architecture and the required one-time account setup, and
 # .claude/skills/application-security-requirements/references/privacy-and-exposure.md
@@ -48,14 +51,14 @@ jobs:
         # clean skip, never a failure.
         env:
           TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
-          TURSO_PARENT_DATABASE: ${{ vars.TURSO_PARENT_DATABASE }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           set -euo pipefail
+          # Previews are seeded from repo fixtures, not branched from
+          # production, so no parent-database variable is required here.
           if [ -n "${TURSO_API_TOKEN}" ] \
-            && [ -n "${TURSO_PARENT_DATABASE}" ] \
             && [ -n "${VERCEL_TOKEN}" ] \
             && [ -n "${VERCEL_ORG_ID}" ] \
             && [ -n "${VERCEL_PROJECT_ID}" ]; then
@@ -99,23 +102,23 @@ jobs:
           set -euo pipefail
           curl --silent --show-error --location --fail https://get.tur.so/install.sh | bash
           echo "${HOME}/.turso" >> "${GITHUB_PATH}"
-      - name: Provision Turso Branch Database
+      - name: Provision Turso Database
         id: turso
-        # Branch a child database from production (a point-in-time copy with
-        # its own storage), so the preview never touches production data.
-        # Creation is idempotent across `synchronize` events; the branch is
-        # reused and only the PR's new migrations are (re-)applied below.
+        # Create a fresh, empty database for this PR — never branched from
+        # production, so no production data or credentials can reach the
+        # preview. Creation is idempotent across `synchronize` events: the
+        # database is reused across pushes (so edits made in the preview
+        # survive re-deploys) and its schema is (re-)applied below.
         env:
-          TURSO_PARENT_DATABASE: ${{ vars.TURSO_PARENT_DATABASE }}
           TURSO_GROUP: ${{ vars.TURSO_GROUP }}
         run: |
           set -euo pipefail
           database="preview-pr-${{ github.event.pull_request.number }}"
           if ! turso db show "${database}" >/dev/null 2>&1; then
             if [ -n "${TURSO_GROUP}" ]; then
-              turso db create "${database}" --from-db "${TURSO_PARENT_DATABASE}" --group "${TURSO_GROUP}"
+              turso db create "${database}" --group "${TURSO_GROUP}"
             else
-              turso db create "${database}" --from-db "${TURSO_PARENT_DATABASE}"
+              turso db create "${database}"
             fi
           fi
           url="$(turso db show "${database}" --url)"
@@ -125,9 +128,11 @@ jobs:
           echo "url=${url}" >> "${GITHUB_OUTPUT}"
           echo "token=${token}" >> "${GITHUB_OUTPUT}"
       - name: Push Database Migrations
-        # Apply the PR branch's migrations to the isolated branch database only.
-        # A no-op when the PR adds no migration, since the branch inherits
-        # production's already-applied migration state.
+        # Build the schema on the fresh, empty database from the repository's
+        # migration files. Idempotent across `synchronize` events: once applied,
+        # re-running is a no-op. Seed data is created separately, at runtime, by
+        # the app's onInit seed on first boot (gated on the PAYLOAD_TEST_USER_*
+        # variables configured in the Vercel Preview environment).
         env:
           LIBSQL_PAYLOAD_TURSO_DATABASE_URL: ${{ steps.turso.outputs.url }}
           LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN: ${{ steps.turso.outputs.token }}
@@ -136,10 +141,13 @@ jobs:
         run: npm install --global vercel@latest
       - name: Deploy Preview to Vercel
         id: deploy
-        # Inject the branch credentials for this deployment only, at both build
-        # and runtime, so they override the project's Preview environment for
-        # this deploy alone. The production credentials must be scoped to the
-        # Production environment in Vercel and are never passed here.
+        # Inject this PR's database credentials for this deployment only, at
+        # both build and runtime, so they override the project's Preview
+        # environment for this deploy alone. The production credentials must be
+        # scoped to the Production environment in Vercel and are never passed
+        # here. The Preview environment supplies the rest (a distinct
+        # PAYLOAD_SECRET, the PAYLOAD_TEST_USER_* seed credentials, and the
+        # dedicated preview Blob store token).
         #
         # `BLOB_PAYLOAD_PREFIX` namespaces this PR's uploaded media under a
         # `pr-<n>/` path in the Blob store so a preview's media is isolated and
@@ -208,7 +216,7 @@ jobs:
               "",
               url,
               "",
-              `Deployed \`${sha}\`. Served by an isolated Turso branch database (\`${database}\`) branched from production and destroyed automatically when this pull request closes. This URL is stable for the pull request and always serves the latest preview.`,
+              `Deployed \`${sha}\`. Served by an isolated Turso database (\`${database}\`) seeded from repository fixtures — no production data — with media in a dedicated preview store; both are destroyed automatically when this pull request closes. This URL is stable for the pull request and always serves the latest preview.`,
             ].join("\n");
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -235,18 +243,48 @@ jobs:
     env:
       TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
     steps:
+      - name: Checkout
+        # Needed only for the blob-prune script below; the Turso teardown does
+        # not read the repository.
+        uses: actions/checkout@v6
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: package.json
       - name: Install Turso CLI
         run: |
           set -euo pipefail
           curl --silent --show-error --location --fail https://get.tur.so/install.sh | bash
           echo "${HOME}/.turso" >> "${GITHUB_PATH}"
-      - name: Destroy Turso Branch Database
+      - name: Destroy Turso Database
         # Tolerate an already-absent database so re-runs and manual cleanups do
         # not fail the job.
         run: |
           set -euo pipefail
           database="preview-pr-${{ github.event.pull_request.number }}"
           turso db destroy "${database}" --yes || echo "::notice::${database} was already absent."
+      - name: Prune Preview Media
+        # Delete every blob this PR wrote under its `pr-<n>/` prefix in the
+        # dedicated preview Blob store. Runs in an isolated scratch directory
+        # with a standalone `@vercel/blob` install, so it never depends on the
+        # repository's own lockfile. Inert (a clean skip, not a failure) when
+        # the preview store token is not configured.
+        env:
+          BLOB_TOKEN: ${{ secrets.BLOB_PAYLOAD_READ_WRITE_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          if [ -z "${BLOB_TOKEN}" ]; then
+            echo "::notice::Preview media prune skipped: BLOB_PAYLOAD_READ_WRITE_TOKEN is not configured."
+            exit 0
+          fi
+          workdir="$(mktemp -d)"
+          cp scripts/prune-preview-blobs.mjs "${workdir}/"
+          cd "${workdir}"
+          npm init --yes >/dev/null 2>&1
+          npm install --no-audit --no-fund --no-package-lock @vercel/blob@^2 >/dev/null
+          BLOB_PAYLOAD_READ_WRITE_TOKEN="${BLOB_TOKEN}" \
+            node prune-preview-blobs.mjs "pr-${PR_NUMBER}/"
       - name: Comment Preview Torn Down
         uses: actions/github-script@v7
         with:
@@ -258,7 +296,7 @@ jobs:
             const body = [
               "### 🚀 Preview deployment",
               "",
-              `Torn down — the isolated Turso branch database (\`${database}\`) for this pull request was destroyed when it closed.`,
+              `Torn down — the isolated Turso database (\`${database}\`) and this pull request's preview media were destroyed when it closed.`,
             ].join("\n");
             await github.rest.issues.createComment({
               owner: context.repo.owner,

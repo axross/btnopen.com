@@ -407,6 +407,27 @@
 			}
 		},
 		{
+			// standalone Node CI/maintenance scripts (e.g. the preview-media prune
+			// used by the preview-deploy teardown) — they read env, print progress,
+			// and use literal API limits/exit codes, so these rules are inherent to
+			// the file type, not application code.
+			"includes": ["scripts/*.mjs"],
+			"linter": {
+				"rules": {
+					"correctness": {
+						"noNodejsModules": "off"
+					},
+					"style": {
+						"noProcessEnv": "off",
+						"noMagicNumbers": "off"
+					},
+					"suspicious": {
+						"noConsole": "off"
+					}
+				}
+			}
+		},
+		{
 			"includes": ["package.json", "package-lock.json", "skills-lock.json"],
 			"formatter": {
 				"enabled": false
