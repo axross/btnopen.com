@@ -63,4 +63,4 @@ The production database URL and auth token, and the Vercel Blob read/write token
 
 - MUST provide `LIBSQL_PAYLOAD_TURSO_DATABASE_URL`, `LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN`, and `BLOB_PAYLOAD_READ_WRITE_TOKEN` to the migration step from the `Production` GitHub environment, not from `vercel env pull` output.
 - MUST delete the pulled `LIBSQL_*` and `BLOB_PAYLOAD_READ_WRITE_TOKEN` lines from `.env.local` before migrating (the workflow's `sed` step) so the unusable sensitive values cannot shadow the process-environment credentials.
-- MUST NOT expose the production `LIBSQL_*` credentials to any job other than `deployment`; the preview pipeline uses isolated per-PR database credentials instead (see [preview-deployments.md](./preview-deployments.md)).
+- MUST NOT expose the production `LIBSQL_*` credentials or the production `BLOB_PAYLOAD_READ_WRITE_TOKEN` to any job other than `deployment`; the preview pipeline uses isolated per-PR database credentials and a `Preview`-environment-scoped token for its dedicated preview Blob store instead (see [preview-deployments.md](./preview-deployments.md)).
