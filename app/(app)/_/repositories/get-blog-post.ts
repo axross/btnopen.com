@@ -20,6 +20,7 @@ const BlogPostDetail = PayloadBlogPost.transform((blogPost) => ({
 	tags: blogPost.tags,
 	thumbnailImage: resolveThumbnailImage(blogPost.coverImage),
 	author: blogPost.author,
+	isCommentsEnabled: blogPost.isCommentsEnabled,
 	publishedAt: blogPost.publishedAt ?? blogPost.createdAt,
 	updatedAt: blogPost.updatedAt,
 }));
@@ -54,6 +55,7 @@ export async function getBlogPost({
 			tags: true,
 			coverImage: true,
 			author: true,
+			isCommentsEnabled: true,
 			publishedAt: true,
 			createdAt: true,
 			updatedAt: true,

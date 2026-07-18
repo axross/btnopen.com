@@ -70,6 +70,7 @@ export interface Config {
   collections: {
     users: User;
     'blog-posts': BlogPost;
+    comments: Comment;
     tags: Tag;
     media: Media;
     'cover-images': CoverImage;
@@ -84,6 +85,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     'blog-posts': BlogPostsSelect<false> | BlogPostsSelect<true>;
+    comments: CommentsSelect<false> | CommentsSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     'cover-images': CoverImagesSelect<false> | CoverImagesSelect<true>;
@@ -239,6 +241,10 @@ export interface BlogPost {
   author: number | User;
   publishedAt?: string | null;
   /**
+   * Show the reader comments section at the bottom of this post.
+   */
+  isCommentsEnabled?: boolean | null;
+  /**
    * Authoring outline for the agent-driven authoring loop. A single Markdown bullet-point list — only list items and inline elements are permitted; no paragraphs or other block types.
    */
   outline?: string | null;
@@ -290,6 +296,33 @@ export interface Tag {
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "comments".
+ */
+export interface Comment {
+  id: number;
+  blogPost: number | BlogPost;
+  /**
+   * Set to reply to a top-level comment. Author-only and limited to one level — a reply cannot have a parent that is itself a reply.
+   */
+  parent?: (number | null) | Comment;
+  /**
+   * Author reply. Renders with the site author's identity and an Author badge instead of the reader snapshot fields.
+   */
+  authorReply?: boolean | null;
+  body: string;
+  status: 'pending' | 'approved' | 'rejected';
+  /**
+   * Identity-provider (Clerk) user id of the reader who posted. Empty for author replies.
+   */
+  authorProviderId?: string | null;
+  authorName?: string | null;
+  authorGithubUsername?: string | null;
+  authorAvatarUrl?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -458,6 +491,10 @@ export interface PayloadLockedDocument {
         value: number | BlogPost;
       } | null)
     | ({
+        relationTo: 'comments';
+        value: number | Comment;
+      } | null)
+    | ({
         relationTo: 'tags';
         value: number | Tag;
       } | null)
@@ -567,12 +604,30 @@ export interface BlogPostsSelect<T extends boolean = true> {
   tags?: T;
   author?: T;
   publishedAt?: T;
+  isCommentsEnabled?: T;
   outline?: T;
   authoringNotes?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "comments_select".
+ */
+export interface CommentsSelect<T extends boolean = true> {
+  blogPost?: T;
+  parent?: T;
+  authorReply?: T;
+  body?: T;
+  status?: T;
+  authorProviderId?: T;
+  authorName?: T;
+  authorGithubUsername?: T;
+  authorAvatarUrl?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

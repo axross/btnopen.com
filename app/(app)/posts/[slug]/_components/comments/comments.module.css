@@ -1,0 +1,258 @@
+@layer components {
+	@scope (.comments) {
+		:where(:scope) {
+			width: stretch;
+			max-width: var(--max-width);
+			margin-block-start: var(--size-64);
+			padding-inline: var(--size-16);
+			display: flex;
+			flex-direction: column;
+			gap: var(--size-24);
+
+			@container style(--page-variant: "desktop") {
+				padding-inline: unset;
+			}
+		}
+
+		.head {
+			display: flex;
+			align-items: baseline;
+			gap: var(--size-8);
+		}
+
+		.heading {
+			font-size: var(--text-md);
+			font-weight: 600;
+			color: var(--neutral-11);
+		}
+
+		.count {
+			font-family: var(--font-mono);
+			font-size: var(--text-sm);
+			color: var(--neutral-11);
+		}
+
+		.empty {
+			font-family: var(--font-mono);
+			font-size: var(--text-sm);
+			color: var(--neutral-11);
+		}
+
+		/* Composer: no surrounding card — the textarea carries the only border. */
+		.composer {
+			display: flex;
+			align-items: flex-start;
+			gap: var(--size-12);
+		}
+
+		.composerField {
+			flex: 1 1 auto;
+			min-width: 0;
+			display: flex;
+			flex-direction: column;
+			gap: var(--size-12);
+		}
+
+		.textarea {
+			width: stretch;
+			min-block-size: var(--size-64);
+			resize: vertical;
+			font: inherit;
+			color: var(--neutral-12);
+			background-color: var(--neutral-0);
+			border: var(--size-1) solid var(--neutral-7);
+			border-radius: var(--radius-sm);
+			padding-block: var(--size-12);
+			padding-inline: var(--size-12);
+			outline: none;
+
+			&::placeholder {
+				color: var(--neutral-11);
+			}
+
+			&:focus-visible {
+				outline: var(--accent-5) solid var(--size-3);
+				outline-offset: var(--size-3);
+			}
+		}
+
+		.composerRow {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: var(--size-12);
+		}
+
+		.hint {
+			font-size: var(--text-xs);
+			color: var(--neutral-11);
+		}
+
+		/* Neutral submit button (monochrome, flips with the theme). */
+		.submit {
+			font: inherit;
+			font-weight: 700;
+			font-size: var(--text-sm);
+			color: var(--neutral-0);
+			background-color: var(--neutral-12);
+			border: none;
+			border-radius: var(--radius-sm);
+			padding-block: var(--size-8);
+			padding-inline: var(--size-16);
+			cursor: pointer;
+			outline: none;
+
+			&:disabled {
+				opacity: 0.5;
+				cursor: default;
+			}
+
+			&:focus-visible {
+				outline: var(--accent-5) solid var(--size-3);
+				outline-offset: var(--size-3);
+			}
+		}
+
+		.signIn {
+			display: inline-flex;
+			align-items: center;
+			gap: var(--size-8);
+		}
+
+		.signInIcon {
+			inline-size: var(--size-16);
+			block-size: var(--size-16);
+		}
+
+		.list {
+			list-style: none;
+			display: flex;
+			flex-direction: column;
+			gap: var(--size-32);
+		}
+
+		.replies {
+			list-style: none;
+			margin-block-start: var(--size-20);
+			margin-inline-start: var(--size-20);
+			padding-inline-start: var(--size-20);
+			border-inline-start: var(--size-1) solid var(--neutral-6);
+			display: flex;
+			flex-direction: column;
+			gap: var(--size-20);
+		}
+
+		.comment {
+			display: flex;
+			gap: var(--size-12);
+		}
+
+		/* Avatars join the palette via the site's brand-hue color-grade recipe. */
+		.avatar {
+			inline-size: var(--size-40);
+			block-size: var(--size-40);
+			flex: 0 0 auto;
+			border-radius: var(--radius-full);
+			object-fit: cover;
+			background-color: var(--accent-4);
+			filter: sepia(1) saturate(var(--saturation))
+				hue-rotate(calc(var(--accent-hue) - 92deg))
+				brightness(var(--brightness));
+
+			--saturation: 1.75;
+			--brightness: 1;
+
+			@container style(--theme: dark) {
+				--saturation: 1.5;
+				--brightness: 0.9;
+			}
+		}
+
+		/* The site author's avatar stays true-color — Author avatars are kept
+		 * unfiltered by the brand-hue grade per the UI design system. */
+		.authorAvatar {
+			background-color: unset;
+			filter: none;
+		}
+
+		.avatarFallback {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: 600;
+			text-transform: uppercase;
+			color: oklch(0.98 0.02 var(--accent-hue));
+			background-color: var(--accent-9);
+		}
+
+		.reply .avatar,
+		.reply .avatarFallback {
+			inline-size: var(--size-32);
+			block-size: var(--size-32);
+			font-size: var(--text-sm);
+		}
+
+		.body {
+			flex: 1 1 auto;
+			min-width: 0;
+		}
+
+		.meta {
+			display: flex;
+			align-items: baseline;
+			flex-wrap: wrap;
+			gap: var(--size-8);
+		}
+
+		.name {
+			font-weight: 600;
+			color: var(--neutral-12);
+		}
+
+		.handle {
+			font-family: var(--font-mono);
+			font-size: var(--text-xs);
+			color: var(--neutral-11);
+			text-decoration: none;
+			outline: none;
+
+			&:hover {
+				text-decoration: underline;
+			}
+
+			&:focus-visible {
+				outline: var(--accent-5) solid var(--size-3);
+				outline-offset: var(--size-3);
+			}
+		}
+
+		.badge {
+			font-family: var(--font-mono);
+			font-size: var(--text-xs);
+			font-weight: 600;
+			color: var(--neutral-11);
+			border: var(--size-1) solid var(--neutral-7);
+			border-radius: var(--radius-sm);
+			padding-block: 0;
+			padding-inline: var(--size-6);
+		}
+
+		.time {
+			font-family: var(--font-mono);
+			font-size: var(--text-xs);
+			color: var(--neutral-11);
+		}
+
+		.text {
+			margin-block-start: var(--size-4);
+			white-space: pre-wrap;
+			overflow-wrap: anywhere;
+			color: var(--neutral-12);
+		}
+
+		.tombstone {
+			color: var(--neutral-11);
+			font-style: italic;
+		}
+	}
+}

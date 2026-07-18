@@ -8,7 +8,7 @@ import {
 	getActiveLocale,
 	openGraphLocaleByLocale,
 } from "@/helpers/i18n";
-import { getBlogPost } from "@/repositories/get-blog-post";
+import { type BlogPostDetail, getBlogPost } from "@/repositories/get-blog-post";
 import { getBlogPostAgentic } from "@/repositories/get-blog-post-agentic";
 import { getWebsite } from "@/repositories/get-website";
 import { urlOrigin } from "@/runtime";
@@ -19,6 +19,7 @@ import {
 import { BlogPostContent } from "./_components/blog-post-content";
 import { BlogPostHeader } from "./_components/blog-post-header";
 import { BlogPostingJsonLd } from "./_components/blog-posting-json-ld";
+import { Comments } from "./_components/comments";
 import { PayloadLivePreview } from "./_components/payload-live-preview";
 import css from "./page.module.css";
 import type { PageProps } from "./page-props";
@@ -65,6 +66,10 @@ export default async function BlogPostPage({
 						<BlogPostContent slug={slug} draft={draft} />
 					</Suspense>
 				</main>
+
+				<Suspense>
+					<MaybeComments blogPost={blogPost} slug={slug} />
+				</Suspense>
 			</article>
 
 			<Suspense>
@@ -76,6 +81,22 @@ export default async function BlogPostPage({
 			</Suspense>
 		</>
 	);
+}
+
+async function MaybeComments({
+	blogPost,
+	slug,
+}: {
+	blogPost: Promise<BlogPostDetail | null>;
+	slug: Promise<string>;
+}): Promise<JSX.Element | null> {
+	const [post, resolvedSlug] = await Promise.all([blogPost, slug]);
+
+	if (!post?.isCommentsEnabled) {
+		return null;
+	}
+
+	return <Comments slug={resolvedSlug} />;
 }
 
 async function MaybePayloadLivePreview({

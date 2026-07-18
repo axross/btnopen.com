@@ -12,6 +12,7 @@ import { rootLogger } from "@/logger";
 import type {
 	AvatarImage,
 	BlogPost,
+	Comment,
 	CoverImage,
 	Media,
 	Tag,
@@ -47,7 +48,14 @@ export async function seed({
 
 	const tag = await seedExampleTag({ payload });
 
-	await seedExampleBlogPost({ payload, config, author: testUser, tag });
+	const exampleBlogPost = await seedExampleBlogPost({
+		payload,
+		config,
+		author: testUser,
+		tag,
+	});
+
+	await seedExampleComments({ payload, blogPost: exampleBlogPost });
 
 	logger.info("Completed seeding process.");
 }
@@ -211,7 +219,7 @@ async function seedExampleBlogPost({
 	config: Promise<SanitizedConfig>;
 	author: User;
 	tag: Tag;
-}) {
+}): Promise<BlogPost> {
 	const blogPosts = await payload.find({
 		collection: "blog-posts",
 		where: {
@@ -344,4 +352,95 @@ async function seedExampleBlogPost({
 			"Completed seeding the example blog post.",
 		);
 	}
+
+	return exampleBlogPost;
+}
+
+async function seedExampleComments({
+	payload,
+	blogPost,
+}: {
+	payload: Payload;
+	blogPost: BlogPost;
+}) {
+	const existing = await payload.find({
+		collection: "comments",
+		where: {
+			blogPost: {
+				equals: blogPost.id,
+			},
+		},
+		limit: 1,
+	});
+
+	if (existing.docs.length > 0) {
+		return;
+	}
+
+	logger.info(
+		"The example blog post has no comments. Started seeding example comments.",
+	);
+
+	// `skipCommentCacheBust` keeps the `approved` writes from firing a
+	// cache-bust fetch at seed time, when the HTTP server may not be reachable.
+	const seedContext = { skipCommentCacheBust: true };
+
+	const approvedComment: Comment = await payload.create({
+		collection: "comments",
+		data: {
+			blogPost: blogPost.id,
+			body: "とても分かりやすい記事でした。実装の判断材料が整理されていて参考になります！",
+			status: "approved",
+			authorName: "田中 花子",
+			authorGithubUsername: "hanako-tanaka",
+			authorProviderId: "seed-hanako-tanaka",
+		},
+		context: seedContext,
+	});
+
+	await payload.create({
+		collection: "comments",
+		data: {
+			blogPost: blogPost.id,
+			body: "コード例が実践的で助かりました。続編も楽しみにしています。",
+			status: "approved",
+			authorName: "佐藤 健",
+			authorGithubUsername: "ken-sato",
+			authorProviderId: "seed-ken-sato",
+		},
+		context: seedContext,
+	});
+
+	// A pending comment stays invisible until the author approves it — seeded so
+	// the moderation state is represented in the example data.
+	await payload.create({
+		collection: "comments",
+		data: {
+			blogPost: blogPost.id,
+			body: "これは承認待ちのサンプルコメントです。承認されるまで公開されません。",
+			status: "pending",
+			authorName: "山田 太郎",
+			authorGithubUsername: "taro-yamada",
+			authorProviderId: "seed-taro-yamada",
+		},
+	});
+
+	// A one-level author reply to the first approved comment — renders with the
+	// site author's identity and the Author badge.
+	await payload.create({
+		collection: "comments",
+		data: {
+			blogPost: blogPost.id,
+			parent: approvedComment.id,
+			authorReply: true,
+			body: "コメントありがとうございます！お役に立てたようで嬉しいです。",
+			status: "approved",
+		},
+		context: seedContext,
+	});
+
+	logger.info(
+		{ blogPostId: blogPost.id },
+		"Completed seeding the example comments.",
+	);
 }

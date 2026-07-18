@@ -69,6 +69,15 @@ export const blogPostCollection: CollectionConfig = {
 								},
 							},
 						},
+						{
+							name: "isCommentsEnabled",
+							type: "checkbox",
+							defaultValue: true,
+							admin: {
+								description:
+									"Show the reader comments section at the bottom of this post.",
+							},
+						},
 					],
 				},
 				{
@@ -104,6 +113,26 @@ export const blogPostCollection: CollectionConfig = {
 	},
 	trash: true,
 	hooks: {
+		beforeDelete: [
+			async ({ req, id }) => {
+				// Comments hold a required (NOT NULL) foreign key to their post, so
+				// permanently deleting a post must remove its comments first —
+				// otherwise the FK's ON DELETE set null would violate that NOT NULL
+				// column and block the deletion. Comments have no trash, so this is a
+				// hard delete. Fires only on permanent delete, not on trashing.
+				//
+				// The post (and its cached comment threads) is going away entirely, so
+				// each cascaded comment's own cache-bust is redundant — signal the
+				// comment hook to skip it rather than fan out one round-trip per row.
+				req.context.skipCommentCacheBust = true;
+
+				await req.payload.delete({
+					collection: "comments",
+					where: { blogPost: { equals: id } },
+					req,
+				});
+			},
+		],
 		afterOperation: [
 			async ({ operation, args, result }) => {
 				// skip the invalidation for the example blog post creation

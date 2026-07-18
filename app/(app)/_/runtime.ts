@@ -35,3 +35,11 @@ export const isSentryEnabled = !!sentryDsn;
 
 export const mixpanelToken = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
 export const isMixpanelEnabled = !!mixpanelToken;
+
+// Clerk brokers GitHub sign-in for comments. When the publishable key is absent
+// (local dev without setup, CI, forked-PR previews), the comment auth UI is not
+// mounted and the composer degrades to a disabled state — keeping build, tests,
+// and unconfigured previews green without Clerk credentials.
+export const clerkPublishableKey =
+	process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || null;
+export const isClerkAvailable = !!clerkPublishableKey;
