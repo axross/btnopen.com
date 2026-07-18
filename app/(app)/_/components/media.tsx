@@ -3,14 +3,12 @@ import { cacheLife } from "next/cache";
 import Image from "next/image";
 import { getPayload } from "payload";
 import type { ComponentProps, JSX } from "react";
+import { resolveMediaId } from "@/helpers/media-src";
 import { rootLogger } from "@/logger";
 import { config } from "@/payload/config";
 import css from "./snippet.module.css";
 
 const logger = rootLogger.child({ module: "🖼️" });
-
-const mediaSrcRegex =
-	/^\/api\/media\/file\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\.[0-9a-z_-]+$/;
 
 export async function Media({
 	src,
@@ -22,10 +20,9 @@ export async function Media({
 	cacheLife("hours");
 
 	if (typeof src === "string") {
-		const match = src.match(mediaSrcRegex);
+		const id = resolveMediaId(src);
 
-		if (match) {
-			const id = match[1];
+		if (id) {
 			const payload = await getPayload({ config });
 			const file = await payload.findByID({ collection: "media", id });
 

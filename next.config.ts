@@ -17,6 +17,18 @@ const nextConfig: NextConfig = {
 	reactCompiler: true,
 	cacheComponents: true,
 	images: {
+		// Defining localPatterns makes it an exhaustive allowlist: every local
+		// next/image src must match an entry. The three upload-serving endpoints
+		// omit `search` because preview deployments append `?prefix=pr-<n>` (the
+		// per-PR blob namespace, absent in production), which an exact-match
+		// `search` cannot express; without these entries, next/image rejects any
+		// local src that carries a query string, blanking every image on previews.
+		localPatterns: [
+			{ pathname: "/api/media/file/**" },
+			{ pathname: "/api/cover-images/file/**" },
+			{ pathname: "/api/avatar-images/file/**" },
+			{ pathname: "/images/**", search: "" },
+		],
 		remotePatterns: [
 			new URL("http://localhost:3000/api/**"),
 			new URL("https://cdn.hashnode.com/res/hashnode/**"),

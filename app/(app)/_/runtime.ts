@@ -30,6 +30,11 @@ export const isLocalhost = urlOrigin.includes("localhost");
 export const vercelBlobToken =
 	process.env.BLOB_PAYLOAD_READ_WRITE_TOKEN || null;
 
+// The blob namespace every uploaded file is stored under (`pr-<n>` on preview
+// deployments, empty in production and local development). Direct blob reads
+// must prepend it to the stored filename or they miss preview uploads.
+export const vercelBlobPrefix = process.env.BLOB_PAYLOAD_PREFIX || null;
+
 export const sentryDsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
 export const isSentryEnabled = !!sentryDsn;
 
