@@ -36,6 +36,7 @@ carries its `@scenario:<id>` tag. The reporter
 | post.embed.x | A blog post page renders an `x.com` embed block as a first-party tweet card that links out to the tweet without an iframe or X widget | posts | should |
 | post.banner | A blog post page renders note and warning banner blocks as callouts with a type label and rich-text body | posts | should |
 | post.content.directives | Text and container directives render verbatim instead of vanishing | posts | must |
+| post.content.cjk-emphasis | Bold spans closing on CJK punctuation render as strong instead of literal asterisks | posts | must |
 | post.agentic | A blog post's agentic view renders its outline Markdown and authoring notes | posts | must |
 | post.agentic.empty | The agentic view shows an empty state when the post has no authoring content | posts | should |
 | post.agentic.draft-fallback | The draft agentic view falls back to the published authoring fields when the draft version has none | posts | should |

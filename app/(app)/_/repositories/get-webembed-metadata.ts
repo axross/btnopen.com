@@ -7,6 +7,7 @@ import metascraperTitle from "metascraper-title";
 import metascraperUrl from "metascraper-url";
 import { cacheLife } from "next/cache";
 import { rootLogger } from "@/logger";
+import { decodeHtml } from "./webembed-html";
 
 const logger = rootLogger.child({ module: "🌏" });
 
@@ -32,10 +33,21 @@ export async function getWebEmbedMetadata({
 	logger.info({ url }, "Started fetching HTML.");
 
 	const response = await fetch(url);
-	const html = await response.text();
+
+	// decode from raw bytes with the page's declared charset; response.text()
+	// would decode everything as UTF-8 and garble e.g. Shift_JIS pages
+	const { html, encoding } = decodeHtml(
+		await response.arrayBuffer(),
+		response.headers.get("content-type"),
+	);
 
 	logger.info(
-		{ url, statusCode: response.status, isRedirected: response.redirected },
+		{
+			url,
+			statusCode: response.status,
+			isRedirected: response.redirected,
+			encoding,
+		},
 		"Completed fetching HTML.",
 	);
 
