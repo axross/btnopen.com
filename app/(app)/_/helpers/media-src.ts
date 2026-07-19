@@ -1,4 +1,4 @@
-// The Payload Vercel Blob storage plugin serves uploads at
+// the Payload Vercel Blob storage plugin serves uploads at
 // `/api/media/file/<filename>` and, when the deployment sets a blob namespace
 // (`BLOB_PAYLOAD_PREFIX`, `pr-<n>` on preview deployments), appends
 // `?prefix=<namespace>` to the document URL. Both forms must resolve to the

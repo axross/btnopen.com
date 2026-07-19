@@ -173,7 +173,7 @@ async function retrieveImageFromVercelBlob(
 		);
 	}
 
-	// Files are stored under the deployment's blob namespace (`pr-<n>/` on
+	// files are stored under the deployment's blob namespace (`pr-<n>/` on
 	// preview deployments); the stored filename alone misses them there.
 	const pathname = vercelBlobPrefix
 		? `${vercelBlobPrefix}/${filename}`
