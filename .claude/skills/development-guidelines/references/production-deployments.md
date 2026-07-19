@@ -16,12 +16,12 @@ push to main
      ▼
   lint ──▶ e2e-tests ──▶ deployment   (environment: Production)
                               1. vercel pull / env pull   (production project settings)
-                              2. verify LIBSQL_* credentials are present  ── absent ─▶ fail
+                              2. verify LIBSQL_* + Blob credentials are present  ── absent ─▶ fail
                               3. npm run migrate:up        (against production)  ── error ─▶ fail
                               4. vercel deploy --prod      (promote new code to traffic)
 ```
 
-The `deployment` job declares `environment: Production`, which is what grants it the production `LIBSQL_PAYLOAD_TURSO_DATABASE_URL` variable and `LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN` secret used by the migration step.
+The `deployment` job declares `environment: Production`, which is what grants it the production `LIBSQL_PAYLOAD_TURSO_DATABASE_URL` variable and the `LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN` and `BLOB_PAYLOAD_READ_WRITE_TOKEN` secrets used by the migration step.
 
 **Guidelines:**
 
@@ -46,21 +46,21 @@ Migrating before promoting leaves a brief window in which the *old* code runs ag
 
 A silent failure here is worse than a loud one: a deploy that proceeds against a half-migrated or wrong database is exactly the drift this pipeline prevents. Two guards make failure fatal.
 
-1. **Credential verification** — the job asserts both `LIBSQL_*` values are non-empty (`test -n`) before migrating. The libSQL adapter falls back to a local file when they are absent, so without this check a misconfigured deploy would "succeed" against a throwaway database and never touch production.
+1. **Credential verification** — the job asserts the `LIBSQL_*` values and the `BLOB_PAYLOAD_READ_WRITE_TOKEN` are non-empty (`test -n`) before migrating. The libSQL adapter falls back to a local file when its credentials are absent, so without this check a misconfigured deploy would "succeed" against a throwaway database and never touch production. `payload migrate` also builds the entire Payload config, whose Vercel Blob adapter validates the token format at config-build time and throws on a malformed value — so a missing or unusable blob token aborts the command before any migration runs; sourcing it here keeps the step from failing on the placeholder `vercel env pull` leaves behind.
 2. **`pipefail` on the migration script** — `migrate:up` runs `payload migrate` piped into `pino-pretty`. Under a plain shell the pipe's exit status is `pino-pretty`'s `0`, masking a failed migration; the `migrate:*` scripts wrap the pipe in `bash -o pipefail -c` so the migration's non-zero status propagates and fails the step.
 
 **Guidelines:**
 
-- MUST keep the credential-verification step (`test -n` on both `LIBSQL_*` values) ahead of the migration step; it is the guard against a silent fallback to a local database.
+- MUST keep the credential-verification step (`test -n` on the `LIBSQL_*` values and the `BLOB_PAYLOAD_READ_WRITE_TOKEN`) ahead of the migration step; it is the guard against a silent fallback to a local database and against the Blob adapter throwing on an unusable pulled token.
 - MUST keep the `migrate:*` npm scripts wrapped in `bash -o pipefail -c` so a failing migration exits non-zero instead of being masked by `pino-pretty`.
 - MUST NOT add a `continue-on-error` or an `|| true` that would let the deploy proceed past a failed migration or a missing credential.
 
 ## Credential Sourcing
 
-The production database URL and auth token live in the `Production` GitHub environment — the URL as a variable, the token as a secret — and are passed to the migration step through the process environment. A subtlety forces this: `vercel env pull` writes the auth token (a *sensitive* Vercel variable) to `.env.local` as an empty string, and `payload migrate` reads root-level `.env*` files, so those pulled lines would shadow the real credentials.
+The production database URL and auth token, and the Vercel Blob read/write token, live in the `Production` GitHub environment — the URL as a variable, the two tokens as secrets — and are passed to the migration step through the process environment. A subtlety forces this: `vercel env pull` cannot retrieve a *sensitive* Vercel variable, so it writes an unusable value to `.env.local` — the libSQL auth token comes through as an empty string, the blob token as a non-conforming placeholder — and `payload migrate` reads root-level `.env*` files, so those pulled lines would shadow the real credentials (the empty libSQL token falling back to a local database, the malformed blob token making the Blob adapter throw at config-build time and abort the migration).
 
 **Guidelines:**
 
-- MUST provide `LIBSQL_PAYLOAD_TURSO_DATABASE_URL` and `LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN` to the migration step from the `Production` GitHub environment, not from `vercel env pull` output.
-- MUST delete the pulled `LIBSQL_*` lines from `.env.local` before migrating (the workflow's `sed` step) so the empty sensitive value cannot shadow the process-environment credentials.
-- MUST NOT expose the production `LIBSQL_*` credentials to any job other than `deployment`; the preview pipeline uses isolated per-PR database credentials instead (see [preview-deployments.md](./preview-deployments.md)).
+- MUST provide `LIBSQL_PAYLOAD_TURSO_DATABASE_URL`, `LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN`, and `BLOB_PAYLOAD_READ_WRITE_TOKEN` to the migration step from the `Production` GitHub environment, not from `vercel env pull` output.
+- MUST delete the pulled `LIBSQL_*` and `BLOB_PAYLOAD_READ_WRITE_TOKEN` lines from `.env.local` before migrating (the workflow's `sed` step) so the unusable sensitive values cannot shadow the process-environment credentials.
+- MUST NOT expose the production `LIBSQL_*` credentials or the production `BLOB_PAYLOAD_READ_WRITE_TOKEN` to any job other than `deployment`; the preview pipeline uses isolated per-PR database credentials and a `Preview`-environment-scoped token for its dedicated preview Blob store instead (see [preview-deployments.md](./preview-deployments.md)).
