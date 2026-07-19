@@ -12,7 +12,7 @@ import { Logo } from "@/components/logo";
 import { defaultLocale } from "@/helpers/i18n";
 import { rootLogger } from "@/logger";
 import { getBlogPost } from "@/repositories/get-blog-post";
-import { urlOrigin, vercelBlobToken } from "@/runtime";
+import { urlOrigin, vercelBlobPrefix, vercelBlobToken } from "@/runtime";
 
 const logger = rootLogger.child({ module: "👽" });
 const selfDirname = dirname(new URL(import.meta.url).pathname);
@@ -173,20 +173,26 @@ async function retrieveImageFromVercelBlob(
 		);
 	}
 
-	logger.info({ filename }, "Started fetching image from Vercel Blob.");
+	// files are stored under the deployment's blob namespace (`pr-<n>/` on
+	// preview deployments); the stored filename alone misses them there.
+	const pathname = vercelBlobPrefix
+		? `${vercelBlobPrefix}/${filename}`
+		: filename;
 
-	const blobResult = await getBlob(filename, {
+	logger.info({ pathname }, "Started fetching image from Vercel Blob.");
+
+	const blobResult = await getBlob(pathname, {
 		access: "public",
 		token: vercelBlobToken,
 	});
 
 	if (!blobResult) {
-		throw new Error(`Blob (filename: "${filename}") was not found.`);
+		throw new Error(`Blob (pathname: "${pathname}") was not found.`);
 	}
 
 	if (!blobResult.stream) {
 		throw new Error(
-			`Blob (filename: "${filename}") was found but no stream was provided.`,
+			`Blob (pathname: "${pathname}") was found but no stream was provided.`,
 		);
 	}
 
@@ -206,7 +212,7 @@ async function retrieveImageFromVercelBlob(
 
 	logger.info(
 		{
-			filename,
+			pathname,
 			contentLength: blobResult.blob.size,
 			bufferLength: offset,
 			firstBytes: formatBytes(view),
