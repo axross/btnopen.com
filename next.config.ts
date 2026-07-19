@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
 	reactCompiler: true,
 	cacheComponents: true,
 	images: {
-		// Defining localPatterns makes it an exhaustive allowlist: every local
+		// defining localPatterns makes it an exhaustive allowlist: every local
 		// next/image src must match an entry. The three upload-serving endpoints
 		// omit `search` because preview deployments append `?prefix=pr-<n>` (the
 		// per-PR blob namespace, absent in production), which an exact-match
