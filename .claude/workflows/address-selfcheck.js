@@ -220,16 +220,16 @@ if (scope.files.length === 0) {
 // Reconcile the agent's tier with the driver's hint by taking the MORE severe
 // of the two — a conservative gate never under-reviews on a disputed tier.
 const tier = RISK_HINT ? maxRisk(scope.riskTier, RISK_HINT) : scope.riskTier;
-const P = TIER_PROFILE[tier];
+const tierProfile = TIER_PROFILE[tier];
 const omittedLenses = Array.isArray(scope.omittedLenses)
 	? scope.omittedLenses.filter((l) => typeof l === "string" && l.trim())
 	: [];
 // Lenses matched but not run because the tier's lensCap is smaller. This is an
 // intentional S1 cost decision (lower-risk diffs get less breadth), recorded
 // for transparency — NOT a skipped lens the driver must cover inline.
-const runLensDirs = scope.lenses.slice(0, P.lensCap);
+const runLensDirs = scope.lenses.slice(0, tierProfile.lensCap);
 const tierDeferredLenses = scope.lenses
-	.slice(P.lensCap)
+	.slice(tierProfile.lensCap)
 	.map((l) => l.skillDir)
 	.concat(omittedLenses);
 log(
@@ -267,7 +267,7 @@ const commonFinderText =
 	DIFF_CMD +
 	"` and review ONLY the changed lines and their immediate context, strictly through your lens.\n" +
 	"3. Report up to " +
-	P.maxCandidates +
+	tierProfile.maxCandidates +
 	" defect candidates. Grade severity per the project's code-review guideline — resolve that skill through the `AGENTS.md` skill index and follow its severity reference, including its severity floors — mapped to this report's three tiers: Critical (must fix), Major (should fix before merge), Minor (worth noting); do not report Nit-tier polish. Each candidate needs the file path, a 1-indexed line in the new version (0 for file-level), a one-sentence summary, a concrete failure scenario, and a fix sketch — required for Critical and Major candidates, optional for Minor.\n" +
 	"4. An empty candidate list is a valid result — do not pad. Skip generated or managed files (`app/(payload)/`, `payload/types.ts`); review `payload/migrations/` only for destructive schema changes.\n" +
 	"5. Do NOT run test suites, dev servers, builds, or any state-changing command — read-only inspection and read-only git commands only; the driver owns verification." +
@@ -373,7 +373,7 @@ let toVerify = blockingCands.concat(minorCands.slice(0, minorSlots));
 const budgetTight =
 	Boolean(BUDGET && BUDGET.total) &&
 	BUDGET.remaining() < BUDGET_MULTIVOTE_FLOOR;
-const blockingVotes = budgetTight ? 1 : P.blockingVotes;
+const blockingVotes = budgetTight ? 1 : tierProfile.blockingVotes;
 if (budgetTight) {
 	// Fit verifier work to the remaining budget, blocking-first.
 	const affordable = Math.max(
