@@ -1,7 +1,7 @@
 ---
 name: agent-skills-best-practices
-description: The authoring discipline for agent skills under this project's skill root (`.claude/skills/`) — agentskills.io format, frontmatter management and invocation-control fields, kebab-case naming, description and when_to_use writing for discovery, section anatomy with concise examples plus RFC-2119 guideline bullets, progressive disclosure into reference files, name-based cross-references, archetype skeletons for the project's structure, component, and UI/design skills, audit checks, and keeping the master skill index in sync.
-when_to_use: Apply whenever creating, refining, restructuring, splitting, consolidating, renaming, deleting, or auditing an agent skill — drafting a `SKILL.md`, editing frontmatter, tightening a `description`, deciding where a new rule belongs, or updating the skill index. Use for "add a skill", "split this skill", "audit skills", or any change to `SKILL.md` files or their references.
+description: The authoring discipline for agent skills under this project's skill root (`.claude/skills/`) — agentskills.io format, frontmatter management and invocation-control fields, kebab-case naming, description and when_to_use writing for discovery, section anatomy with concise examples plus RFC-2119 guideline bullets, progressive disclosure into reference files, name-based cross-references, archetype skeletons for the project's structure, component, and UI/design skills, audit checks, keeping the master skill index in sync, and the named Workflow-script delegation pattern (a workflow entry-point skill delegating a phase to a `.claude/workflows/<name>.js` orchestration script).
+when_to_use: Apply whenever creating, refining, restructuring, splitting, consolidating, renaming, deleting, or auditing an agent skill — drafting a `SKILL.md`, editing frontmatter, tightening a `description`, deciding where a new rule belongs, or updating the skill index — and whenever creating or editing a named Workflow-tool script under `.claude/workflows/`. Use for "add a skill", "split this skill", "audit skills", or any change to `SKILL.md` files, their references, or workflow scripts.
 user-invocable: false
 ---
 
@@ -25,6 +25,7 @@ See [frontmatter-and-naming.md](./references/frontmatter-and-naming.md) for:
 
 - creating or editing discovery-critical `SKILL.md` frontmatter
 - setting the invocation-control fields (`when_to_use`, `argument-hint`, `arguments`, `user-invocable`, `disable-model-invocation`) by skill archetype — guideline skill vs workflow entry point
+- delegating a workflow entry-point skill's phase to a named Workflow-tool script under `.claude/workflows/` — the delegation contract (`export const meta`, name↔filename match, whenToUse boundary, inline fallback)
 - choosing the skill directory name and keeping it aligned with the `name` field
 - porting or preserving host-project harness fields
 

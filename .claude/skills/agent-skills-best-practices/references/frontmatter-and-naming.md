@@ -1,6 +1,6 @@
 # Frontmatter and Naming
 
-Apply this reference when authoring or editing a `SKILL.md` frontmatter block or choosing the directory name for a skill.
+Apply this reference when authoring or editing a `SKILL.md` frontmatter block, choosing the directory name for a skill, or creating or editing a named Workflow-tool script under `.claude/workflows/` that a workflow entry-point skill delegates to.
 
 ## Required Fields
 
