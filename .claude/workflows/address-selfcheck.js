@@ -62,6 +62,11 @@ const SCOPE_SCHEMA = {
 	required: ["files", "lenses", "dirty"],
 	properties: {
 		dirty: { type: "boolean" },
+		omittedLenses: {
+			type: "array",
+			maxItems: 20,
+			items: { type: "string" },
+		},
 		files: {
 			type: "array",
 			maxItems: 100,
@@ -118,6 +123,7 @@ const VERDICT_SCHEMA = {
 	properties: {
 		verdict: { enum: ["CONFIRMED", "PLAUSIBLE", "REFUTED"] },
 		evidence: { type: "string" },
+		severity: { enum: ["Critical", "Major", "Minor"] },
 	},
 };
 
@@ -139,8 +145,8 @@ const scope = await agent(
 		" --stat` to list every changed file, and `git status --porcelain` to detect uncommitted or untracked work; set `dirty` to true when the porcelain output is non-empty (finders review only committed history, so uncommitted work cannot be reviewed).\n" +
 		"2. Read the skill index table in `AGENTS.md` at the repository root. Select the guideline skills whose routing condition matches the changed files or surfaces — at most " +
 		MAX_LENSES +
-		", most relevant first. Use each skill's directory name under `.claude/skills/` as `skillDir`.\n" +
-		"3. Exclude workflow entry-point skills (address, handoff, author), the development-guidelines baseline, and maintainable-code-guidelines (a fixed finder already covers it).\n\n" +
+		", most relevant first. Use each skill's directory name under `.claude/skills/` as `skillDir`. When more lenses match than fit the cap, list every overflow skillDir in `omittedLenses` so the driver can cover them — never drop a matching lens silently.\n" +
+		"3. Exclude the workflow entry-point skills (the ones AGENTS.md lists under its Workflow Entry Points section), the development-guidelines baseline, and maintainable-code-guidelines (a fixed finder already covers it).\n\n" +
 		"Return every changed file (with a one-word surface tag where obvious) and the selected lenses with a one-line reason each. Structured output only.",
 	{ label: "scope", phase: "Scope", schema: SCOPE_SCHEMA },
 );
@@ -158,12 +164,15 @@ if (scope.dirty) {
 }
 if (scope.files.length === 0) {
 	return {
-		summary: `The diff against ${BASE_REF} is empty; nothing to review.`,
-		findings: [],
-		refuted: [],
-		stats: { lenses: 0, finders: 0, candidates: 0, verified: 0 },
+		error:
+			"The diff against " +
+			BASE_REF +
+			" is empty — nothing was reviewed. Check the baseRef, or fall back to the inline reviewer-mode reset.",
 	};
 }
+const omittedLenses = Array.isArray(scope.omittedLenses)
+	? scope.omittedLenses.filter((l) => typeof l === "string" && l.trim())
+	: [];
 log(
 	scope.files.length +
 		" changed files; lenses: " +
@@ -185,8 +194,9 @@ const commonFinderText =
 	"` and review ONLY the changed lines and their immediate context, strictly through your lens.\n" +
 	"3. Report up to " +
 	MAX_CANDIDATES_PER_FINDER +
-	" defect candidates. Severity per the project's code-review vocabulary: Critical (must fix — broken behavior, security, data loss), Major (should fix before merge), Minor (worth noting). Each candidate needs the file path, a 1-indexed line in the new version (0 for file-level), a one-sentence summary, a concrete failure scenario, and optionally a fix sketch.\n" +
-	"4. An empty candidate list is a valid result — do not pad." +
+	" defect candidates. Grade severity per `.claude/skills/code-review-guideline/references/severity.md`, including its severity floors, mapped to this report's three tiers: Critical (must fix), Major (should fix before merge), Minor (worth noting); do not report Nit-tier polish. Each candidate needs the file path, a 1-indexed line in the new version (0 for file-level), a one-sentence summary, a concrete failure scenario, and optionally a fix sketch.\n" +
+	"4. An empty candidate list is a valid result — do not pad.\n" +
+	"5. Do NOT run test suites, dev servers, builds, or any state-changing command — read-only inspection and read-only git commands only; the driver owns verification." +
 	constraintsBlock +
 	"\n\nJudge the actual diff, not the intent behind it. Structured output only.";
 
@@ -236,18 +246,19 @@ const finderOuts = await parallel(
 			}),
 	),
 );
-// A skipped lens is not a passed lens: report which lenses produced no
-// review so the driver can cover them inline instead of counting silence
-// as a pass.
-const skippedLenses = finders
+// A skipped lens is not a passed lens: report every lens that produced no
+// review — failed finders and cap-omitted scope matches alike — so the
+// driver can cover them inline instead of counting silence as a pass.
+const failedFinderKeys = finders
 	.filter((f, i) => finderOuts[i] === null)
 	.map((f) => f.key);
-if (skippedLenses.length === finders.length) {
+if (failedFinderKeys.length === finders.length) {
 	return {
 		error:
 			"Every finder agent failed; the driver must fall back to the inline reviewer-mode reset.",
 	};
 }
+const skippedLenses = failedFinderKeys.concat(omittedLenses);
 
 // Merge only true duplicates: the key includes the normalized claim text,
 // so distinct defects at the same location (including file-level line-0
@@ -277,7 +288,7 @@ if (candidates.length === 0) {
 	return {
 		summary:
 			"No defect candidates found by " +
-			(finders.length - skippedLenses.length) +
+			(finders.length - failedFinderKeys.length) +
 			" finders across " +
 			scope.files.length +
 			" changed files." +
@@ -290,7 +301,7 @@ if (candidates.length === 0) {
 		stats: {
 			lenses: scope.lenses.length,
 			finders: finders.length,
-			findersErrored: skippedLenses.length,
+			findersErrored: failedFinderKeys.length,
 			candidates: 0,
 			verified: 0,
 		},
@@ -320,7 +331,8 @@ const verified = (
 						"\n\n## Task\n" +
 						"Read the file and the diff (`" +
 						DIFF_CMD +
-						"`). Check: does the failure scenario actually occur with the code as written? Is it reachable? Is it already handled elsewhere? Is the severity honest?\n\n" +
+						"`). Check: does the failure scenario actually occur with the code as written? Is it reachable? Is it already handled elsewhere? Is the severity honest — and when it is not, return the corrected tier in `severity` (per `.claude/skills/code-review-guideline/references/severity.md`) instead of refuting an otherwise-real defect over its grade.\n" +
+						"Do NOT run test suites, dev servers, builds, or any state-changing command — read-only inspection and read-only git commands only; the driver owns verification.\n\n" +
 						"Verdicts: CONFIRMED (reproducible from the code as written, evidence in hand), PLAUSIBLE (credible but not fully demonstrable), REFUTED (does not hold).\n" +
 						(sevRank[c.severity] === 2
 							? "This is a Minor candidate: default to REFUTED when uncertain.\n"
@@ -334,7 +346,7 @@ const verified = (
 					},
 				).then((v) =>
 					v
-						? { ...c, ...v }
+						? { ...c, ...v, severity: v.severity || c.severity }
 						: {
 								...c,
 								verdict: "PLAUSIBLE",
@@ -379,7 +391,8 @@ const droppedMinors = minors.length - keptMinors.length;
 const stats = {
 	lenses: scope.lenses.length,
 	finders: finders.length,
-	findersErrored: skippedLenses.length,
+	findersErrored: failedFinderKeys.length,
+	omittedLenses: omittedLenses.length,
 	candidates: candidates.length,
 	verified: verified.length,
 	refuted: refuted.length,

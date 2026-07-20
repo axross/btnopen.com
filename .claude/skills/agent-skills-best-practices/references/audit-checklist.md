@@ -41,6 +41,7 @@ find .claude/skills -name '*.md' -print | sort
 - MUST check that every guideline bullet begins with an RFC-2119 keyword.
 - MUST check that relative Markdown links outside fenced code blocks resolve; this skill's `scripts/check-links.sh` automates the check (see [cross-referencing.md](./cross-referencing.md)).
 - MUST check that cross-skill references are name-based and index-resolvable, not path links into another skill's `SKILL.md` or `references/` files.
+- MUST inventory named Workflow-tool scripts under `.claude/workflows/` and check each against the delegation contract in [frontmatter-and-naming.md](./frontmatter-and-naming.md): `meta.name` matches the filename, `meta.whenToUse` carries a do-not-invoke boundary, and the delegating entry-point skill names the script and states an inline fallback.
 - SHOULD check for stale plain labels such as `Guidelines:` or `Example:` when the project standard is bold subheading-like labels.
 - SHOULD check for stale fenced `text` examples when a blockquote or table would be clearer.
 
