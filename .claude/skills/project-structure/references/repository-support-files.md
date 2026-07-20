@@ -16,6 +16,7 @@ Repository support files define runtime, build, type-checking, test, and observa
 | `.env.example` | Documented environment-variable shape |
 | `.pino-prettyrc` | Local pretty-printing for Pino logs |
 | `e2e/.data/` | Local e2e fixture/runtime data |
+| `.claude/workflows/` | Named Workflow-tool orchestration scripts (`address-selfcheck.js`, `address-criteria.js`) that the address workflow entry-point skill launches for its Phase 2 checks |
 
 **Guidelines:**
 
@@ -24,3 +25,4 @@ Repository support files define runtime, build, type-checking, test, and observa
 - MUST consult the project's observability guidelines before changing instrumentation, Sentry config, or logger setup.
 - MUST consult the project's e2e testing guidelines before changing `playwright.config.ts` or files under `e2e/`.
 - MUST treat generated outputs such as `.next/`, `node_modules/`, `payload/types.ts`, and Payload-generated route files as non-source unless the task explicitly concerns generation.
+- MUST consult the address workflow entry-point skill before changing scripts under `.claude/workflows/` — they implement its Phase 2 delegation contract — and the agent-skills-best-practices skill for the delegation pattern's rules.

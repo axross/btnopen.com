@@ -48,7 +48,7 @@ Apply these keywords consistently in this document and the documents linked from
 
 ### Workflow Entry Points
 
-Unlike the guideline skills above, these skills are runnable workflows: a human launches one as `/<name>` (or the agent invokes it when its `when_to_use` matches), so they carry `user-invocable: true` and an `argument-hint` per [Agent Skills Best Practices](.claude/skills/agent-skills-best-practices/SKILL.md).
+Unlike the guideline skills above, these skills are runnable workflows: a human launches one as `/<name>` (or the agent invokes it when its `when_to_use` matches), so they carry `user-invocable: true` and an `argument-hint` per [Agent Skills Best Practices](.claude/skills/agent-skills-best-practices/SKILL.md). The Address skill additionally delegates its Phase 2 self-check and acceptance-criteria sweep to named Workflow-tool scripts under `.claude/workflows/` (`address-selfcheck`, `address-criteria`) when the harness provides the Workflow tool, falling back inline otherwise — the delegation pattern is defined in Agent Skills Best Practices.
 
 | Skill | What it drives |
 | ----- | -------------- |
