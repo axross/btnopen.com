@@ -1,43 +1,45 @@
-# Architecture Overview Framing
+# System Design Section Framing
 
-Apply this reference when drafting or reviewing the "System design / architecture" section of a spec — data flow, module boundaries, alternatives considered, and constraints, described at the specification level, not the implementation itself. Sourced from design-doc and architecture-decision-record practice: [Design Docs at Google](https://www.industrialempathy.com/posts/design-docs-at-google/), the [C4 model](https://c4model.com/), [arc42](https://arc42.org/overview), [Michael Nygard's ADR format](https://github.com/joelparkerhenderson/architecture-decision-record/blob/main/locales/en/templates/decision-record-template-by-michael-nygard/index.md), the [Rust RFC template](https://github.com/rust-lang/rfcs/blob/master/0000-template.md), [AWS's ADR guidance](https://docs.aws.amazon.com/prescriptive-guidance/latest/architectural-decision-records/adr-process.html), and [GitLab's documentation ladder](https://docs.gitlab.com/charts/architecture/decision-making/). Implementation mechanics for these same concerns — actual module placement, file layout, routing — stay owned by the project's project-structure skill; this reference owns only how to *describe* system-design decisions in a spec.
+Apply this reference when drafting or reviewing the **System design** section of a plan — nested under Functional requirements, with **Alternatives considered** as its conditional subsection — and the top-level **Non-functional requirements** section. It covers data flow, module boundaries, intricate mechanics, alternatives, and constraints, described at the specification level, not the implementation itself. Sourced from design-doc and architecture-decision-record practice: [Design Docs at Google](https://www.industrialempathy.com/posts/design-docs-at-google/), the [C4 model](https://c4model.com/), [arc42](https://arc42.org/overview), [Michael Nygard's ADR format](https://github.com/joelparkerhenderson/architecture-decision-record/blob/main/locales/en/templates/decision-record-template-by-michael-nygard/index.md), the [Rust RFC template](https://github.com/rust-lang/rfcs/blob/master/0000-template.md), [AWS's ADR guidance](https://docs.aws.amazon.com/prescriptive-guidance/latest/architectural-decision-records/adr-process.html), [GitLab's documentation ladder](https://docs.gitlab.com/charts/architecture/decision-making/), and [GitHub's native mermaid rendering](https://github.blog/developer-skills/github/include-diagrams-markdown-files-mermaid/). Implementation mechanics for these same concerns — actual module placement, file layout, routing — stay owned by the project's project-structure skill; this reference owns only how to *describe* system-design decisions in a plan.
 
-## When to Include an Architecture Overview
+## When to Include a System Design Section
 
-Not every change earns an architecture section. arc42 treats every one of its architecture sections as optional by design, included only when the project's scale warrants it, and GitLab's documentation ladder makes the same point operationally: a single-team, low-blast-radius change is fully documented by a good commit message, and only work that crosses team or module boundaries escalates to a design doc. Shape Up generalizes this into "appetite" — the amount of process, and by extension documentation, a piece of work deserves is set by its size and reversibility up front, not discovered by filling out a fixed template.
-
-**Guidelines:**
-
-- MUST include an architecture overview only when the change crosses a module, service, or team boundary, or is expensive to reverse; MUST NOT include one for a change scoped to a single module with no shared-state impact.
-- SHOULD size the section to the change's appetite rather than a fixed template — a narrow change earns a short paragraph or none; a new shared-state model or service boundary earns more.
-- SHOULD apply a concrete trigger test before writing the section: is this decision hard or costly to reverse, does it affect more than one module or team, would a future engineer need to know *why* this shape was chosen? Omit the section if none apply.
-
-## Data Flow and Module Boundaries at Spec Level
-
-An architecture section answers "what talks to what, and who owns which piece of state" — it does not pre-write the code. Google's design-doc guidance is explicit that these documents should rarely contain code or pseudocode except for a genuinely novel algorithm, and the C4 model formalizes the same instinct by stopping most spec audiences at the context/container/component levels, reserving the "code" level for the codebase itself. arc42's building-block view offers the right unit of description: name each module or service, state its responsibility, and describe its interface at the level of what it accepts and returns, not literal signatures.
+Two distinct triggers warrant the section, and either alone suffices. The first is the classic architecture trigger: the change crosses a module, service, or team boundary, or is expensive to reverse — arc42 treats its sections as optional below that bar, and GitLab's documentation ladder escalates from commit message to design doc on the same axis. The second is the **mechanics trigger**: the change is minor in scope but its mechanism is intricate enough that a diagram or snippet clarifies it where prose cannot. Typical mechanics that earn the section regardless of architectural scope: fetch and cache invalidation, UI event-driven complex mechanics, multi-threaded or concurrent logic, complicated React context + hooks data propagation, authentication flows, atomic operations across multiple persistent actors, and form control logic. What stays out is the genuinely straightforward change — one whose diff explains itself.
 
 **Guidelines:**
 
-- MUST describe data flow as named entities moving between processes and stores, and MUST NOT contain code, pseudocode, or literal function/type signatures except for a genuinely novel algorithm.
-- MUST state which module or service owns each piece of shared state and how other modules may read or mutate it.
+- MUST include a System design section when the change crosses a module, service, or team boundary or is expensive to reverse, **or** when its mechanism is intricate enough that a diagram or code snippet materially clarifies it (the mechanics catalog above is the trigger guide, not an exhaustive list).
+- MUST omit the section, with a stated reason, for straightforward changes where neither trigger applies; MUST NOT pad it onto a change whose diff explains itself.
+- SHOULD size the section to the change's appetite — an intricate but small mechanism earns a focused diagram and a paragraph, not an architecture tour; a new shared-state model or service boundary earns more.
+
+## Data Flow, Mechanics, and Module Boundaries at Spec Level
+
+A System design section answers "what talks to what, who owns which piece of state, and how does the tricky part actually work" — it does not pre-write the implementation. The C4 model stops most spec audiences at the context/container/component levels and starts with the broadest view, and arc42's building-block view offers the right unit of description: name each module or service, state its responsibility, and describe its interface at the level of what it accepts and returns. Mermaid diagrams render natively on GitHub and are highly recommended — a flowchart for data flow, a sequence diagram for event-driven mechanics or a handshake. Code snippets are equally welcome when they clarify — a cache-key shape, a context/hook signature, a state-machine sketch — so long as they illustrate the mechanism rather than pre-write the finished implementation.
+
+**Guidelines:**
+
+- MUST describe data flow as named entities moving between processes and stores, and state which module or service owns each piece of shared state and how other modules may read or mutate it.
+- SHOULD add a mermaid diagram or a clarifying code snippet whenever it communicates the structure or mechanism better than prose; SHOULD open with the high-level shape before component detail.
+- MUST keep snippets illustrative — the shape of a key, a signature, a transition table — rather than pre-writing the implementation the coding phase will produce.
 - MUST NOT prescribe file layout, routing, or module-placement mechanics that belong to the project's project-structure skill.
 
 ## Alternatives Considered
 
-Mature spec-writing traditions treat the alternatives you rejected as being as valuable as the one you chose. The Rust RFC template devotes a dedicated "Rationale and alternatives" section to justifying the chosen design against the road not taken, including the impact of doing nothing. Michael Nygard's ADR format builds the same expectation into "Consequences" — a decision record is incomplete if it doesn't make clear what became harder, not just what became easier. The practical reason is institutional memory: a record of a rejected alternative stops a future engineer from re-litigating a path already closed off.
+**Alternatives considered** is the System design section's conditional subsection, included when a plausible competing approach exists. Mature spec-writing traditions treat the alternatives you rejected as being as valuable as the one you chose: the Rust RFC template devotes a dedicated "Rationale and alternatives" section to justifying the chosen design against the road not taken, and Michael Nygard's ADR format builds the same expectation into "Consequences" — a decision record is incomplete if it doesn't make clear what became harder. The practical reason is institutional memory: a record of a rejected alternative stops a future engineer from re-litigating a path already closed off.
 
 **Guidelines:**
 
-- MUST list the realistic alternatives that were seriously evaluated and state why each was rejected, when the section is included at all.
+- MUST include the Alternatives considered subsection when a plausible competing approach exists, listing each realistic alternative that was seriously evaluated and why it was rejected; MUST omit it, with a stated reason, when no plausible competitor exists.
 - SHOULD record a rejected alternative even when the current answer seems obvious, since the record's value is in preventing the same alternative from being re-proposed later.
 - SHOULD reduce a comparison to the 2-4 criteria that actually drove the decision (cost, latency, blast radius, ownership) rather than an exhaustive feature matrix.
 
-## Constraints and Non-Functional Requirements
+## Non-Functional Requirements
 
-Non-functional requirements belong in a spec as short, measurable targets, not as a rehearsal of the implementation that will satisfy them. AWS's ADR guidance treats performance, availability, and security requirements as consequences of a decision, not decisions in themselves, and standard NFR-writing practice replaces vague adjectives like "fast" or "scalable" with a stated number and scope, e.g., "95th percentile under 200ms".
+The plan's top-level **Non-functional requirements** section carries the technical, architectural, and security requirements that matter beyond functional behavior — as short, measurable targets, not a rehearsal of the implementation that will satisfy them. AWS's ADR guidance treats performance, availability, and security requirements as consequences of a decision, not decisions in themselves, and standard NFR-writing practice replaces vague adjectives like "fast" or "scalable" with a stated number and scope, e.g., "95th percentile under 200ms". The section is conditional: a change with no meaningful non-functional surface omits it with a stated reason rather than inventing constraints.
 
 **Guidelines:**
 
-- MUST state non-functional requirements (performance, scale, security) as short, measurable targets, per [problem-and-scope.md › Concrete, Checkable Language](./problem-and-scope.md#concrete-checkable-language).
+- MUST state non-functional requirements (performance, scale, security, reliability) as short, measurable targets, per [problem-and-scope.md › Concrete, Checkable Language](./problem-and-scope.md#concrete-checkable-language); MUST omit the section with a stated reason when the change has no meaningful non-functional surface.
 - SHOULD scope each non-functional requirement to the specific component it constrains rather than declaring it for the whole system.
-- MUST NOT restate the implementation mechanism used to satisfy a constraint (e.g., "use Redis with a 5-minute TTL"); the constraint is the target, and the technique — if architecturally significant — belongs in the alternatives-considered discussion above.
+- SHOULD treat the section as a considered checklist — security, privacy, performance, failure behavior — answering only the ones the change genuinely touches.
+- MUST NOT restate the implementation mechanism used to satisfy a constraint (e.g., "use Redis with a 5-minute TTL"); the constraint is the target, and the technique — if significant — belongs in Alternatives considered above.
