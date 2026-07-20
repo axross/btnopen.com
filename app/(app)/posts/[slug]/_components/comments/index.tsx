@@ -12,6 +12,7 @@ import type { PayloadLocale } from "@/repositories/payload-types";
 import { isClerkAvailable } from "@/runtime";
 import { CommentComposer } from "./comment-composer";
 import css from "./comments.module.css";
+import { LeaveAReviewIllustration } from "./leave-a-review";
 
 /**
  * The reader comments section rendered at the bottom of a post: a muted
@@ -58,7 +59,14 @@ export async function Comments({
 			{isClerkAvailable && !draft ? <CommentComposer slug={slug} /> : null}
 
 			{threads.length === 0 ? (
-				<p className={css.empty}>{t("empty")}</p>
+				<div className={css.empty} data-testid="empty">
+					<LeaveAReviewIllustration className={css.emptyIllustration} />
+
+					<div className={css.emptyCopy}>
+						<p className={css.emptyExpression}>{"comments.length === 0"}</p>
+						<p className={css.emptyInvite}>{t("empty-invite")}</p>
+					</div>
+				</div>
 			) : (
 				<ol className={css.list} data-testid="list">
 					{threads.map((thread) => (

@@ -32,10 +32,46 @@
 			color: var(--neutral-11);
 		}
 
+		/* Empty state: a centered illustration over the site's code-syntax voice (a
+		 * JS equality expression, matching the not-found surface) and a gentle
+		 * invitation. The composer sits directly above on published views, so the
+		 * invitation points at it rather than duplicating an interactive control. */
 		.empty {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			text-align: center;
+			gap: var(--size-16);
+			padding-block: var(--size-16) var(--size-8);
+		}
+
+		/* unDraw "Leave a Review", recolored to the palette so it flips with the
+		 * theme (see leave-a-review.tsx). Sized by width; height tracks the aspect. */
+		.emptyIllustration {
+			inline-size: var(--size-160);
+			block-size: auto;
+		}
+
+		/* The expression and invitation form one tight pair below the illustration. */
+		.emptyCopy {
+			display: flex;
+			flex-direction: column;
+			gap: var(--size-4);
+		}
+
+		.emptyExpression {
 			font-family: var(--font-mono);
+			font-feature-settings: var(--font-mono-features);
 			font-size: var(--text-sm);
+			font-weight: 600;
 			color: var(--neutral-11);
+		}
+
+		/* Slightly higher contrast than the expression so it reads as the next step
+		 * without masquerading as a link (which would need underline). */
+		.emptyInvite {
+			font-size: var(--text-sm);
+			color: var(--neutral-12);
 		}
 
 		/* Composer: no surrounding card — the textarea carries the only border. */

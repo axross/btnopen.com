@@ -19,7 +19,7 @@
 	},
 	"comments": {
 		"heading": "Comments",
-		"empty": "No comments yet.",
+		"empty-invite": "Be the first to comment.",
 		"sign-in": "Sign in with GitHub to comment",
 		"placeholder": "Write a comment…",
 		"hint": "Published after review",
