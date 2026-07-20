@@ -29,14 +29,24 @@ export const meta = {
 // Driver contract: the /address skill passes a small args object; everything
 // else is read from the repository by the agents themselves. The workflow
 // returns structured data only — the driver owns all GitHub writes and gates.
+// Some harness surfaces deliver the args value as a JSON-encoded string, so
+// tolerate both shapes before reading fields.
+let input = args;
+if (typeof input === "string") {
+	try {
+		input = JSON.parse(input);
+	} catch {
+		input = null;
+	}
+}
 const BASE_REF =
-	(args && typeof args.baseRef === "string" && args.baseRef.trim()) ||
+	(input && typeof input.baseRef === "string" && input.baseRef.trim()) ||
 	"origin/main";
 const ISSUE_NUMBER =
-	args && typeof args.issueNumber === "number" ? args.issueNumber : null;
+	input && typeof input.issueNumber === "number" ? input.issueNumber : null;
 const PLAN_CONSTRAINTS =
-	args && Array.isArray(args.planConstraints)
-		? args.planConstraints.filter((c) => typeof c === "string" && c.trim())
+	input && Array.isArray(input.planConstraints)
+		? input.planConstraints.filter((c) => typeof c === "string" && c.trim())
 		: [];
 
 const MAX_LENSES = 6;

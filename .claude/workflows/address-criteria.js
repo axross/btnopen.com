@@ -21,9 +21,19 @@ export const meta = {
 // driver has already run the verification commands once — verifiers never
 // re-run suites, dev servers, or builds. A failed verifier degrades to
 // needs-manual-check so a criterion can never be silently claimed as met.
+// Some harness surfaces deliver the args value as a JSON-encoded string, so
+// tolerate both shapes before reading fields.
+let input = args;
+if (typeof input === "string") {
+	try {
+		input = JSON.parse(input);
+	} catch {
+		input = null;
+	}
+}
 const CRITERIA =
-	args && Array.isArray(args.criteria)
-		? args.criteria.filter((c) => typeof c === "string" && c.trim())
+	input && Array.isArray(input.criteria)
+		? input.criteria.filter((c) => typeof c === "string" && c.trim())
 		: [];
 if (CRITERIA.length === 0) {
 	return {
@@ -32,13 +42,13 @@ if (CRITERIA.length === 0) {
 	};
 }
 const BASE_REF =
-	(args && typeof args.baseRef === "string" && args.baseRef.trim()) ||
+	(input && typeof input.baseRef === "string" && input.baseRef.trim()) ||
 	"origin/main";
 const ISSUE_NUMBER =
-	args && typeof args.issueNumber === "number" ? args.issueNumber : null;
+	input && typeof input.issueNumber === "number" ? input.issueNumber : null;
 const EVIDENCE =
-	args && Array.isArray(args.verificationEvidence)
-		? args.verificationEvidence.filter((e) => e && typeof e === "object")
+	input && Array.isArray(input.verificationEvidence)
+		? input.verificationEvidence.filter((e) => e && typeof e === "object")
 		: [];
 
 const DIFF_CMD = `git diff ${BASE_REF}...HEAD`;
