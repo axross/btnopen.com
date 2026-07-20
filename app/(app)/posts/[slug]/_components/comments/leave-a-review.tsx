@@ -1,30 +1,29 @@
-import type { JSX } from "react";
+import type { ComponentProps, JSX } from "react";
 
 /**
  * unDraw "Leave a Review" (https://undraw.co/), self-hosted and recolored to the
  * site palette. License: unDraw — free for commercial use, no attribution
- * required, modification and self-hosting permitted. unDraw's primary color was
- * mapped to the accent and its fixed grey/dark tones to neutral tokens so the
- * scene flips with the theme (the figure reads as a dark silhouette in light,
- * light in dark); the skin tone is kept. Decorative — the svg is aria-hidden.
+ * required, modification and self-hosting permitted. Every fill is mapped to a
+ * palette token — unDraw's primary to the accent, its grey/dark tones to neutral
+ * tokens, and its skin tone to a light accent tint — so the illustration carries
+ * no baked-in colors and flips with the theme (the figure reads as a dark
+ * silhouette in light, light in dark). Decorative — the svg is aria-hidden.
  */
-export function LeaveAReviewIllustration({
-	className,
-}: {
-	className?: string;
-}): JSX.Element {
+export function LeaveAReviewIllustration(
+	props: ComponentProps<"svg">,
+): JSX.Element {
 	return (
 		<svg
-			className={className}
 			aria-hidden="true"
 			viewBox="0 0 960 629.249"
 			xmlns="http://www.w3.org/2000/svg"
+			{...props}
 		>
 			<g transform="translate(-437 -192.301)">
 				<path
 					d="M262.659,385.862l170.828,20.819-19.674-59.02-148.257-4.714c-7.074-8.356-18.392-14.176-31.486-15.06-22.912-1.548-42.523,12.569-43.8,31.529S206.522,395,229.434,396.551C242.528,397.435,254.526,393.19,262.659,385.862Z"
 					transform="translate(698.239 362.822)"
-					fill="#ed9da0"
+					fill="var(--accent-4)"
 				/>
 				<path
 					d="M221.184,202.109,209.813,358.967l-56.5,38.328,12.3,44.266L320.48,459.793,262.839,212.645l-29.57-16.963a8.082,8.082,0,0,0-12.082,6.427Z"
@@ -34,7 +33,7 @@ export function LeaveAReviewIllustration({
 				<path
 					d="M304.6,72.6a83.081,83.081,0,1,0-70.772,113.737l54.36,92.572,50.653-93.778a469,469,0,0,1-39.718-38.06C314.99,124.162,314.972,98.469,304.6,72.6Z"
 					transform="translate(856.78 241.486)"
-					fill="#ed9da0"
+					fill="var(--accent-4)"
 				/>
 				<path
 					d="M20.849,206.978,96.6,131.652s36.888-17.214,49.184,36.888c0,0,83.036-2.142,106.319,75.326s60.164,306.169,60.164,306.169H31L.215,247.36A41.783,41.783,0,0,1,20.85,206.977h0Z"
@@ -59,7 +58,7 @@ export function LeaveAReviewIllustration({
 				<path
 					d="M254.95,390.561l170.83,20.821-19.674-59.02-148.257-4.714c-7.074-8.356-18.392-14.176-31.486-15.06-22.912-1.548-42.523,12.569-43.8,31.529s16.253,35.585,39.166,37.132c13.094.884,25.093-3.361,33.226-10.689Z"
 					transform="translate(716.694 364.676)"
-					fill="#ed9da0"
+					fill="var(--accent-4)"
 				/>
 				<path
 					d="M137.925,377.715V232.781S173.746,109.1,265.748,172.259c0,0-26.366,298.045-72.263,310.839s-111.12-6.5-111.12-6.5L60.1,405.408Z"
@@ -101,21 +100,6 @@ export function LeaveAReviewIllustration({
 						d="M503.7,374.284a3.746,3.746,0,0,1-2.208-.731l-5.322-3.867a2.585,2.585,0,0,0-3.042,0l-5.322,3.867a3.757,3.757,0,0,1-5.781-4.2l2.033-6.256a2.582,2.582,0,0,0-.94-2.894l-5.322-3.867a3.757,3.757,0,0,1,2.208-6.8h6.578a2.581,2.581,0,0,0,2.461-1.788l2.033-6.256a3.757,3.757,0,0,1,7.146,0l2.033,6.256a2.581,2.581,0,0,0,2.461,1.788H509.3a3.757,3.757,0,0,1,2.209,6.8l-5.322,3.867a2.582,2.582,0,0,0-.94,2.894l2.033,6.256a3.7,3.7,0,0,1-1.365,4.2A3.746,3.746,0,0,1,503.7,374.284Z"
 						transform="translate(-211.668 -188.679)"
 						fill="var(--accent-9)"
-					/>
-					<path
-						d="M253.727,211.5a6.2,6.2,0,1,0,0,12.407H567.721a6.2,6.2,0,1,0,0-12.407Z"
-						transform="translate(-201.236 -182.868)"
-						fill="var(--neutral-6)"
-					/>
-					<path
-						d="M253.727,245.5a6.2,6.2,0,1,0,0,12.407H567.721a6.2,6.2,0,1,0,0-12.407Z"
-						transform="translate(-201.236 -184.419)"
-						fill="var(--neutral-6)"
-					/>
-					<path
-						d="M253.727,279.5a6.2,6.2,0,1,0,0,12.407H567.721a6.2,6.2,0,1,0,0-12.407Z"
-						transform="translate(-201.236 -185.97)"
-						fill="var(--neutral-6)"
 					/>
 					<path
 						d="M253.727,211.5a6.2,6.2,0,1,0,0,12.407H567.721a6.2,6.2,0,1,0,0-12.407Z"
