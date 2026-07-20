@@ -68,7 +68,7 @@ export default async function BlogPostPage({
 				</main>
 
 				<Suspense>
-					<MaybeComments blogPost={blogPost} slug={slug} />
+					<MaybeComments blogPost={blogPost} slug={slug} draft={draft} />
 				</Suspense>
 			</article>
 
@@ -86,17 +86,23 @@ export default async function BlogPostPage({
 async function MaybeComments({
 	blogPost,
 	slug,
+	draft,
 }: {
 	blogPost: Promise<BlogPostDetail | null>;
 	slug: Promise<string>;
+	draft: Promise<boolean>;
 }): Promise<JSX.Element | null> {
-	const [post, resolvedSlug] = await Promise.all([blogPost, slug]);
+	const [post, resolvedSlug, isDraft] = await Promise.all([
+		blogPost,
+		slug,
+		draft,
+	]);
 
 	if (!post?.isCommentsEnabled) {
 		return null;
 	}
 
-	return <Comments slug={resolvedSlug} />;
+	return <Comments slug={resolvedSlug} draft={isDraft} />;
 }
 
 async function MaybePayloadLivePreview({
