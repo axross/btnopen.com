@@ -195,6 +195,66 @@ test(
 	},
 );
 
+// The composer is server-gated on `isClerkAvailable`, so its presence (and thus
+// its absence on a draft view) is only observable when Clerk is configured.
+// Define this scenario only in that case, mirroring the suite's env-gated
+// helpers rather than skipping at runtime.
+// biome-ignore lint/style/noProcessEnv: env-driven gate mirroring runtime `isClerkAvailable`
+if (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+	test(
+		"A draft/preview post view renders the comments section without the composer",
+		{
+			tag: [
+				"@scenario:post.comments.draft-no-composer",
+				"@area:posts",
+				"@priority:should",
+			],
+		},
+		async ({ page }, testInfo) => {
+			let postId: number | null = null;
+
+			try {
+				const slug = uniqueSlug(
+					"comments-draft",
+					testInfo.repeatEachIndex,
+					testInfo.workerIndex,
+				);
+
+				await test.step("Create a published post with comments enabled", async () => {
+					({ id: postId } = await createPublishedBlogPost({
+						page,
+						slug,
+						testInfo,
+						title: "下書きプレビューの投稿",
+					}));
+				});
+
+				await test.step("The published view shows the comments section with a composer", async () => {
+					await page.goto(`/posts/${slug}`);
+
+					await expect(page.getByTestId("comments")).toBeVisible();
+					await expect(page.getByTestId("composer")).toBeVisible();
+				});
+
+				await test.step("The draft view shows the comments section but no composer", async () => {
+					await page.goto(`/posts/${slug}?draft=true`);
+
+					await expect(page.getByTestId("comments")).toBeVisible();
+					await expect(page.getByTestId("composer")).toHaveCount(0);
+				});
+			} finally {
+				if (postId !== null) {
+					const id = postId;
+
+					await test.step("Clean up the post", async () => {
+						await deleteBlogPost({ id, page, testInfo });
+					});
+				}
+			}
+		},
+	);
+}
+
 // This scenario only holds when Clerk is genuinely unconfigured (local, CI, or
 // a preview without Clerk keys); with Clerk on, the same post renders the
 // section with a composer and an empty state. Define it only in that case

@@ -22,11 +22,17 @@ import css from "./comments.module.css";
  * be posted — no visible comments and Clerk unavailable — so an unconfigured
  * deployment renders no dead comment UI. Existing approved comments still
  * render read-only when Clerk is unavailable, only the composer drops out.
+ *
+ * On a draft/preview view the composer also drops out: the comment write path
+ * only accepts published posts, so a composer there could never succeed. The
+ * section itself still renders so the preview shows how it looks.
  */
 export async function Comments({
 	slug,
+	draft,
 }: {
 	slug: string;
+	draft: boolean;
 }): Promise<JSX.Element | null> {
 	const [locale, t] = await Promise.all([
 		getActiveLocale(),
@@ -49,7 +55,7 @@ export async function Comments({
 				<span className={css.count}>{`(${count})`}</span>
 			</div>
 
-			{isClerkAvailable ? <CommentComposer slug={slug} /> : null}
+			{isClerkAvailable && !draft ? <CommentComposer slug={slug} /> : null}
 
 			{threads.length === 0 ? (
 				<p className={css.empty}>{t("empty")}</p>
