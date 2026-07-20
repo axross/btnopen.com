@@ -16,7 +16,10 @@
 			"!build",
 			"!payload/types.ts",
 			"!payload/migrations",
-			"!app/(payload)/admin/importMap.js"
+			"!app/(payload)/admin/importMap.js",
+			// Workflow-tool scripts use top-level return, which Biome cannot
+			// parse; they are hand-formatted to the tab-indent house style.
+			"!.claude/workflows"
 		]
 	},
 	"formatter": {
