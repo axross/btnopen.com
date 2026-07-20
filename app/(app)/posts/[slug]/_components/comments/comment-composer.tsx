@@ -34,16 +34,36 @@ export function CommentComposer({ slug }: { slug: string }): JSX.Element {
 	if (!isSignedIn) {
 		return (
 			<div className={css.composer} data-testid="composer">
-				<SignInButton mode="modal">
-					<button
-						type="button"
-						className={clsx(css.submit, css.signIn)}
-						data-testid="sign-in"
-					>
-						<GitHubIcon className={css.signInIcon} />
-						{t("sign-in")}
-					</button>
-				</SignInButton>
+				<div className={css.composerField}>
+					{/* A non-interactive preview of the composer: signed-out readers see
+					 * the textarea they'd get, with the sign-in call sitting where the
+					 * submit button lives once signed in. Decorative only — hidden from
+					 * assistive tech and the tab order so the sign-in button is the sole
+					 * control. */}
+					<textarea
+						className={clsx(css.textarea, css.textareaPreview)}
+						placeholder={t("placeholder")}
+						readOnly
+						aria-hidden="true"
+						tabIndex={-1}
+						data-testid="textarea-preview"
+					/>
+
+					<div className={css.composerRow}>
+						<span className={css.hint}>{t("hint")}</span>
+
+						<SignInButton mode="modal">
+							<button
+								type="button"
+								className={clsx(css.submit, css.signIn)}
+								data-testid="sign-in"
+							>
+								<GitHubIcon className={css.signInIcon} />
+								{t("sign-in")}
+							</button>
+						</SignInButton>
+					</div>
+				</div>
 			</div>
 		);
 	}

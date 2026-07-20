@@ -76,8 +76,17 @@
 			}
 		}
 
+		/* The signed-out composer preview: a non-editable textarea shown purely to
+		 * illustrate the affordance. `pointer-events: none` keeps it out of focus
+		 * entirely, so pairing it with `aria-hidden` is safe. */
+		.textareaPreview {
+			cursor: default;
+			pointer-events: none;
+		}
+
 		.composerRow {
 			display: flex;
+			flex-wrap: wrap;
 			align-items: center;
 			justify-content: space-between;
 			gap: var(--size-12);
