@@ -283,7 +283,8 @@ jobs:
         # that changes on every push. Re-point a deterministic per-PR alias at
         # this deployment so the pull request's preview URL stays stable across
         # pushes and always serves the newest build. The alias label defaults to
-        # the sanitized repository name and can be overridden with the optional
+        # the repository name's first dot-delimited label (its site name, e.g.
+        # `btnopen` from `btnopen.com`) and can be overridden with the optional
         # `VERCEL_PREVIEW_ALIAS_PREFIX` variable. Aliasing is scoped by the same
         # VERCEL_ORG_ID / VERCEL_PROJECT_ID the deploy step relies on. Fail loud
         # if it fails: a stable URL is the whole point, so silently falling back
@@ -297,11 +298,12 @@ jobs:
           set -euo pipefail
           prefix="${ALIAS_PREFIX}"
           if [ -z "${prefix}" ]; then
-            # Reduce the repository name to a valid .vercel.app label: lowercase,
+            # Reduce the repository name to a valid .vercel.app label: drop any
+            # domain suffix (keep only the first dot-delimited label), lowercase,
             # runs of non-alphanumerics collapsed to a single `-`, ends trimmed.
             prefix="$(printf '%s' "${REPOSITORY_NAME}" \
               | tr '[:upper:]' '[:lower:]' \
-              | sed 's/[^a-z0-9]\+/-/g; s/^-//; s/-$//')"
+              | sed 's/\..*$//; s/[^a-z0-9]\+/-/g; s/^-//; s/-$//')"
           fi
           alias="${prefix}-pr-${PR_NUMBER}.vercel.app"
           vercel alias set "${DEPLOYMENT_URL}" "${alias}" --token="${{ secrets.VERCEL_TOKEN }}"

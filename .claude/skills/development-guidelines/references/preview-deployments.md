@@ -65,7 +65,7 @@ These steps touch the GitHub and Turso/Vercel accounts and cannot be performed f
 | GitHub secret (`Preview` environment) | `BLOB_PAYLOAD_READ_WRITE_TOKEN` | the **dedicated preview** Blob store's read/write token, added under the repository's **`Preview`** GitHub Actions environment (Settings → Environments → Preview → Secrets); the `teardown` job declares `environment: Preview` to read it and prune `pr-<n>/` media |
 | GitHub secret (`Preview` environment) | `PAYLOAD_TEST_USER_EMAIL` / `PAYLOAD_TEST_USER_PASSWORD` | the preview seed-admin credentials, **distinct from Production's**, added under the same `Preview` environment; the `deploy` job declares `environment: Preview` and injects them into the deployment so the app self-seeds |
 | GitHub variable | `TURSO_GROUP` | *(optional)* the group the database is created in |
-| GitHub variable | `VERCEL_PREVIEW_ALIAS_PREFIX` | *(optional)* the `.vercel.app` label to prefix the stable per-PR alias; defaults to the sanitized repository name (e.g. `btnopen-com`), yielding `<prefix>-pr-<n>.vercel.app` |
+| GitHub variable | `VERCEL_PREVIEW_ALIAS_PREFIX` | *(optional)* the `.vercel.app` label to prefix the stable per-PR alias; defaults to the repository name's first dot-delimited label with any domain suffix dropped (e.g. `btnopen` from `btnopen.com`), yielding `<prefix>-pr-<n>.vercel.app` |
 
 `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` already exist for the production deploy and are reused as-is. No parent-database variable is needed — previews are seeded, not branched.
 
