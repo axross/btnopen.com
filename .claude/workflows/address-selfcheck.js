@@ -61,12 +61,18 @@ const RISK_ORDER = ["low", "medium", "high"];
 const RISK_HINT =
 	input && RISK_ORDER.includes(input.riskTier) ? input.riskTier : null;
 
-// S2 cascade: finders and the scope pass run on a cheap model at low effort
-// (recall over-produces candidates); verification stays on the strong model
-// (the precision gate). If the cheap model is unavailable in a session the
-// finder simply returns null and its lens is reported skipped — the driver
-// covers it inline, so the cascade degrades safe.
+// S2 cascade: finders run on a cheap model at low effort (recall over-produces
+// candidates); verification stays on the strong model (the precision gate).
+// If the cheap model is unavailable in a session a finder simply returns null
+// and its lens is reported skipped — the driver covers it inline, so the
+// cascade degrades safe. The scope pass deliberately stays on the default
+// (strong) model: it is a single cheap call on the critical path, and running
+// it on the cheap model would let cheap-model unavailability disable the whole
+// workflow rather than just narrow finder breadth.
 const CHEAP_MODEL = "haiku";
+// budget is a sandbox global; guard against a session that does not inject it
+// so a missing global degrades to "no cap" instead of a ReferenceError.
+const BUDGET = typeof budget !== "undefined" && budget ? budget : null;
 const MAX_FINDINGS = 10;
 // S4 budget cap: multi-vote verification is only afforded when the turn's
 // token target leaves comfortable headroom; below the floor, force single
@@ -188,7 +194,7 @@ const scope = await agent(
 		"4. Classify `riskTier`: `high` if the diff touches auth or access control, markdown/XSS, SSRF or embed fetching, migrations, public route contracts, production config, or a large refactor (the high-risk list in the AGENTS.md Review Independence Gates); `medium` if it changes other app or runtime behavior; `low` if it only touches docs, config, or agent-skill files with no app-runtime surface.\n\n" +
 		"Do NOT run test suites, dev servers, builds, or any state-changing command — read-only inspection and read-only git commands only; the driver owns verification.\n\n" +
 		"Return every changed file (with a one-word surface tag where obvious), the selected lenses with a one-line reason each, and the risk tier. Structured output only.",
-	{ label: "scope", phase: "Scope", model: CHEAP_MODEL, effort: "low", schema: SCOPE_SCHEMA },
+	{ label: "scope", phase: "Scope", effort: "low", schema: SCOPE_SCHEMA },
 );
 if (!scope) {
 	return {
@@ -316,8 +322,10 @@ const finderOuts = await parallel(
 			}),
 	),
 );
-// A finder that failed is a skipped lens the driver must cover inline (a
-// skipped lens is not a passed lens); a tier-deferred lens is not.
+// A finder that FAILED is a skipped lens the driver must cover inline (a
+// skipped lens is not a passed lens). A tier-DEFERRED lens (one S1 chose not
+// to run for cost) is intentional and is reported separately — the driver does
+// NOT cover it, or the tiering saves nothing.
 const failedFinderKeys = finders
 	.filter((f, i) => finderOuts[i] === null)
 	.map((f) => f.key);
@@ -327,7 +335,7 @@ if (failedFinderKeys.length === finders.length) {
 			"Every finder agent failed; the driver must fall back to the inline reviewer-mode reset.",
 	};
 }
-const skippedLenses = failedFinderKeys.concat(tierDeferredLenses);
+const skippedLenses = failedFinderKeys;
 
 // Merge only true duplicates: the key includes the normalized claim text, so
 // distinct defects at the same location (including file-level line-0
@@ -363,14 +371,14 @@ const minorCands = candidates.filter((c) => sevRank[c.severity] === 2);
 const minorSlots = Math.max(0, MAX_FINDINGS - blockingCands.length);
 let toVerify = blockingCands.concat(minorCands.slice(0, minorSlots));
 const budgetTight =
-	Boolean(budget && budget.total) &&
-	budget.remaining() < BUDGET_MULTIVOTE_FLOOR;
+	Boolean(BUDGET && BUDGET.total) &&
+	BUDGET.remaining() < BUDGET_MULTIVOTE_FLOOR;
 const blockingVotes = budgetTight ? 1 : P.blockingVotes;
 if (budgetTight) {
 	// Fit verifier work to the remaining budget, blocking-first.
 	const affordable = Math.max(
 		blockingCands.length,
-		Math.floor(budget.remaining() / BUDGET_PER_VERIFIER),
+		Math.floor(BUDGET.remaining() / BUDGET_PER_VERIFIER),
 	);
 	if (toVerify.length > affordable) {
 		toVerify = toVerify.slice(0, affordable);
@@ -556,7 +564,10 @@ const mechanicalSummary =
 		? ` ${droppedMinors} Minor finding(s) dropped by the report cap.`
 		: "") +
 	(skippedLenses.length > 0
-		? ` Skipped/deferred lenses: ${skippedLenses.join(", ")}.`
+		? ` Skipped lenses (finder failed — review these inline): ${skippedLenses.join(", ")}.`
+		: "") +
+	(tierDeferredLenses.length > 0
+		? ` Tier-deferred lenses (intentional at tier ${tier}, not for inline coverage): ${tierDeferredLenses.join(", ")}.`
 		: "");
 const synth =
 	findings.length > 0
@@ -594,6 +605,7 @@ return {
 		evidence: c.evidence,
 	})),
 	skippedLenses,
+	tierDeferredLenses,
 	tier,
 	stats,
 };
