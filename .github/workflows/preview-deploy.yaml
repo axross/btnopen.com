@@ -41,8 +41,17 @@ jobs:
     name: Preflight
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
+      # `pull-requests: read` lets the change-detection step below list the
+      # pull request's files (pulls.listFiles). A job-level permissions block
+      # replaces the top-level default, so `contents: read` is restated here.
+      pull-requests: read
     outputs:
       ready: ${{ steps.check.outputs.ready }}
+      # Empty on the `closed` event (the detection step is skipped there); the
+      # deploy job already gates on `action != 'closed'`, so that is harmless.
+      source-changed: ${{ steps.changes.outputs.source-changed }}
     steps:
       - name: Check Required Configuration
         id: check
@@ -67,11 +76,87 @@ jobs:
             echo "ready=false" >> "${GITHUB_OUTPUT}"
             echo "::notice::Preview deploy skipped: required secrets/vars are not configured. See .claude/skills/development-guidelines/references/preview-deployments.md."
           fi
+      - name: Detect Deploy-Affecting Changes
+        id: changes
+        # A preview build only earns its Vercel credit when the pull request
+        # changes something the deployed site actually renders. Classify every
+        # file the PR touches against a denylist of non-deployable paths — agent
+        # skills, docs, CI, e2e tests, and editor/tooling config — and mark the
+        # deploy as needed unless *every* changed file is non-deployable. This
+        # is a denylist, so any unlisted or newly added path counts as
+        # deployable: a missed preview is worse than a redundant one. Skipped on
+        # `closed` (teardown never consults this), and it fails safe toward
+        # deploying — an API error or a truncated (>= 3000) file list yields
+        # `source-changed=true` rather than a silent skip.
+        if: ${{ github.event.action != 'closed' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Non-deployable path prefixes and exact root files. Keep in sync
+            // with the deploy-affecting-path guideline in
+            // .claude/skills/development-guidelines/references/preview-deployments.md.
+            const ignoredPrefixes = [
+              ".claude/",
+              ".github/",
+              "e2e/",
+              ".vscode/",
+              ".zed/",
+              ".data/",
+            ];
+            const ignoredExactPaths = new Set([
+              "AGENTS.md",
+              "CLAUDE.md",
+              "README.md",
+              "REVIEW.md",
+              ".mcp.json",
+              ".pino-prettyrc",
+              ".gitignore",
+            ]);
+            const isNonDeployable = (path) =>
+              ignoredExactPaths.has(path) ||
+              ignoredPrefixes.some((prefix) => path.startsWith(prefix));
+
+            let files;
+            try {
+              files = await github.paginate(github.rest.pulls.listFiles, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number,
+                per_page: 100,
+              });
+            } catch (error) {
+              // Fail safe: if the file list cannot be read, deploy rather than
+              // silently skip a preview a reviewer may be waiting on.
+              core.warning(`Could not list pull request files (${error.message}); deploying.`);
+              core.setOutput("source-changed", "true");
+              return;
+            }
+
+            // `pulls.listFiles` caps at 3000 files, so an empty or capped list
+            // is ambiguous — fall back to deploying.
+            const paths = files.map((file) => file.filename);
+            const sourceChanged =
+              paths.length === 0 ||
+              paths.length >= 3000 ||
+              paths.some((path) => !isNonDeployable(path));
+
+            if (sourceChanged) {
+              core.setOutput("source-changed", "true");
+            } else {
+              core.setOutput("source-changed", "false");
+              core.notice(
+                "Preview deploy skipped: the pull request changes only non-deployable paths (agent skills, docs, CI, e2e tests, or editor/tooling config).",
+              );
+            }
 
   deploy:
     name: Deploy Preview
     needs: preflight
-    if: ${{ needs.preflight.outputs.ready == 'true' && github.event.action != 'closed' }}
+    # Also gate on the deploy-affecting-path check: a pull request whose entire
+    # diff is non-deployable (agent skills, docs, CI, e2e tests, editor config)
+    # skips the Vercel build so it spends no preview credit. Teardown below is
+    # deliberately left ungated on close, so a preview is always cleaned up.
+    if: ${{ needs.preflight.outputs.ready == 'true' && github.event.action != 'closed' && needs.preflight.outputs.source-changed == 'true' }}
     runs-on: ubuntu-latest
     # The `PAYLOAD_TEST_USER_*` seed credentials are environment-scoped secrets
     # with a Preview-specific value (distinct from Production), so this job
