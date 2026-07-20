@@ -314,8 +314,12 @@ if (candidates.length === 0) {
 			lenses: scope.lenses.length,
 			finders: finders.length,
 			findersErrored: failedFinderKeys.length,
+			omittedLenses: omittedLenses.length,
 			candidates: 0,
 			verified: 0,
+			refuted: 0,
+			reported: 0,
+			droppedMinors: 0,
 		},
 	};
 }
