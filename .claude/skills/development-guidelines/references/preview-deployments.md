@@ -12,8 +12,10 @@ The workflow is [`.github/workflows/preview-deploy.yaml`](../../../../.github/wo
 pull_request (opened / synchronize / reopened)
         │
         ▼
-  preflight ── required secrets/vars absent? ──▶ skip (no-op, green)
+  preflight ── required secrets/vars absent? ──────▶ skip (no-op, green)
         │ present
+        ├─ only non-deployable paths changed? ──────▶ skip deploy (no Vercel credit)
+        │ a deploy-affecting file changed
         ▼
   deploy
    1. create  preview-pr-<n>  as a fresh, empty database (never from production)
@@ -29,6 +31,8 @@ pull_request (closed) ──▶ teardown: turso db destroy preview-pr-<n>;
 
 **Guidelines:**
 
+- MUST gate the `deploy` job on a **deploy-affecting-path** check so a pull request whose entire diff is non-deployable spends no Vercel credit: the `preflight` job lists the PR's changed files (`pulls.listFiles`, requiring `pull-requests: read`) and sets `source-changed=false` only when **every** changed file matches the non-deployable denylist — `.claude/**`, root docs (`AGENTS.md`, `CLAUDE.md`, `README.md`, `REVIEW.md`), `.github/**`, `e2e/**`, and editor/tooling config (`.vscode/**`, `.zed/**`, `.mcp.json`, `.pino-prettyrc`, `.gitignore`, `.data/**`). It is a **denylist**: any unlisted or newly added path — including in-tree content such as `payload/helpers/seed/*.md` (the seeded preview content) — counts as deployable, and the classifier fails safe toward deploying, forcing a deploy on a `pulls.listFiles` error or a capped (>= 3000) file list rather than a silent skip.
+- MUST keep `teardown` **ungated** by that path check — it runs on every `closed` event regardless of paths — so any preview whose database and media were provisioned is always destroyed, even in the rare deploy-then-revert-to-non-deployable-then-close sequence. This is why the check gates the `deploy` job rather than the workflow's `pull_request` trigger (a trigger-level `paths-ignore` would skip teardown too and orphan the database).
 - MUST provision each preview as a **fresh, empty** database — never branched from production — so no production row ever reaches a publicly reachable preview. Content comes only from the app's `onInit` seed (`payload/helpers/seed.ts`) running against that empty database on first boot.
 - MUST keep the production `LIBSQL_*` credentials out of every preview: the workflow injects only the per-PR database credentials via `vercel deploy --env` / `--build-env`, never the production ones.
 - MUST run schema **migrations in CI** (`npm run migrate:up` against the fresh database) so the schema exists before traffic; only data seeding happens at runtime.
