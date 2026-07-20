@@ -36,10 +36,10 @@ export function CommentComposer({ slug }: { slug: string }): JSX.Element {
 			<div className={css.composer} data-testid="composer">
 				<div className={css.composerField}>
 					{/* A non-interactive preview of the composer: signed-out readers see
-					 * the textarea they'd get, with the sign-in call sitting where the
-					 * submit button lives once signed in. Decorative only — hidden from
-					 * assistive tech and the tab order so the sign-in button is the sole
-					 * control. */}
+					 * the textarea they'd get, with the sign-in button in the same
+					 * bottom-right slot the submit button occupies once signed in.
+					 * Decorative only — hidden from assistive tech and the tab order so
+					 * the sign-in button is the sole control. */}
 					<textarea
 						className={clsx(css.textarea, css.textareaPreview)}
 						placeholder={t("placeholder")}
@@ -49,9 +49,7 @@ export function CommentComposer({ slug }: { slug: string }): JSX.Element {
 						data-testid="textarea-preview"
 					/>
 
-					<div className={css.composerRow}>
-						<span className={css.hint}>{t("hint")}</span>
-
+					<div className={clsx(css.composerRow, css.composerRowEnd)}>
 						<SignInButton mode="modal">
 							<button
 								type="button"

@@ -92,6 +92,13 @@
 			gap: var(--size-12);
 		}
 
+		/* Signed-out composer: only the sign-in button sits in the action row, so
+		 * anchor it to the bottom-right where the submit button lives when signed
+		 * in (space-between would left-align a lone item). */
+		.composerRowEnd {
+			justify-content: flex-end;
+		}
+
 		.hint {
 			font-size: var(--text-xs);
 			color: var(--neutral-11);
