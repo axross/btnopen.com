@@ -13,9 +13,10 @@ type SubmitState = "idle" | "submitting" | "submitted" | "error";
 
 /**
  * The reader-facing composer for top-level comments. Signed-out readers get a
- * "Sign in with GitHub" affordance (Clerk modal); signed-in readers get a
- * bordered textarea and a neutral submit button. On success the composer swaps
- * to an "awaiting review" acknowledgment, since the comment is pending.
+ * non-interactive preview of the composer — a placeholder textarea with a
+ * "Sign in with GitHub" call (Clerk modal); signed-in readers get a bordered
+ * textarea and a neutral submit button. On success the composer swaps to an
+ * "awaiting review" acknowledgment, since the comment is pending.
  *
  * Only mounted when Clerk is configured — its Clerk hooks require the provider.
  */
