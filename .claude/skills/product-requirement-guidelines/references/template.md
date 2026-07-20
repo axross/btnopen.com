@@ -55,7 +55,7 @@ _(See functional-requirements.md.)_
 _(Conditional — include only for view-affected changes; otherwise omit with a stated
 reason. When the visual options exhibit runs, this section carries the per-round
 design record: options presented, the option the human selected at each round, both
-the wireframe and hi-fi design-artifact links, and the in-issue durable copies —
+the wireframe and hi-fi Artifact links, and the in-issue wireframe fallback —
 rules owned by the address skill's visual-design-options reference.)_
 
 <Hierarchy, interaction states, accessibility and responsive intent, copy

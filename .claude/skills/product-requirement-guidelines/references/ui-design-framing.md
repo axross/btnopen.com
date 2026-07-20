@@ -14,11 +14,11 @@ Not every change earns a UI design section, and forcing one onto a non-view-affe
 
 ## Design Record and Artifact Links
 
-When a delivery workflow runs the visual options exhibit for the change, the UI design section doubles as the durable design record: it records, per design round, the options presented and the option the human selected at that level, and it always references both the wireframe round's and the hi-fi round's design-artifact links alongside the in-issue durable copies — so the designs and the decision trail stay reachable from the issue after the authoring session is archived. The granular rules for that record live with the exhibit, not here.
+When a delivery workflow runs the visual options exhibit for the change, the UI design section doubles as the durable design record: it records, per design round, the options presented and the option the human selected at that level, and it always references both the wireframe round's and the hi-fi round's Artifact links — the design source of truth — alongside the in-issue wireframe fallback, so the designs and the decision trail stay reachable from the issue after the authoring session is archived. The granular rules for that record live with the exhibit, not here.
 
 **Guidelines:**
 
-- MUST follow the address skill's visual-design-options reference for the exhibit lifecycle and its design record — per-round selections, both design-artifact links, and the in-issue durable copies; this reference owns only the section's spec-level content.
+- MUST follow the address skill's visual-design-options reference for the exhibit lifecycle and its design record — per-round selections, both rounds' Artifact links, and the in-issue wireframe fallback; this reference owns only the section's spec-level content.
 
 ## State Before Mechanics
 
