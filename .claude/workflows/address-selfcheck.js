@@ -1,27 +1,28 @@
 export const meta = {
 	name: "address-selfcheck",
 	description:
-		"Multi-agent self-check for /address Phase 2: scope the working diff, fan out one finder per matching project review lens, adversarially verify every pooled candidate, and return a ranked, capped findings report.",
+		"Risk-tiered, cascaded, delta-aware multi-agent self-check for /address Phase 2: scope the diff and its risk once (cheaply), fan out cheap-model finders across the tier's matching review lenses, adversarially verify the survivors on the strong model (multi-vote for blocking findings on high-risk diffs), and return a ranked, capped findings report.",
 	whenToUse:
-		"Launched by the /address skill after implementation and verification, before the draft pull request opens. Pass args: { baseRef, issueNumber, planConstraints }. Not for ad-hoc review outside an /address run.",
+		"Launched by the /address skill after implementation and verification, before the draft pull request opens. Pass args: { baseRef, issueNumber, planConstraints, riskTier, sinceRef }. sinceRef makes a relaunch review only the delta since that commit. Not for ad-hoc review outside an /address run.",
 	phases: [
 		{
 			title: "Scope",
 			detail:
-				"Pin the diff command, changed files, and matching review lenses from the AGENTS.md skill index",
+				"One cheap agent: changed files, matching lenses, risk tier, dirty/empty-diff guards",
 		},
 		{
 			title: "Find",
 			detail:
-				"One finder per matched lens plus fixed correctness and maintainability finders",
+				"Cheap-model finders across the tier's lens budget plus fixed correctness and maintainability finders",
 		},
 		{
 			title: "Verify",
-			detail: "One adversarial verifier per deduplicated candidate",
+			detail:
+				"Strong-model adversarial verifier per pruned candidate — multi-vote for blocking findings on high-risk diffs",
 		},
 		{
 			title: "Synthesize",
-			detail: "Merge same-location findings, rank by severity, cap the report",
+			detail: "Rank by severity, exempt blocking findings from the cap, report",
 		},
 	],
 };
@@ -42,31 +43,64 @@ if (typeof input === "string") {
 const BASE_REF =
 	(input && typeof input.baseRef === "string" && input.baseRef.trim()) ||
 	"origin/main";
+// S3 delta re-review: on a second-pass relaunch the driver passes the
+// previously reviewed head as sinceRef, so the re-review scopes to the hunks
+// changed since then instead of re-reviewing the whole diff. Absent → full
+// diff against baseRef (first pass).
+const SINCE_REF =
+	input && typeof input.sinceRef === "string" && input.sinceRef.trim()
+		? input.sinceRef.trim()
+		: null;
 const ISSUE_NUMBER =
 	input && typeof input.issueNumber === "number" ? input.issueNumber : null;
 const PLAN_CONSTRAINTS =
 	input && Array.isArray(input.planConstraints)
 		? input.planConstraints.filter((c) => typeof c === "string" && c.trim())
 		: [];
+const RISK_ORDER = ["low", "medium", "high"];
+const RISK_HINT =
+	input && RISK_ORDER.includes(input.riskTier) ? input.riskTier : null;
 
-const MAX_LENSES = 6;
-const MAX_CANDIDATES_PER_FINDER = 8;
+// S2 cascade: finders and the scope pass run on a cheap model at low effort
+// (recall over-produces candidates); verification stays on the strong model
+// (the precision gate). If the cheap model is unavailable in a session the
+// finder simply returns null and its lens is reported skipped — the driver
+// covers it inline, so the cascade degrades safe.
+const CHEAP_MODEL = "haiku";
 const MAX_FINDINGS = 10;
+// S4 budget cap: multi-vote verification is only afforded when the turn's
+// token target leaves comfortable headroom; below the floor, force single
+// vote. budget.total is null when no target was set (then remaining() is
+// Infinity and nothing is capped).
+const BUDGET_MULTIVOTE_FLOOR = 200_000;
+const BUDGET_PER_VERIFIER = 90_000;
 
-const DIFF_CMD = `git diff ${BASE_REF}...HEAD`;
+// S1 + S6: each risk tier sets how wide the fleet fans out and how many
+// adversarial votes a blocking (Critical/Major) candidate gets. Minor
+// candidates are always single-vote. lensCap bounds how many of the matched
+// lenses actually run a finder; the fixed correctness/maintainability finders
+// always run.
+const TIER_PROFILE = {
+	low: { lensCap: 0, maxCandidates: 4, blockingVotes: 1 },
+	medium: { lensCap: 3, maxCandidates: 8, blockingVotes: 1 },
+	high: { lensCap: 6, maxCandidates: 8, blockingVotes: 3 },
+};
+
+const DIFF_CMD = SINCE_REF
+	? `git diff ${SINCE_REF}...HEAD`
+	: `git diff ${BASE_REF}...HEAD`;
 const sevRank = { Critical: 0, Major: 1, Minor: 2 };
 const verdictRank = { CONFIRMED: 0, PLAUSIBLE: 1 };
+const maxRisk = (a, b) =>
+	RISK_ORDER[Math.max(RISK_ORDER.indexOf(a), RISK_ORDER.indexOf(b))];
 
 const SCOPE_SCHEMA = {
 	type: "object",
-	required: ["files", "lenses", "dirty"],
+	required: ["files", "lenses", "dirty", "riskTier"],
 	properties: {
 		dirty: { type: "boolean" },
-		omittedLenses: {
-			type: "array",
-			maxItems: 20,
-			items: { type: "string" },
-		},
+		riskTier: { enum: ["low", "medium", "high"] },
+		omittedLenses: { type: "array", maxItems: 20, items: { type: "string" } },
 		files: {
 			type: "array",
 			maxItems: 100,
@@ -81,7 +115,7 @@ const SCOPE_SCHEMA = {
 		},
 		lenses: {
 			type: "array",
-			maxItems: MAX_LENSES,
+			maxItems: 6,
 			items: {
 				type: "object",
 				required: ["skillDir", "reason"],
@@ -100,7 +134,7 @@ const CANDIDATES_SCHEMA = {
 	properties: {
 		candidates: {
 			type: "array",
-			maxItems: MAX_CANDIDATES_PER_FINDER,
+			maxItems: 8,
 			items: {
 				type: "object",
 				required: ["severity", "file", "line", "summary", "failureScenario"],
@@ -134,22 +168,27 @@ const SUMMARY_SCHEMA = {
 };
 
 // ─── Scope ───
+// S5: one cheap agent does all the AGENTS.md-dependent judgment (file list,
+// lens selection, risk tier, dirty/empty guards) once; the script does every
+// mechanical decision (fleet width, votes, effort, pruning) in plain code, so
+// no reasoning tokens are spent on orchestration and the skill index stays the
+// single source of truth for routing.
 phase("Scope");
 const scope = await agent(
 	"## Self-check scope for an /address run" +
 		(ISSUE_NUMBER ? ` (issue #${ISSUE_NUMBER})` : "") +
+		(SINCE_REF ? ` — delta re-review since ${SINCE_REF}` : "") +
 		"\n\n" +
 		"You are scoping a code self-review inside this repository checkout.\n\n" +
 		"1. Run `" +
 		DIFF_CMD +
 		" --stat` to list every changed file, and `git status --porcelain` to detect uncommitted or untracked work; set `dirty` to true when the porcelain output is non-empty (finders review only committed history, so uncommitted work cannot be reviewed).\n" +
-		"2. Read the skill index table in `AGENTS.md` at the repository root. Select the guideline skills whose routing condition matches the changed files or surfaces — at most " +
-		MAX_LENSES +
-		", most relevant first. Use each skill's directory name under `.claude/skills/` as `skillDir`. When more lenses match than fit the cap, list every overflow skillDir in `omittedLenses` so the driver can cover them — never drop a matching lens silently. Treat generated or managed files as outside review scope: exclude `app/(payload)/` and `payload/types.ts` from `files`, and include `payload/migrations/` files only when the diff changes them destructively.\n" +
-		"3. Exclude the workflow entry-point skills (the ones AGENTS.md lists under its Workflow Entry Points section), the development-guidelines baseline, and maintainable-code-guidelines (a fixed finder already covers it).\n\n" +
+		"2. Read the skill index table in `AGENTS.md` at the repository root. Select the guideline skills whose routing condition matches the changed files or surfaces — at most 6, most relevant first. Use each skill's directory name under `.claude/skills/` as `skillDir`. When more lenses match than fit, list every overflow skillDir in `omittedLenses`. Treat generated or managed files as outside review scope: exclude `app/(payload)/` and `payload/types.ts` from `files`, and include `payload/migrations/` files only when the diff changes them destructively.\n" +
+		"3. Exclude the workflow entry-point skills (the ones AGENTS.md lists under its Workflow Entry Points section), the development-guidelines baseline, and maintainable-code-guidelines (a fixed finder already covers it).\n" +
+		"4. Classify `riskTier`: `high` if the diff touches auth or access control, markdown/XSS, SSRF or embed fetching, migrations, public route contracts, production config, or a large refactor (the high-risk list in the AGENTS.md Review Independence Gates); `medium` if it changes other app or runtime behavior; `low` if it only touches docs, config, or agent-skill files with no app-runtime surface.\n\n" +
 		"Do NOT run test suites, dev servers, builds, or any state-changing command — read-only inspection and read-only git commands only; the driver owns verification.\n\n" +
-		"Return every changed file (with a one-word surface tag where obvious) and the selected lenses with a one-line reason each. Structured output only.",
-	{ label: "scope", phase: "Scope", schema: SCOPE_SCHEMA },
+		"Return every changed file (with a one-word surface tag where obvious), the selected lenses with a one-line reason each, and the risk tier. Structured output only.",
+	{ label: "scope", phase: "Scope", model: CHEAP_MODEL, effort: "low", schema: SCOPE_SCHEMA },
 );
 if (!scope) {
 	return {
@@ -167,17 +206,33 @@ if (scope.files.length === 0) {
 	return {
 		error:
 			"The diff against " +
-			BASE_REF +
-			" is empty — nothing was reviewed. Check the baseRef, or fall back to the inline reviewer-mode reset.",
+			(SINCE_REF || BASE_REF) +
+			" is empty — nothing was reviewed. Check the baseRef/sinceRef, or fall back to the inline reviewer-mode reset.",
 	};
 }
+
+// Reconcile the agent's tier with the driver's hint by taking the MORE severe
+// of the two — a conservative gate never under-reviews on a disputed tier.
+const tier = RISK_HINT ? maxRisk(scope.riskTier, RISK_HINT) : scope.riskTier;
+const P = TIER_PROFILE[tier];
 const omittedLenses = Array.isArray(scope.omittedLenses)
 	? scope.omittedLenses.filter((l) => typeof l === "string" && l.trim())
 	: [];
+// Lenses matched but not run because the tier's lensCap is smaller. This is an
+// intentional S1 cost decision (lower-risk diffs get less breadth), recorded
+// for transparency — NOT a skipped lens the driver must cover inline.
+const runLensDirs = scope.lenses.slice(0, P.lensCap);
+const tierDeferredLenses = scope.lenses
+	.slice(P.lensCap)
+	.map((l) => l.skillDir)
+	.concat(omittedLenses);
 log(
 	scope.files.length +
-		" changed files; lenses: " +
-		(scope.lenses.map((l) => l.skillDir).join(", ") || "(none)"),
+		" changed file(s); tier=" +
+		tier +
+		(SINCE_REF ? " (delta)" : "") +
+		"; lenses: " +
+		(runLensDirs.map((l) => l.skillDir).join(", ") || "(fixed only)"),
 );
 
 // ─── Find ───
@@ -206,14 +261,14 @@ const commonFinderText =
 	DIFF_CMD +
 	"` and review ONLY the changed lines and their immediate context, strictly through your lens.\n" +
 	"3. Report up to " +
-	MAX_CANDIDATES_PER_FINDER +
+	P.maxCandidates +
 	" defect candidates. Grade severity per the project's code-review guideline — resolve that skill through the `AGENTS.md` skill index and follow its severity reference, including its severity floors — mapped to this report's three tiers: Critical (must fix), Major (should fix before merge), Minor (worth noting); do not report Nit-tier polish. Each candidate needs the file path, a 1-indexed line in the new version (0 for file-level), a one-sentence summary, a concrete failure scenario, and a fix sketch — required for Critical and Major candidates, optional for Minor.\n" +
 	"4. An empty candidate list is a valid result — do not pad. Skip generated or managed files (`app/(payload)/`, `payload/types.ts`); review `payload/migrations/` only for destructive schema changes.\n" +
 	"5. Do NOT run test suites, dev servers, builds, or any state-changing command — read-only inspection and read-only git commands only; the driver owns verification." +
 	constraintsBlock +
 	"\n\nJudge the actual diff, not the intent behind it. Structured output only.";
 
-const lensFinders = scope.lenses.map((l) => ({
+const lensFinders = runLensDirs.map((l) => ({
 	key: l.skillDir,
 	prompt:
 		"## Review finder — lens: " +
@@ -242,13 +297,15 @@ const fixedFinders = [
 const finders = lensFinders.concat(fixedFinders);
 
 // Barrier is intentional: candidates must be pooled and deduplicated across
-// all finders before any verifier tokens are spent.
+// all finders before any strong-model verifier tokens are spent.
 const finderOuts = await parallel(
 	finders.map(
 		(f) => () =>
 			agent(f.prompt, {
 				label: `find:${f.key}`,
 				phase: "Find",
+				model: CHEAP_MODEL,
+				effort: "low",
 				schema: CANDIDATES_SCHEMA,
 			}).then((r) => {
 				if (!r) {
@@ -259,9 +316,8 @@ const finderOuts = await parallel(
 			}),
 	),
 );
-// A skipped lens is not a passed lens: report every lens that produced no
-// review — failed finders and cap-omitted scope matches alike — so the
-// driver can cover them inline instead of counting silence as a pass.
+// A finder that failed is a skipped lens the driver must cover inline (a
+// skipped lens is not a passed lens); a tier-deferred lens is not.
 const failedFinderKeys = finders
 	.filter((f, i) => finderOuts[i] === null)
 	.map((f) => f.key);
@@ -271,10 +327,10 @@ if (failedFinderKeys.length === finders.length) {
 			"Every finder agent failed; the driver must fall back to the inline reviewer-mode reset.",
 	};
 }
-const skippedLenses = failedFinderKeys.concat(omittedLenses);
+const skippedLenses = failedFinderKeys.concat(tierDeferredLenses);
 
-// Merge only true duplicates: the key includes the normalized claim text,
-// so distinct defects at the same location (including file-level line-0
+// Merge only true duplicates: the key includes the normalized claim text, so
+// distinct defects at the same location (including file-level line-0
 // candidates) each keep their own summary, failure scenario, and verifier.
 const pooled = finderOuts.filter(Boolean).flat();
 const byClaim = new Map();
@@ -290,88 +346,153 @@ for (const c of pooled) {
 	}
 }
 const candidates = Array.from(byClaim.values());
+
+// ─── Verify ───
+phase("Verify");
+// S2 deterministic pre-verify prune (safer than an LLM triage — it can never
+// drop a blocking finding): verify every blocking candidate, but only as many
+// Minors as could still be reported under the cap, and — when a budget target
+// is set and tight — trim the tail to fit the remaining tokens, always
+// preferring blocking over Minor. Nothing is dropped silently; the counts land
+// in stats.
+const rankBySeverity = (a, b) => sevRank[a.severity] - sevRank[b.severity];
+const blockingCands = candidates
+	.filter((c) => sevRank[c.severity] <= 1)
+	.sort(rankBySeverity);
+const minorCands = candidates.filter((c) => sevRank[c.severity] === 2);
+const minorSlots = Math.max(0, MAX_FINDINGS - blockingCands.length);
+let toVerify = blockingCands.concat(minorCands.slice(0, minorSlots));
+const budgetTight =
+	Boolean(budget && budget.total) &&
+	budget.remaining() < BUDGET_MULTIVOTE_FLOOR;
+const blockingVotes = budgetTight ? 1 : P.blockingVotes;
+if (budgetTight) {
+	// Fit verifier work to the remaining budget, blocking-first.
+	const affordable = Math.max(
+		blockingCands.length,
+		Math.floor(budget.remaining() / BUDGET_PER_VERIFIER),
+	);
+	if (toVerify.length > affordable) {
+		toVerify = toVerify.slice(0, affordable);
+	}
+	log(
+		"budget tight — single-vote verification, verifying " +
+			toVerify.length +
+			"/" +
+			candidates.length +
+			" candidates (blocking first)",
+	);
+}
+const prunedFromVerify = candidates.length - toVerify.length;
 log(
 	pooled.length +
 		" candidates pooled → " +
 		candidates.length +
-		" after same-claim dedup",
+		" deduped → verifying " +
+		toVerify.length +
+		" (tier=" +
+		tier +
+		", blockingVotes=" +
+		blockingVotes +
+		")",
 );
-if (candidates.length === 0) {
-	return {
-		summary:
-			"No defect candidates found by " +
-			(finders.length - failedFinderKeys.length) +
-			" finders across " +
-			scope.files.length +
-			" changed files." +
-			(skippedLenses.length > 0
-				? ` Skipped lenses (review these inline): ${skippedLenses.join(", ")}.`
-				: ""),
-		findings: [],
-		refuted: [],
-		skippedLenses,
-		stats: {
-			lenses: scope.lenses.length,
-			finders: finders.length,
-			findersErrored: failedFinderKeys.length,
-			omittedLenses: omittedLenses.length,
-			candidates: 0,
-			verified: 0,
-			refuted: 0,
-			reported: 0,
-			droppedMinors: 0,
-		},
-	};
-}
 
-// ─── Verify ───
-phase("Verify");
-const verified = (
-	await parallel(
-		candidates.map(
-			(c) => () =>
-				agent(
-					"## Adversarial verifier\n\nBe SKEPTICAL. Try to REFUTE this code-review candidate against the actual repository state.\n\n" +
-						"**Location:** " +
-						c.file +
-						":" +
-						c.line +
-						" (severity claimed: " +
-						c.severity +
-						", lens: " +
-						c.lens +
-						")\n**Claim:** " +
-						c.summary +
-						"\n**Failure scenario:** " +
-						c.failureScenario +
-						"\n\n## Task\n" +
-						"Read the file and the diff (`" +
-						DIFF_CMD +
-						"`). Check: does the failure scenario actually occur with the code as written? Is it reachable? Is it already handled elsewhere? Is the severity honest — and when it is not, return the corrected tier in `severity` (graded per the project's code-review guideline's severity rules, resolved through the `AGENTS.md` skill index) instead of refuting an otherwise-real defect over its grade.\n" +
-						"Do NOT run test suites, dev servers, builds, or any state-changing command — read-only inspection and read-only git commands only; the driver owns verification.\n\n" +
-						"Verdicts: CONFIRMED (reproducible from the code as written, evidence in hand), PLAUSIBLE (credible but not fully demonstrable), REFUTED (does not hold).\n" +
-						(sevRank[c.severity] === 2
-							? "This is a Minor candidate: default to REFUTED when uncertain.\n"
-							: "For Critical/Major candidates keep PLAUSIBLE when the defect is credible but not fully demonstrable.\n") +
-						"Evidence MUST cite specific code. Structured output only.",
-					{
-						label: `verify:${c.file}:${c.line}`,
-						phase: "Verify",
-						schema: VERDICT_SCHEMA,
-						effort: sevRank[c.severity] <= 1 ? "high" : "low",
-					},
-				).then((v) =>
-					v
-						? { ...c, ...v, severity: v.severity || c.severity }
-						: {
-								...c,
-								verdict: "PLAUSIBLE",
-								evidence: "Verifier agent failed; candidate kept unverified.",
-							},
-				),
-		),
-	)
-).filter(Boolean);
+const votesFor = (c) => (sevRank[c.severity] <= 1 ? blockingVotes : 1);
+// Adjudicate a candidate's vote set. A vote can be null (agent failure); it
+// counts as no vote cast. Three outcomes, never conflating infra failure with
+// a merit refutation: REFUTED needs a majority of the requested votes to
+// refute; a multi-vote candidate with too few valid votes stays PLAUSIBLE
+// (unverified); otherwise it survives with the most severe non-refuted
+// (re)grading.
+const adjudicate = (c, verdicts) => {
+	const need = Math.ceil(verdicts.length / 2);
+	const valid = verdicts.filter(Boolean);
+	const refutes = valid.filter((v) => v.verdict === "REFUTED").length;
+	if (verdicts.length >= 2 && valid.length < need) {
+		return {
+			...c,
+			verdict: "PLAUSIBLE",
+			evidence: `Only ${valid.length}/${verdicts.length} verifier votes returned — kept unverified.`,
+		};
+	}
+	if (refutes >= need) {
+		return {
+			...c,
+			verdict: "REFUTED",
+			evidence:
+				valid.find((v) => v.verdict === "REFUTED")?.evidence || "Refuted.",
+		};
+	}
+	const kept = valid.filter((v) => v.verdict !== "REFUTED");
+	const verdict = kept.some((v) => v.verdict === "CONFIRMED")
+		? "CONFIRMED"
+		: "PLAUSIBLE";
+	const regraded = kept
+		.map((v) => v.severity)
+		.filter(Boolean)
+		.sort((a, b) => sevRank[a] - sevRank[b]);
+	const severity = regraded[0] || c.severity;
+	const evidence =
+		(kept.find((v) => v.verdict === "CONFIRMED") || kept[0])?.evidence ||
+		"Kept.";
+	return {
+		...c,
+		verdict,
+		severity,
+		evidence,
+		votes: `${kept.length}/${verdicts.length}`,
+	};
+};
+
+const verified =
+	toVerify.length === 0
+		? []
+		: (
+				await parallel(
+					toVerify.map((c) => () => {
+						const votes = votesFor(c);
+						const effort = sevRank[c.severity] <= 1 ? "high" : "low";
+						const prompt =
+							"## Adversarial verifier\n\nBe SKEPTICAL. Try to REFUTE this code-review candidate against the actual repository state.\n\n" +
+							"**Location:** " +
+							c.file +
+							":" +
+							c.line +
+							" (severity claimed: " +
+							c.severity +
+							", lens: " +
+							c.lens +
+							")\n**Claim:** " +
+							c.summary +
+							"\n**Failure scenario:** " +
+							c.failureScenario +
+							"\n\n## Task\n" +
+							"Read the file and the diff (`" +
+							DIFF_CMD +
+							"`). Check: does the failure scenario actually occur with the code as written? Is it reachable? Is it already handled elsewhere? Is the severity honest — and when it is not, return the corrected tier in `severity` (graded per the project's code-review guideline's severity rules, resolved through the `AGENTS.md` skill index) instead of refuting an otherwise-real defect over its grade.\n" +
+							"Do NOT run test suites, dev servers, builds, or any state-changing command — read-only inspection and read-only git commands only; the driver owns verification.\n\n" +
+							"Verdicts: CONFIRMED (reproducible from the code as written, evidence in hand), PLAUSIBLE (credible but not fully demonstrable), REFUTED (does not hold).\n" +
+							(sevRank[c.severity] === 2
+								? "This is a Minor candidate: default to REFUTED when uncertain.\n"
+								: "For Critical/Major candidates keep PLAUSIBLE when the defect is credible but not fully demonstrable.\n") +
+							"Evidence MUST cite specific code. Structured output only.";
+						// Strong model (inherited): the verify step is the precision gate,
+						// so it is never cheapened. Blocking findings on a high-risk diff
+						// get multi-vote adjudication.
+						return parallel(
+							Array.from({ length: votes }, (_, v) => () =>
+								agent(prompt, {
+									label:
+										(votes > 1 ? `v${v}:` : "verify:") + c.file + ":" + c.line,
+									phase: "Verify",
+									effort,
+									schema: VERDICT_SCHEMA,
+								}),
+							),
+						).then((verdicts) => adjudicate(c, verdicts));
+					}),
+				)
+			).filter(Boolean);
 
 const surviving = verified.filter((c) => c.verdict !== "REFUTED");
 const refuted = verified.filter((c) => c.verdict === "REFUTED");
@@ -386,9 +507,8 @@ const ranked = surviving
 			sevRank[a.severity] - sevRank[b.severity] ||
 			verdictRank[a.verdict] - verdictRank[b.verdict],
 	);
-// The cap never drops a blocking finding: every Critical/Major is always
-// reported; only Minors compete for the remaining slots, and any drop is
-// counted rather than silent.
+// The cap never drops a blocking finding: every Critical/Major is reported;
+// only Minors compete for the remaining slots, and any drop is counted.
 const blocking = ranked.filter((c) => sevRank[c.severity] <= 1);
 const minors = ranked.filter((c) => sevRank[c.severity] === 2);
 const keptMinors = minors.slice(0, Math.max(0, MAX_FINDINGS - blocking.length));
@@ -405,11 +525,14 @@ const findings = blocking.concat(keptMinors).map((c) => ({
 }));
 const droppedMinors = minors.length - keptMinors.length;
 const stats = {
-	lenses: scope.lenses.length,
+	tier,
+	delta: Boolean(SINCE_REF),
+	lenses: runLensDirs.length,
 	finders: finders.length,
 	findersErrored: failedFinderKeys.length,
-	omittedLenses: omittedLenses.length,
+	tierDeferredLenses: tierDeferredLenses.length,
 	candidates: candidates.length,
+	prunedFromVerify,
 	verified: verified.length,
 	refuted: refuted.length,
 	reported: findings.length,
@@ -422,10 +545,18 @@ const mechanicalSummary =
 	blocking.length +
 	" Critical/Major); " +
 	refuted.length +
-	" refuted." +
-	(droppedMinors > 0 ? ` ${droppedMinors} Minor finding(s) dropped by the report cap.` : "") +
+	" refuted. Tier=" +
+	tier +
+	(SINCE_REF ? " (delta re-review)" : "") +
+	"." +
+	(prunedFromVerify > 0
+		? ` ${prunedFromVerify} lower-priority candidate(s) not verified (cap/budget).`
+		: "") +
+	(droppedMinors > 0
+		? ` ${droppedMinors} Minor finding(s) dropped by the report cap.`
+		: "") +
 	(skippedLenses.length > 0
-		? ` Skipped lenses (review these inline): ${skippedLenses.join(", ")}.`
+		? ` Skipped/deferred lenses: ${skippedLenses.join(", ")}.`
 		: "");
 const synth =
 	findings.length > 0
@@ -463,5 +594,6 @@ return {
 		evidence: c.evidence,
 	})),
 	skippedLenses,
+	tier,
 	stats,
 };
