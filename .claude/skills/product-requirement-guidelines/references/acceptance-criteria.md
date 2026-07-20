@@ -1,6 +1,6 @@
 # Acceptance Criteria Craft
 
-Apply this reference when drafting or reviewing the checklist a reviewer uses to judge a finished change against a spec. Sourced from INVEST-adjacent testability practice and BDD/Gherkin acceptance-criteria craft: [LogRocket's INVEST guide](https://blog.logrocket.com/product-management/writing-meaningful-user-stories-invest-principle/), [Agile Alliance's INVEST glossary entry](https://agilealliance.org/glossary/invest/), [AltexSoft's acceptance-criteria guide](https://www.altexsoft.com/blog/acceptance-criteria-purposes-formats-and-best-practices/), [Adaptive US on acceptance criteria](https://www.adaptiveus.com/blog/how-to-leverage-nfrs-to-develop-acceptance-criteria), and [Cucumber's Gherkin style guide](https://cucumber.io/docs/bdd/better-gherkin/).
+Apply this reference when drafting or reviewing the **Acceptance criteria** section — the checklist a reviewer uses to judge a finished change against a spec. It sits after the requirements sections (Functional and Non-functional requirements), so every criterion has something earlier in the document to trace to, and is followed by the Verification strategy section that describes how to check it (see [verification-strategy.md](./verification-strategy.md)). Sourced from INVEST-adjacent testability practice and BDD/Gherkin acceptance-criteria craft: [LogRocket's INVEST guide](https://blog.logrocket.com/product-management/writing-meaningful-user-stories-invest-principle/), [Agile Alliance's INVEST glossary entry](https://agilealliance.org/glossary/invest/), [AltexSoft's acceptance-criteria guide](https://www.altexsoft.com/blog/acceptance-criteria-purposes-formats-and-best-practices/), [Adaptive US on acceptance criteria](https://www.adaptiveus.com/blog/how-to-leverage-nfrs-to-develop-acceptance-criteria), and [Cucumber's Gherkin style guide](https://cucumber.io/docs/bdd/better-gherkin/).
 
 ## Independent Verifiability
 
@@ -33,12 +33,12 @@ Most defects live outside the primary flow, so a criteria set that only covers t
 
 ## Right-Sized Checklists
 
-A checklist that needs far more than a handful of criteria is usually a sign the underlying story should split; too few leaves testable gaps that surface as bugs later. Practitioner guidance converges on roughly three to seven or eight criteria as a starting rubric, not a hard ceiling. Verification gates belong in the same checklist as trailing items, since "done" includes passing the project's own format/lint/test/build commands, not only the feature behavior.
+A checklist that needs far more than a handful of criteria is usually a sign the underlying story should split; too few leaves testable gaps that surface as bugs later. Practitioner guidance converges on roughly three to seven or eight criteria as a starting rubric, not a hard ceiling. Verification gates — the project's format/lint/test/build commands — are part of "done" but not part of this checklist: they live in the Verification strategy section, keeping the criteria purely about the change's observable outcomes.
 
 **Guidelines:**
 
 - SHOULD right-size the checklist to roughly three to seven criteria; treat materially more as a signal to reconsider the change's scope rather than padding restatements of the same behavior.
-- MUST include the verification gates the change requires (format/lint, unit/e2e suites, build) as trailing checklist items, per [AGENTS.md › Verification](../../../../AGENTS.md#verification), with the project's development guidelines (verification rules) covering the e2e/manual side.
+- MUST keep verification gates (format/lint, unit/e2e suites, build) out of the criteria checklist; they belong in the Verification strategy section per [verification-strategy.md](./verification-strategy.md).
 - MUST NOT restate the same observable behavior across multiple bullets.
 - MUST write each criterion as a plain bullet (`-`), not a GitHub task-list checkbox (`- [ ]`) — unless the project actually checks the boxes as part of its process, an unchecked box reads as perpetually incomplete.
 

@@ -1,39 +1,49 @@
 ---
 name: product-requirement-guidelines
-description: How to write and review a product requirement, feature spec, or issue description. Covers framing the problem/outcome before the solution, separating "what" from "how", explicit non-goals and assumptions, right-sizing scope to the change, testable acceptance criteria, and — for view-affected or architecturally broad changes — framing a spec's UI design and system-design/architecture sections.
-when_to_use: Apply when writing, refining, or reviewing a product requirement, feature spec, or issue description, including any plan-writing or issue-drafting step of a delivery workflow — "write a PRD", "refine this issue", "write acceptance criteria", "what's the scope of this change", "is this requirement testable", or "does this need a UI design / architecture section".
+description: How to write and review a product requirement, feature spec, plan document, or issue description. Owns the canonical plan-document structure — Summary; Background with Goals, Non-goals, and Assumptions; Functional requirements with UI design and System design (plus Alternatives considered); Non-functional requirements; Acceptance criteria; Verification strategy; Open questions — and the per-section craft: problem/outcome framing, "what should be" requirement phrasing, design-section triggers including intricate minor-scoped mechanics, testable criteria, ordered verification steps, and TBD-friendly open questions.
+when_to_use: Apply when writing, refining, or reviewing a product requirement, feature spec, plan document, or issue description, including any plan-writing or issue-drafting step of a delivery workflow — "write a PRD", "refine this issue", "structure this plan", "write acceptance criteria", "how do I verify this is done", "what's the scope of this change", or "does this need a UI design / system design section".
 user-invocable: false
 ---
 
 # Product Requirement Guidelines
 
-Apply this skill whenever drafting or reviewing the parts of a product requirement, feature spec, or issue description that describe **what** is needed and **how completion is verified** — not how it is built. It is general-purpose: any product requirement, feature specification, or issue description benefits from it, not only a delivery workflow's plan-writing step.
+Apply this skill whenever drafting or reviewing a product requirement, feature spec, or plan document — the parts that describe **what** is needed and **how completion is verified**, not how it is built. It is general-purpose: any product requirement, feature specification, or issue description benefits from it, not only a delivery workflow's plan-writing step.
 
-This skill deliberately does not own everything a spec contains. It owns problem framing, scope boundaries, acceptance-criteria craft, and — when those sections are warranted — the spec-level framing of the UI design and system-design/architecture sections. It does not own the implementation mechanics behind them:
+This skill owns the canonical plan-document structure, in this order. Required sections appear in every plan; conditional sections are omitted only with a stated reason.
 
-- UI component structure, CSS, and markup mechanics — the project's UI design principles and the project's React component guidelines. This skill owns only how to *describe* hierarchy, states, accessibility, and responsive intent in the spec (see below).
-- Actual data flow implementation, routes, and module placement — the project's project-structure skill. This skill owns only how to *describe* system-design decisions in the spec (see below).
-- Test coverage strategy — the project's e2e testing guidelines and the project's unit-test guidelines.
+1. **Summary** — one standalone paragraph.
+2. **Background** — with **Goals**, **Non-goals**, and **Assumptions** subsections.
+3. **Functional requirements** *(conditional)* — with **UI design** *(conditional)* and **System design** *(conditional, with **Alternatives considered** when a plausible competing approach exists)* nested under it.
+4. **Non-functional requirements** *(conditional)*.
+5. **Acceptance criteria**.
+6. **Verification strategy**.
+7. **Open questions**.
 
-## Problem Framing and Scope
+This skill deliberately does not own everything a plan contains. It owns the structure, problem framing, scope boundaries, requirement and criteria craft, and the spec-level framing of the UI design and System design sections. It does not own the implementation mechanics behind them:
+
+- UI component structure, CSS, and markup mechanics — the project's UI design principles and the project's React component guidelines. This skill owns only how to *describe* hierarchy, states, accessibility, and responsive intent in the spec. The visual options exhibit and its design record (per-round selections, design-artifact links) are owned by the address skill's visual-design-options reference.
+- Actual data flow implementation, routes, and module placement — the project's project-structure skill. This skill owns only how to *describe* system-design decisions in the spec.
+- Test-writing mechanics — the project's e2e testing guidelines and the project's unit-test guidelines. This skill owns only how a spec *names* the coverage and verification steps that make it checkable.
+
+## Summary and Background Framing
 
 See [problem-and-scope.md](./references/problem-and-scope.md) for:
 
-- stating the user-facing outcome and problem before any solution detail
-- writing explicit non-goals and out-of-scope bullets
-- separating stated assumptions from open questions
-- right-sizing the section to the size of the change
+- writing the standalone one-paragraph Summary
+- framing Background as concise bullets, with mermaid diagrams when they clarify circumstances
+- stating goals, explicit non-goals, and assumptions distinct from open questions
+- writing the trailing Open questions section, including known risks with mitigation
+- right-sizing the document to the size of the change
 - replacing vague quality adjectives with concrete, checkable statements
 
-## Acceptance Criteria Craft
+## Functional Requirements Craft
 
-See [acceptance-criteria.md](./references/acceptance-criteria.md) for:
+See [functional-requirements.md](./references/functional-requirements.md) for:
 
-- writing criteria a reviewer can verify independently, without reading implementation code
-- preferring concrete, checkable phrasing over adjectives
-- covering the happy path, edge/error/empty states, and explicit non-effects
-- right-sizing the checklist and including verification-gate criteria
-- tracing every criterion back to the rest of the spec
+- writing user-perspective requirements as "what should be", not "what to do"
+- ordering guide-level explanation before reference-level detail
+- covering the primary flow and the relevant empty, error, and edge states
+- deciding when the section applies and how to omit it with a stated reason
 
 ## UI Design Section Framing
 
@@ -44,19 +54,38 @@ See [ui-design-framing.md](./references/ui-design-framing.md) for:
 - enumerating interaction states (default, disabled, loading, error, empty)
 - stating accessibility intent as testable, WCAG-referencing criteria
 - stating responsive behavior intent and copy/microcopy constraints
+- how the section's durable design record relates to the visual options exhibit
 
-## Architecture Overview Framing
+## System Design Section Framing
 
 See [architecture-overview-framing.md](./references/architecture-overview-framing.md) for:
 
-- when a spec needs a system-design/architecture section at all (broad or hard-to-reverse changes only)
-- describing data flow and module boundaries at spec level, not implementation
+- when a spec needs a System design section — boundary-crossing or hard-to-reverse changes, and intricate minor-scoped mechanics
+- describing data flow and module boundaries at spec level, with mermaid diagrams and clarifying code snippets
 - recording alternatives considered and why they were rejected
-- stating constraints and non-functional requirements as measurable targets
+- stating non-functional requirements as measurable targets
 
-## Product Requirement Section Template
+## Acceptance Criteria Craft
+
+See [acceptance-criteria.md](./references/acceptance-criteria.md) for:
+
+- writing criteria a reviewer can verify independently, without reading implementation code
+- preferring concrete, checkable phrasing over adjectives
+- covering the happy path, edge/error/empty states, and explicit non-effects
+- right-sizing the checklist and tracing every criterion back to the rest of the spec
+
+## Verification Strategy Craft
+
+See [verification-strategy.md](./references/verification-strategy.md) for:
+
+- writing the ordered verification steps that show the work is done
+- steps-to-reproduce for bug work, before and after the fix
+- naming the project's verification gates the changed surface requires
+- naming the test coverage to add or update
+
+## Plan Document Template
 
 See [template.md](./references/template.md) for:
 
-- a self-contained, annotated Markdown skeleton for the Product requirement and Acceptance criteria sections
-- what belongs in each slot (problem/outcome, scope, non-goals, assumptions/constraints, checklist)
+- a self-contained, annotated Markdown skeleton of the full plan-document structure
+- what belongs in each slot, each conditional section's omit-rule, and the right-sizing note

@@ -1,6 +1,6 @@
 # UI Design Section Framing
 
-Apply this reference when drafting or reviewing the "UI design" section of a spec — hierarchy, interaction states, accessibility intent, responsive behavior, and copy constraints, described in spec terms, not implementation. Sourced from PRD/design-spec practice, design-system precedent, and accessibility standards: [Shape Up's breadboarding](https://basecamp.com/shapeup/1.3-chapter-04), [Shopify Polaris on interaction states](https://polaris-react.shopify.com/design/interaction-states), [Material Design 3 on states](https://m3.material.io/foundations/interaction/states/applying-states), [NN/g on empty states](https://www.nngroup.com/articles/empty-state-interface-design/) and [error messages](https://www.nngroup.com/articles/error-message-guidelines/), [W3C WCAG 2.2](https://www.w3.org/TR/WCAG22/), [GOV.UK's accessibility acceptance criteria practice](https://insidegovuk.blog.gov.uk/2018/01/24/improving-accessibility-with-accessibility-acceptance-criteria/), and [A List Apart on responsive design](https://alistapart.com/article/responsive-web-design/). Implementation mechanics for these same concerns — component structure, CSS, ARIA markup — stay owned by the project's UI design principles and the project's React component guidelines; this reference owns only how to *describe* them in a spec.
+Apply this reference when drafting or reviewing the "UI design" section of a plan — nested under Functional requirements — covering hierarchy, interaction states, accessibility intent, responsive behavior, and copy constraints, described in spec terms, not implementation. Sourced from PRD/design-spec practice, design-system precedent, and accessibility standards: [Shape Up's breadboarding](https://basecamp.com/shapeup/1.3-chapter-04), [Shopify Polaris on interaction states](https://polaris-react.shopify.com/design/interaction-states), [Material Design 3 on states](https://m3.material.io/foundations/interaction/states/applying-states), [NN/g on empty states](https://www.nngroup.com/articles/empty-state-interface-design/) and [error messages](https://www.nngroup.com/articles/error-message-guidelines/), [W3C WCAG 2.2](https://www.w3.org/TR/WCAG22/), [GOV.UK's accessibility acceptance criteria practice](https://insidegovuk.blog.gov.uk/2018/01/24/improving-accessibility-with-accessibility-acceptance-criteria/), and [A List Apart on responsive design](https://alistapart.com/article/responsive-web-design/). Implementation mechanics for these same concerns — component structure, CSS, ARIA markup — stay owned by the project's UI design principles and the project's React component guidelines; this reference owns only how to *describe* them in a spec.
 
 ## When to Include a UI Design Section
 
@@ -11,6 +11,14 @@ Not every change earns a UI design section, and forcing one onto a non-view-affe
 - MUST include a UI design section only when the change is view-affected (adds, removes, or materially alters a user-visible surface); MUST NOT include one for non-UI changes (data migrations, internal refactors, config, backend-only logic).
 - SHOULD keep the section at wireframe/breadboard fidelity — places, affordances, and flow — rather than pixel-perfect mockup description.
 - SHOULD link an existing wireframe or prototype instead of describing layout in prose when one exists, since a picture resolves ambiguity paragraphs cannot.
+
+## Design Record and Artifact Links
+
+When a delivery workflow runs the visual options exhibit for the change, the UI design section doubles as the durable design record: it records, per design round, the options presented and the option the human selected at that level, and it always references both the wireframe round's and the hi-fi round's design-artifact links alongside the in-issue durable copies — so the designs and the decision trail stay reachable from the issue after the authoring session is archived. The granular rules for that record live with the exhibit, not here.
+
+**Guidelines:**
+
+- MUST follow the address skill's visual-design-options reference for the exhibit lifecycle and its design record — per-round selections, both design-artifact links, and the in-issue durable copies; this reference owns only the section's spec-level content.
 
 ## State Before Mechanics
 
