@@ -76,11 +76,26 @@
 			}
 		}
 
+		/* The signed-out composer preview: a non-editable textarea shown purely to
+		 * illustrate the affordance. `pointer-events: none` keeps it out of focus
+		 * entirely, so pairing it with `aria-hidden` is safe. */
+		.textareaPreview {
+			cursor: default;
+			pointer-events: none;
+		}
+
 		.composerRow {
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
 			gap: var(--size-12);
+		}
+
+		/* Signed-out composer: only the sign-in button sits in the action row, so
+		 * anchor it to the bottom-right where the submit button lives when signed
+		 * in (space-between would left-align a lone item). */
+		.composerRowEnd {
+			justify-content: flex-end;
 		}
 
 		.hint {
