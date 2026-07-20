@@ -52,7 +52,11 @@ export async function Comments({
 			{isClerkAvailable ? <CommentComposer slug={slug} /> : null}
 
 			{threads.length === 0 ? (
-				<p className={css.empty}>{t("empty")}</p>
+				<div className={css.empty} data-testid="empty">
+					<p className={css.emptyExpression}>{"comments.length === 0"}</p>
+					<p className={css.emptyText}>{t("empty")}</p>
+					<p className={css.emptyInvite}>{t("empty-invite")}</p>
+				</div>
 			) : (
 				<ol className={css.list} data-testid="list">
 					{threads.map((thread) => (
