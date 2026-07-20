@@ -64,7 +64,7 @@ _(See ui-design-framing.md.)_
 
 ### System design
 
-_(Conditional — include for boundary-crossing or hard-to-reverse changes AND for
+_(Conditional — include for boundary-crossing or hard-to-reverse changes, or for
 intricate minor-scoped mechanics where a diagram or snippet clarifies the mechanism;
 otherwise omit with a stated reason.)_
 
