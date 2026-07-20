@@ -13,9 +13,10 @@ type SubmitState = "idle" | "submitting" | "submitted" | "error";
 
 /**
  * The reader-facing composer for top-level comments. Signed-out readers get a
- * "Sign in with GitHub" affordance (Clerk modal); signed-in readers get a
- * bordered textarea and a neutral submit button. On success the composer swaps
- * to an "awaiting review" acknowledgment, since the comment is pending.
+ * non-interactive preview of the composer — a placeholder textarea with a
+ * "Sign in with GitHub" call (Clerk modal); signed-in readers get a bordered
+ * textarea and a neutral submit button. On success the composer swaps to an
+ * "awaiting review" acknowledgment, since the comment is pending.
  *
  * Only mounted when Clerk is configured — its Clerk hooks require the provider.
  */
@@ -34,16 +35,34 @@ export function CommentComposer({ slug }: { slug: string }): JSX.Element {
 	if (!isSignedIn) {
 		return (
 			<div className={css.composer} data-testid="composer">
-				<SignInButton mode="modal">
-					<button
-						type="button"
-						className={clsx(css.submit, css.signIn)}
-						data-testid="sign-in"
-					>
-						<GitHubIcon className={css.signInIcon} />
-						{t("sign-in")}
-					</button>
-				</SignInButton>
+				<div className={css.composerField}>
+					{/* a non-interactive preview of the composer: signed-out readers see
+					 * the textarea they'd get, with the sign-in button in the same
+					 * bottom-right slot the submit button occupies once signed in.
+					 * decorative only — hidden from assistive tech and the tab order so
+					 * the sign-in button is the sole control. */}
+					<textarea
+						className={clsx(css.textarea, css.textareaPreview)}
+						placeholder={t("placeholder")}
+						readOnly
+						aria-hidden="true"
+						tabIndex={-1}
+						data-testid="textarea-preview"
+					/>
+
+					<div className={clsx(css.composerRow, css.composerRowEnd)}>
+						<SignInButton mode="modal">
+							<button
+								type="button"
+								className={clsx(css.submit, css.signIn)}
+								data-testid="sign-in"
+							>
+								<GitHubIcon className={css.signInIcon} />
+								{t("sign-in")}
+							</button>
+						</SignInButton>
+					</div>
+				</div>
 			</div>
 		);
 	}
