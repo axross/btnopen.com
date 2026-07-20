@@ -19,7 +19,6 @@
 	},
 	"comments": {
 		"heading": "コメント",
-		"empty": "まだコメントはありません。",
 		"empty-invite": "最初のコメントを書いてみませんか。",
 		"sign-in": "GitHubでログインしてコメント",
 		"placeholder": "コメントを書く…",
