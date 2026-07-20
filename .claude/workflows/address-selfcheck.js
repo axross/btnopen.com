@@ -282,12 +282,11 @@ for (const c of pooled) {
 	const key = `${c.file}:${c.line}:${c.summary.toLowerCase().replace(/\s+/g, " ").slice(0, 80)}`;
 	const existing = byClaim.get(key);
 	if (existing) {
-		existing.duplicateLenses.push(c.lens);
 		if (sevRank[c.severity] < sevRank[existing.severity]) {
 			existing.severity = c.severity;
 		}
 	} else {
-		byClaim.set(key, { ...c, duplicateLenses: [] });
+		byClaim.set(key, { ...c });
 	}
 }
 const candidates = Array.from(byClaim.values());
