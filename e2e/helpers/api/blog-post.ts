@@ -6,6 +6,10 @@ import { getCreatedDocId, getCurrentUserId, isRecord } from "./mcp";
 
 export const exampleBlogPostSlug = "markdown-example";
 
+// The seed's PUBLISHED post (the example post above stays a draft), so this one
+// is what a public, unauthenticated view renders.
+export const publishedBlogPostSlug = "declarative-ui";
+
 export async function getExampleBlogPost({
 	page,
 	testInfo,
@@ -35,6 +39,40 @@ export async function getExampleBlogPost({
 
 	throw new Error(
 		"Failed to get the example blog post because it was not found.",
+	);
+}
+
+// Fetches the PUBLISHED seed blog post through the public REST read (no `draft`
+// param), so it reflects what a public/unauthenticated view renders. Mirrors
+// `getExampleBlogPost`, which targets the DRAFT seed post via `draft=true`.
+export async function getPublishedBlogPost({
+	page,
+	testInfo,
+}: {
+	page: Page;
+	testInfo: TestInfo;
+}): Promise<z.infer<typeof PayloadBlogPost>> {
+	const url = new URL("/api/blog-posts", testInfo.project.use.baseURL);
+	url.searchParams.set("where[slug][equals]", publishedBlogPostSlug);
+	url.searchParams.set("limit", "1");
+
+	const response = await page.request.get(`${url}`);
+
+	if (!response.ok()) {
+		throw new Error(
+			"Failed to get the published blog post due to non-200 response.",
+		);
+	}
+
+	const json = await response.json();
+	const docs = json.docs;
+
+	if (Array.isArray(docs) && docs.length > 0) {
+		return PayloadBlogPost.parse(docs[0]);
+	}
+
+	throw new Error(
+		"Failed to get the published blog post because it was not found.",
 	);
 }
 

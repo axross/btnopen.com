@@ -217,13 +217,13 @@ test("Blog post banner blocks", {
 	});
 });
 
-// seed post (`payload/helpers/seed/blog-post.md`) emits seven GFM tables in
-// this authored order: small reference, wide comparison, metrics, inline
-// content, header-only template, single-column runtimes, sparse cells. On the
-// Pixel 7 viewport (~412px wide), the wide comparison and inline-content tables
-// overflow, while the single-column table sits well within the reading column.
+// seed post (`payload/helpers/seed/blog-post.md`) emits two GFM tables in this
+// authored order: a small two-column 記法/用途 reference, then a wide
+// seven-column round-trip comparison. On the Pixel 7 viewport (~412px wide), the
+// wide comparison overflows, while the small reference sits within the reading
+// column.
+const narrowTableIndex = 0;
 const wideTableIndex = 1;
-const narrowTableIndex = 5;
 
 // opacity tolerances for the scroll-driven edge fades. The animation snaps to
 // the keyframe endpoints once the scroll timeline is at the ends, so small

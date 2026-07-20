@@ -29,9 +29,11 @@ carries its `@scenario:<id>` tag. The reporter
 | index.blog-post-list | The index page lists blog posts and navigates to a post | index | must |
 | index.landmarks | The index page exposes the introduction and posts landmark regions | index | should |
 | index.heading-structure | The index page has a single top-level heading and list semantics | index | should |
+| index.published-post | The public index page lists the published seed post and omits the draft one | index | should |
 | posts.redirect | The /posts route redirects to the index route | posts | should |
 | post.header | A blog post page shows its title, date, cover image, author, and tags | posts | must |
 | post.content | A blog post page renders its Markdown content | posts | must |
+| post.published.public | A published post is publicly reachable and renders its content and seeded comments | posts | should |
 | post.embed | A blog post page renders an embed block as a web-embed card linking to the embedded URL | posts | should |
 | post.embed.x | A blog post page renders an `x.com` embed block as a first-party tweet card that links out to the tweet without an iframe or X widget | posts | should |
 | post.banner | A blog post page renders note and warning banner blocks as callouts with a type label and rich-text body | posts | should |
