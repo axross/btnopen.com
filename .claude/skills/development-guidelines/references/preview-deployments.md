@@ -6,16 +6,16 @@ The security trade-offs of this design (a publicly reachable preview serving fix
 
 ## Pipeline Overview
 
-The workflow is [`.github/workflows/preview-deploy.yaml`](../../../../.github/workflows/preview-deploy.yaml), triggered on `pull_request` `[opened, synchronize, reopened, closed]` and concurrency-grouped per PR. Each PR is served by a fresh, empty Turso database, migrated in CI, wired into a Vercel preview deployment that self-seeds from fixtures on first boot, with media in a dedicated preview store under a `pr-<n>/` prefix; the database and that media are destroyed when the PR closes.
+The workflow is [`.github/workflows/preview-deploy.yaml`](../../../../.github/workflows/preview-deploy.yaml), triggered on `pull_request` `[opened, synchronize, reopened, closed]` **and** on `workflow_dispatch` (a maintainer-only manual entry point; see [Manual Dispatch](#manual-dispatch)), concurrency-grouped per PR. Each PR is served by a fresh, empty Turso database, migrated in CI, wired into a Vercel preview deployment that self-seeds from fixtures on first boot, with media in a dedicated preview store under a `pr-<n>/` prefix; the database and that media are destroyed when the PR closes.
 
 ```text
-pull_request (opened / synchronize / reopened)
-        │
-        ▼
+pull_request (opened / synchronize / reopened)          workflow_dispatch (pr_number, action)
+        │                                                        │ deploy / recreate → deploy;
+        ▼                                                        │ teardown / recreate → teardown
   preflight ── required secrets/vars absent? ──────▶ skip (no-op, green)
-        │ present
-        ├─ only non-deployable paths changed? ──────▶ skip deploy (no Vercel credit)
-        │ a deploy-affecting file changed
+        │ present   (also resolves the PR number + head SHA — from the event, or the pr_number input)
+        ├─ pull_request & only non-deployable paths changed? ──▶ skip deploy (no Vercel credit)
+        │ a deploy-affecting file changed, or a deploy/recreate dispatch (dispatch bypasses the path check)
         ▼
   deploy
    1. create  preview-pr-<n>  as a fresh, empty database (never from production)
@@ -25,8 +25,9 @@ pull_request (opened / synchronize / reopened)
    4. alias a stable per-PR URL to that deployment, then post a new comment
       with it (a fresh comment each deploy — prior ones are left intact)
 
-pull_request (closed) ──▶ teardown: turso db destroy preview-pr-<n>;
+pull_request (closed) OR dispatch teardown/recreate ──▶ teardown: turso db destroy preview-pr-<n>;
                           prune every blob under pr-<n>/; post a teardown comment
+                          (recreate runs teardown → deploy sequentially in one run)
 ```
 
 **Guidelines:**
@@ -41,6 +42,20 @@ pull_request (closed) ──▶ teardown: turso db destroy preview-pr-<n>;
 - MUST surface a **stable per-PR URL**, not the per-commit `vercel deploy` URL: after deploying, re-point a deterministic alias (`<prefix>-pr-<n>.vercel.app`) at the new deployment with `vercel alias set`, so the pull request's preview link stays constant across pushes and always serves the newest build. The alias step fails the job on error rather than falling back to the per-commit URL.
 - MUST post a **new** comment on each deploy (and a distinct teardown comment on close) rather than editing one sticky comment — a fresh comment re-surfaces the deploy in the PR timeline, and each carries the deployed short SHA so the appended history stays meaningful even though the URL is constant.
 - SHOULD grant `issues: write` to any job whose `github-script` step posts a PR comment — PR comments post through the Issues API, and an explicit `permissions:` block defaults every unlisted scope to `none`.
+
+## Manual Dispatch
+
+The `pull_request` triggers cannot re-seed a live preview: the per-PR database is created idempotently and the app seeds only on first boot, so subsequent pushes reuse the existing database and never re-seed. When the seed fixtures change across a PR's life, the preview keeps serving the *first* seed's content, and the only reset was a fragile close→reopen dance that races the `cancel-in-progress` teardown. The `workflow_dispatch` entry point exists to reset a preview without that dance.
+
+**Guidelines:**
+
+- MUST reuse the existing `preflight`/`deploy`/`teardown` jobs for the manual path rather than duplicating deploy logic — `workflow_dispatch` only adds inputs and widens the job gates. Its inputs are `pr_number` (required number) and `action` (required choice `recreate` | `deploy` | `teardown`, default `recreate`).
+- MUST resolve the PR number and head SHA in `preflight` and expose them as job outputs (`pr-number`, `head-sha`) that `deploy`/`teardown` consume, because `github.event.pull_request.*` is absent under `workflow_dispatch`: derive them from the event on a `pull_request` run, or from the `pr_number` input via the PRs API (`pulls.get`) on a manual run (failing loudly on a non-positive/invalid `pr_number`). Every `deploy`/`teardown` reference to the PR number, head SHA, and the comment steps' context reads these outputs, so both jobs work identically under either trigger.
+- MUST key the workflow-level `concurrency` group on `github.event.pull_request.number || inputs.pr_number` so a manual run and an event-driven run for the **same** PR share a group and never collide. (Concurrency is evaluated before jobs run, so it uses the raw input, not the resolved `preflight` output — they are equal for the same PR.)
+- MUST run `recreate` as teardown → deploy **sequentially in one run** (`deploy` gains `needs: [preflight, teardown]`) so the destroy completes before the fresh deploy re-provisions and re-seeds — this is what sidesteps the close→reopen cancellation race. Gate `deploy` with `!cancelled() && needs.preflight.result == 'success' && (needs.teardown.result == 'success' || needs.teardown.result == 'skipped')`: the skipped-teardown allowance keeps a normal (non-recreate) deploy running, the success requirement makes a `recreate` deploy wait for — and only proceed on — a successful teardown, and the `preflight.result` guard blocks a deploy when the resolve step failed (otherwise `!cancelled()` would let it run with an empty `head-sha` and fall back to a default-branch checkout).
+- MUST have the manual `deploy` check out the **resolved PR head** (`ref: ${{ github.event_name == 'workflow_dispatch' && needs.preflight.outputs.head-sha || '' }}`), not the default branch a dispatch checks out by default, so it builds and re-seeds from the pull request's own current fixtures. An empty `ref` (the `pull_request` path) falls back to checkout's default behavior, keeping that path unchanged.
+- SHOULD let the manual path bypass the deploy-affecting-path check — a `deploy`/`recreate` dispatch is an explicit, intentional action, so its `deploy` gate does not consult `source-changed` (the change-detection step is guarded to `github.event_name == 'pull_request'`).
+- The manual trigger only surfaces once this workflow is on the **default branch**, and a dispatch runs the default branch's version of the workflow (a known GitHub `workflow_dispatch` constraint).
 
 ## Seeding
 
