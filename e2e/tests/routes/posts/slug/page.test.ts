@@ -64,6 +64,21 @@ test(
 	},
 );
 
+test("Blog post page has a single top-level heading", {
+	tag: ["@scenario:post.heading-structure", "@area:posts", "@priority:should"],
+}, async ({ page }) => {
+	const postPage = page.getByTestId("page");
+
+	await test.step("Verify the page has exactly one h1 (the title)", async () => {
+		await expect(postPage.locator("h1")).toHaveCount(1);
+	});
+
+	await test.step("Verify the body content repeats no h1", async () => {
+		// the title is the page's only h1; the body's sections start at h2.
+		await expect(postPage.getByTestId("content").locator("h1")).toHaveCount(0);
+	});
+});
+
 test(
 	"Author avatar falls back to initials when the image fails to load",
 	{ tag: ["@scenario:post.avatar-fallback", "@area:posts", "@priority:may"] },

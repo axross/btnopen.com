@@ -40,6 +40,17 @@ test(
 			await expect(postPage.getByTestId("content")).toBeVisible();
 		});
 
+		await test.step("Verify the page has a single top-level heading (the title, not a body h1)", async () => {
+			const headings = postPage.locator("h1");
+
+			await expect(headings).toHaveCount(1);
+			await expect(headings).toHaveText(title);
+			// the body must not repeat the title as an h1 — its sections start at h2.
+			await expect(postPage.getByTestId("content").locator("h1")).toHaveCount(
+				0,
+			);
+		});
+
 		const comments = postPage.getByTestId("comments");
 
 		await test.step("Verify the seeded comments section renders an approved comment", async () => {

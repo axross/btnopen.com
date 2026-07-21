@@ -33,6 +33,7 @@ carries its `@scenario:<id>` tag. The reporter
 | posts.redirect | The /posts route redirects to the index route | posts | should |
 | post.header | A blog post page shows its title, date, cover image, author, and tags | posts | must |
 | post.content | A blog post page renders its Markdown content | posts | must |
+| post.heading-structure | A blog post page has a single top-level heading (the title), with no h1 in the body | posts | should |
 | post.published.public | A published post is publicly reachable and renders its content and seeded comments | posts | should |
 | post.embed | A blog post page renders an embed block as a web-embed card linking to the embedded URL | posts | should |
 | post.embed.x | A blog post page renders an `x.com` embed block as a first-party tweet card that links out to the tweet without an iframe or X widget | posts | should |
