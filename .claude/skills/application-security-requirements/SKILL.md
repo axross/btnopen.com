@@ -1,7 +1,7 @@
 ---
 name: application-security-requirements
 description: The security and privacy review lens for changes in this Next.js + Payload CMS + Vercel project. Covers secrets/env vars, the `NEXT_PUBLIC_*` boundary, input validation, Payload access control and drafts, public exposure, preview deployment data exposure, markdown XSS, SSRF/webembed/OG fetching, auth/session settings, Sentry/Mixpanel data capture, and npm dependency supply-chain risk.
-when_to_use: Use when reviewing security or privacy implications of a change — "is this safe", "security", "auth", "admin", "secret", "privacy", "PII", "XSS", "SSRF", "preview deployment", or dependency reviews. This is the security lens code review delegates to; for the general review method/severity/reporting, use code-review-guideline.
+when_to_use: Use when reviewing security or privacy implications of a change — "is this safe", "security", "auth", "admin", "secret", "privacy", "PII", "XSS", "SSRF", "preview deployment", or dependency reviews. This is the security lens code review delegates to; for the general review method/severity/reporting, use the code review guideline.
 user-invocable: false
 ---
 

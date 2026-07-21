@@ -1,7 +1,7 @@
 ---
 name: maintainable-code-guidelines
 description: The maintainability and design review lens for changed code — the reviewer's layer on top of development, project-structure, React, and routing rules. Covers naming and file organization, route-local vs shared abstraction boundaries, complexity/readability limits, magic-number and dead-code discipline, scope control, and SOLID/DRY/KISS/YAGNI judgment for RSC trees and Payload repositories.
-when_to_use: Use when reviewing maintainability and design of changed code — "readable", "too long", "refactor", "abstraction", or "should this live elsewhere". Not for component/RSC mechanics (react-component-guidelines), file placement or repo structure (project-structure), or runtime cost (performance-and-reliability-requirements).
+when_to_use: Use when reviewing maintainability and design of changed code — "readable", "too long", "refactor", "abstraction", or "should this live elsewhere". Not for component/RSC mechanics (the React component guidelines), file placement or repo structure (the project structure guide), or runtime cost (the performance and reliability requirements).
 user-invocable: false
 ---
 
