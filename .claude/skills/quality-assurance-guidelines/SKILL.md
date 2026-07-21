@@ -1,7 +1,7 @@
 ---
 name: quality-assurance-guidelines
 description: The reviewer's QA lens — whether a change carries adequate verification evidence — on top of development-verification and e2e-testing rules. Covers format/lint proof, e2e coverage under `e2e/tests/routes/...`, required `data-testid` hooks, intentional Playwright snapshot updates, scenario-coverage evidence (the `e2e/scenarios.md` journey catalog, `@scenario`/`@area`/`@priority` tags, and `must`-priority gaps), flaky-test investigation, manual checks for draft/preview/not-found states, skipped checks, and residual risk.
-when_to_use: Use when reviewing whether a change has adequate verification evidence — "are tests good", "did this break anything", "is the scenario catalog complete", or "should I bump snapshots".
+when_to_use: Use when reviewing whether a change has adequate verification evidence — "are tests good", "did this break anything", "is the scenario catalog complete", or "should I bump snapshots". Not for how to write the tests — use e2e-testing-guidelines (Playwright) or unit-test-guidelines (Jest).
 user-invocable: false
 ---
 

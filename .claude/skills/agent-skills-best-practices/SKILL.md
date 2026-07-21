@@ -19,6 +19,14 @@ See [scoping-and-mece.md](./references/scoping-and-mece.md) for:
 - checking overlap with neighboring skills before adding new guidance
 - using section length and topic growth as signals for restructuring
 
+## Load-Pattern Classification
+
+See [load-pattern-classification.md](./references/load-pattern-classification.md) for:
+
+- deciding whether a rule belongs in a skill at all, and if so which of three load patterns — runnable capability, always-on rule, or on-demand reference lens
+- the current project skills classified by load pattern, with the always-on and activity-scoped-always-on candidates flagged
+- using the load pattern to choose where content lives and how discovery metadata is written
+
 ## Frontmatter and Naming
 
 See [frontmatter-and-naming.md](./references/frontmatter-and-naming.md) for:

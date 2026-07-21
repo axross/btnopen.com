@@ -1,7 +1,7 @@
 ---
 name: routing-guidelines
 description: The App Router routing conventions for `app/` — RESTful path structure (resource/identifier repetition, kebab-case, search params for optional inputs, semantic dynamic-segment names like `[slug]`), route-group `(group)` and underscore-prefixed (`_/`, `_components/`) directory conventions, co-located `page-props.ts` with `Promise<...>`-typed `params` / `searchParams`, `not-found.tsx` / OG-image file-metadata co-location, and the rule that `route.ts` MUST live in a dedicated sub-directory (e.g., `posts/[slug]/caches/route.ts`) — never next to a `page.tsx`.
-when_to_use: Use when creating, moving, renaming, or reviewing any route in `app/`, even when the user only says "add a page", "new route", "App Router", "page props", "search params", or "route handler".
+when_to_use: Use when creating, moving, renaming, or reviewing any route in `app/`, even when the user only says "add a page", "new route", "App Router", "page props", "search params", or "route handler". Not for how to write the route's component (react-component-guidelines) or general repo structure and file placement (project-structure).
 user-invocable: false
 ---
 

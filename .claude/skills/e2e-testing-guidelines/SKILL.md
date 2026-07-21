@@ -1,7 +1,7 @@
 ---
 name: e2e-testing-guidelines
 description: The Playwright end-to-end testing conventions for this project. Covers the `e2e/` test directory layout, `.test.ts` test-file naming, structured `test()` / `test.step()` naming, stable `getByTestId()` chained/scoped locators with a role-then-copy fallback hierarchy, locator-native auto-waiting assertions (`toBeFocused`, `toBeVisible`, `toHaveAttribute`) over manual DOM reads via `evaluate()`, `expect.poll` / `waitForFunction` (never fixed sleeps) for async settling, pseudo-element state via `getComputedStyle`, authenticated `storageState` reuse, reusable API/setup helpers in `e2e/helpers/api/`, the snapshot update flow, the scenario-coverage journey catalog (`e2e/scenarios.md`) with its `@scenario`/`@area`/`@priority`/`@smoke` tags, and commands for running against dev, local production, and the deployed Vercel environment.
-when_to_use: Use whenever writing, reviewing, refactoring, or running Playwright e2e tests, or when a change needs verification via the e2e suite — even when the user only mentions "Playwright", e2e tests, snapshots, `data-testid`, `expect.poll`, `toBeFocused`, pseudo-elements, polling/waiting, focus assertions, or a failing test run.
+when_to_use: Use whenever writing, reviewing, refactoring, or running Playwright e2e tests, or when a change needs verification via the e2e suite — even when the user only mentions "Playwright", e2e tests, snapshots, `data-testid`, `expect.poll`, `toBeFocused`, pseudo-elements, polling/waiting, focus assertions, or a failing test run. Not for whether verification evidence is adequate (quality-assurance-guidelines) or Jest unit tests (unit-test-guidelines).
 user-invocable: false
 ---
 

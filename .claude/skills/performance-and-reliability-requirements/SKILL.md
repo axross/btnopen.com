@@ -1,7 +1,7 @@
 ---
 name: performance-and-reliability-requirements
 description: The runtime-cost and failure-mode review lens for changes in this Next.js + Payload CMS + Vercel project. Covers Payload query efficiency and N+1 risk, RSC/client boundary cost and async waterfalls, `Promise<T>` props, Suspense loading splits, `"use cache"`/`cacheLife()` caching correctness (lifetime, scope, invalidation), image optimization, client bundle and dependency weight, React Compiler impact, and error-handling/observability hooks (Sentry, Pino).
-when_to_use: Use when reviewing runtime cost or failure-mode behavior of a code change — "fast", "cache", "scale", "slow", "bundle", or "what happens when this fails".
+when_to_use: Use when reviewing runtime cost or failure-mode behavior of a code change — "fast", "cache", "scale", "slow", "bundle", or "what happens when this fails". Not for how to write the component itself (react-component-guidelines) or general design quality (maintainable-code-guidelines).
 user-invocable: false
 ---
 

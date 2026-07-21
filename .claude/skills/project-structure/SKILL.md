@@ -1,7 +1,7 @@
 ---
 name: project-structure
 description: The repository map for this Next.js + Payload CMS blog. Covers tech stack, Sentry/Mixpanel, support files, import aliases, App Router route groups, underscore directories, Payload ownership, e2e tests, public assets, and local data directories.
-when_to_use: Use when locating files, placing modules, checking repository structure, or needing stack/service context.
+when_to_use: Use when locating files, placing modules, checking repository structure, or needing stack/service context. Not for design/abstraction quality (maintainable-code-guidelines) or route-path conventions (routing-guidelines).
 user-invocable: false
 ---
 
