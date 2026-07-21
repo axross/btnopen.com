@@ -25,12 +25,37 @@ on:
       - synchronize
       - reopened
       - closed
+  # A maintainer-only manual entry point (workflow_dispatch is write-access
+  # gated) to deploy, teardown, or recreate a specific pull request's preview
+  # without the fragile close→reopen dance. `recreate` runs teardown then a
+  # fresh, re-seeded deploy sequentially in one run (see the deploy job's
+  # `needs`/`if`), sidestepping the concurrency-cancellation race that a manual
+  # close→reopen risks. Only surfaced once this workflow is on the default
+  # branch, and a dispatch runs the default branch's version of the workflow.
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number whose preview to act on
+        required: true
+        type: number
+      action:
+        description: What to do with the pull request's preview
+        required: true
+        type: choice
+        default: recreate
+        options:
+          - recreate
+          - deploy
+          - teardown
 
 # One preview per pull request; supersede an in-flight deploy when a newer
 # commit arrives. Migrations and `vercel deploy` are idempotent, so a cancelled
-# run leaves nothing half-applied that the next run does not reconcile.
+# run leaves nothing half-applied that the next run does not reconcile. The
+# group falls through to the dispatch input's PR number when the event carries
+# no pull request, so a manual run and an event-driven run for the same PR
+# share a group and never collide.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || inputs.pr_number }}
   cancel-in-progress: true
 
 permissions:
@@ -49,9 +74,15 @@ jobs:
       pull-requests: read
     outputs:
       ready: ${{ steps.check.outputs.ready }}
-      # Empty on the `closed` event (the detection step is skipped there); the
-      # deploy job already gates on `action != 'closed'`, so that is harmless.
+      # Empty on the `closed` event and on every `workflow_dispatch` run (the
+      # detection step is skipped there); the deploy job only consults this on
+      # its `pull_request` non-closed branch, so an empty value is harmless.
       source-changed: ${{ steps.changes.outputs.source-changed }}
+      # The pull request the run acts on, resolved from the event
+      # (`pull_request`) or from the `pr_number` input (`workflow_dispatch`) so
+      # the deploy/teardown jobs work identically under either trigger.
+      pr-number: ${{ steps.resolve.outputs.pr-number }}
+      head-sha: ${{ steps.resolve.outputs.head-sha }}
     steps:
       - name: Check Required Configuration
         id: check
@@ -87,8 +118,11 @@ jobs:
         # deployable: a missed preview is worse than a redundant one. Skipped on
         # `closed` (teardown never consults this), and it fails safe toward
         # deploying — an API error or a truncated (>= 3000) file list yields
-        # `source-changed=true` rather than a silent skip.
-        if: ${{ github.event.action != 'closed' }}
+        # `source-changed=true` rather than a silent skip. A manual
+        # `workflow_dispatch` is an explicit, intentional action, so it skips
+        # this push-only gate entirely — the deploy job never consults
+        # `source-changed` on its dispatch branch.
+        if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
         uses: actions/github-script@v7
         with:
           script: |
@@ -148,15 +182,79 @@ jobs:
                 "Preview deploy skipped: the pull request changes only non-deployable paths (agent skills, docs, CI, e2e tests, or editor/tooling config).",
               );
             }
+      - name: Resolve Pull Request Context
+        id: resolve
+        # The deploy/teardown jobs read the PR number and head SHA from
+        # `github.event.pull_request.*`, which is absent under
+        # `workflow_dispatch`. Resolve both here — from the event on a
+        # `pull_request` run, or from the `pr_number` input via the PRs API on a
+        # manual run — and expose them as job outputs the downstream jobs
+        # consume uniformly. Runs on `closed` too (the event still carries the
+        # pull request), so teardown can key on the resolved number.
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let prNumber;
+            let headSha;
+            if (process.env.EVENT_NAME === "workflow_dispatch") {
+              prNumber = Number(process.env.INPUT_PR_NUMBER);
+              if (!Number.isInteger(prNumber) || prNumber <= 0) {
+                core.setFailed(
+                  `Invalid pr_number input: ${process.env.INPUT_PR_NUMBER}`,
+                );
+                return;
+              }
+              const { data: pullRequest } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+              });
+              headSha = pullRequest.head.sha;
+            } else {
+              prNumber = context.payload.pull_request.number;
+              headSha = context.payload.pull_request.head.sha;
+            }
+            core.setOutput("pr-number", String(prNumber));
+            core.setOutput("head-sha", headSha);
 
   deploy:
     name: Deploy Preview
-    needs: preflight
-    # Also gate on the deploy-affecting-path check: a pull request whose entire
-    # diff is non-deployable (agent skills, docs, CI, e2e tests, editor config)
-    # skips the Vercel build so it spends no preview credit. Teardown below is
-    # deliberately left ungated on close, so a preview is always cleaned up.
-    if: ${{ needs.preflight.outputs.ready == 'true' && github.event.action != 'closed' && needs.preflight.outputs.source-changed == 'true' }}
+    # Also `needs: teardown` so `recreate` runs the destroy *before* this fresh
+    # deploy (which then re-provisions and re-seeds). `!cancelled()` keeps this
+    # job running when teardown is *skipped* (every non-recreate path) without
+    # firing it on a superseded/cancelled run, while the result check makes a
+    # `recreate` deploy wait for — and only proceed on — a successful teardown,
+    # never deploying onto a half-destroyed preview.
+    needs:
+      - preflight
+      - teardown
+    # Gate on the deploy-affecting-path check for the automatic push path: a
+    # pull request whose entire diff is non-deployable (agent skills, docs, CI,
+    # e2e tests, editor config) skips the Vercel build so it spends no preview
+    # credit. A manual `workflow_dispatch` deploys whenever its action is
+    # `deploy` or `recreate`, bypassing that push-only path check. Teardown
+    # below is deliberately left ungated on close, so a preview is always
+    # cleaned up.
+    if: >-
+      ${{
+        !cancelled()
+        && needs.preflight.outputs.ready == 'true'
+        && (needs.teardown.result == 'success' || needs.teardown.result == 'skipped')
+        && (
+          (
+            github.event_name == 'pull_request'
+            && github.event.action != 'closed'
+            && needs.preflight.outputs.source-changed == 'true'
+          )
+          || (
+            github.event_name == 'workflow_dispatch'
+            && (inputs.action == 'deploy' || inputs.action == 'recreate')
+          )
+        )
+      }}
     runs-on: ubuntu-latest
     # The `PAYLOAD_TEST_USER_*` seed credentials are environment-scoped secrets
     # with a Preview-specific value (distinct from Production), so this job
@@ -182,6 +280,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          # A `pull_request` run checks out its default ref (unchanged). A manual
+          # `workflow_dispatch` defaults to the branch it was dispatched from, so
+          # check out the resolved PR head instead — the deploy must build and
+          # re-seed from the pull request's own current fixtures, not the default
+          # branch's. An empty `ref` falls back to checkout's default behavior.
+          ref: ${{ github.event_name == 'workflow_dispatch' && needs.preflight.outputs.head-sha || '' }}
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
@@ -210,7 +315,7 @@ jobs:
           TURSO_GROUP: ${{ vars.TURSO_GROUP }}
         run: |
           set -euo pipefail
-          database="preview-pr-${{ github.event.pull_request.number }}"
+          database="preview-pr-${{ needs.preflight.outputs.pr-number }}"
           create=(turso db create "${database}")
           if [ -n "${TURSO_GROUP}" ]; then
             create+=(--group "${TURSO_GROUP}")
@@ -257,7 +362,7 @@ jobs:
         env:
           LIBSQL_URL: ${{ steps.turso.outputs.url }}
           LIBSQL_TOKEN: ${{ steps.turso.outputs.token }}
-          BLOB_PREFIX: pr-${{ github.event.pull_request.number }}
+          BLOB_PREFIX: pr-${{ needs.preflight.outputs.pr-number }}
           TEST_USER_EMAIL: ${{ secrets.PAYLOAD_TEST_USER_EMAIL }}
           TEST_USER_PASSWORD: ${{ secrets.PAYLOAD_TEST_USER_PASSWORD }}
         run: |
@@ -293,7 +398,7 @@ jobs:
           DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
           ALIAS_PREFIX: ${{ vars.VERCEL_PREVIEW_ALIAS_PREFIX }}
           REPOSITORY_NAME: ${{ github.event.repository.name }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_NUMBER: ${{ needs.preflight.outputs.pr-number }}
         run: |
           set -euo pipefail
           prefix="${ALIAS_PREFIX}"
@@ -313,11 +418,17 @@ jobs:
         env:
           # The stable per-PR alias, not the per-commit deployment URL.
           PREVIEW_URL: ${{ steps.alias.outputs.url }}
+          # From preflight outputs, not the event context, so the comment
+          # renders identically under `workflow_dispatch` (where
+          # `context.issue.number` / `context.payload.pull_request.*` are absent).
+          PR_NUMBER: ${{ needs.preflight.outputs.pr-number }}
+          HEAD_SHA: ${{ needs.preflight.outputs.head-sha }}
         with:
           script: |
             const url = process.env.PREVIEW_URL;
-            const database = `preview-pr-${context.issue.number}`;
-            const sha = context.payload.pull_request.head.sha.slice(0, 7);
+            const prNumber = process.env.PR_NUMBER;
+            const database = `preview-pr-${prNumber}`;
+            const sha = process.env.HEAD_SHA.slice(0, 7);
             // Post a new comment on every deploy (never edit a prior one), so
             // each build lands a fresh, timeline-visible entry. The URL is
             // stable, so the short SHA records which commit this entry deployed.
@@ -331,14 +442,28 @@ jobs:
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              issue_number: Number(prNumber),
               body,
             });
 
   teardown:
     name: Teardown Preview
     needs: preflight
-    if: ${{ needs.preflight.outputs.ready == 'true' && github.event.action == 'closed' }}
+    # Runs when the pull request closes (automatic) or when a manual
+    # `workflow_dispatch` asks to `teardown` or `recreate`. For `recreate` the
+    # deploy job `needs` this job, so the destroy completes before the fresh
+    # deploy re-provisions.
+    if: >-
+      ${{
+        needs.preflight.outputs.ready == 'true'
+        && (
+          (github.event_name == 'pull_request' && github.event.action == 'closed')
+          || (
+            github.event_name == 'workflow_dispatch'
+            && (inputs.action == 'teardown' || inputs.action == 'recreate')
+          )
+        )
+      }}
     runs-on: ubuntu-latest
     # The media-prune step reads BLOB_PAYLOAD_READ_WRITE_TOKEN, which is scoped
     # to the `Preview` GitHub Actions environment, so this job must declare that
@@ -377,7 +502,7 @@ jobs:
         # not fail the job.
         run: |
           set -euo pipefail
-          database="preview-pr-${{ github.event.pull_request.number }}"
+          database="preview-pr-${{ needs.preflight.outputs.pr-number }}"
           turso db destroy "${database}" --yes || echo "::notice::${database} was already absent."
       - name: Prune Preview Media
         # Delete every blob this PR wrote under its `pr-<n>/` prefix in the
@@ -387,7 +512,7 @@ jobs:
         # the preview store token is not configured.
         env:
           BLOB_TOKEN: ${{ secrets.BLOB_PAYLOAD_READ_WRITE_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_NUMBER: ${{ needs.preflight.outputs.pr-number }}
         run: |
           set -euo pipefail
           if [ -z "${BLOB_TOKEN}" ]; then
@@ -403,20 +528,26 @@ jobs:
             node prune-preview-blobs.mjs "pr-${PR_NUMBER}/"
       - name: Comment Preview Torn Down
         uses: actions/github-script@v7
+        env:
+          # From the preflight output, not the event context, so the comment
+          # renders under `workflow_dispatch` (where `context.issue.number` is
+          # absent) as well as on a `closed` event.
+          PR_NUMBER: ${{ needs.preflight.outputs.pr-number }}
         with:
           script: |
-            const database = `preview-pr-${context.issue.number}`;
+            const prNumber = process.env.PR_NUMBER;
+            const database = `preview-pr-${prNumber}`;
             // Post a distinct teardown comment rather than editing a prior
             // preview comment, consistent with the append-a-comment-per-deploy
             // model: the timeline keeps the full deploy-then-teardown history.
             const body = [
               "### 🚀 Preview deployment",
               "",
-              `Torn down — the isolated Turso database (\`${database}\`) and this pull request's preview media were destroyed when it closed.`,
+              `Torn down — the isolated Turso database (\`${database}\`) and this pull request's preview media were destroyed.`,
             ].join("\n");
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              issue_number: Number(prNumber),
               body,
             });
