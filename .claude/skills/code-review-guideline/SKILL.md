@@ -1,7 +1,7 @@
 ---
 name: code-review-guideline
 description: The review methodology for this project. Covers reviewer-mode reset, diff scoping with `git status`/`git diff`, severity labels, file-line evidence, fix snippets, verification evidence, second-pass re-review after fixes, escalation for high-risk changes, and topic-specific lenses for maintainability, QA, security, performance, structure, routing, markdown, UI, observability, and e2e tests.
-when_to_use: Apply at the start of EVERY review task, including post-implementation self-review. Use for "review", "PR", "audit", "check this change", or self-review prompts.
+when_to_use: Apply at the start of EVERY review task, including post-implementation self-review. Use for "review", "PR", "audit", "check this change", or self-review prompts. This owns review method (severity, evidence, reporting); domain criteria live in the per-topic lenses — e.g. the application security requirements (security), the performance and reliability requirements (runtime cost), the maintainable code guidelines (design), and the quality-assurance guidelines (verification adequacy).
 user-invocable: false
 ---
 
