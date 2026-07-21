@@ -64,6 +64,21 @@ test(
 	},
 );
 
+test("Blog post page has a single top-level heading", {
+	tag: ["@scenario:post.heading-structure", "@area:posts", "@priority:should"],
+}, async ({ page }) => {
+	const postPage = page.getByTestId("page");
+
+	await test.step("Verify the page has exactly one h1 (the title)", async () => {
+		await expect(postPage.locator("h1")).toHaveCount(1);
+	});
+
+	await test.step("Verify the body content repeats no h1", async () => {
+		// the title is the page's only h1; the body's sections start at h2.
+		await expect(postPage.getByTestId("content").locator("h1")).toHaveCount(0);
+	});
+});
+
 test(
 	"Author avatar falls back to initials when the image fails to load",
 	{ tag: ["@scenario:post.avatar-fallback", "@area:posts", "@priority:may"] },
@@ -217,13 +232,13 @@ test("Blog post banner blocks", {
 	});
 });
 
-// seed post (`payload/helpers/seed/blog-post.md`) emits seven GFM tables in
-// this authored order: small reference, wide comparison, metrics, inline
-// content, header-only template, single-column runtimes, sparse cells. On the
-// Pixel 7 viewport (~412px wide), the wide comparison and inline-content tables
-// overflow, while the single-column table sits well within the reading column.
+// seed post (`payload/helpers/seed/blog-post.md`) emits two GFM tables in this
+// authored order: a small two-column 記法/用途 reference, then a wide
+// seven-column round-trip comparison. On the Pixel 7 viewport (~412px wide), the
+// wide comparison overflows, while the small reference sits within the reading
+// column.
+const narrowTableIndex = 0;
 const wideTableIndex = 1;
-const narrowTableIndex = 5;
 
 // opacity tolerances for the scroll-driven edge fades. The animation snaps to
 // the keyframe endpoints once the scroll timeline is at the ends, so small

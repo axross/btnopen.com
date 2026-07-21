@@ -1,187 +1,114 @@
-# Markdown Example: 実装メモを記事として残す
+このブログの記事は Markdown で書いています。書いた本文は Payload CMS の Lexical エディターに保存され、表示するときに Markdown へ戻してから `remark` と `rehype` のパイプラインに通しています。だから「エディターで打てる」ことと「表示で意味を持つ」ことは、必ずしも一致しません。この記事では、その差を踏まえて、実際に使っている記法と、その使いどころをまとめておきます。
 
-Markdown の確認用記事は、構文を並べるだけだとすぐ読まれなくなる。この記事では、このブログの Markdown レンダラーを点検しながら、実装メモとしても使える形に整える。
+特別な記法を網羅するのが目的ではありません。あとで自分が読み返したときに、どういう基準で書いていたかが分かるようにしておくのが狙いです。
 
-前提は単純で、Payload CMS の Lexical エディターに保存した本文を Markdown に戻し、Next.js 側で `remark` / `rehype` のパイプラインに通して表示する。つまり、**書けること**と*表示で意味を持つこと*を分けて見る必要がある。
-
-> サンプル記事でも、読者にとって意味のある制約と判断材料を残す。構文の網羅は目的ではなく、記事の副産物として満たす。
+> 記法は道具なので、増やすより減らすほうを優先しています。表示で効果がないものは、書けても本文には入れません。
 
 :::banner{type="note"}
 
-`banner` ブロックは、注記や注意を本文から少し持ち上げて示すための入れ物だ。中身は **リッチテキスト** で、[リンク](https://payloadcms.com/docs/rich-text/blocks) や `インラインコード` もそのまま書ける。
+`banner` は、注記や注意を本文から少し持ち上げて示すための入れ物です。中身は **リッチテキスト** なので、[リンク](https://payloadcms.com/docs/rich-text/blocks) やインラインコードはそのまま書けます。ただし段落・強調・リンクといった標準的な要素に限っています。
 
 :::
 
-## まず確認する範囲
+## 段落と強調は控えめに使う
 
-このブログで特に見たいのは、次のような実運用の材料だ。
+本文では `Payload` や `Lexical` のような識別子はそのまま出します。**太字** は後から見て効く判断に、*斜体* は補足のニュアンスに使います。~~断言していたが取り下げた~~ ような箇所は、消さずに取り消し線で残すこともあります。インラインコードは短いファイル名やコマンドだけに絞ります。
+
+強調を増やすと、どれも目立たなくなります。基本的には、一段落に一つ効けば十分だと思っています。
+
+## リストは手順と判断に使う
+
+順序が要らないものは箇条書きにします。
 
 - 見出しで話題を分ける
-- 箇条書きで確認手順を残す
-    - 子項目は 4 スペースでインデントする
-    - 2 スペースだと Payload の Markdown 変換で平坦化されやすい
-- テーブルで比較や判断を横に並べる
-- コードブロックで再現できる最小例を残す
-- 画像と Web 埋め込みで、文章だけでは伝わりにくい状態を補う
+- 箇条書きで確認したい観点を並べる
+    - 子項目は 4 スペースでインデントします
+    - 2 スペースだと Payload の変換で平坦化されやすいです
+- コードや表は、文章が長くなるところにだけ足す
 
-作業順はこのくらいに絞る。
+手順として順序があるものは番号付きにします。
 
-1. Payload の `editor` 設定で有効な Feature を確認する
-2. Markdown から Lexical へ変換したときの落ち方を見る
-3. Lexical から Markdown に戻した出力をレンダラーで読む
-4. 見た目の都合だけでなく、本文として自然かを見直す
+1. 本文を書く
+2. プレビューで表示を確認する
+3. 記法が表示で効いているかを見直す
 
-### 変換で落としやすいもの
+## コードは境界だけ載せる
 
-Payload の既定 Feature にはチェックリストや整列などもある。ただし、このサイトの表示パイプラインでは GFM 全体ではなく、表と `~~取り消し線~~` を中心に扱っている。だから、この記事では「エディターで編集できる」だけのものを無理に本文へ入れない。
-
-#### 本文側で優先する判断
-
-本文では `Payload`, `Lexical`, `remarkRehype` のような識別子をそのまま出す。**太字**は重要な判断に、*斜体*は補足的なニュアンスに、~~あとで消す予定の断言~~は撤回済みの選択肢に使う。`inline code` は短いファイル名やコマンドだけに限定する。
-
-##### 細かい見出しを使う場面
-
-深い見出しは多用しない。付録や細かい条件を分けたいときだけ使う。ここでは、構文としての深い見出しが壊れないかを見るために一段だけ残している。
-
-## 外部情報は本文から離しすぎない
-
-Payload 側の Rich Text Feature は公式ドキュメントで確認する。たとえば [Payload の Official Features](https://payloadcms.com/docs/rich-text/official-features) では、見出し、リンク、引用、アップロード、テーブルなどの Feature がどう扱われるかを追える。
-
-記事の中であとから読み返す価値がある外部記事は、段落内リンクではなく埋め込みにしておくと探しやすい。
-
-::embed{url="https://zenn.dev/uma002/articles/architecture-abstraction-patterns" type="webpage"}
-
-埋め込みは便利だが、本文の主張そのものを外部ページに預けない。リンク先が消えても、この記事だけで最低限の判断ができるようにする。
-
-X（旧 Twitter）の投稿も同じ埋め込みで扱える。ウィジェットの JavaScript や iframe を読み込まず、サーバー側で取得した内容を本文と同じ見た目の引用として描画する。
-
-::embed{url="https://x.com/jack/status/20" type="x.com"}
-
-埋め込みの種類が増えても、本文の流れは変えない。カードの形ではなく、引用の中身に視線が向くようにする。
-
-:::banner{type="warning"}
-
-`banner` の中に埋め込みやアップロード、コードブロックなどのブロックは入れない。本文は段落・強調・リンクといった標準的なリッチテキストに限定している。
-
-:::
-
-## スクリーンショットを置く位置
-
-UI やレンダリングの話では、文章だけより画像が早いことがある。ここではシード用のメディアを置いて、アップロードノードが本文の途中で崩れないことも確認する。
-
-![media:019d1223-94d4-754c-8f57-47337be15c9e]()
-
-画像の前後には、何を見ればよいかを書いておく。代替テキストも、装飾か説明かを分けて考える。
-
-## コードは小さく、実際の境界を写す
-
-このブログの表示側は、本文を Markdown に戻してから React コンポーネントへ変換している。実装メモとして残すなら、全体を貼るより境界だけを示したほうが読みやすい。
+表示側は本文を Markdown に戻してから React コンポーネントへ変換しています。全体を貼るより、判断が読み取れる境界だけを載せたほうが読みやすいです。
 
 ```ts
-type MarkdownRenderInput = {
-	markdown: string;
-	classNames?: Partial<Record<string, string>>;
-};
-
-export async function renderPostBody({
-	markdown,
-	classNames = {},
-}: MarkdownRenderInput) {
+export async function renderPostBody({ markdown }: { markdown: string }) {
 	const normalized = markdown.trim();
 
 	if (normalized.length === 0) {
 		return null;
 	}
 
-	return renderMarkdown({
-		markdown: normalized,
-		rehypeReactOptions: await getRehypeReactOptions({ classNames }),
-	});
+	return renderMarkdown({ markdown: normalized });
 }
 ```
 
-`trim()` のような小さな処理でも、空本文をどう扱うかという判断が入る。コードブロックには、そういう判断が読み取れる部分だけを載せる。
+`trim()` のような小さな処理でも、空本文をどう扱うかという判断が入ります。コードブロックには、そういう判断が見える部分だけを残します。
 
-## 表は判断を圧縮するために使う
+## 表は列で比べたいときだけ
 
-表は「列で比べると早い」情報だけに使う。ここでは実装確認でよく見る七つの形を、本文の流れに沿って置いている。
+表は「列で並べると早い」情報にだけ使います。記法と用途の対応くらいなら、小さな表で足ります。
 
-### 小さな対応表
+| 記法 | 用途 |
+| --- | --- |
+| 太字 | 効かせたい判断 |
+| 斜体 | 補足 |
 
-| 確認したい観点 | 使う材料 | 見る場所 |
-| --- | --- | --- |
-| 変換 | Markdown と Lexical の往復 | `payload/helpers/editor.ts` |
-| 表示 | React コンポーネントへの割り当て | `app/(app)/_/components/markdown.tsx` |
-| 見た目 | 余白、横スクロール、コードの色 | `blog-post-content.module.css` |
+一方で、Markdown と Lexical の往復での落ち方まで並べたいときは、どうしても列が増えます。横に長い表は、モバイル幅だと横スクロールになります。
 
-### 横に長い比較
-
-| 機能 | Markdown 入力 | Payload Lexical | Markdown 出力 | React 表示 | 注意点 | この記事での使い方 |
+| 記法 | Markdown 入力 | Lexical | Markdown 出力 | React 表示 | 注意点 | 使いどころ |
 | --- | --- | --- | --- | --- | --- | --- |
 | 見出し | `## 見出し` | heading node | `## 見出し` | `h2` | 階層を飛ばさない | セクション分割 |
-| リスト | `- item` | list node | `- item` | `ul` / `ol` | 子リストは 4 スペース | 手順と判断材料 |
-| 画像 | `[media:id]()` | text node | `![alt](/api/media/file/...)` | `Media` | 先頭の ! で upload node になる | スクリーンショット |
-| コード | fenced block | code block | fenced block | `Snippet` | 言語名は Shiki に渡る | 最小コード例 |
-| 表 | pipe table | table node | pipe table | `Table` | alignment は往復で落ちる | 比較と棚卸し |
+| リスト | `- item` | list node | `- item` | `ul` / `ol` | 子は 4 スペース | 手順と観点 |
+| 画像 | `[media:id]()` | text node | `![alt](…)` | `Media` | 先頭の ! で upload になる | スクリーンショット |
+| コード | fenced block | code block | fenced block | `Snippet` | 言語名は Shiki へ渡る | 最小例 |
+| 表 | pipe table | table node | pipe table | `Table` | 位置揃えは往復で落ちる | 比較 |
 | 埋め込み | directive | paragraph text | directive | `WebEmbed` | 外部取得に失敗する可能性 | 参考リンク |
 
-### 数値を見るための表
+### 位置揃えは表示側に寄せる
 
-| 指標 | 判定 | 値 |
-| --- | --- | --- |
-| First Contentful Paint | Good | 1200 |
-| Largest Contentful Paint | Needs work | 3450 |
-| Interaction to Next Paint | Poor | 812 |
-| Cumulative Layout Shift | Good | 0.04 |
+位置揃えは Markdown では書けますが、Payload の往復では保持されません。揃えたいときは、本文データではなく表示コンポーネント側の責務に寄せます。細かい見出しは、こうした付随的な注意を本文から分けたいときだけ使います。
 
-表の位置揃えは Markdown では書けるが、Payload の往復では保持されない。見た目を揃えたい場合は、本文データではなく表示コンポーネント側の責務に寄せる。
+## 外部の情報は埋め込みにしておく
 
-### セル内のインライン要素
+あとで読み返す価値のある記事は、段落内リンクより埋め込みにしておくと探しやすいです。
 
-| API | 判断 | 参照 | 例 |
-| --- | --- | --- | --- |
-| `Array.prototype.map` | **安定**していて、配列変換の第一候補にしやすい | [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map) | `items.map((item) => item.id)` |
-| `Array.prototype.flatMap` | *一段だけ* flatten したいときに読みやすい | [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap) | `rows.flatMap((row) => row.cells)` |
-| `Array.prototype.group` | ~~今すぐ使う~~ ではなく、環境と仕様を確認する | [TC39](https://github.com/tc39/proposal-array-grouping) | `Object.groupBy(items, getKind)` |
-| `String.prototype.at` | 負のインデックスを使う意図が明確なら便利 | [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/at) | `"こんにちは".at(-1)` |
+::embed{url="https://zenn.dev/uma002/articles/architecture-abstraction-patterns" type="webpage"}
 
-### まだ値を入れない表
+埋め込みは便利ですが、本文の主張そのものを外部ページに預けないようにしています。リンク先が消えても、この記事だけで最低限の判断ができる状態を保ちます。
 
-| 未確認の観点 | 担当 | メモ |
-| --- | --- | --- |
+X（旧 Twitter）の投稿も同じ埋め込みで扱えます。ウィジェットの JavaScript を読み込まず、サーバー側で取得した内容を、本文と同じ見た目の引用として描画します。
 
-この形は、あとで埋める前提のテンプレートとして使う。本文中に置くなら、空である理由も一緒に書く。
+::embed{url="https://x.com/jack/status/20" type="x.com"}
 
-### 一列だけで足りる表
+:::banner{type="warning"}
 
-| 対象ランタイム |
-| --- |
-| Node.js |
-| Bun |
-| Deno |
+`banner` の中に埋め込みやアップロード、コードブロックは入れません。中身は段落・強調・リンクに限っているので、注意を少し持ち上げる用途だけに使います。
 
-横に比べるものがないなら、無理に列を増やさない。
+:::
 
-### 空セルを含む表
+## 画像は前後に文を置く
 
-| 項目 | 値 |
-| --- | --- |
-| タイトル | Markdown Example |
-| 目的 | 実装メモとして読める構文確認 |
-| 未定の担当 |  |
+UI やレンダリングの話は、文章だけより画像が早いことがあります。画像の前後には、何を見ればよいかを書いておきます。
 
-空セルは「未入力」を表すためにだけ使う。読み手が欠落か意図か迷うなら、本文で補足する。
+![media:019d1223-94d4-754c-8f57-47337be15c9e]()
 
-## 最後に見るチェックポイント
+代替テキストも、装飾なのか説明なのかを分けて考えます。説明が要る画像なら、本文でも要点を繰り返します。
 
-記事として読めるかは、次の順番で見る。
+## 公開前に見返すこと
 
-1. 最初の段落だけで、何を確認する記事か分かるか
-2. 見出しが構文名ではなく、判断の単位になっているか
-3. 表やコードが本文の説明を短くしているか
-4. リンクと埋め込みが、主張の代わりではなく補助になっているか
-5. 画像が装飾ではなく、確認したい状態を示しているか
+最後に、次の順番で読み返しています。
+
+1. 最初の段落だけで、何の記事か分かるか
+2. 見出しが記法名ではなく、話題の単位になっているか
+3. 表やコードが説明を短くしているか
+4. リンクと埋め込みが、主張の代わりになっていないか
 
 ---
 
-構文確認用の記事でも、実装の制約、落とし穴、判断の理由を書けば、あとから読み返せるメモになる。Markdown の機能をすべて目立たせるより、必要な場所で自然に使うほうが、結果としてレンダラーの確認にもなる。
+記法を全部使うことより、必要なところで自然に使うことを優先しています。結果として、それがこのブログのレンダラーの確認にもなっています。

@@ -134,9 +134,12 @@ export const blogPostCollection: CollectionConfig = {
 			},
 		],
 		afterOperation: [
-			async ({ operation, args, result }) => {
-				// skip the invalidation for the example blog post creation
-				if (operation === "create" && result.slug === "markdown-example") {
+			async ({ operation, args, req, result }) => {
+				// The seed creates posts during `onInit`, when no HTTP server is
+				// reachable; it sets this context flag so the published create does not
+				// fire a doomed cache-bust fetch (mirrors the comment collection's
+				// `skipCommentCacheBust`). Kept content-agnostic — no slug special-case.
+				if (req.context?.skipBlogPostCacheBust) {
 					return;
 				}
 
