@@ -227,7 +227,12 @@ jobs:
     # job running when teardown is *skipped* (every non-recreate path) without
     # firing it on a superseded/cancelled run, while the result check makes a
     # `recreate` deploy wait for — and only proceed on — a successful teardown,
-    # never deploying onto a half-destroyed preview.
+    # never deploying onto a half-destroyed preview. Because `!cancelled()` is a
+    # status function, this `if` is also evaluated when `preflight` *fails*, and
+    # `preflight` can emit `ready=true` from its first step yet still fail if the
+    # later resolve step throws (e.g. a bad `pr_number`) — leaving `head-sha`
+    # empty and the checkout falling back to the default branch. The explicit
+    # `needs.preflight.result == 'success'` guard blocks the deploy in that case.
     needs:
       - preflight
       - teardown
@@ -241,6 +246,7 @@ jobs:
     if: >-
       ${{
         !cancelled()
+        && needs.preflight.result == 'success'
         && needs.preflight.outputs.ready == 'true'
         && (needs.teardown.result == 'success' || needs.teardown.result == 'skipped')
         && (
