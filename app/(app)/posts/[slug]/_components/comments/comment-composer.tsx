@@ -2,6 +2,7 @@
 
 import { SignInButton, useUser } from "@clerk/nextjs";
 import { clsx } from "clsx";
+import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { type FormEvent, type JSX, useState } from "react";
 import { COMMENT_CSRF_HEADER } from "@/helpers/comment-csrf";
@@ -23,6 +24,12 @@ type SubmitState = "idle" | "submitting" | "submitted" | "error";
 export function CommentComposer({ slug }: { slug: string }): JSX.Element {
 	const t = useTranslations("comments");
 	const { isLoaded, isSignedIn, user } = useUser();
+	// `mode="modal"` opens the sign-in on the current route without navigating to
+	// a sign-in page, so Clerk never records a `redirect_url`; after the GitHub
+	// OAuth round-trip it would otherwise fall back to its default of `/`. pinning
+	// the redirect to the current path returns the reader to the post they were on
+	// (`signUp…` covers first-time account creation via the same button).
+	const pathname = usePathname();
 	const [body, setBody] = useState("");
 	const [state, setState] = useState<SubmitState>("idle");
 
@@ -51,7 +58,11 @@ export function CommentComposer({ slug }: { slug: string }): JSX.Element {
 					/>
 
 					<div className={clsx(css.composerRow, css.composerRowEnd)}>
-						<SignInButton mode="modal">
+						<SignInButton
+							mode="modal"
+							forceRedirectUrl={pathname}
+							signUpForceRedirectUrl={pathname}
+						>
 							<button
 								type="button"
 								className={clsx(css.submit, css.signIn)}
