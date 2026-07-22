@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Locator, test } from "@playwright/test";
 import { authenticatedStorageState } from "@/e2e/helpers/api/auth";
 import { createPublishedBlogPost } from "@/e2e/helpers/api/blog-post";
 import { createComment, deleteComment } from "@/e2e/helpers/api/comment";
@@ -7,9 +7,18 @@ import { deleteBlogPost } from "@/e2e/helpers/api/mcp";
 test.use({ storageState: authenticatedStorageState });
 
 const forbiddenStatus = 403;
+// The fallback badge is sized to the avatar box; a bare glyph is well under this.
+const avatarFallbackMinSizePx = 32;
+const avatarFallbackSquareTolerancePx = 1;
 
 function uniqueSlug(prefix: string, repeat: number, worker: number): string {
 	return `${prefix}-${repeat}-${worker}-${Date.now()}`;
+}
+
+// No locator-native matcher exists for a computed `filter`, so read it via
+// getComputedStyle (the sanctioned exception, as with pseudo-element state).
+function computedFilter(locator: Locator): Promise<string> {
+	return locator.evaluate((element) => getComputedStyle(element).filter);
 }
 
 test(
@@ -194,24 +203,22 @@ test(
 			const comments = page.getByTestId("comments");
 			await expect(comments).toBeVisible();
 
-			await test.step("The reader avatar carries the brand-hue tint filter", async () => {
-				// The top-level (non-author) comment is the reader; its avatar runs the
-				// shared sepia → hue-rotate grade. There is no locator-native matcher
-				// for a computed `filter`, so read it via getComputedStyle (the
-				// sanctioned exception, as with pseudo-element state).
-				const readerAvatar = comments
-					.getByTestId("comment")
-					.first()
-					.getByTestId("avatar");
+			// The first top-level (non-author) comment is the reader with a photo.
+			const readerAvatar = comments
+				.getByTestId("comment")
+				.first()
+				.getByTestId("avatar");
 
+			// Captured in light theme, re-checked after switching to dark.
+			let lightFilter = "";
+
+			await test.step("The reader avatar carries the brand-hue tint filter", async () => {
 				await expect(readerAvatar).toBeVisible();
 
-				const filter = await readerAvatar.evaluate(
-					(element) => getComputedStyle(element).filter,
-				);
+				lightFilter = await computedFilter(readerAvatar);
 
-				expect(filter).not.toBe("none");
-				expect(filter).toContain("sepia");
+				expect(lightFilter).not.toBe("none");
+				expect(lightFilter).toContain("sepia");
 			});
 
 			await test.step("The author reply avatar stays true-colour (unfiltered)", async () => {
@@ -220,12 +227,109 @@ test(
 					.getByTestId("avatar");
 
 				await expect(authorAvatar).toBeVisible();
+				expect(await computedFilter(authorAvatar)).toBe("none");
+			});
 
-				const filter = await authorAvatar.evaluate(
-					(element) => getComputedStyle(element).filter,
+			await test.step("The reader avatar stays tinted in dark theme", async () => {
+				await page.emulateMedia({ colorScheme: "dark" });
+
+				const darkFilter = await computedFilter(readerAvatar);
+
+				expect(darkFilter).not.toBe("none");
+				expect(darkFilter).toContain("sepia");
+				// The dark scheme applies its own saturation/brightness compensation, so
+				// the filter must differ from light — proving the theme-driven container
+				// query re-evaluated rather than the tint being theme-agnostic.
+				expect(darkFilter).not.toBe(lightFilter);
+
+				await page.emulateMedia({ colorScheme: "light" });
+			});
+		} finally {
+			await Promise.all(
+				commentIds.map((id) => deleteComment({ id, page, testInfo })),
+			);
+
+			if (postId !== null) {
+				const id = postId;
+
+				await test.step("Clean up the post", async () => {
+					await deleteBlogPost({ id, page, testInfo });
+				});
+			}
+		}
+	},
+);
+
+test(
+	"A reader comment without an avatar shows a sized, circular letter badge",
+	{
+		tag: [
+			"@scenario:post.comments.avatar-fallback",
+			"@area:posts",
+			"@priority:should",
+		],
+	},
+	async ({ page }, testInfo) => {
+		let postId: number | null = null;
+		const commentIds: number[] = [];
+
+		try {
+			const slug = uniqueSlug(
+				"comments-avatar-fallback",
+				testInfo.repeatEachIndex,
+				testInfo.workerIndex,
+			);
+
+			await test.step("Create a published post with comments enabled", async () => {
+				({ id: postId } = await createPublishedBlogPost({
+					page,
+					slug,
+					testInfo,
+					title: "アバターのないコメントの投稿",
+				}));
+			});
+
+			await test.step("Seed a reader comment with no avatar image", async () => {
+				commentIds.push(
+					await createComment({
+						page,
+						testInfo,
+						blogPostId: postId as number,
+						body: "アバター画像のないコメントです。",
+						status: "approved",
+						authorName: "遥",
+					}),
+				);
+			});
+
+			await test.step("Navigate to the post", async () => {
+				await page.goto(`/posts/${slug}`);
+			});
+
+			await test.step("The letter badge renders as a sized, rounded circle", async () => {
+				const fallback = page
+					.getByTestId("comments")
+					.getByTestId("avatar-fallback");
+
+				await expect(fallback).toBeVisible();
+
+				const box = await fallback.boundingBox();
+
+				if (box === null) {
+					throw new Error("The avatar fallback has no bounding box.");
+				}
+
+				// Sized to the avatar box and square, not collapsed to the bare glyph.
+				expect(box.width).toBeGreaterThanOrEqual(avatarFallbackMinSizePx);
+				expect(Math.abs(box.width - box.height)).toBeLessThanOrEqual(
+					avatarFallbackSquareTolerancePx,
 				);
 
-				expect(filter).toBe("none");
+				const borderRadius = await fallback.evaluate(
+					(element) => getComputedStyle(element).borderRadius,
+				);
+
+				expect(borderRadius).not.toBe("0px");
 			});
 		} finally {
 			await Promise.all(
