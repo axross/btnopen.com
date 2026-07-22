@@ -1,9 +1,8 @@
 @layer components {
 	/* Avatars join the palette via the site's brand-hue color-grade recipe. The
-	 * parent sizes the avatar via `className` (the comment list and composer size
-	 * the image and fallback differently), so no size lives here. CommentAvatar
-	 * renders one of two roots — the image or the letter fallback — so each gets
-	 * its own scope. */
+	 * parent sizes the avatar via `className` (applied to the image and the
+	 * fallback alike), so no size lives here. CommentAvatar renders one of two
+	 * roots — the image or the letter fallback — so each gets its own scope. */
 	@scope (.avatar) {
 		:where(:scope) {
 			flex: 0 0 auto;
@@ -32,7 +31,12 @@
 	}
 
 	@scope (.avatarFallback) {
+		/* A reader without an avatar image still gets a proper accent-filled
+		 * circle (sized by the parent's `className`, like the image) rather than
+		 * collapsing to the bare glyph. */
 		:where(:scope) {
+			flex: 0 0 auto;
+			border-radius: var(--radius-full);
 			display: flex;
 			align-items: center;
 			justify-content: center;

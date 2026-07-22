@@ -1,7 +1,7 @@
 export const meta = {
 	name: "address-selfcheck",
 	description:
-		"Risk-tiered, cascaded, delta-aware multi-agent self-check for /address Phase 2: scope the diff and its risk once (cheaply), fan out cheap-model finders across the tier's matching review lenses, adversarially verify the survivors on the strong model (multi-vote for blocking findings on high-risk diffs), and return a ranked, capped findings report.",
+		"Risk-tiered, cascaded, delta-aware multi-agent self-check for /address Phase 2: scope the diff and its risk once (cheaply), fan out mechanical-tier finders (judgment-tier on high-risk diffs) across the tier's matching review lenses, adversarially verify the survivors (strong model for blocking findings, multi-vote on high-risk diffs; judgment-tier for Minor), and return a ranked, capped findings report.",
 	whenToUse:
 		"Launched by the /address skill after implementation and verification, before the draft pull request opens. Pass args: { baseRef, issueNumber, planConstraints, riskTier, sinceRef }. sinceRef makes a relaunch review only the delta since that commit. Not for ad-hoc review outside an /address run.",
 	phases: [
@@ -13,12 +13,12 @@ export const meta = {
 		{
 			title: "Find",
 			detail:
-				"Cheap-model finders across the tier's lens budget plus fixed correctness and maintainability finders",
+				"Mechanical-tier finders (judgment-tier on high-risk diffs) across the tier's lens budget plus fixed correctness and maintainability finders",
 		},
 		{
 			title: "Verify",
 			detail:
-				"Strong-model adversarial verifier per pruned candidate — multi-vote for blocking findings on high-risk diffs",
+				"Adversarial verifier per pruned candidate — strong model for blocking findings (multi-vote on high-risk diffs), judgment-tier for Minor",
 		},
 		{
 			title: "Synthesize",
@@ -61,15 +61,28 @@ const RISK_ORDER = ["low", "medium", "high"];
 const RISK_HINT =
 	input && RISK_ORDER.includes(input.riskTier) ? input.riskTier : null;
 
-// S2 cascade: finders run on a cheap model at low effort (recall over-produces
-// candidates); verification stays on the strong model (the precision gate).
-// If the cheap model is unavailable in a session a finder simply returns null
-// and its lens is reported skipped — the driver covers it inline, so the
-// cascade degrades safe. The scope pass deliberately stays on the default
-// (strong) model: it is a single cheap call on the critical path, and running
-// it on the cheap model would let cheap-model unavailability disable the whole
-// workflow rather than just narrow finder breadth.
-const CHEAP_MODEL = "haiku";
+// S2 three-tier cascade: mechanical → judgment → strong, so each step costs
+// what its judgment is worth.
+//   - MECHANICAL_MODEL (haiku): the recall-wide finder fan-out and the
+//     mechanical synthesis summary. Finders deliberately over-produce
+//     candidates at low effort; the Verify phase is the precision gate that
+//     prunes them.
+//   - JUDGMENT_MODEL (sonnet): bounded judgment that does not need the strong
+//     model — the scope pass, the finder fan-out on high-risk diffs (where the
+//     finder tier sets the recall ceiling the verifier cannot recover), and
+//     single-vote Minor verification.
+//   - The inherited default (the session's strong model, e.g. Opus) is
+//     reserved for the blocking-verify precision gate; see the Verify phase.
+// If a finder's model is unavailable in a session it simply returns null and
+// its lens is reported skipped — the driver covers it inline, so the cascade
+// degrades safe. The scope pass stays on JUDGMENT_MODEL rather than the
+// mechanical tier on purpose: it is a single call on the critical path, and
+// running it on the mechanical tier would let that tier's unavailability
+// disable the whole workflow rather than just narrow finder breadth —
+// JUDGMENT_MODEL is itself a strong, broadly-available tier, so it does not
+// reintroduce that risk.
+const MECHANICAL_MODEL = "haiku";
+const JUDGMENT_MODEL = "sonnet";
 // budget is a sandbox global; guard against a session that does not inject it
 // so a missing global degrades to "no cap" instead of a ReferenceError.
 const BUDGET = typeof budget !== "undefined" && budget ? budget : null;
@@ -194,7 +207,13 @@ const scope = await agent(
 		"4. Classify `riskTier`: `high` if the diff touches auth or access control, markdown/XSS, SSRF or embed fetching, migrations, public route contracts, production config, or a large refactor (the high-risk list in the AGENTS.md Review Independence Gates); `medium` if it changes other app or runtime behavior; `low` if it only touches docs, config, or agent-skill files with no app-runtime surface.\n\n" +
 		"Do NOT run test suites, dev servers, builds, or any state-changing command — read-only inspection and read-only git commands only; the driver owns verification.\n\n" +
 		"Return every changed file (with a one-word surface tag where obvious), the selected lenses with a one-line reason each, and the risk tier. Structured output only.",
-	{ label: "scope", phase: "Scope", effort: "low", schema: SCOPE_SCHEMA },
+	{
+		label: "scope",
+		phase: "Scope",
+		model: JUDGMENT_MODEL,
+		effort: "low",
+		schema: SCOPE_SCHEMA,
+	},
 );
 if (!scope) {
 	return {
@@ -302,6 +321,14 @@ const fixedFinders = [
 ];
 const finders = lensFinders.concat(fixedFinders);
 
+// High-risk diffs raise the finder fan-out to JUDGMENT_MODEL. The finder tier
+// is the recall ceiling: adversarial verification only prunes false
+// positives — it can never resurface a real defect a finder never reported.
+// On the surfaces where a miss is costly (auth, XSS, SSRF, migrations, public
+// route contracts, production config), the extra finder recall is worth the
+// spend; medium-risk diffs keep the mechanical tier.
+const finderModel = tier === "high" ? JUDGMENT_MODEL : MECHANICAL_MODEL;
+
 // Barrier is intentional: candidates must be pooled and deduplicated across
 // all finders before any strong-model verifier tokens are spent.
 const finderOuts = await parallel(
@@ -310,7 +337,7 @@ const finderOuts = await parallel(
 			agent(f.prompt, {
 				label: `find:${f.key}`,
 				phase: "Find",
-				model: CHEAP_MODEL,
+				model: finderModel,
 				effort: "low",
 				schema: CANDIDATES_SCHEMA,
 			}).then((r) => {
@@ -460,6 +487,12 @@ const verified =
 					toVerify.map((c) => () => {
 						const votes = votesFor(c);
 						const effort = sevRank[c.severity] <= 1 ? "high" : "low";
+						// Blocking candidates (Critical/Major) verify on the inherited
+						// strong model; Minor candidates — single-vote, low-effort, and
+						// defaulting to REFUTED when uncertain — verify on the judgment
+						// tier.
+						const verifyModel =
+							sevRank[c.severity] <= 1 ? undefined : JUDGMENT_MODEL;
 						const prompt =
 							"## Adversarial verifier\n\nBe SKEPTICAL. Try to REFUTE this code-review candidate against the actual repository state.\n\n" +
 							"**Location:** " +
@@ -484,15 +517,17 @@ const verified =
 								? "This is a Minor candidate: default to REFUTED when uncertain.\n"
 								: "For Critical/Major candidates keep PLAUSIBLE when the defect is credible but not fully demonstrable.\n") +
 							"Evidence MUST cite specific code. Structured output only.";
-						// Strong model (inherited): the verify step is the precision gate,
-						// so it is never cheapened. Blocking findings on a high-risk diff
-						// get multi-vote adjudication.
+						// The verify step is the precision gate, so it is never cheapened
+						// below the judgment tier: blocking findings stay on the inherited
+						// strong model (verifyModel above) and, on a high-risk diff, get
+						// multi-vote adjudication.
 						return parallel(
 							Array.from({ length: votes }, (_, v) => () =>
 								agent(prompt, {
 									label:
 										(votes > 1 ? `v${v}:` : "verify:") + c.file + ":" + c.line,
 									phase: "Verify",
+									model: verifyModel,
 									effort,
 									schema: VERDICT_SCHEMA,
 								}),
@@ -569,6 +604,9 @@ const mechanicalSummary =
 	(tierDeferredLenses.length > 0
 		? ` Tier-deferred lenses (intentional at tier ${tier}, not for inline coverage): ${tierDeferredLenses.join(", ")}.`
 		: "");
+// Mechanical summarization of already-ranked findings — mechanical tier. The
+// deterministic mechanicalSummary already stands in when there are no
+// findings, so this call is low-stakes.
 const synth =
 	findings.length > 0
 		? await agent(
@@ -591,7 +629,7 @@ const synth =
 						)
 						.join("\n") +
 					"\n\nStructured output only.",
-				{ label: "synthesize", schema: SUMMARY_SCHEMA },
+				{ label: "synthesize", model: MECHANICAL_MODEL, schema: SUMMARY_SCHEMA },
 			)
 		: null;
 

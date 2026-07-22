@@ -99,14 +99,15 @@
 
 		/* Size only — the avatar's appearance (the brand-hue grade, the author
 		 * true-color variant, and the letter fallback) lives in the shared
-		 * CommentAvatar component. */
+		 * CommentAvatar component. The letter fallback shares this size via the
+		 * same `className`, so a reader without an avatar image still gets a
+		 * proper accent circle (the reply variant below shrinks both). */
 		.avatar {
 			inline-size: var(--size-40);
 			block-size: var(--size-40);
 		}
 
-		.reply .avatar,
-		.reply .avatarFallback {
+		.reply .avatar {
 			inline-size: var(--size-32);
 			block-size: var(--size-32);
 			font-size: var(--text-sm);

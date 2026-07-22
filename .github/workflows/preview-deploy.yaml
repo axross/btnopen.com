@@ -352,19 +352,64 @@ jobs:
         run: npm run migrate:up
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
-      - name: Deploy Preview to Vercel
-        id: deploy
-        # Inject this PR's credentials for this deployment only, at both build
-        # and runtime, so they override the project's Preview environment for
-        # this deploy alone: the per-PR database credentials, the media prefix,
-        # and the Preview-scoped PAYLOAD_TEST_USER_* seed credentials (read from
-        # the `Preview` GitHub environment declared on this job). The production
-        # credentials must be scoped to the Production environment in Vercel and
-        # are never passed here.
+      - name: Pull Vercel Project Settings
+        # `vercel build` needs the project's settings and Preview environment
+        # variables locally. Pull them for the preview target; the sensitive ones
+        # arrive as unusable placeholders (stripped in the build step below), and
+        # the per-PR database credentials are injected there instead.
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build Preview on GitHub Actions
+        # Build on the runner instead of on Vercel, then ship the prebuilt output
+        # with `vercel deploy --prebuilt` below, so Vercel spends no build
+        # compute. Because `--prebuilt` runs no build on Vercel, the per-PR
+        # variables that used to travel as `--build-env` are injected here: the
+        # isolated Turso credentials, the `pr-<n>` media prefix, and the
+        # Preview-scoped PAYLOAD_TEST_USER_* seed credentials (read from the
+        # `Preview` GitHub environment declared on this job). The production
+        # credentials are scoped to the Production environment in Vercel and are
+        # never passed here.
         #
-        # `BLOB_PAYLOAD_PREFIX` namespaces this PR's uploaded media under a
-        # `pr-<n>/` path in the Blob store so a preview's media is isolated and
-        # can be pruned wholesale on teardown (production leaves this unset).
+        # Under `--prebuilt` Vercel's System Environment Variables are absent at
+        # build time, so inject the two the client bundle inlines
+        # (NEXT_PUBLIC_VERCEL_ENV / _GIT_COMMIT_SHA — the btn-env/btn-sha meta
+        # tags and the Sentry release) plus the custom DEPLOYMENT_ID that
+        # next.config.ts bakes into routes-manifest.json to keep Skew Protection
+        # working. `BLOB_PAYLOAD_PREFIX` namespaces this PR's uploaded media
+        # under a `pr-<n>/` path so a preview's media is isolated and can be
+        # pruned wholesale on teardown. The dedicated preview blob token is
+        # passed so `payload`'s config build sees a real, valid-format token; the
+        # unusable placeholders `vercel pull` left for the sensitive variables
+        # are stripped first so they cannot shadow the values passed here.
+        env:
+          NEXT_PUBLIC_VERCEL_ENV: preview
+          NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ needs.preflight.outputs.head-sha }}
+          DEPLOYMENT_ID: ${{ needs.preflight.outputs.head-sha }}
+          LIBSQL_PAYLOAD_TURSO_DATABASE_URL: ${{ steps.turso.outputs.url }}
+          LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN: ${{ steps.turso.outputs.token }}
+          BLOB_PAYLOAD_PREFIX: pr-${{ needs.preflight.outputs.pr-number }}
+          BLOB_PAYLOAD_READ_WRITE_TOKEN: ${{ secrets.BLOB_PAYLOAD_READ_WRITE_TOKEN }}
+          PAYLOAD_TEST_USER_EMAIL: ${{ secrets.PAYLOAD_TEST_USER_EMAIL }}
+          PAYLOAD_TEST_USER_PASSWORD: ${{ secrets.PAYLOAD_TEST_USER_PASSWORD }}
+        run: |
+          set -euo pipefail
+          for envfile in .vercel/.env.*.local; do
+            if [ -f "${envfile}" ]; then
+              sed --in-place --regexp-extended \
+                '/^(LIBSQL_PAYLOAD_TURSO_(DATABASE_URL|AUTH_TOKEN)|BLOB_PAYLOAD_READ_WRITE_TOKEN)=/d' \
+                "${envfile}"
+            fi
+          done
+          vercel build --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy Prebuilt Preview to Vercel
+        id: deploy
+        # Upload the prebuilt `.vercel/output` without rebuilding on Vercel.
+        # Runtime environment variables are still set per deployment via `--env`
+        # so they override the project's Preview environment for this deployment
+        # alone: the per-PR database credentials and media prefix (absent from
+        # the Vercel Preview environment) and the seed credentials. The dedicated
+        # preview blob token continues to come from the Vercel Preview
+        # environment at runtime. `--archive=tgz` keeps a large Next.js output
+        # tree clear of the upload file-count limit.
         env:
           LIBSQL_URL: ${{ steps.turso.outputs.url }}
           LIBSQL_TOKEN: ${{ steps.turso.outputs.token }}
@@ -375,18 +420,13 @@ jobs:
           set -euo pipefail
           # `vercel deploy` prints progress to stderr and the deployment URL to
           # stdout; take the last stdout line to be robust to any extra output.
-          url="$(vercel deploy \
+          url="$(vercel deploy --prebuilt --archive=tgz \
             --token="${{ secrets.VERCEL_TOKEN }}" \
             --env LIBSQL_PAYLOAD_TURSO_DATABASE_URL="${LIBSQL_URL}" \
             --env LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN="${LIBSQL_TOKEN}" \
             --env BLOB_PAYLOAD_PREFIX="${BLOB_PREFIX}" \
             --env PAYLOAD_TEST_USER_EMAIL="${TEST_USER_EMAIL}" \
-            --env PAYLOAD_TEST_USER_PASSWORD="${TEST_USER_PASSWORD}" \
-            --build-env LIBSQL_PAYLOAD_TURSO_DATABASE_URL="${LIBSQL_URL}" \
-            --build-env LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN="${LIBSQL_TOKEN}" \
-            --build-env BLOB_PAYLOAD_PREFIX="${BLOB_PREFIX}" \
-            --build-env PAYLOAD_TEST_USER_EMAIL="${TEST_USER_EMAIL}" \
-            --build-env PAYLOAD_TEST_USER_PASSWORD="${TEST_USER_PASSWORD}" | tail -n1)"
+            --env PAYLOAD_TEST_USER_PASSWORD="${TEST_USER_PASSWORD}" | tail -n1)"
           echo "url=${url}" >> "${GITHUB_OUTPUT}"
       - name: Assign Stable Preview Alias
         id: alias

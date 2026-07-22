@@ -6,7 +6,7 @@ The security trade-offs of this design (a publicly reachable preview serving fix
 
 ## Pipeline Overview
 
-The workflow is [`.github/workflows/preview-deploy.yaml`](../../../../.github/workflows/preview-deploy.yaml), triggered on `pull_request` `[opened, synchronize, reopened, closed]` **and** on `workflow_dispatch` (a maintainer-only manual entry point; see [Manual Dispatch](#manual-dispatch)), concurrency-grouped per PR. Each PR is served by a fresh, empty Turso database, migrated in CI, wired into a Vercel preview deployment that self-seeds from fixtures on first boot, with media in a dedicated preview store under a `pr-<n>/` prefix; the database and that media are destroyed when the PR closes.
+The workflow is [`.github/workflows/preview-deploy.yaml`](../../../../.github/workflows/preview-deploy.yaml), triggered on `pull_request` `[opened, synchronize, reopened, closed]` **and** on `workflow_dispatch` (a maintainer-only manual entry point; see [Manual Dispatch](#manual-dispatch)), concurrency-grouped per PR. Each PR is served by a fresh, empty Turso database, migrated in CI, wired into a Vercel preview deployment that self-seeds from fixtures during the build, with media in a dedicated preview store under a `pr-<n>/` prefix; the database and that media are destroyed when the PR closes.
 
 ```text
 pull_request (opened / synchronize / reopened)          workflow_dispatch (pr_number, action)
@@ -20,9 +20,11 @@ pull_request (opened / synchronize / reopened)          workflow_dispatch (pr_nu
   deploy
    1. create  preview-pr-<n>  as a fresh, empty database (never from production)
    2. run the repo's migrations against it            (schema built from scratch)
-   3. vercel deploy (preview), injecting the DB creds + BLOB_PAYLOAD_PREFIX=pr-<n>
-      at build + runtime; the app self-seeds from fixtures on first boot
-   4. alias a stable per-PR URL to that deployment, then post a new comment
+   3. vercel build (on the runner) with the DB creds + BLOB_PAYLOAD_PREFIX=pr-<n>
+      in the build env; the app self-seeds from fixtures during the build
+   4. vercel deploy --prebuilt, passing the same DB creds + prefix as runtime
+      --env; Vercel publishes the prebuilt output without a Vercel-side build
+   5. alias a stable per-PR URL to that deployment, then post a new comment
       with it (a fresh comment each deploy — prior ones are left intact)
 
 pull_request (closed) OR dispatch teardown/recreate ──▶ teardown: turso db destroy preview-pr-<n>;
@@ -34,18 +36,30 @@ pull_request (closed) OR dispatch teardown/recreate ──▶ teardown: turso db
 
 - MUST gate the `deploy` job on a **deploy-affecting-path** check so a pull request whose entire diff is non-deployable spends no Vercel credit: the `preflight` job lists the PR's changed files (`pulls.listFiles`, requiring `pull-requests: read`) and sets `source-changed=false` only when **every** changed file matches the non-deployable denylist — `.claude/**`, root docs (`AGENTS.md`, `CLAUDE.md`, `README.md`, `REVIEW.md`), `.github/**`, `e2e/**`, and editor/tooling config (`.vscode/**`, `.zed/**`, `.mcp.json`, `.pino-prettyrc`, `.gitignore`, `.data/**`). It is a **denylist**: any unlisted or newly added path — including in-tree content such as `payload/helpers/seed/*.md` (the seeded preview content) — counts as deployable, and the classifier fails safe toward deploying, forcing a deploy on a `pulls.listFiles` error or a capped (>= 3000) file list rather than a silent skip.
 - MUST keep `teardown` **ungated** by that path check — it runs on every `closed` event regardless of paths — so any preview whose database and media were provisioned is always destroyed, even in the rare deploy-then-revert-to-non-deployable-then-close sequence. This is why the check gates the `deploy` job rather than the workflow's `pull_request` trigger (a trigger-level `paths-ignore` would skip teardown too and orphan the database).
-- MUST provision each preview as a **fresh, empty** database — never branched from production — so no production row ever reaches a publicly reachable preview. Content comes only from the app's `onInit` seed (`payload/helpers/seed.ts`) running against that empty database on first boot.
-- MUST keep the production `LIBSQL_*` credentials out of every preview: the workflow injects only the per-PR database credentials via `vercel deploy --env` / `--build-env`, never the production ones.
-- MUST run schema **migrations in CI** (`npm run migrate:up` against the fresh database) so the schema exists before traffic; only data seeding happens at runtime.
+- MUST provision each preview as a **fresh, empty** database — never branched from production — so no production row ever reaches a publicly reachable preview. Content comes only from the app's `onInit` seed (`payload/helpers/seed.ts`) running against that empty database during the build.
+- MUST keep the production `LIBSQL_*` credentials out of every preview: the workflow injects only the per-PR database credentials — into the `vercel build` step's environment at build time, and onto `vercel deploy --prebuilt --env` at runtime — never the production ones.
+- MUST run schema **migrations in CI** (`npm run migrate:up` against the fresh database) so the schema exists before the build seeds it; only data seeding (the `onInit` seed) happens during the build.
 - MUST keep the pipeline inert until setup exists — the `preflight` job gates `deploy`/`teardown` on the required secrets/vars so unconfigured and forked PRs stay green rather than failing.
 - MUST keep provisioning idempotent across `synchronize` events (create the database only if absent; re-running migrations is a no-op once applied), so the per-PR database persists across pushes and edits made in the preview survive re-deploys.
-- MUST surface a **stable per-PR URL**, not the per-commit `vercel deploy` URL: after deploying, re-point a deterministic alias (`<prefix>-pr-<n>.vercel.app`) at the new deployment with `vercel alias set`, so the pull request's preview link stays constant across pushes and always serves the newest build. The alias step fails the job on error rather than falling back to the per-commit URL.
+- MUST surface a **stable per-PR URL**, not the per-commit `vercel deploy --prebuilt` URL: after deploying, re-point a deterministic alias (`<prefix>-pr-<n>.vercel.app`) at the new deployment with `vercel alias set`, so the pull request's preview link stays constant across pushes and always serves the newest build. The alias step fails the job on error rather than falling back to the per-commit URL.
 - MUST post a **new** comment on each deploy (and a distinct teardown comment on close) rather than editing one sticky comment — a fresh comment re-surfaces the deploy in the PR timeline, and each carries the deployed short SHA so the appended history stays meaningful even though the URL is constant.
 - SHOULD grant `issues: write` to any job whose `github-script` step posts a PR comment — PR comments post through the Issues API, and an explicit `permissions:` block defaults every unlisted scope to `none`.
 
+## Prebuilt Build
+
+Both this pipeline and the production one (see [production-deployments.md](./production-deployments.md)) build on the GitHub Actions runner and let Vercel only publish the result, so Vercel spends no build credit. `vercel build` produces `.vercel/output` on the runner; `vercel deploy --prebuilt --archive=tgz` uploads it without a Vercel-side rebuild.
+
+**Guidelines:**
+
+- MUST run `vercel pull` before `vercel build` so the runner has the project settings and (non-sensitive) environment variables the build needs.
+- MUST inject, into the `vercel build` step's environment, everything the build consumes that Vercel would otherwise supply at build time: the per-PR database credentials and `BLOB_PAYLOAD_PREFIX` (production sources its own from the `Production` environment), the dedicated preview blob token, the seed credentials, and the build-time system variables `--prebuilt` deployments do **not** receive (`NEXT_PUBLIC_VERCEL_ENV`, `NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA`) — which the client bundle inlines into the `btn-env` / `btn-sha` meta tags and the Sentry release.
+- MUST set a custom `DEPLOYMENT_ID` (a commit SHA truncated to Vercel's **32-character** limit) in the build env so Skew Protection keeps working: a `--prebuilt` deployment cannot inherit Vercel's auto-assigned deployment ID, so `next.config.ts` bakes this one into `routes-manifest.json` and the client's `?dpl=` requests. A full 40-character SHA is rejected by `vercel build` ("must be 32 characters or less").
+- MUST strip the unusable placeholders `vercel pull` writes for sensitive variables (the libSQL auth token, the blob token) from the pulled `.vercel/.env.*.local` files before `vercel build`, so they cannot shadow the real values injected through the step environment — the same shadowing hazard the production pipeline guards against for `payload migrate`.
+- MUST keep runtime-only credentials on `vercel deploy --prebuilt --env` (not the build step): the per-PR database credentials, `BLOB_PAYLOAD_PREFIX`, and seed credentials the running preview needs.
+
 ## Manual Dispatch
 
-The `pull_request` triggers cannot re-seed a live preview: the per-PR database is created idempotently and the app seeds only on first boot, so subsequent pushes reuse the existing database and never re-seed. When the seed fixtures change across a PR's life, the preview keeps serving the *first* seed's content, and the only reset was a fragile close→reopen dance that races the `cancel-in-progress` teardown. The `workflow_dispatch` entry point exists to reset a preview without that dance.
+The `pull_request` triggers cannot re-seed a live preview: the per-PR database is created idempotently and its `onInit` seed populates it only once, so subsequent pushes reuse the existing database and never re-seed. When the seed fixtures change across a PR's life, the preview keeps serving the *first* seed's content, and the only reset was a fragile close→reopen dance that races the `cancel-in-progress` teardown. The `workflow_dispatch` entry point exists to reset a preview without that dance.
 
 **Guidelines:**
 
@@ -63,9 +77,9 @@ A preview's content is not copied from anywhere — it is generated by the app's
 
 **Guidelines:**
 
-- MUST provide `PAYLOAD_TEST_USER_EMAIL` and `PAYLOAD_TEST_USER_PASSWORD` so the app self-seeds on first boot. They are **environment-scoped secrets with a distinct value per environment**: the `deploy` job declares `environment: Preview` and injects the Preview-scoped values into the deployment, while Production and local development use their own separate values. The `onInit` seed is idempotent, so it provisions that admin account once per database.
+- MUST provide `PAYLOAD_TEST_USER_EMAIL` and `PAYLOAD_TEST_USER_PASSWORD` so the app self-seeds when it first initializes Payload. They are **environment-scoped secrets with a distinct value per environment**: the `deploy` job declares `environment: Preview` and injects the Preview-scoped values into the deployment, while Production and local development use their own separate values. The `onInit` seed is idempotent, so it provisions that admin account once per database.
 - MUST keep the Preview seed credential **distinct from Production's** — the preview admin login is publicly reachable, so reusing the Production value there would expose Production admin access (see the application-security requirements, privacy-and-exposure rules).
-- MUST run migrations in CI (not rely on runtime schema push): the runtime seed only creates data, against the already-migrated schema.
+- MUST run migrations in CI (not rely on runtime schema push): the seed only creates data, against the already-migrated schema.
 - SHOULD accept that the `onInit` seed is idempotent but not concurrency-safe — two simultaneous cold starts could race it. For a single-reviewer preview this is low risk; a dedicated CI seed step (booting Payload against the database before deploy) is the fallback if double-seeding ever appears.
 
 ## Required One-Time Setup

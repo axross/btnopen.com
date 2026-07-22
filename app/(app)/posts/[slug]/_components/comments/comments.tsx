@@ -132,7 +132,7 @@ function CommentItem({
 				isAuthor={comment.isAuthor}
 				fallback={comment.authorName.slice(0, 1)}
 				className={css.avatar}
-				fallbackClassName={css.avatarFallback}
+				data-testid="avatar"
 			/>
 
 			<div className={css.body}>

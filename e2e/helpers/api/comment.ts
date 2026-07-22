@@ -8,6 +8,7 @@ type CommentStatus = "pending" | "approved" | "rejected";
 // state, author reply, or parent it needs. Pair every call with `deleteComment`
 // in teardown.
 export async function createComment({
+	authorAvatarUrl,
 	authorGithubUsername,
 	authorName,
 	authorReply = false,
@@ -18,6 +19,7 @@ export async function createComment({
 	status,
 	testInfo,
 }: {
+	authorAvatarUrl?: string;
 	authorGithubUsername?: string;
 	authorName?: string;
 	authorReply?: boolean;
@@ -41,6 +43,7 @@ export async function createComment({
 			authorReply,
 			...(authorName === undefined ? {} : { authorName }),
 			...(authorGithubUsername === undefined ? {} : { authorGithubUsername }),
+			...(authorAvatarUrl === undefined ? {} : { authorAvatarUrl }),
 			...(parentId === undefined ? {} : { parent: parentId }),
 		},
 	});

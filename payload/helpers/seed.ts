@@ -53,6 +53,13 @@ interface SeedCommentDescriptor {
 	authorName: string;
 	authorGithubUsername: string;
 	authorProviderId: string;
+	/**
+	 * A reader avatar image so seeded/preview comments exercise the brand-hue
+	 * avatar tint (not just the letter-badge fallback). A local `/images/…` path
+	 * renders through `next/image` on previews without an external fetch. Omit to
+	 * keep the letter-badge fallback for that comment.
+	 */
+	authorAvatarUrl?: string;
 	/** Author replies rendered under this comment (approved, `authorReply`). */
 	replies?: { body: string }[];
 }
@@ -93,6 +100,7 @@ const draftBlogPostComments: SeedCommentDescriptor[] = [
 		authorName: "田中 花子",
 		authorGithubUsername: "hanako-tanaka",
 		authorProviderId: "seed-hanako-tanaka",
+		authorAvatarUrl: "/images/comment-avatars/hanako.webp",
 		replies: [
 			{ body: "コメントありがとうございます！お役に立てたようで嬉しいです。" },
 		],
@@ -103,6 +111,7 @@ const draftBlogPostComments: SeedCommentDescriptor[] = [
 		authorName: "佐藤 健",
 		authorGithubUsername: "ken-sato",
 		authorProviderId: "seed-ken-sato",
+		authorAvatarUrl: "/images/comment-avatars/ken.webp",
 	},
 	{
 		body: "これは承認待ちのサンプルコメントです。承認されるまで公開されません。",
@@ -122,6 +131,7 @@ const publishedBlogPostComments: SeedCommentDescriptor[] = [
 		authorName: "鈴木 みなと",
 		authorGithubUsername: "minato-suzuki",
 		authorProviderId: "seed-minato-suzuki",
+		authorAvatarUrl: "/images/comment-avatars/minato.webp",
 		replies: [
 			{
 				body: "ありがとうございます！派生値の線引きを最初に決めておくと、後がだいぶ楽になります。",
@@ -555,6 +565,9 @@ async function seedComments({
 				authorName: comment.authorName,
 				authorGithubUsername: comment.authorGithubUsername,
 				authorProviderId: comment.authorProviderId,
+				...(comment.authorAvatarUrl === undefined
+					? {}
+					: { authorAvatarUrl: comment.authorAvatarUrl }),
 			},
 			context: seedContext,
 		});
