@@ -7,6 +7,9 @@ const withNextIntl = createNextIntlPlugin(
 	"./app/(app)/_/helpers/i18n-request.ts",
 );
 
+// Vercel caps a custom deployment ID at 32 characters.
+const maxDeploymentIdLength = 32;
+
 // biome-ignore-start lint/style/noProcessEnv: nextjs config needs to access env vars
 const isCi = !!process.env.CI;
 const sentryOrg = process.env.SENTRY_ORG;
@@ -15,10 +18,11 @@ const sentryProject = process.env.SENTRY_PROJECT;
 // Skew Protection keeps working when the app is built on CI with `vercel build`
 // and shipped with `vercel deploy --prebuilt`: the prebuilt flow cannot inherit
 // Vercel's auto-assigned deployment ID, so the build bakes this one into
-// routes-manifest.json and the client's skew-protected `?dpl=` requests. Unset
-// outside the deploy workflows (local dev, tests), where `undefined` leaves
-// Next.js on its default behavior.
-const deploymentId = process.env.DEPLOYMENT_ID;
+// routes-manifest.json and the client's skew-protected `?dpl=` requests. The
+// 40-character commit SHA is truncated to Vercel's limit. Unset outside the
+// deploy workflows (local dev, tests), where `undefined` leaves Next.js on its
+// default behavior.
+const deploymentId = process.env.DEPLOYMENT_ID?.slice(0, maxDeploymentIdLength);
 // biome-ignore-end lint/style/noProcessEnv: nextjs config needs to access env vars
 
 const nextConfig: NextConfig = {
