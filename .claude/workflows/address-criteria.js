@@ -65,10 +65,10 @@ const DIFF_CMD = `git diff ${BASE_REF}...HEAD`;
 const STATUSES = ["met", "unmet", "partial", "needs-manual-check"];
 
 // Model tiering (mirrors address-selfcheck). The preflight is a mechanical
-// dirty/empty-diff check, so it runs on the cheap tier. Each criterion
+// dirty/empty-diff check, so it runs on the mechanical tier. Each criterion
 // verifier does bounded static judgment and degrades safely to
 // needs-manual-check on failure — and its verdict is not the authoritative
-// gate (the independent Phase 3 review is) — so it runs on the mid tier
+// gate (the independent Phase 3 review is) — so it runs on the judgment tier
 // rather than the session's strong default. The report is assembled
 // deterministically, with no model call.
 const MECHANICAL_MODEL = "haiku";
