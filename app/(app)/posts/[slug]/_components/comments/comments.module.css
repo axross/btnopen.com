@@ -226,7 +226,14 @@
 			filter: none;
 		}
 
+		/* Sized to match `.avatar` so a reader without an avatar image still gets a
+		 * proper accent-filled circle (the reply variant below overrides the size).
+		 * Without these, a top-level fallback collapses to its single glyph. */
 		.avatarFallback {
+			inline-size: var(--size-40);
+			block-size: var(--size-40);
+			flex: 0 0 auto;
+			border-radius: var(--radius-full);
 			display: flex;
 			align-items: center;
 			justify-content: center;

@@ -54,6 +54,8 @@ carries its `@scenario:<id>` tag. The reporter
 | post.comments.csrf | The comment endpoint rejects a write without a CSRF token | posts | should |
 | post.comments.unavailable-hidden | A comments-enabled post with no comments hides the section when Clerk is unavailable | posts | should |
 | post.comments.author-reply | An author reply renders nested one level under a comment with an Author badge | posts | should |
+| post.comments.avatar-tint | A reader comment's avatar is tinted to the brand hue while the author's stays true-colour | posts | should |
+| post.comments.avatar-fallback | A reader comment without an avatar shows a sized, circular letter badge | posts | should |
 | post.comments.sign-in | A signed-out reader sees the Sign in with GitHub affordance (needs Clerk test tokens) | posts | may |
 | post.comments.submit | A signed-in reader submits a comment that stays pending until approved (needs Clerk test tokens) | posts | may |
 | post.comments.draft-no-composer | A draft/preview post view renders the comments section without the composer (needs Clerk configured) | posts | should |

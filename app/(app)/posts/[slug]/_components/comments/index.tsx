@@ -133,9 +133,14 @@ function CommentItem({
 					alt={comment.authorName}
 					width={40}
 					height={40}
+					data-testid="avatar"
 				/>
 			) : (
-				<span className={css.avatarFallback} aria-hidden="true">
+				<span
+					className={css.avatarFallback}
+					aria-hidden="true"
+					data-testid="avatar-fallback"
+				>
 					{comment.authorName.slice(0, 1)}
 				</span>
 			)}
