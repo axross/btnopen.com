@@ -64,6 +64,16 @@ const EVIDENCE =
 const DIFF_CMD = `git diff ${BASE_REF}...HEAD`;
 const STATUSES = ["met", "unmet", "partial", "needs-manual-check"];
 
+// Model tiering (mirrors address-selfcheck). The preflight is a mechanical
+// dirty/empty-diff check, so it runs on the mechanical tier. Each criterion
+// verifier does bounded static judgment and degrades safely to
+// needs-manual-check on failure — and its verdict is not the authoritative
+// gate (the independent Phase 3 review is) — so it runs on the judgment tier
+// rather than the session's strong default. The report is assembled
+// deterministically, with no model call.
+const MECHANICAL_MODEL = "haiku";
+const JUDGMENT_MODEL = "sonnet";
+
 // Collapse untrusted text onto one line so a multi-line value cannot inject
 // top-level prompt or markdown lines.
 const oneLine = (s) => String(s).replace(/\s+/g, " ").trim();
@@ -113,6 +123,7 @@ const pre = await agent(
 	{
 		label: "preflight",
 		phase: "Verify",
+		model: MECHANICAL_MODEL,
 		schema: {
 			type: "object",
 			required: ["dirty", "emptyDiff"],
@@ -178,6 +189,7 @@ const results = await parallel(
 				{
 					label: `criterion:${i}`,
 					phase: "Verify",
+					model: JUDGMENT_MODEL,
 					schema: CRITERION_SCHEMA,
 				},
 			).then((r) => ({
