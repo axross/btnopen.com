@@ -1,6 +1,5 @@
 import { clsx } from "clsx";
 import { formatDistanceToNow } from "date-fns";
-import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import type { JSX } from "react";
 import { dateFnsLocaleByLocale, getActiveLocale } from "@/helpers/i18n";
@@ -10,6 +9,7 @@ import {
 } from "@/repositories/get-blog-post-comments";
 import type { PayloadLocale } from "@/repositories/payload-types";
 import { isClerkAvailable } from "@/runtime";
+import { CommentAvatar } from "./comment-avatar";
 import { CommentComposer } from "./comment-composer";
 import css from "./comments.module.css";
 import { LeaveAReviewIllustration } from "./leave-a-review";
@@ -126,24 +126,14 @@ function CommentItem({
 			className={clsx(css.comment, isReply && css.reply)}
 			data-testid="comment"
 		>
-			{comment.authorAvatarUrl ? (
-				<Image
-					className={clsx(css.avatar, comment.isAuthor && css.authorAvatar)}
-					src={comment.authorAvatarUrl}
-					alt={comment.authorName}
-					width={40}
-					height={40}
-					data-testid="avatar"
-				/>
-			) : (
-				<span
-					className={css.avatarFallback}
-					aria-hidden="true"
-					data-testid="avatar-fallback"
-				>
-					{comment.authorName.slice(0, 1)}
-				</span>
-			)}
+			<CommentAvatar
+				src={comment.authorAvatarUrl}
+				alt={comment.authorName}
+				isAuthor={comment.isAuthor}
+				fallback={comment.authorName.slice(0, 1)}
+				className={css.avatar}
+				data-testid="avatar"
+			/>
 
 			<div className={css.body}>
 				<div className={css.meta}>

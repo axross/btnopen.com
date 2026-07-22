@@ -19,7 +19,7 @@ import {
 import { BlogPostContent } from "./_components/blog-post-content";
 import { BlogPostHeader } from "./_components/blog-post-header";
 import { BlogPostingJsonLd } from "./_components/blog-posting-json-ld";
-import { Comments } from "./_components/comments";
+import { Comments } from "./_components/comments/comments";
 import { PayloadLivePreview } from "./_components/payload-live-preview";
 import css from "./page.module.css";
 import type { PageProps } from "./page-props";
