@@ -2,12 +2,12 @@
 
 import { SignInButton, useUser } from "@clerk/nextjs";
 import { clsx } from "clsx";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { type FormEvent, type JSX, useState } from "react";
 import { COMMENT_CSRF_HEADER } from "@/helpers/comment-csrf";
 import { MAX_COMMENT_BODY_LENGTH } from "@/helpers/comments";
-import css from "./comments.module.css";
+import { CommentAvatar } from "./comment-avatar";
+import css from "./comment-composer.module.css";
 
 type SubmitState = "idle" | "submitting" | "submitted" | "error";
 
@@ -141,17 +141,11 @@ export function CommentComposer({ slug }: { slug: string }): JSX.Element {
 			onSubmit={handleSubmit}
 			data-testid="composer"
 		>
-			{user.imageUrl ? (
-				<Image
-					className={css.avatar}
-					src={user.imageUrl}
-					alt={user.fullName ?? user.username ?? ""}
-					width={40}
-					height={40}
-				/>
-			) : (
-				<span className={css.avatarFallback} aria-hidden="true" />
-			)}
+			<CommentAvatar
+				src={user.imageUrl}
+				alt={user.fullName ?? user.username ?? ""}
+				className={css.avatar}
+			/>
 
 			<div className={css.composerField}>
 				<textarea

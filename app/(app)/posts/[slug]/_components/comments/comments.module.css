@@ -74,107 +74,6 @@
 			color: var(--neutral-12);
 		}
 
-		/* Composer: no surrounding card — the textarea carries the only border. */
-		.composer {
-			display: flex;
-			align-items: flex-start;
-			gap: var(--size-12);
-		}
-
-		.composerField {
-			flex: 1 1 auto;
-			min-width: 0;
-			display: flex;
-			flex-direction: column;
-			gap: var(--size-12);
-		}
-
-		.textarea {
-			width: stretch;
-			min-block-size: var(--size-64);
-			resize: vertical;
-			font: inherit;
-			color: var(--neutral-12);
-			background-color: var(--neutral-0);
-			border: var(--size-1) solid var(--neutral-7);
-			border-radius: var(--radius-sm);
-			padding-block: var(--size-12);
-			padding-inline: var(--size-12);
-			outline: none;
-
-			&::placeholder {
-				color: var(--neutral-11);
-			}
-
-			&:focus-visible {
-				outline: var(--accent-5) solid var(--size-3);
-				outline-offset: var(--size-3);
-			}
-		}
-
-		/* The signed-out composer preview: a non-editable textarea shown purely to
-		 * illustrate the affordance. `pointer-events: none` keeps it out of focus
-		 * entirely, so pairing it with `aria-hidden` is safe. */
-		.textareaPreview {
-			cursor: default;
-			pointer-events: none;
-		}
-
-		.composerRow {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			gap: var(--size-12);
-		}
-
-		/* Signed-out composer: only the sign-in button sits in the action row, so
-		 * anchor it to the bottom-right where the submit button lives when signed
-		 * in (space-between would left-align a lone item). */
-		.composerRowEnd {
-			justify-content: flex-end;
-		}
-
-		.hint {
-			font-size: var(--text-xs);
-			color: var(--neutral-11);
-		}
-
-		/* Neutral submit button (monochrome, flips with the theme). */
-		.submit {
-			font: inherit;
-			font-weight: 700;
-			font-size: var(--text-sm);
-			color: var(--neutral-0);
-			background-color: var(--neutral-12);
-			border: none;
-			border-radius: var(--radius-sm);
-			padding-block: var(--size-8);
-			padding-inline: var(--size-16);
-			cursor: pointer;
-			outline: none;
-
-			&:disabled {
-				opacity: 0.5;
-				cursor: default;
-			}
-
-			&:focus-visible {
-				outline: var(--accent-5) solid var(--size-3);
-				outline-offset: var(--size-3);
-			}
-		}
-
-		.signIn {
-			display: inline-flex;
-			align-items: center;
-			gap: var(--size-8);
-		}
-
-		.signInIcon {
-			inline-size: var(--size-16);
-			block-size: var(--size-16);
-		}
-
 		.list {
 			list-style: none;
 			display: flex;
@@ -198,42 +97,12 @@
 			gap: var(--size-12);
 		}
 
-		/* Avatars join the palette via the site's brand-hue color-grade recipe. */
+		/* Size only — the avatar's appearance (the brand-hue grade, the author
+		 * true-color variant, and the letter fallback) lives in the shared
+		 * CommentAvatar component. */
 		.avatar {
 			inline-size: var(--size-40);
 			block-size: var(--size-40);
-			flex: 0 0 auto;
-			border-radius: var(--radius-full);
-			object-fit: cover;
-			background-color: var(--accent-4);
-			filter: sepia(1) saturate(var(--saturation))
-				hue-rotate(calc(var(--accent-hue) - 92deg))
-				brightness(var(--brightness));
-
-			--saturation: 1.75;
-			--brightness: 1;
-
-			@container style(--theme: dark) {
-				--saturation: 1.5;
-				--brightness: 0.9;
-			}
-		}
-
-		/* The site author's avatar stays true-color — Author avatars are kept
-		 * unfiltered by the brand-hue grade per the UI design system. */
-		.authorAvatar {
-			background-color: unset;
-			filter: none;
-		}
-
-		.avatarFallback {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			font-weight: 600;
-			text-transform: uppercase;
-			color: oklch(0.98 0.02 var(--accent-hue));
-			background-color: var(--accent-9);
 		}
 
 		.reply .avatar,

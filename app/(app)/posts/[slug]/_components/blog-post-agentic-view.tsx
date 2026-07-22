@@ -2,12 +2,10 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import type { JSX } from "react";
 import { LoadingPlaceholderText } from "@/components/loading-placeholder";
-import { Markdown } from "@/components/markdown";
 import { getActiveLocale } from "@/helpers/i18n";
 import { getBlogPostAgentic } from "@/repositories/get-blog-post-agentic";
 import css from "./blog-post-agentic-view.module.css";
-import { markdownClassNames } from "./blog-post-content";
-import blogPostContentCss from "./blog-post-content.module.css";
+import { MarkdownContent } from "./markdown-content";
 
 export async function BlogPostAgenticView({
 	slug: slugPromise,
@@ -53,12 +51,7 @@ export async function BlogPostAgenticView({
 						{outline ? (
 							<section className={css.section} data-testid="outline">
 								<h2 className={css.sectionHeading}>{t("outline-heading")}</h2>
-								<div className={blogPostContentCss.blogPostContent}>
-									<Markdown
-										markdown={outline}
-										classNames={markdownClassNames}
-									/>
-								</div>
+								<MarkdownContent markdown={outline} />
 							</section>
 						) : null}
 
@@ -67,12 +60,7 @@ export async function BlogPostAgenticView({
 								<h2 className={css.sectionHeading}>
 									{t("authoring-notes-heading")}
 								</h2>
-								<div className={blogPostContentCss.blogPostContent}>
-									<Markdown
-										markdown={authoringNotes}
-										classNames={markdownClassNames}
-									/>
-								</div>
+								<MarkdownContent markdown={authoringNotes} />
 							</section>
 						) : null}
 					</>

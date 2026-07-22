@@ -1,4 +1,3 @@
-import { clsx } from "clsx";
 import { cacheLife } from "next/cache";
 import Image from "next/image";
 import { getPayload } from "payload";
@@ -6,7 +5,6 @@ import type { ComponentProps, JSX } from "react";
 import { resolveMediaId } from "@/helpers/media-src";
 import { rootLogger } from "@/logger";
 import { config } from "@/payload/config";
-import css from "./snippet.module.css";
 
 const logger = rootLogger.child({ module: "🖼️" });
 
@@ -38,7 +36,7 @@ export async function Media({
 						src={src}
 						alt={alt ?? fileAlt ?? ""}
 						loading="lazy"
-						className={clsx(css.media, className)}
+						className={className}
 						{...optimizations}
 					/>
 				);

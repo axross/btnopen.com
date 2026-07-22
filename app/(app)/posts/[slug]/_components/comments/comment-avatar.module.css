@@ -1,0 +1,38 @@
+@layer components {
+	/* Avatars join the palette via the site's brand-hue color-grade recipe. The
+	 * parent sizes the avatar via `className` (the comment list and composer size
+	 * the image and fallback differently), so no size lives here. */
+	.avatar {
+		flex: 0 0 auto;
+		border-radius: var(--radius-full);
+		object-fit: cover;
+		background-color: var(--accent-4);
+		filter: sepia(1) saturate(var(--saturation))
+			hue-rotate(calc(var(--accent-hue) - 92deg)) brightness(var(--brightness));
+
+		--saturation: 1.75;
+		--brightness: 1;
+
+		@container style(--theme: dark) {
+			--saturation: 1.5;
+			--brightness: 0.9;
+		}
+	}
+
+	/* The site author's avatar stays true-color — author avatars are kept
+	 * unfiltered by the brand-hue grade per the UI design system. */
+	.authorAvatar {
+		background-color: unset;
+		filter: none;
+	}
+
+	.avatarFallback {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: 600;
+		text-transform: uppercase;
+		color: oklch(0.98 0.02 var(--accent-hue));
+		background-color: var(--accent-9);
+	}
+}
