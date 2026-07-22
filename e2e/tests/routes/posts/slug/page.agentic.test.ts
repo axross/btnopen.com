@@ -51,9 +51,12 @@ test(
 		await test.step("Verify the outline Markdown is rendered as links", async () => {
 			await expect(
 				content.getByTestId("outline").getByRole("link", {
-					name: "Markdown Guide",
+					name: "Payload Official Features",
 				}),
-			).toHaveAttribute("href", "https://www.markdownguide.org/");
+			).toHaveAttribute(
+				"href",
+				"https://payloadcms.com/docs/rich-text/official-features",
+			);
 		});
 
 		await test.step("Verify nested outline bullets render as a nested list", async () => {
