@@ -125,6 +125,125 @@ test(
 );
 
 test(
+	"A reader comment's avatar is tinted to the brand hue while the author's stays true-colour",
+	{
+		tag: [
+			"@scenario:post.comments.avatar-tint",
+			"@area:posts",
+			"@priority:should",
+		],
+	},
+	async ({ page }, testInfo) => {
+		const readerBody = "テーマ色に着色されるアバターのコメントです。";
+		const replyBody = "著者アバターは元の色のままです。";
+		// A seeded local fixture (see public/images/comment-avatars) so the reader
+		// avatar renders as an <img> and exercises the brand-hue tint recipe.
+		const readerAvatarUrl = "/images/comment-avatars/minato.webp";
+
+		let postId: number | null = null;
+		const commentIds: number[] = [];
+
+		try {
+			const slug = uniqueSlug(
+				"comments-avatar-tint",
+				testInfo.repeatEachIndex,
+				testInfo.workerIndex,
+			);
+
+			await test.step("Create a published post with comments enabled", async () => {
+				({ id: postId } = await createPublishedBlogPost({
+					page,
+					slug,
+					testInfo,
+					title: "アバターのある投稿",
+				}));
+			});
+
+			await test.step("Seed a reader comment with an avatar and an author reply", async () => {
+				const blogPostId = postId as number;
+
+				const readerId = await createComment({
+					page,
+					testInfo,
+					blogPostId,
+					body: readerBody,
+					status: "approved",
+					authorName: "みなと",
+					authorGithubUsername: "minato",
+					authorAvatarUrl: readerAvatarUrl,
+				});
+				commentIds.push(readerId);
+
+				commentIds.push(
+					await createComment({
+						page,
+						testInfo,
+						blogPostId,
+						body: replyBody,
+						status: "approved",
+						authorReply: true,
+						parentId: readerId,
+					}),
+				);
+			});
+
+			await test.step("Navigate to the post", async () => {
+				await page.goto(`/posts/${slug}`);
+			});
+
+			const comments = page.getByTestId("comments");
+			await expect(comments).toBeVisible();
+
+			await test.step("The reader avatar carries the brand-hue tint filter", async () => {
+				// The top-level (non-author) comment is the reader; its avatar runs the
+				// shared sepia → hue-rotate grade. There is no locator-native matcher
+				// for a computed `filter`, so read it via getComputedStyle (the
+				// sanctioned exception, as with pseudo-element state).
+				const readerAvatar = comments
+					.getByTestId("comment")
+					.first()
+					.getByTestId("avatar");
+
+				await expect(readerAvatar).toBeVisible();
+
+				const filter = await readerAvatar.evaluate(
+					(element) => getComputedStyle(element).filter,
+				);
+
+				expect(filter).not.toBe("none");
+				expect(filter).toContain("sepia");
+			});
+
+			await test.step("The author reply avatar stays true-colour (unfiltered)", async () => {
+				const authorAvatar = comments
+					.getByTestId("replies")
+					.getByTestId("avatar");
+
+				await expect(authorAvatar).toBeVisible();
+
+				const filter = await authorAvatar.evaluate(
+					(element) => getComputedStyle(element).filter,
+				);
+
+				expect(filter).toBe("none");
+			});
+		} finally {
+			await Promise.all(
+				commentIds.map((id) => deleteComment({ id, page, testInfo })),
+			);
+
+			if (postId !== null) {
+				const id = postId;
+
+				await test.step("Clean up the post", async () => {
+					await deleteBlogPost({ id, page, testInfo });
+				});
+			}
+		}
+	},
+);
+
+test(
 	"The comment endpoint rejects a write without a CSRF token",
 	{
 		tag: ["@scenario:post.comments.csrf", "@area:posts", "@priority:should"],

@@ -133,6 +133,7 @@ function CommentItem({
 					alt={comment.authorName}
 					width={40}
 					height={40}
+					data-testid="avatar"
 				/>
 			) : (
 				<span className={css.avatarFallback} aria-hidden="true">
