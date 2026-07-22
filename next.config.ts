@@ -11,9 +11,18 @@ const withNextIntl = createNextIntlPlugin(
 const isCi = !!process.env.CI;
 const sentryOrg = process.env.SENTRY_ORG;
 const sentryProject = process.env.SENTRY_PROJECT;
+// A custom deployment ID (the commit SHA, injected by the deploy workflows) so
+// Skew Protection keeps working when the app is built on CI with `vercel build`
+// and shipped with `vercel deploy --prebuilt`: the prebuilt flow cannot inherit
+// Vercel's auto-assigned deployment ID, so the build bakes this one into
+// routes-manifest.json and the client's skew-protected `?dpl=` requests. Unset
+// outside the deploy workflows (local dev, tests), where `undefined` leaves
+// Next.js on its default behavior.
+const deploymentId = process.env.DEPLOYMENT_ID;
 // biome-ignore-end lint/style/noProcessEnv: nextjs config needs to access env vars
 
 const nextConfig: NextConfig = {
+	deploymentId,
 	reactCompiler: true,
 	cacheComponents: true,
 	images: {
