@@ -7,7 +7,7 @@ import { deleteBlogPost } from "@/e2e/helpers/api/mcp";
 test.use({ storageState: authenticatedStorageState });
 
 const forbiddenStatus = 403;
-// The fallback badge is sized to the avatar box; a bare glyph is well under this.
+// the fallback badge is sized to the avatar box; a bare glyph is well under this.
 const avatarFallbackMinSizePx = 32;
 const avatarFallbackSquareTolerancePx = 1;
 
@@ -15,8 +15,9 @@ function uniqueSlug(prefix: string, repeat: number, worker: number): string {
 	return `${prefix}-${repeat}-${worker}-${Date.now()}`;
 }
 
-// No locator-native matcher exists for a computed `filter`, so read it via
-// getComputedStyle (the sanctioned exception, as with pseudo-element state).
+// no locator-native matcher exists for a computed `filter`, so read it via
+// getComputedStyle (the sanctioned exception, as with pseudo-element state),
+// re-sampled through expect.poll at the call sites so it settles.
 function computedFilter(locator: Locator): Promise<string> {
 	return locator.evaluate((element) => getComputedStyle(element).filter);
 }
@@ -145,7 +146,7 @@ test(
 	async ({ page }, testInfo) => {
 		const readerBody = "テーマ色に着色されるアバターのコメントです。";
 		const replyBody = "著者アバターは元の色のままです。";
-		// A seeded local fixture (see public/images/comment-avatars) so the reader
+		// a seeded local fixture (see public/images/comment-avatars) so the reader
 		// avatar renders as an <img> and exercises the brand-hue tint recipe.
 		const readerAvatarUrl = "/images/comment-avatars/minato.webp";
 
@@ -203,22 +204,25 @@ test(
 			const comments = page.getByTestId("comments");
 			await expect(comments).toBeVisible();
 
-			// The first top-level (non-author) comment is the reader with a photo.
+			// the first top-level (non-author) comment is the reader with a photo.
 			const readerAvatar = comments
 				.getByTestId("comment")
 				.first()
 				.getByTestId("avatar");
 
-			// Captured in light theme, re-checked after switching to dark.
+			// captured in light theme, re-checked after switching to dark.
 			let lightFilter = "";
 
 			await test.step("The reader avatar carries the brand-hue tint filter", async () => {
 				await expect(readerAvatar).toBeVisible();
 
-				lightFilter = await computedFilter(readerAvatar);
+				// poll until the container-query-driven filter settles on the tint.
+				await expect
+					.poll(() => computedFilter(readerAvatar))
+					.toContain("sepia");
 
+				lightFilter = await computedFilter(readerAvatar);
 				expect(lightFilter).not.toBe("none");
-				expect(lightFilter).toContain("sepia");
 			});
 
 			await test.step("The author reply avatar stays true-colour (unfiltered)", async () => {
@@ -227,20 +231,23 @@ test(
 					.getByTestId("avatar");
 
 				await expect(authorAvatar).toBeVisible();
-				expect(await computedFilter(authorAvatar)).toBe("none");
+				await expect.poll(() => computedFilter(authorAvatar)).toBe("none");
 			});
 
 			await test.step("The reader avatar stays tinted in dark theme", async () => {
 				await page.emulateMedia({ colorScheme: "dark" });
 
-				const darkFilter = await computedFilter(readerAvatar);
+				// the dark scheme applies its own saturation/brightness compensation, so
+				// re-sample until the filter differs from light — proving the
+				// theme-driven container query re-evaluated rather than the tint being
+				// theme-agnostic — then confirm it is still a (dark) sepia grade.
+				await expect
+					.poll(() => computedFilter(readerAvatar))
+					.not.toBe(lightFilter);
 
+				const darkFilter = await computedFilter(readerAvatar);
 				expect(darkFilter).not.toBe("none");
 				expect(darkFilter).toContain("sepia");
-				// The dark scheme applies its own saturation/brightness compensation, so
-				// the filter must differ from light — proving the theme-driven container
-				// query re-evaluated rather than the tint being theme-agnostic.
-				expect(darkFilter).not.toBe(lightFilter);
 
 				await page.emulateMedia({ colorScheme: "light" });
 			});
@@ -319,17 +326,20 @@ test(
 					throw new Error("The avatar fallback has no bounding box.");
 				}
 
-				// Sized to the avatar box and square, not collapsed to the bare glyph.
+				// sized to the avatar box and square, not collapsed to the bare glyph.
 				expect(box.width).toBeGreaterThanOrEqual(avatarFallbackMinSizePx);
 				expect(Math.abs(box.width - box.height)).toBeLessThanOrEqual(
 					avatarFallbackSquareTolerancePx,
 				);
 
-				const borderRadius = await fallback.evaluate(
-					(element) => getComputedStyle(element).borderRadius,
-				);
-
-				expect(borderRadius).not.toBe("0px");
+				// poll the computed border-radius (no locator-native matcher for it).
+				await expect
+					.poll(() =>
+						fallback.evaluate(
+							(element) => getComputedStyle(element).borderRadius,
+						),
+					)
+					.not.toBe("0px");
 			});
 		} finally {
 			await Promise.all(
