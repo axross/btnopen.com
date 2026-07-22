@@ -145,5 +145,41 @@ jobs:
           LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN: ${{ secrets.LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN }}
           BLOB_PAYLOAD_READ_WRITE_TOKEN: ${{ secrets.BLOB_PAYLOAD_READ_WRITE_TOKEN }}
         run: npm run migrate:up
-      - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build Project Artifacts on GitHub Actions
+        # Build here instead of on Vercel, then ship the prebuilt output with
+        # `vercel deploy --prebuilt` below, so Vercel spends no build compute.
+        # Under `--prebuilt`, Vercel's System Environment Variables are absent at
+        # build time, so inject the two the client bundle inlines
+        # (NEXT_PUBLIC_VERCEL_ENV / _GIT_COMMIT_SHA — the btn-env/btn-sha meta
+        # tags and the Sentry release) plus the custom DEPLOYMENT_ID that
+        # next.config.ts bakes into routes-manifest.json to keep Skew Protection
+        # working. The production database and blob credentials are sourced from
+        # the `Production` GitHub environment exactly as the migrate step above;
+        # `payload`'s config build validates the blob token's format, so a real
+        # token must be present. The unusable placeholders `vercel pull` wrote
+        # for the sensitive variables are stripped from its pulled env file(s)
+        # first, so they cannot shadow the real values passed here.
+        env:
+          NEXT_PUBLIC_VERCEL_ENV: production
+          NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
+          DEPLOYMENT_ID: ${{ github.sha }}
+          LIBSQL_PAYLOAD_TURSO_DATABASE_URL: ${{ vars.LIBSQL_PAYLOAD_TURSO_DATABASE_URL }}
+          LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN: ${{ secrets.LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN }}
+          BLOB_PAYLOAD_READ_WRITE_TOKEN: ${{ secrets.BLOB_PAYLOAD_READ_WRITE_TOKEN }}
+        run: |
+          set -euo pipefail
+          for envfile in .vercel/.env.*.local; do
+            if [ -f "${envfile}" ]; then
+              sed --in-place --regexp-extended \
+                '/^(LIBSQL_PAYLOAD_TURSO_(DATABASE_URL|AUTH_TOKEN)|BLOB_PAYLOAD_READ_WRITE_TOKEN)=/d' \
+                "${envfile}"
+            fi
+          done
+          vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy Prebuilt Artifacts to Vercel
+        # Upload the `.vercel/output` built above without rebuilding on Vercel.
+        # `--archive=tgz` compresses the upload so a large Next.js output tree
+        # stays clear of Vercel's per-deployment file-count upload limit. The
+        # deployment's runtime environment variables still come from the Vercel
+        # `Production` environment, so nothing runtime-facing is passed here.
+        run: vercel deploy --prebuilt --prod --archive=tgz --token=${{ secrets.VERCEL_TOKEN }}

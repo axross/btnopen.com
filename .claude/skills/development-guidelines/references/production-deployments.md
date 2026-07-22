@@ -18,14 +18,16 @@ push to main
                               1. vercel pull / env pull   (production project settings)
                               2. verify LIBSQL_* + Blob credentials are present  ── absent ─▶ fail
                               3. npm run migrate:up        (against production)  ── error ─▶ fail
-                              4. vercel deploy --prod      (promote new code to traffic)
+                              4. vercel build --prod       (build on the runner, not on Vercel)
+                              5. vercel deploy --prebuilt --prod  (publish the prebuilt output)
 ```
 
-The `deployment` job declares `environment: Production`, which is what grants it the production `LIBSQL_PAYLOAD_TURSO_DATABASE_URL` variable and the `LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN` and `BLOB_PAYLOAD_READ_WRITE_TOKEN` secrets used by the migration step.
+The build runs on the GitHub Actions runner (`vercel build`), and `vercel deploy --prebuilt` only publishes the resulting `.vercel/output` — Vercel never rebuilds, so it spends no build credit (see [preview-deployments.md](./preview-deployments.md) for the prebuilt mechanics shared by both pipelines). The `deployment` job declares `environment: Production`, which is what grants it the production `LIBSQL_PAYLOAD_TURSO_DATABASE_URL` variable and the `LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN` and `BLOB_PAYLOAD_READ_WRITE_TOKEN` secrets used by both the migration step and the build step (the build renders `/sitemap.xml` and runs the `onInit` seed against production, so it needs the same database and blob credentials).
 
 **Guidelines:**
 
-- MUST keep the `npm run migrate:up` step ordered before the `vercel deploy --prod` step, so migrations reach production before the new code is promoted to traffic.
+- MUST keep the `npm run migrate:up` step ordered before the `vercel build --prod` and `vercel deploy --prebuilt --prod` steps, so migrations reach production before the new code is built against it (the build queries production while rendering `/sitemap.xml` and seeding) and promoted to traffic.
+- MUST source the production credentials and the build-time system variables the prebuilt build needs — `NEXT_PUBLIC_VERCEL_ENV`, `NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA`, and the custom `DEPLOYMENT_ID` (a `<=32`-char commit SHA for Skew Protection; see [preview-deployments.md](./preview-deployments.md)) — in the `vercel build --prod` step's environment, because `--prebuilt` deployments do not receive Vercel's System Environment Variables at build time.
 - MUST keep migration failures fatal to the deploy (see [Fail Loud on Migration or Credential Errors](#fail-loud-on-migration-or-credential-errors)); a half-migrated database must never be served.
 - MUST source the production credentials from the `Production` GitHub environment (see [Credential Sourcing](#credential-sourcing)), never from the repository-wide scope.
 - SHOULD keep this the single production-promotion path: if Vercel Git auto-deploy is enabled on the project, a push-triggered Vercel build can promote new code in parallel with (and ahead of) this job's migration step, reopening the drift window this pipeline closes.
