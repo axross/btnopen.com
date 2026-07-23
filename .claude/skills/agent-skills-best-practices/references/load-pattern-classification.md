@@ -20,7 +20,6 @@ The project's current skills, by load pattern. Keep this synchronized with the s
 | Skill | Load pattern | Note |
 | ----- | ------------ | ---- |
 | `address` | Runnable capability | `user-invocable: true` |
-| `author` | Runnable capability | `user-invocable: true` |
 | `handoff` | Runnable capability | `user-invocable: true` |
 | `development-guidelines` | Always-on rule | "Apply at the start of EVERY task"; candidate for hoisting its baseline into `AGENTS.md` |
 | `code-review-guideline` | On-demand reference lens | Activity-scoped always-on: fires on every review; reviewer-reset/severity core is a hoist candidate |
@@ -40,9 +39,8 @@ The project's current skills, by load pattern. Keep this synchronized with the s
 | `observability-guidelines` | On-demand reference lens | |
 | `e2e-testing-guidelines` | On-demand reference lens | |
 | `unit-test-guidelines` | On-demand reference lens | |
-| `blog-post-authoring-guidelines` | On-demand reference lens | |
 
-Totals: **3 runnable capabilities · 1 always-on rule · 18 on-demand reference lenses**.
+Totals: **2 runnable capabilities · 1 always-on rule · 17 on-demand reference lenses**.
 
 ## Using the Classification
 

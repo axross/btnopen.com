@@ -17,6 +17,7 @@ Apply these keywords consistently in this document and the documents linked from
 - This is a personal blogging website. It displays a portrait, a bio, and links to the author's social media accounts.
 - Blog posts are the primary content type. They support tags, cover images, and rich Markdown including syntax-highlighted code blocks and embedded web content previews.
 - Content is written primarily in Japanese, with English provided as a fallback for readers in other locales.
+- Writing and editing blog post *content* is driven by a separate agent-skills library that connects through the Payload MCP server; this repository owns the CMS content model (see [README](README.md)) and the [Payload CMS MCP](.claude/skills/payload-cms-mcp/SKILL.md) operation skill, not the authoring workflow itself.
 - For tech stack, third-party services, and directory placement, consult [Project Structure](.claude/skills/project-structure/SKILL.md).
 - For npm run-scripts, current-docs lookup rules, and verification commands, consult [Development Guidelines](.claude/skills/development-guidelines/SKILL.md).
 
@@ -28,7 +29,6 @@ Apply these keywords consistently in this document and the documents linked from
 | ----- | ------------- |
 | [Agent Skills Best Practices](.claude/skills/agent-skills-best-practices/SKILL.md) | Creating, refining, splitting, renaming, deleting, or auditing project skills or this skill index, or authoring the named Workflow scripts under `.claude/workflows/` that entry-point skills delegate to |
 | [Application Security Requirements](.claude/skills/application-security-requirements/SKILL.md) | Reviewing secrets, environment variables, validation, Payload access control, markdown XSS, SSRF/embed fetching, auth/session behavior, privacy exposure, preview deployment data exposure, analytics/error-reporting data, or npm dependency risk |
-| [Blog Post Authoring Guidelines](.claude/skills/blog-post-authoring-guidelines/SKILL.md) | Drafting, rewriting, refining, translating, or reviewing blog post content, titles, briefs, tags, structure, tone, grammar, the `outline` / `authoringNotes` authoring artifacts, and authorial style |
 | [Code Review Guideline](.claude/skills/code-review-guideline/SKILL.md) | Reviewing a diff, pull request, local change, or post-implementation self-review |
 | [Development Guidelines](.claude/skills/development-guidelines/SKILL.md) | Implementing, refactoring, running commands, preparing commits, writing pull request descriptions, adding dependencies, checking current docs, changing migrations, or working on the preview-deployment pipeline |
 | [E2E Testing Guidelines](.claude/skills/e2e-testing-guidelines/SKILL.md) | Writing, running, reviewing, or maintaining Playwright tests, snapshots, route coverage, or browser assertions |
@@ -54,7 +54,6 @@ Unlike the guideline skills above, these skills are runnable workflows: a human 
 | ----- | -------------- |
 | [Address](.claude/skills/address/SKILL.md) | Delivering one unit of work — an issue, a pull request, or a free-form prompt — end-to-end: plan, human approval, code, independent review, address findings; `continue` resumes a paused run or takes over a handoff package |
 | [Handoff](.claude/skills/handoff/SKILL.md) | Suspending in-progress work into a downloadable package that a fresh-context session takes over with `/address continue` |
-| [Author](.claude/skills/author/SKILL.md) | Driving a btnopen blog post from an idea or outline through research and drafting rounds to a reviewed draft via the Payload MCP server |
 
 ## Response Approach
 

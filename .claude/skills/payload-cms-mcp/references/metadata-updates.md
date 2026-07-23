@@ -2,7 +2,7 @@
 
 Blog post metadata includes fields outside the Lexical body: `title`, `brief`, `outline`, `authoringNotes`, `slug`, `tags`, `coverImage`, `publishedAt`, and `_status`. The custom body tools do not update these fields.
 
-Which content belongs in the `outline` versus `authoringNotes` authoring artifacts is an editorial decision owned by the blog-post authoring guidelines (its authoring-artifacts reference); this file covers only the mutation mechanics.
+Which content belongs in the `outline` versus `authoringNotes` authoring artifacts is specified in the repository README's CMS content model; this file covers only the mutation mechanics.
 
 **Guidelines:**
 
