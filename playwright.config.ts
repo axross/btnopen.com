@@ -12,6 +12,10 @@ const vercelAutomationBypassSecret =
 
 export default defineConfig({
 	testDir: "./e2e/tests",
+	// Runs once in the main process before any worker: fetches the Clerk testing
+	// token when the dev-instance keys are set, and is a no-op otherwise so the
+	// suite still runs without Clerk configured.
+	globalSetup: "./e2e/global-setup.ts",
 	// keep the default terminal reporter (github annotations on CI, list locally)
 	// and append the scenario-coverage reporter — it only tallies @scenario: tags
 	// against e2e/scenarios.md, so it adds no measurable cost to the default run.

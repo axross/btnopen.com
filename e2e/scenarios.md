@@ -56,8 +56,8 @@ carries its `@scenario:<id>` tag. The reporter
 | post.comments.author-reply | An author reply renders nested one level under a comment with an Author badge | posts | should |
 | post.comments.avatar-tint | A reader comment's avatar is tinted to the brand hue while the author's stays true-colour | posts | should |
 | post.comments.avatar-fallback | A reader comment without an avatar shows a sized, circular letter badge | posts | should |
-| post.comments.sign-in | A signed-out reader sees the Sign in with GitHub affordance (needs Clerk test tokens) | posts | may |
-| post.comments.submit | A signed-in reader submits a comment that stays pending until approved (needs Clerk test tokens) | posts | may |
+| post.comments.sign-in | A signed-out reader sees the Sign in with GitHub affordance (Clerk-configured runs only) | posts | may |
+| post.comments.submit | A signed-in reader submits a comment that stays pending until approved (Clerk-configured runs only) | posts | may |
 | post.comments.draft-no-composer | A draft/preview post view renders the comments section without the composer (needs Clerk configured) | posts | should |
 | not-found.status | An unknown route responds with a 404 status | not-found | must |
 | post.not-found | An unknown post slug shows the not-found page | not-found | must |
