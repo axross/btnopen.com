@@ -17,7 +17,7 @@ Apply these keywords consistently in this document and the documents linked from
 - This is a personal blogging website. It displays a portrait, a bio, and links to the author's social media accounts.
 - Blog posts are the primary content type. They support tags, cover images, and rich Markdown including syntax-highlighted code blocks and embedded web content previews.
 - Content is written primarily in Japanese, with English provided as a fallback for readers in other locales.
-- Writing and editing blog post *content* is driven by a separate agent-skills library that connects through the Payload MCP server; this repository owns the CMS content model (see [README](README.md)) and the [Payload CMS MCP](.claude/skills/payload-cms-mcp/SKILL.md) operation skill, not the authoring workflow itself.
+- Writing and editing blog post *content* — and the CMS operations that apply it through the Payload MCP server — is driven by a separate agent-skills library; this repository owns the CMS content model (see [README](README.md)) and the MCP server itself, not the authoring or CMS-editing workflow.
 - For tech stack, third-party services, and directory placement, consult [Project Structure](.claude/skills/project-structure/SKILL.md).
 - For npm run-scripts, current-docs lookup rules, and verification commands, consult [Development Guidelines](.claude/skills/development-guidelines/SKILL.md).
 
@@ -36,7 +36,6 @@ Apply these keywords consistently in this document and the documents linked from
 | [Maintainable Code Guidelines](.claude/skills/maintainable-code-guidelines/SKILL.md) | Reviewing readability, naming, abstraction boundaries, complexity, dead code, or scope discipline |
 | [Markdown Processing Guidelines](.claude/skills/markdown-processing-guidelines/SKILL.md) | Writing, reviewing, or modifying markdown rendering, Remark/Rehype plugins, Shiki setup, custom nodes, web embeds, or rich-text block markdown converters |
 | [Observability Guidelines](.claude/skills/observability-guidelines/SKILL.md) | Throwing, catching, reporting, or logging errors with Sentry or Pino |
-| [Payload CMS MCP](.claude/skills/payload-cms-mcp/SKILL.md) | Inspecting or mutating existing Payload CMS content through MCP, including blog posts, media, tags, locales, drafts, and metadata; use this for existing blog post edits even when MCP is not mentioned |
 | [Performance and Reliability Requirements](.claude/skills/performance-and-reliability-requirements/SKILL.md) | Reviewing Payload query cost, RSC/client boundaries, caching, image optimization, bundle weight, or runtime failure behavior |
 | [Product Requirement Guidelines](.claude/skills/product-requirement-guidelines/SKILL.md) | Writing, refining, or reviewing a product requirement, feature spec, plan document, or issue description; the canonical plan-document structure and its per-section craft — goals/non-goals/assumptions, functional and non-functional requirements, UI/system design framing, acceptance criteria, verification strategy, open questions |
 | [Project Structure](.claude/skills/project-structure/SKILL.md) | Navigating the repository, locating files, placing new modules, checking stack/service context, import aliases, or directory conventions |

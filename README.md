@@ -185,9 +185,9 @@ content model above.
 Payload exposes a [Model Context Protocol](https://modelcontextprotocol.io)
 (MCP) server, so any MCP-capable AI agent can inspect and edit CMS content —
 blog posts, tags, cover images, media, and the site profile — through a single
-authenticated endpoint. This is what powers AI-assisted blogging on the site;
-the agent-facing operating rules for this repository live in
-[`.claude/skills/payload-cms-mcp/`](.claude/skills/payload-cms-mcp/SKILL.md).
+authenticated endpoint. This is what powers AI-assisted blogging on the site: a
+separate agent-skills library uses these tools to write and edit content, and
+any MCP-capable agent can connect to the same endpoint.
 
 **Endpoint.** The server is served by the Payload app itself, as HTTP
 [JSON-RPC 2.0](https://www.jsonrpc.org/specification):

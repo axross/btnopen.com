@@ -27,7 +27,6 @@ The project's current skills, by load pattern. Keep this synchronized with the s
 | `agent-skills-best-practices` | On-demand reference lens | Authoring/meta discipline |
 | `product-requirement-guidelines` | On-demand reference lens | |
 | `project-structure` | On-demand reference lens | |
-| `payload-cms-mcp` | On-demand reference lens | Procedural how-to for the MCP server; not runnable |
 | `application-security-requirements` | On-demand reference lens | Review lens |
 | `maintainable-code-guidelines` | On-demand reference lens | Review lens |
 | `performance-and-reliability-requirements` | On-demand reference lens | Review lens |
@@ -40,7 +39,7 @@ The project's current skills, by load pattern. Keep this synchronized with the s
 | `e2e-testing-guidelines` | On-demand reference lens | |
 | `unit-test-guidelines` | On-demand reference lens | |
 
-Totals: **2 runnable capabilities · 1 always-on rule · 17 on-demand reference lenses**.
+Totals: **2 runnable capabilities · 1 always-on rule · 16 on-demand reference lenses**.
 
 ## Using the Classification
 
