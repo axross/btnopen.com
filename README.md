@@ -135,11 +135,11 @@ components, and the rest of the [skill index](AGENTS.md) — here.
 
 ## CMS content model
 
-All content lives in Payload CMS collections, edited in the Payload admin or
-through the MCP server (below). The main collections are `blog-posts` (the
-primary content type), `tags`, `cover-images`, `media` (images embedded in post
-bodies), the site profile, and `payload-mcp-api-keys` (scoped keys for the MCP
-server). Reader-facing fields are localized with **Japanese (`ja-JP`) as the
+All content lives in Payload CMS collections and one global, edited in the
+Payload admin or through the MCP server (below). The main collections are
+`blog-posts` (the primary content type), `tags`, `cover-images`, `media` (images
+embedded in post bodies), and `payload-mcp-api-keys` (scoped keys for the MCP
+server); the `website` global holds the site profile. Reader-facing fields are localized with **Japanese (`ja-JP`) as the
 primary locale** and English as a fallback, and each post is served in a draft
 or published state.
 
