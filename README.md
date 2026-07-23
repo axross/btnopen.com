@@ -174,6 +174,15 @@ What belongs in each field:
 | Body section structure and each section's substance | `outline` |
 | ねらい / 結論 / 対象読者 / 編集方針 / 進行状態 / 公開前チェックリスト, and working notes | `authoringNotes` |
 
+`authoringNotes` has a recommended structure so it stays usable as resumable
+state: organize it under `## ねらい`, `## 結論`, `## 対象読者`, `## 編集方針`,
+`## 進行状態`, and `## 公開前チェックリスト` headings (omitting any that are
+genuinely empty; free-form working notes may follow). Keep a **single merged
+`公開前チェックリスト`** rather than two overlapping checklists, and record
+`進行状態` with the current phase, completed work, and links to any session
+artifacts — that is what lets a fresh session resume the post from CMS state
+alone.
+
 The editorial craft for shaping these fields — the outline's nested-tree
 discipline and the author's writing voice — and the end-to-end writing workflow
 live in a separate agent-skills library that drives authoring through the
