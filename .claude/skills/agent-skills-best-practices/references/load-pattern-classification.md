@@ -20,7 +20,6 @@ The project's current skills, by load pattern. Keep this synchronized with the s
 | Skill | Load pattern | Note |
 | ----- | ------------ | ---- |
 | `address` | Runnable capability | `user-invocable: true` |
-| `author` | Runnable capability | `user-invocable: true` |
 | `handoff` | Runnable capability | `user-invocable: true` |
 | `development-guidelines` | Always-on rule | "Apply at the start of EVERY task"; candidate for hoisting its baseline into `AGENTS.md` |
 | `code-review-guideline` | On-demand reference lens | Activity-scoped always-on: fires on every review; reviewer-reset/severity core is a hoist candidate |
@@ -28,7 +27,6 @@ The project's current skills, by load pattern. Keep this synchronized with the s
 | `agent-skills-best-practices` | On-demand reference lens | Authoring/meta discipline |
 | `product-requirement-guidelines` | On-demand reference lens | |
 | `project-structure` | On-demand reference lens | |
-| `payload-cms-mcp` | On-demand reference lens | Procedural how-to for the MCP server; not runnable |
 | `application-security-requirements` | On-demand reference lens | Review lens |
 | `maintainable-code-guidelines` | On-demand reference lens | Review lens |
 | `performance-and-reliability-requirements` | On-demand reference lens | Review lens |
@@ -40,9 +38,8 @@ The project's current skills, by load pattern. Keep this synchronized with the s
 | `observability-guidelines` | On-demand reference lens | |
 | `e2e-testing-guidelines` | On-demand reference lens | |
 | `unit-test-guidelines` | On-demand reference lens | |
-| `blog-post-authoring-guidelines` | On-demand reference lens | |
 
-Totals: **3 runnable capabilities · 1 always-on rule · 18 on-demand reference lenses**.
+Totals: **2 runnable capabilities · 1 always-on rule · 16 on-demand reference lenses**.
 
 ## Using the Classification
 

@@ -17,6 +17,7 @@ Apply these keywords consistently in this document and the documents linked from
 - This is a personal blogging website. It displays a portrait, a bio, and links to the author's social media accounts.
 - Blog posts are the primary content type. They support tags, cover images, and rich Markdown including syntax-highlighted code blocks and embedded web content previews.
 - Content is written primarily in Japanese, with English provided as a fallback for readers in other locales.
+- Writing and editing blog post *content* — and the CMS operations that apply it through the Payload MCP server — is driven by a separate agent-skills library; this repository owns the CMS content model (see [README](README.md)) and the MCP server itself, not the authoring or CMS-editing workflow.
 - For tech stack, third-party services, and directory placement, consult [Project Structure](.claude/skills/project-structure/SKILL.md).
 - For npm run-scripts, current-docs lookup rules, and verification commands, consult [Development Guidelines](.claude/skills/development-guidelines/SKILL.md).
 
@@ -28,7 +29,6 @@ Apply these keywords consistently in this document and the documents linked from
 | ----- | ------------- |
 | [Agent Skills Best Practices](.claude/skills/agent-skills-best-practices/SKILL.md) | Creating, refining, splitting, renaming, deleting, or auditing project skills or this skill index, or authoring the named Workflow scripts under `.claude/workflows/` that entry-point skills delegate to |
 | [Application Security Requirements](.claude/skills/application-security-requirements/SKILL.md) | Reviewing secrets, environment variables, validation, Payload access control, markdown XSS, SSRF/embed fetching, auth/session behavior, privacy exposure, preview deployment data exposure, analytics/error-reporting data, or npm dependency risk |
-| [Blog Post Authoring Guidelines](.claude/skills/blog-post-authoring-guidelines/SKILL.md) | Drafting, rewriting, refining, translating, or reviewing blog post content, titles, briefs, tags, structure, tone, grammar, the `outline` / `authoringNotes` authoring artifacts, and authorial style |
 | [Code Review Guideline](.claude/skills/code-review-guideline/SKILL.md) | Reviewing a diff, pull request, local change, or post-implementation self-review |
 | [Development Guidelines](.claude/skills/development-guidelines/SKILL.md) | Implementing, refactoring, running commands, preparing commits, writing pull request descriptions, adding dependencies, checking current docs, changing migrations, or working on the preview-deployment pipeline |
 | [E2E Testing Guidelines](.claude/skills/e2e-testing-guidelines/SKILL.md) | Writing, running, reviewing, or maintaining Playwright tests, snapshots, route coverage, or browser assertions |
@@ -36,7 +36,6 @@ Apply these keywords consistently in this document and the documents linked from
 | [Maintainable Code Guidelines](.claude/skills/maintainable-code-guidelines/SKILL.md) | Reviewing readability, naming, abstraction boundaries, complexity, dead code, or scope discipline |
 | [Markdown Processing Guidelines](.claude/skills/markdown-processing-guidelines/SKILL.md) | Writing, reviewing, or modifying markdown rendering, Remark/Rehype plugins, Shiki setup, custom nodes, web embeds, or rich-text block markdown converters |
 | [Observability Guidelines](.claude/skills/observability-guidelines/SKILL.md) | Throwing, catching, reporting, or logging errors with Sentry or Pino |
-| [Payload CMS MCP](.claude/skills/payload-cms-mcp/SKILL.md) | Inspecting or mutating existing Payload CMS content through MCP, including blog posts, media, tags, locales, drafts, and metadata; use this for existing blog post edits even when MCP is not mentioned |
 | [Performance and Reliability Requirements](.claude/skills/performance-and-reliability-requirements/SKILL.md) | Reviewing Payload query cost, RSC/client boundaries, caching, image optimization, bundle weight, or runtime failure behavior |
 | [Product Requirement Guidelines](.claude/skills/product-requirement-guidelines/SKILL.md) | Writing, refining, or reviewing a product requirement, feature spec, plan document, or issue description; the canonical plan-document structure and its per-section craft — goals/non-goals/assumptions, functional and non-functional requirements, UI/system design framing, acceptance criteria, verification strategy, open questions |
 | [Project Structure](.claude/skills/project-structure/SKILL.md) | Navigating the repository, locating files, placing new modules, checking stack/service context, import aliases, or directory conventions |
@@ -54,7 +53,6 @@ Unlike the guideline skills above, these skills are runnable workflows: a human 
 | ----- | -------------- |
 | [Address](.claude/skills/address/SKILL.md) | Delivering one unit of work — an issue, a pull request, or a free-form prompt — end-to-end: plan, human approval, code, independent review, address findings; `continue` resumes a paused run or takes over a handoff package |
 | [Handoff](.claude/skills/handoff/SKILL.md) | Suspending in-progress work into a downloadable package that a fresh-context session takes over with `/address continue` |
-| [Author](.claude/skills/author/SKILL.md) | Driving a btnopen blog post from an idea or outline through research and drafting rounds to a reviewed draft via the Payload MCP server |
 
 ## Response Approach
 

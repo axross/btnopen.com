@@ -97,15 +97,15 @@ current state, remaining to-dos, uncommitted changes — into a downloadable
 session is running low on context, or to park work for later; a fresh session
 takes the package over with `/address continue`.
 
-### `/author` — the blog authoring loop
+### Blog post authoring
 
-[`/author`](.claude/skills/author/SKILL.md) drives a post from an idea or an
-outline to a reviewed draft in two human-gated loops: research rounds that
-audit and strengthen the outline stored on the post's `outline` field until
-you give the go sign, then drafting rounds that write the body and return a
-preview URL until you have no more requests. Point it at an existing post to
-refine it (this replaced the former `/polish` command). It operates on drafts
-through the Payload MCP server (below); publishing stays manual.
+Writing and editing blog post content — driving a post from an idea or outline
+to a reviewed draft, and refining existing posts — is handled by a separate
+agent-skills library that connects to this site through the Payload MCP server
+(below) and operates on drafts you review before publishing. This repository is
+the source of truth for the [CMS content model](#cms-content-model) those skills
+read and write, and keeps the code-facing skills — rendering, routing,
+components, and the rest of the [skill index](AGENTS.md) — here.
 
 ### Claude Code environment setup
 
@@ -133,14 +133,70 @@ through the Payload MCP server (below); publishing stays manual.
   local checks on top. They use mise if it is installed and degrade gracefully
   otherwise.
 
+## CMS content model
+
+All content lives in Payload CMS collections and one global, edited in the
+Payload admin or through the MCP server (below). The main collections are
+`blog-posts` (the primary content type), `tags`, `cover-images`, `media` (images
+embedded in post bodies), and `payload-mcp-api-keys` (scoped keys for the MCP
+server); the `website` global holds the site profile. Reader-facing fields are localized with **Japanese (`ja-JP`) as the
+primary locale** and English as a fallback, and each post is served in a draft
+or published state.
+
+### Authoring artifacts: `outline` and `authoringNotes`
+
+A `blog-posts` document carries two authoring-artifact fields — `outline` and
+`authoringNotes` — on the collection's **Agentic** tab. They are the durable
+state of the post's authoring workflow: they let a fresh agent session resume
+work on a post from CMS state alone, so every tool that writes them must agree
+on what belongs where. Both fields:
+
+- are **never rendered** in the published post body — they are visible only on
+  the noindex agentic view (`/posts/<slug>?agentic=true`, with `&draft=true` for
+  a draft post), which is the surface to hand back after writing either field;
+  and
+- are **non-localized** — shared across locales, so no `locale` targeting
+  applies to writing them.
+
+What belongs in each field:
+
+- **`outline`** is a direct map of the article body structure and nothing else:
+  a single nested Markdown bullet list, one top-level bullet per body section in
+  order, with each section's substance as nested child bullets. It carries no
+  meta content.
+- **`authoringNotes`** is everything _about_ the writing, as free-form Markdown:
+  aims (ねらい), the conclusion (結論), the target reader (対象読者), the
+  editorial policy (編集方針), progress (進行状態), and the pre-publication
+  checklist (公開前チェックリスト).
+
+| Content | Field |
+| ------- | ----- |
+| Body section structure and each section's substance | `outline` |
+| ねらい / 結論 / 対象読者 / 編集方針 / 進行状態 / 公開前チェックリスト, and working notes | `authoringNotes` |
+
+`authoringNotes` has a recommended structure so it stays usable as resumable
+state: organize it under `## ねらい`, `## 結論`, `## 対象読者`, `## 編集方針`,
+`## 進行状態`, and `## 公開前チェックリスト` headings (omitting any that are
+genuinely empty; free-form working notes may follow). Keep a **single merged
+`公開前チェックリスト`** rather than two overlapping checklists, and record
+`進行状態` with the current phase, completed work, and links to any session
+artifacts — that is what lets a fresh session resume the post from CMS state
+alone.
+
+The editorial craft for shaping these fields — the outline's nested-tree
+discipline and the author's writing voice — and the end-to-end writing workflow
+live in a separate agent-skills library that drives authoring through the
+Payload MCP server below; this repository is the source of truth for the CMS
+content model above.
+
 ## Connecting AI agents to Payload CMS (MCP)
 
 Payload exposes a [Model Context Protocol](https://modelcontextprotocol.io)
 (MCP) server, so any MCP-capable AI agent can inspect and edit CMS content —
 blog posts, tags, cover images, media, and the site profile — through a single
-authenticated endpoint. This is what powers the AI blogging workflow
-(`/author`); the agent-facing operating rules live in
-[`.claude/skills/payload-cms-mcp/`](.claude/skills/payload-cms-mcp/SKILL.md).
+authenticated endpoint. This is what powers AI-assisted blogging on the site: a
+separate agent-skills library uses these tools to write and edit content, and
+any MCP-capable agent can connect to the same endpoint.
 
 **Endpoint.** The server is served by the Payload app itself, as HTTP
 [JSON-RPC 2.0](https://www.jsonrpc.org/specification):
@@ -183,8 +239,8 @@ The `url` defaults to production and can be overridden with `PAYLOAD_MCP_URL`
 fails to authenticate rather than breaking the whole file).
 
 **Claude Code cloud/web sessions.** Cloud sessions load and connect a committed
-`.mcp.json` automatically — no per-session registration or approval — so
-`/author` works out of the box once two things are configured
+`.mcp.json` automatically — no per-session registration or approval — so the
+MCP tools work out of the box once two things are configured
 **once** in the
 [Claude Code web environment settings](https://code.claude.com/docs/en/claude-code-on-the-web):
 
@@ -229,7 +285,7 @@ a post's rich-text body.
 running and reachable at that origin. A key authenticates against **its own
 environment's database** — a local key will not work against production, and
 vice versa. A production key writes to the live CMS, so prefer a
-**draft-scoped** key: `/author` operates on drafts you review at
+**draft-scoped** key: the authoring workflow operates on drafts you review at
 `/posts/<slug>?draft=true` before publishing.
 
 ## Testing
