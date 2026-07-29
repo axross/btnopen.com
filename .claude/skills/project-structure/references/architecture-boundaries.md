@@ -33,7 +33,7 @@ Payload lifecycle hooks run server-side, outside the React runtime, so a UI impo
 **Guidelines:**
 
 - MUST keep a Payload `beforeOperation` / `afterOperation` hook free of imports from `@/components/*` or any React module.
-- MUST NOT treat a Payload collection field's `admin.hidden: true` as access control; it is a UI affordance only. Gate the field with `access.read` per [payload-conventions.md](./payload-conventions.md).
+- MUST NOT treat a Payload collection field's `admin.hidden: true` as access control; it is a UI affordance only. Gate the field with `access.read`, and justify any field-level rule that opens an admin-only field, per [payload-conventions.md](./payload-conventions.md).
 
 ## Cross-Tier Imports
 

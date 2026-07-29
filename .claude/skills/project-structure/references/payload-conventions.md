@@ -12,6 +12,7 @@ Access rules are enforced at the data layer itself, so every route, handler, and
 - MUST NOT set `access.read = () => true` on a collection holding non-public data. Only `media`, `cover-images`, and `avatar-images` are intentionally public-readable, as static assets.
 - MUST keep `access.update`, `access.delete`, and `access.create` admin-only on a new collection rather than allowing all authenticated users.
 - MUST have `access.read` consult `req.user` rather than returning `true` unconditionally — even a public collection should return a query filter excluding draft `_status` for unauthenticated requests.
+- MUST justify, with an explicit comment, a **field-level** `access` rule that returns `() => true` on an admin-only field such as draft `_status`. The collection-level prohibition above is about the collection's own data; this is the narrower case of one field being opened up inside an otherwise-gated collection, and the comment is what separates a deliberate exposure from an oversight.
 - MUST NOT review or hand-edit files under `app/(payload)/`; Payload owns that route segment.
 
 ## Draft and Published Gating
