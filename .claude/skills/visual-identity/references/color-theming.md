@@ -1,6 +1,6 @@
 # Color Theming (Light / Dark)
 
-Apply these rules when reviewing how a surface behaves under the two color schemes. This file governs **the theming design decisions that determine whether a surface needs any per-scheme attention at all**, and **how imagery is compensated when it does**. The numbered-step palette semantics and step-role table are in [design-tone-and-taste › color-system](./design-tone-and-taste.md#color-system); the color-scheme plumbing and the per-surface scheme-branch mechanic are in the project's React component guidelines (css-property-usage rules, Theme and Color Scheme).
+Apply these rules when reviewing how a surface behaves under the two color schemes. This file governs **the theming design decisions that determine whether a surface needs any per-scheme attention at all**, and **how imagery is compensated when it does**. The numbered-step palette semantics and step-role table are in [design-tone-and-taste › color-system](./design-tone-and-taste.md#color-system); the color-scheme plumbing and the per-surface scheme-branch mechanic are in [css-property-usage.md › Theme and Color Scheme](./css-property-usage.md#theme-and-color-scheme).
 
 ## Shared Lightness, Inverted Between Schemes
 

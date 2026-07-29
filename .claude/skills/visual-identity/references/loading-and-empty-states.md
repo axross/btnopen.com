@@ -2,7 +2,7 @@
 
 Apply these rules when designing any UI state that is not the "happy, loaded, populated" view — loading skeletons, suspense fallbacks, empty lists, 404 / not-found pages, and the visual continuity between a list and its detail page.
 
-The component-pair wiring (a loaded / loading sibling pair plumbed through suspense, with shared style modules enforcing proportion parity) lives in the project's React component guidelines (server-components rules). This document governs what those states should **look and feel like**, not how they are wired.
+The component-pair wiring (a loaded / loading sibling pair plumbed through suspense, with shared style modules enforcing proportion parity) lives in the React component development capability's loading-and-error-surface rules. This document governs what those states should **look and feel like**, not how they are wired.
 
 ## Visual Parity Between Loaded and Loading
 
@@ -31,7 +31,7 @@ Rules for using them:
 
 ## Loading Boundary Placement
 
-The suspense-boundary wiring itself is defined in the project's React component guidelines (server-components rules); this section governs **where** a loading boundary should sit on the page from a design standpoint.
+The suspense-boundary wiring itself is defined in the React component development capability's loading-and-error-surface rules; this section governs **where** a loading boundary should sit on the page from a design standpoint.
 
 **Guidelines:**
 

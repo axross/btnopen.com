@@ -1,6 +1,6 @@
 # Design Tone and Taste
 
-Apply these rules when establishing the visual language of any new surface and when reviewing whether an existing surface stays on-brand. This file describes **what the design feels like** and **what each named tier means semantically** — the palette ramps, the radius tier, the duration tier, the type scale. The implementation mechanics for enforcing these tiers in CSS live in the project's React component guidelines (css-property-usage rules).
+Apply these rules when establishing the visual language of any new surface and when reviewing whether an existing surface stays on-brand. This file describes **what the design feels like** and **what each named tier means semantically** — the palette ramps, the radius tier, the duration tier, the type scale. The implementation mechanics for enforcing these tiers in CSS live in [css-property-usage.md](./css-property-usage.md).
 
 ## Visual Identity
 

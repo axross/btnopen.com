@@ -1,6 +1,6 @@
 # Responsive Layout
 
-Apply these rules when deciding how a surface should behave across screen widths — which transitions should happen at which width, how content density and structure should shift, and when a surface needs to opt into a layout variant at all. This file governs **design intent**; the mechanics for propagating tier state down into descendant styles live in the project's React component guidelines (css-property-usage rules, Responsive Layout), and the high-level reading posture sits in [design-tone-and-taste › layout-posture](./design-tone-and-taste.md#layout-posture).
+Apply these rules when deciding how a surface should behave across screen widths — which transitions should happen at which width, how content density and structure should shift, and when a surface needs to opt into a layout variant at all. This file governs **design intent**; the mechanics for propagating tier state down into descendant styles live in [css-property-usage.md › Responsive Layout](./css-property-usage.md#responsive-layout), and the high-level reading posture sits in [design-tone-and-taste › layout-posture](./design-tone-and-taste.md#layout-posture).
 
 ## Breakpoint Tiers
 
@@ -71,7 +71,7 @@ An image's aspect ratio MAY change between tiers when the image's role in the co
 
 **Guidelines:**
 
-- MUST make both crops read as the same asset viewed differently when an image has distinct per-tier aspect ratios — never as two unrelated images. The `1600/600` ↔ `1600/1200` pairing on list items is an explicit choice to preserve a coherent list→detail morph target; see [loading-and-empty-states › ViewTransition for Visual Continuity](./loading-and-empty-states.md#viewtransition-for-visual-continuity).
+- MUST make both crops read as the same asset viewed differently when an image has distinct per-tier aspect ratios — never as two unrelated images. The `1600/600` ↔ `1600/1200` pairing on list items is an explicit choice to preserve a coherent list→detail morph target; see [loading-and-empty-states › View Transitions for Visual Continuity](./loading-and-empty-states.md#view-transitions-for-visual-continuity).
 - MUST NOT introduce a third aspect ratio at some intermediate tier for the same image; the design tolerates exactly two crops per image (one for mobile, one for tablet-and-desktop).
 
 ## Full-Bleed vs Inset

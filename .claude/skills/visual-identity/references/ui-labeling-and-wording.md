@@ -6,7 +6,7 @@ Apply these rules when writing any user-facing string — navigation labels, but
 
 Language captures the project-specific context for the checklist below: The root document's language attribute is currently English. MUST NOT flip it without a deliberate site-wide i18n rollout; inline Japanese content inside English-root documents is accepted today without per-region language wrappers.
 
-- Primary UI copy language is **Japanese**. English is the fallback for readers outside Japanese-reading locales (see the [project overview in AGENTS.md](../../../../AGENTS.md)).
+- Primary UI copy language is **Japanese**. English is the fallback for readers outside Japanese-reading locales, as the project overview in the repository's working agreement states.
 
 **Guidelines:**
 
@@ -83,7 +83,7 @@ Emoji is a project prohibition: do not include emoji in rendered UI copy or in M
 **Guidelines:**
 
 - MUST NOT include emoji in rendered UI copy or in Markdown content authored for the project's own surfaces.
-- MAY allow emoji in observability module identifiers because they are not rendered UI copy. See the project's observability guidelines.
+- MAY allow emoji in observability module identifiers because they are not rendered UI copy. See the project's observability conventions.
 
 ## Loading-Placeholder Sample Text
 
