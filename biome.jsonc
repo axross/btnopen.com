@@ -17,9 +17,15 @@
 			"!payload/types.ts",
 			"!payload/migrations",
 			"!app/(payload)/admin/importMap.js",
-			// Workflow-tool scripts use top-level return, which Biome cannot
-			// parse; they are hand-formatted to the tab-indent house style.
-			"!.claude/workflows"
+			// Agent skills installed from the shared library are generated
+			// artifacts reproduced byte-for-byte by `npx skills` (see README's
+			// "Agent skills" section). Formatting or linting them would rewrite
+			// upstream-owned files to the house style and diverge them from
+			// their source, so the whole skill root is excluded — the validator
+			// scripts these skills ship are standalone Node CLIs written to
+			// their own conventions, and the rest of the tree is Markdown that
+			// Biome does not process anyway.
+			"!.claude/skills"
 		]
 	},
 	"formatter": {
