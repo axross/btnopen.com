@@ -4,11 +4,11 @@ Apply these guidelines when working on the production deploy pipeline, when reas
 
 This exists because it once did not: production repeatedly served code whose Payload schema outran the production database, and core queries failed with `SQLite input error: no such column: …` until the migration was applied by hand (Sentry BTNOPEN-4G on Jul 6, BTNOPEN-4H on Jul 10). The steps below are what close those drift windows; keep them intact.
 
-The per-pull-request preview pipeline is the sibling of this flow and migrates a fresh, isolated Turso database seeded from fixtures instead of production; see [preview-deployments.md](./preview-deployments.md). The migration commands themselves are owned by [dev-commands.md](./dev-commands.md).
+The per-pull-request preview pipeline is the sibling of this flow and migrates a fresh, isolated Turso database seeded from fixtures instead of production; see [preview-deployments.md](./preview-deployments.md). The migration commands themselves are owned by the Commands table in the [README](../README.md).
 
 ## Pipeline Overview
 
-The workflow is [`.github/workflows/check-and-deploy.yaml`](../../../../.github/workflows/check-and-deploy.yaml), triggered on `push` to `main` and concurrency-grouped per ref. Three jobs run in sequence; only the last touches production.
+The workflow is [`.github/workflows/check-and-deploy.yaml`](../.github/workflows/check-and-deploy.yaml), triggered on `push` to `main` and concurrency-grouped per ref. Three jobs run in sequence; only the last touches production.
 
 ```text
 push to main

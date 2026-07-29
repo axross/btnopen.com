@@ -6,7 +6,7 @@ The security trade-offs of this design (a publicly reachable preview serving fix
 
 ## Pipeline Overview
 
-The workflow is [`.github/workflows/preview-deploy.yaml`](../../../../.github/workflows/preview-deploy.yaml), triggered on `pull_request` `[opened, synchronize, reopened, closed]` **and** on `workflow_dispatch` (a maintainer-only manual entry point; see [Manual Dispatch](#manual-dispatch)), concurrency-grouped per PR. Each PR is served by a fresh, empty Turso database, migrated in CI, wired into a Vercel preview deployment that self-seeds from fixtures during the build, with media in a dedicated preview store under a `pr-<n>/` prefix; the database and that media are destroyed when the PR closes.
+The workflow is [`.github/workflows/preview-deploy.yaml`](../.github/workflows/preview-deploy.yaml), triggered on `pull_request` `[opened, synchronize, reopened, closed]` **and** on `workflow_dispatch` (a maintainer-only manual entry point; see [Manual Dispatch](#manual-dispatch)), concurrency-grouped per PR. Each PR is served by a fresh, empty Turso database, migrated in CI, wired into a Vercel preview deployment that self-seeds from fixtures during the build, with media in a dedicated preview store under a `pr-<n>/` prefix; the database and that media are destroyed when the PR closes.
 
 ```text
 pull_request (opened / synchronize / reopened)          workflow_dispatch (pr_number, action)
@@ -131,11 +131,23 @@ End-to-end pipeline behavior depends on live Turso and Vercel accounts, so it is
 
 ## Media Isolation via Blob Prefix
 
-`BLOB_PAYLOAD_PREFIX` (read in [`payload/config.ts`](../../../../payload/config.ts)) namespaces every uploaded file under that path in the Vercel Blob store. The deploy job injects `pr-<n>` for each preview, so a PR's media lives under `pr-<n>/…` and never collides with production (which leaves the prefix unset, keeping its keys flat) or with another PR. The `prefix` field the storage plugin persists per document is what makes an uploaded file's URL reproducible, so it is added to the schema in every environment (`alwaysInsertFields`) to keep generated migrations deterministic even though local development and production run with an empty prefix.
+`BLOB_PAYLOAD_PREFIX` (read in [`payload/config.ts`](../payload/config.ts)) namespaces every uploaded file under that path in the Vercel Blob store. The deploy job injects `pr-<n>` for each preview, so a PR's media lives under `pr-<n>/…` and never collides with production (which leaves the prefix unset, keeping its keys flat) or with another PR. The `prefix` field the storage plugin persists per document is what makes an uploaded file's URL reproducible, so it is added to the schema in every environment (`alwaysInsertFields`) to keep generated migrations deterministic even though local development and production run with an empty prefix.
 
 **Guidelines:**
 
 - MUST keep `BLOB_PAYLOAD_PREFIX` empty (unset) in production and local development so existing media keys stay flat; only preview deployments set it.
 - MUST generate migrations with `BLOB_PAYLOAD_PREFIX` unset so the `prefix` column's default stays a stable `''` rather than baking a preview value into the schema.
-- MUST prune a closed PR's media on teardown by deleting everything under its `pr-<n>/` prefix — the `teardown` job runs [`scripts/prune-preview-blobs.mjs`](../../../../scripts/prune-preview-blobs.mjs) (`@vercel/blob` `list` + `del`, paginated) against the preview store, from a throwaway directory with a standalone install so it never depends on the repository lockfile. The step is a clean skip when the `BLOB_PAYLOAD_READ_WRITE_TOKEN` secret is absent.
+- MUST prune a closed PR's media on teardown by deleting everything under its `pr-<n>/` prefix — the `teardown` job runs [`scripts/prune-preview-blobs.mjs`](../scripts/prune-preview-blobs.mjs) (`@vercel/blob` `list` + `del`, paginated) against the preview store, from a throwaway directory with a standalone install so it never depends on the repository lockfile. The step is a clean skip when the `BLOB_PAYLOAD_READ_WRITE_TOKEN` secret is absent.
 - MUST keep preview media in a store **dedicated** to previews (see [Required One-Time Setup](#required-one-time-setup)); the prefix isolates keys within that store, and the dedicated store additionally isolates credentials from production.
+
+## Data Isolation and Exposure
+
+A preview runs on a fresh, empty Turso database seeded from the repository's own fixtures and writes media to a dedicated preview Blob store, so by construction it holds no production content — no production `users`, `payload-mcp-api-keys`, or blog data — even though its Payload admin and MCP endpoints are live on a publicly reachable URL. The exposure to guard against is therefore a regression that reintroduces production data or credentials into a preview, not the steady state.
+
+**Guidelines:**
+
+- MUST NOT route production `LIBSQL_*` credentials to a preview deployment, branch or copy the production database into a preview, or otherwise let a preview reach the production database.
+- MUST NOT point a preview's `BLOB_PAYLOAD_READ_WRITE_TOKEN` at the production Blob store, so preview CMS writes cannot mutate or read production media.
+- MUST use a distinct Preview `PAYLOAD_SECRET`, so preview session cookies and tokens cannot interoperate with production.
+- MUST keep the preview `PAYLOAD_TEST_USER_*` seed credential distinct from Production's. Both are environment-scoped secrets — the preview value lives in the `Preview` GitHub Actions environment and is injected at deploy — and the preview admin login is publicly reachable, so reusing the Production value would expose Production admin access. The credential must never be committed or written to logs.
+- SHOULD verify preview media stays namespaced under the per-PR `pr-<n>/` prefix and is pruned on teardown, so one preview cannot read or clobber another's uploads within the shared preview store.
