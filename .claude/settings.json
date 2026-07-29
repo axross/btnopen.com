@@ -1,8 +1,5 @@
 {
 	"effortLevel": "xhigh",
-	"permissions": {
-		"allow": ["Workflow(address-selfcheck)", "Workflow(address-criteria)"]
-	},
 	"hooks": {
 		"SessionStart": [
 			{

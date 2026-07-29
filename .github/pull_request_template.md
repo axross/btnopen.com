@@ -1,11 +1,12 @@
 <!--
 Thanks for the pull request! Fill in every section below, and delete a
 section that does not apply rather than leaving it empty. Detailed guidance:
-.claude/skills/development-guidelines/references/pull-request-descriptions.md
+the `software-development` skill's pull-request-description rules, under
+.claude/skills/software-development/references/pull-request-descriptions.md
 
 Title: use a Conventional Commits header — `<type>[scope][!]: <description>`
-(e.g. `fix(parser): handle empty input`), per
-.claude/skills/development-guidelines/references/commit-messages.md.
+(e.g. `fix(parser): handle empty input`), per the `conventional-commits`
+skill under .claude/skills/conventional-commits/SKILL.md.
 
 Keep the pull request small and single-purpose; split unrelated changes into
 separate pull requests.

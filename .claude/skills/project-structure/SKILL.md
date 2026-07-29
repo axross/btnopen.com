@@ -1,7 +1,7 @@
 ---
 name: project-structure
-description: The structure and conventions of this Next.js + Payload CMS blog — the facts a shared skill library cannot know about it. Covers the tech stack and third-party services, the directory tree and tier model, TypeScript path aliases, repository support files, file placement and naming, the architecture boundaries between the app, the data layer, and the Payload realm, App Router route-path and route-file conventions, Payload access control, drafts, query bounds and cache invalidation, Sentry/Pino observability wiring, and the Jest, Playwright, and `data-testid` testing conventions.
-when_to_use: Use when locating files, placing or naming a new module, or resolving any "how does THIS project do it" question that a general capability defers to the project on — where data access lives, which tier a module belongs in, how a route directory is laid out, how Payload collections gate access, which log level or logger to use, how tests and test IDs are named. Consult it alongside the general capability for the surface being changed, which owns the underlying practice; this skill owns only what is specific to this repository.
+description: The structure and conventions of this Next.js + Payload CMS blog — the facts a shared skill library cannot know about it. Covers the tech stack and third-party services, the directory tree and tier model, TypeScript path aliases, repository support files and the enforced Biome thresholds, file placement and naming, the architecture boundaries between the app, the data layer, and the Payload realm, App Router route-path and route-file conventions, React component anatomy and the loaded/loading split, Payload access control, drafts, query bounds and cache invalidation, the `runtime.ts` environment barrel with the project's SSRF, CSRF, and input-validation surfaces, Sentry/Pino observability wiring, the lowercase-first source-comment voice, and the Jest, Playwright, and `data-testid` testing conventions.
+when_to_use: Use when locating files, placing or naming a new module, or resolving any "how does THIS project do it" question that a general capability defers to the project on — where data access lives, which tier a module belongs in, how a route directory is laid out, how a component splits across the server/client boundary, how Payload collections gate access, how environment values are read, which log level or logger to use, how comments are cased, how tests and test IDs are named. Consult it alongside the general capability for the surface being changed, which owns the underlying practice; this skill owns only what is specific to this repository.
 user-invocable: false
 ---
 
@@ -69,6 +69,32 @@ See [architecture-boundaries.md](./references/architecture-boundaries.md) for:
 - the data-access split: repositories under `app/(app)/_/repositories/`, Zod-parsed view types, UI-free and read-only
 - which modules a Client Component may never import, and the `loaded.tsx` split
 - the Payload-hook boundary and the cross-tier import directions
+
+## Component Conventions
+
+See [component-conventions.md](./references/component-conventions.md) for:
+
+- component anatomy: the `ComponentProps<T>` base type, `interface` over `type`, no `any`, the mandatory `...props` spread
+- what forces a component to the client, and splitting rather than converting
+- the orchestrator / `loaded` / `loading` triad, its paired CSS modules, and Suspense placement
+- the `media.tsx` image pattern, the `sharp` requirement, and the `reactCompiler` / `cacheComponents` flags
+
+## Security Conventions
+
+See [security-conventions.md](./references/security-conventions.md) for:
+
+- `app/(app)/_/runtime.ts` as the only sanctioned environment barrel, and the four files Biome whitelists for `process.env`
+- the webembed SSRF surface, the `URL.canParse` filter, `images.remotePatterns` scoping, and OG-image and sitemap fetch rules
+- `searchParams` value comparison, Zod validation on route handlers, and upload filename sanitization
+- the `serverExternalPackages` justification rule
+
+## Code Style
+
+See [code-style.md](./references/code-style.md) for:
+
+- the lowercase-first comment voice for `.ts` / `.tsx` / `.js` source, and what keeps natural casing
+- `biome-ignore` directive casing and the `@throws` requirement
+- the prohibition on barrel re-export files as import sources
 
 ## Routing Conventions
 

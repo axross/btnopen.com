@@ -18,143 +18,72 @@ Apply these keywords consistently in this document and the documents linked from
 - Blog posts are the primary content type. They support tags, cover images, and rich Markdown including syntax-highlighted code blocks and embedded web content previews.
 - Content is written primarily in Japanese, with English provided as a fallback for readers in other locales.
 - Writing and editing blog post *content* — and the CMS operations that apply it through the Payload MCP server — is driven by a separate agent-skills library; this repository owns the CMS content model (see [README](README.md)) and the MCP server itself, not the authoring or CMS-editing workflow.
-- For tech stack, third-party services, and directory placement, consult [Project Structure](.claude/skills/project-structure/SKILL.md).
-- For npm run-scripts, current-docs lookup rules, and verification commands, consult [Development Guidelines](.claude/skills/development-guidelines/SKILL.md).
+- For the tech stack, repository layout, and every "how does this project do it" convention, consult the [Project Structure](.claude/skills/project-structure/SKILL.md) skill.
+- For commands, deployment pipelines, and environment setup, consult the [README](README.md) — it is this project's contributor documentation and the source of truth for how to operate it.
 
-## Skill Index
+## Skills
 
-`AGENTS.md` is the master routing index for project skills. Consult the relevant skill before acting on matching work.
+Agent guidance here comes from two places, and the difference matters when you go to change one.
 
-| Skill | When to apply |
-| ----- | ------------- |
-| [Agent Skills Best Practices](.claude/skills/agent-skills-best-practices/SKILL.md) | Creating, refining, splitting, renaming, deleting, or auditing project skills or this skill index, or authoring the named Workflow scripts under `.claude/workflows/` that entry-point skills delegate to |
-| [Application Security Requirements](.claude/skills/application-security-requirements/SKILL.md) | Reviewing secrets, environment variables, validation, Payload access control, markdown XSS, SSRF/embed fetching, auth/session behavior, privacy exposure, preview deployment data exposure, analytics/error-reporting data, or npm dependency risk |
-| [Code Review Guideline](.claude/skills/code-review-guideline/SKILL.md) | Reviewing a diff, pull request, local change, or post-implementation self-review |
-| [Development Guidelines](.claude/skills/development-guidelines/SKILL.md) | Implementing, refactoring, running commands, preparing commits, writing pull request descriptions, adding dependencies, checking current docs, changing migrations, or working on the preview-deployment pipeline |
-| [E2E Testing Guidelines](.claude/skills/e2e-testing-guidelines/SKILL.md) | Writing, running, reviewing, or maintaining Playwright tests, snapshots, route coverage, or browser assertions |
-| [GitHub Operation Guidelines](.claude/skills/github-operation-guidelines/SKILL.md) | Reading from or writing to GitHub — issues, pull requests, comments, labels, reviews, or branches — through a proxied single-operator identity: agent-comment markers, issue-vs-PR targets, commit/PR titles under squash merge, no-amend/force-push history preservation, untrusted content |
-| [Maintainable Code Guidelines](.claude/skills/maintainable-code-guidelines/SKILL.md) | Reviewing readability, naming, abstraction boundaries, complexity, dead code, or scope discipline |
-| [Markdown Processing Guidelines](.claude/skills/markdown-processing-guidelines/SKILL.md) | Writing, reviewing, or modifying markdown rendering, Remark/Rehype plugins, Shiki setup, custom nodes, web embeds, or rich-text block markdown converters |
-| [Observability Guidelines](.claude/skills/observability-guidelines/SKILL.md) | Throwing, catching, reporting, or logging errors with Sentry or Pino |
-| [Performance and Reliability Requirements](.claude/skills/performance-and-reliability-requirements/SKILL.md) | Reviewing Payload query cost, RSC/client boundaries, caching, image optimization, bundle weight, or runtime failure behavior |
-| [Product Requirement Guidelines](.claude/skills/product-requirement-guidelines/SKILL.md) | Writing, refining, or reviewing a product requirement, feature spec, plan document, or issue description; the canonical plan-document structure and its per-section craft — goals/non-goals/assumptions, functional and non-functional requirements, UI/system design framing, acceptance criteria, verification strategy, open questions |
-| [Project Structure](.claude/skills/project-structure/SKILL.md) | Navigating the repository, locating files, placing new modules, checking stack/service context, import aliases, or directory conventions |
-| [Quality Assurance Guidelines](.claude/skills/quality-assurance-guidelines/SKILL.md) | Reviewing verification evidence, e2e coverage, snapshots, flakiness, lint/format evidence, or manual checks |
-| [React Component Guidelines](.claude/skills/react-component-guidelines/SKILL.md) | Writing, reviewing, or refactoring React components, Server/Client component boundaries, styling, CSS conventions, or `data-testid` contracts |
-| [Routing Guidelines](.claude/skills/routing-guidelines/SKILL.md) | Creating, moving, renaming, or reviewing App Router routes, route handlers, route groups, dynamic params, or search params |
-| [Unit Test Guidelines](.claude/skills/unit-test-guidelines/SKILL.md) | Writing, refactoring, reviewing, or running Jest unit tests, including `@jest/globals` imports, mocks/fakes, fixtures, schema tests, and behavior-focused assertions |
-| [UI Design Principles](.claude/skills/ui-design-principles/SKILL.md) | Designing, implementing, or reviewing user-facing surfaces, responsive behavior, visual tone, copy, accessibility, loading states, or theme behavior |
+**Installed skills** are copied from the shared [axross/skills](https://github.com/axross/skills) library into `.claude/skills/` and pinned by [`skills-lock.json`](skills-lock.json). They are **generated artifacts**.
 
-### Workflow Entry Points
+- MUST NOT hand-edit an installed skill or any of its reference files; the next install discards the edit.
+- MUST take a change to an installed skill upstream, as an issue or pull request against the library, rather than patching the copy here.
+- MUST regenerate the copies with the install command in the [README](README.md) and commit them together with `skills-lock.json`.
 
-Unlike the guideline skills above, these skills are runnable workflows: a human launches one as `/<name>` (or the agent invokes it when its `when_to_use` matches), so they carry `user-invocable: true` and an `argument-hint` per [Agent Skills Best Practices](.claude/skills/agent-skills-best-practices/SKILL.md). The Address skill additionally delegates its Phase 2 self-check and acceptance-criteria sweep to named Workflow-tool scripts under `.claude/workflows/` (`address-selfcheck`, `address-criteria`) when the harness provides the Workflow tool, falling back inline otherwise — the delegation pattern is defined in Agent Skills Best Practices.
+**Project skills** are this repository's own, and hold only what the library cannot know about it. There are three; everything else was replaced by its library counterpart.
 
-| Skill | What it drives |
-| ----- | -------------- |
-| [Address](.claude/skills/address/SKILL.md) | Delivering one unit of work — an issue, a pull request, or a free-form prompt — end-to-end: plan, human approval, code, independent review, address findings; `continue` resumes a paused run or takes over a handoff package |
-| [Handoff](.claude/skills/handoff/SKILL.md) | Suspending in-progress work into a downloadable package that a fresh-context session takes over with `/address continue` |
+| Project skill | Owns |
+| ------------- | ---- |
+| [Project Structure](.claude/skills/project-structure/SKILL.md) | Stack, directory tree and tier model, path aliases, support files, placement and naming, architecture boundaries, routing conventions, component anatomy, Payload access/queries/caching, environment and security surfaces, observability wiring, source-comment voice, testing conventions |
+| [Visual Identity](.claude/skills/visual-identity/SKILL.md) | The site's design language — palette, shape, motion, imagery, responsive tiers, theming, Japanese-primary copy, loading and 404 aesthetics — and the CSS conventions that encode it |
+| [Markdown Processing Guidelines](.claude/skills/markdown-processing-guidelines/SKILL.md) | The Remark/Rehype/Shiki pipeline, custom directives, Lexical rich-text blocks, component mapping, and the content-safety rules for CMS-authored markdown |
 
-## Response Approach
+### Always-On Skills
 
-Use this workflow for single-agent work in this repository. The agent owns planning, implementation, investigation, verification, review, and reporting directly.
+Installing a skill makes it *discoverable*, not binding. These three govern how work happens here, and apply whether or not a request mentions them.
 
-### Overall Strategy
+- MUST apply **`professional-behavior`** in every session — resolving each uncertainty at its right source, researching current sources over memory, asking rather than assuming, and labelling what is verified, inferred, or assumed.
+- MUST apply **`software-development`** at the start of every task that touches this project — the format/lint loop, scoped change management, and consulting the README for how to run anything.
+- MUST use **`loop-engineering`** as the default change loop for any code or document change delivered end-to-end: plan → human approval → code → verify → independent review → address. It runs model-invoked, so describing the work is enough.
 
-Non-trivial work should move through the same decision sequence even when some steps are brief.
+### Routing to the Rest
 
-1. Classify the request and load the relevant project guidance.
-2. Define success criteria, constraints, affected surface, dependencies, and verification expectations.
-3. Inspect the smallest useful code and documentation context.
-4. Draft an ordered local workflow with acceptance criteria.
-5. Implement, investigate, or review within the narrowest scope that satisfies the request.
-6. Self-review the result as a separate phase.
-7. Run or report the relevant verification.
-8. Update or propose skill guidance when the work exposes reusable project learning.
-9. Summarize outcome, verification status, trade-offs, and open follow-ups.
+Consult the skill whose trigger matches the surface being changed. Discovery resolves these by `description` / `when_to_use`, so a name here is a pointer, not a path.
+
+| Working on | Consult |
+| ---------- | ------- |
+| Reviewing a diff, pull request, or your own change before calling it done | `code-review`, plus `quality-assurance` for whether the verification is adequate |
+| A spec, plan document, or issue description | `product-requirement-document-authoring` |
+| A commit message or pull request title | `conventional-commits` |
+| Any GitHub read or write | `github-operation` |
+| Naming, complexity, abstraction boundaries, dead code | `code-maintainability` |
+| Secrets, untrusted input, injection, SSRF, access control, dependencies | `application-security` |
+| Logging, error handling, error reporting, analytics events | `software-instrumentation` |
+| Jest unit tests | `unit-testing` |
+| Playwright end-to-end tests | `end-to-end-testing` |
+| App Router mechanics — rendering, caching, route handlers, metadata, the server/client boundary | `next-app-development` |
+| A React component's composition, props, or state | `react-component-development` |
+| A CSS Module, token, or theme | `react-component-styling` |
+| Visual design with real color, type, and states | `high-fidelity-ui-design` |
+| Low-fidelity layout exploration | `wireframe-design` |
+| Creating or auditing a skill | `agent-skill-authoring`; for installing and refreshing them, `agent-skill-management` |
 
 **Guidelines:**
 
-- MUST consult [Development Guidelines](.claude/skills/development-guidelines/SKILL.md) at the start of every task.
-- MUST classify non-trivial work as UI-bearing, implementation-only, review-only, skill-maintenance, exploratory, or mixed workflow before editing files.
-- MUST consult every skill whose routing condition matches the changed surface or requested review lens.
-- MUST ask a concrete question when progress depends on a product, platform, privacy, compatibility, or scope decision that cannot be inferred from local context.
-- SHOULD compress the sequence for small answer-only requests without skipping relevant safety checks.
+- MUST consult every skill whose routing condition matches the changed surface, not only the first one that matches.
+- MUST pair a general capability with the project skill holding this repository's half of the same topic — the general one states the practice, the project one states the convention.
+- MUST keep this index synchronized when a skill is installed, removed, or added, and when the library's inventory changes.
 
-### Planning and Execution
+## Working Agreement
 
-Planning exists to make the work checkable. It should name what changes, what must stay unchanged, and how the result will be verified.
+`loop-engineering` owns the delivery loop, `software-development` owns change discipline, `code-review` owns review method, and `professional-behavior` owns conduct. This section records only what is specific to this repository.
 
 **Guidelines:**
 
-- MUST restate success criteria, constraints, affected surface, and verification expectations before non-trivial edits.
-- MUST preserve public behavior during refactors unless the requested change intentionally modifies it.
-- MUST keep edits scoped to the smallest surface that satisfies the acceptance criteria.
-- SHOULD inspect independent discovery targets in parallel when their outputs do not depend on each other.
-- SHOULD revise the plan when new evidence changes affected files, risks, or acceptance criteria.
-
-### UI-Bearing Work
-
-User-facing changes need design intent before implementation mechanics. The single agent owns both, but the phases must stay distinct.
-
-**Guidelines:**
-
-- MUST establish design intent before implementing UI-bearing changes: hierarchy, interaction states, accessibility intent, responsive behavior, and copy constraints.
-- MUST consult [UI Design Principles](.claude/skills/ui-design-principles/SKILL.md) for design decisions and [React Component Guidelines](.claude/skills/react-component-guidelines/SKILL.md) for implementation mechanics.
-- MUST express design intent in user-facing terms before translating it into components, CSS, or tests.
-- MUST verify that text, layout, focus behavior, loading states, and responsive behavior remain coherent across relevant viewports.
-- SHOULD keep design-system rules in design vocabulary and link to implementation-mechanics skills instead of duplicating CSS wiring rules.
-
-### Review Independence Gates
-
-A single agent cannot provide true independent review. This repository compensates with a mandatory separate review phase for ordinary work and external review gates for high-risk work.
-
-**Guidelines:**
-
-- MUST perform a reviewer-mode reset after non-trivial implementation: stop editing, reread the request, inspect `git status` and `git diff`, and review only the produced diff.
-- MUST apply [Code Review Guideline](.claude/skills/code-review-guideline/SKILL.md) during self-review, including severity labels, file-line evidence, concrete fixes, and an explicit verdict when findings exist.
-- MUST load topic-specific review lenses when relevant: maintainability, quality assurance, security, performance/reliability, UI design, routing, markdown, observability, or e2e testing.
-- MUST judge the actual diff and observed behavior, not the implementation intent.
-- MUST fix Critical or Major self-review findings before claiming completion.
-- MUST perform a second-pass re-review after fixing any blocking self-review finding.
-- MUST report verification evidence before completion: commands run, manual checks, failures, skipped checks, and residual risk.
-- MUST escalate high-risk changes to user review, CI/PR review, or an explicitly requested secondary review before calling them merge-ready.
-- SHOULD route that escalation through the project's independent-review channel — the posted-review policy in [REVIEW.md](./REVIEW.md).
-- SHOULD treat auth, access control, markdown/XSS, SSRF/embed fetching, migrations, public route contracts, production config, data-loss risk, and large refactors as high-risk.
-
-### Verification
-
-Verification should match the changed surface. Documentation-only changes need link and format checks; route, UI, Payload, markdown, and runtime changes need stronger evidence.
-
-**Guidelines:**
-
-- MUST run the relevant verification commands after non-trivial changes, or report why they could not run.
-- MUST run `npm run format` and `npm run lint` after code or documentation edits.
-- MUST run `npm run test:unit` when a change affects code the unit suite covers.
-- MUST run `npm run test:e2e` when a change affects a UI output surface or e2e coverage.
-- MUST run `npm run build` when a change affects Next.js routes, metadata, Payload config, runtime config, dependencies, or TypeScript signatures.
-- SHOULD perform focused manual checks when browser behavior, crawler metadata, custom protocol behavior, responsive layout, or CMS preview behavior changes.
-- MUST report unverified acceptance criteria and residual risk in the final summary.
-
-### Skill Maintenance
-
-Skill maintenance keeps reusable workflow learning close to the project rules. It should happen when a change reveals durable guidance, not after every narrow fix.
-
-**Guidelines:**
-
-- MUST consult [Agent Skills Best Practices](.claude/skills/agent-skills-best-practices/SKILL.md) when adding, renaming, moving, deleting, splitting, or cross-linking skills, changing reference files, or updating this index.
-- MUST keep this skill index synchronized when skills are added, renamed, moved, or removed.
-- MUST make one skill the source of truth for a rule instead of copying detailed guidance across multiple skills.
-- SHOULD propose or implement skill updates when the workflow exposes a reusable convention, outdated guidance, recurring review issue, or missing project rule.
-- SHOULD skip skill maintenance when the workflow produced no generalizable learning, and state that it was skipped.
-
-### Communication
-
-User-facing communication should expose decisions, blockers, verification, and outcomes without narrating every local inspection step.
-
-**Guidelines:**
-
-- MUST keep progress updates concise and focused on decisions, blockers, and outcomes.
-- MUST summarize changed files, verification status, trade-offs, unresolved risks, and deferred follow-ups at completion.
-- MUST state whether skill maintenance was performed, skipped, or blocked when skill guidance governed the work.
-- SHOULD include detailed plans, command logs, or iteration logs only when the user asks for auditability or when the outcome depends on them.
-- MUST ask a concrete question when progress depends on a product, platform, privacy, or scope decision.
+- MUST ask a concrete question when progress depends on a product, platform, privacy, compatibility, or scope decision that local context cannot settle.
+- MUST establish design intent before implementing a user-facing change — hierarchy, interaction states, accessibility intent, responsive behavior, copy — and express it in user-facing terms before translating it into components and CSS.
+- MUST run the verification the changed surface requires, using the commands in the [README](README.md), and report what ran, what was skipped, and the residual risk.
+- MUST treat auth, access control, markdown/XSS, SSRF and embed fetching, migrations, public route contracts, production config, data-loss risk, and large refactors as high-risk, and route them to the independent review in [REVIEW.md](REVIEW.md) rather than self-certifying.
+- MUST NOT push to the default branch; work on a `claude/`-prefixed branch and leave merging to the maintainer, @axross.
+- SHOULD propose a skill update when work exposes a durable convention this repository owns, and say so when skill maintenance was deliberately skipped.

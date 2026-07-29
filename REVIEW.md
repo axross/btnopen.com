@@ -6,9 +6,10 @@ product (e.g. Claude Code's managed Code Review) natively, and the CI
 reviewer ([`claude-review.yaml`](.github/workflows/claude-review.yaml)) via a
 system-prompt bootstrap. This file overrides reviewer defaults and
 complements the review **methodology** in
-[Code Review Guideline](.claude/skills/code-review-guideline/SKILL.md); where
+the installed [`code-review`](.claude/skills/code-review/SKILL.md) skill; where
 the two differ about what a posted review reports, this file wins (see that
-skill's [Repository Review Policy Overlay](.claude/skills/code-review-guideline/SKILL.md#repository-review-policy-overlay)).
+skill's [Posted and CI Reviews](.claude/skills/code-review/SKILL.md#posted-and-ci-reviews)
+section).
 
 This is a **strict** review: run every mandatory check below, verify the linked
 issue's acceptance criteria, and report every finding — do not wave anything
@@ -58,8 +59,8 @@ skill in the finding.
 - MUST run both mandatory checks on every review and raise a finding for each
   miss.
 - MUST give each finding a severity label, `file:line` evidence, and a concrete
-  fix, per
-  [Code Review Guideline](.claude/skills/code-review-guideline/SKILL.md).
+  fix, per the installed
+  [`code-review`](.claude/skills/code-review/SKILL.md) skill.
 
 ## Do Not Report
 
@@ -96,5 +97,5 @@ and nothing is summarized away — the tally counts every finding.
   separate top-level conversation comments.
 - MUST post any pull-request review as a **COMMENT**-type review — never
   APPROVE or REQUEST_CHANGES — per
-  [GitHub Operation Guidelines](.claude/skills/github-operation-guidelines/SKILL.md); this reviewer
-  is advisory and does not gate merges.
+  the installed [`github-operation`](.claude/skills/github-operation/SKILL.md)
+  skill; this reviewer is advisory and does not gate merges.

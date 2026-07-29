@@ -53,7 +53,8 @@ Playwright writes run artifacts to `.playwright-results/` and keeps visual snaps
 - MUST define API call functions in `e2e/helpers/api/`, named-exported, taking `page` and `testInfo`, and using `page.request` so calls share the test's authenticated state.
 - SHOULD reuse the saved authenticated state with `test.use({ storageState: authenticatedStorageState })` rather than logging in per test. The `setup` project authenticates with `PAYLOAD_TEST_USER_EMAIL` / `PAYLOAD_TEST_USER_PASSWORD` and saves state under `e2e/.data/`.
 - SHOULD target a deployed environment only by setting `PLAYWRIGHT_BASE_URL` deliberately, such as `PLAYWRIGHT_BASE_URL=https://btnopen.com npm run test:e2e`.
-- MUST update snapshots (`npm run test:e2e -- --update-snapshots`) only when the visual change is intentional, and state the reason the expected output changed.
+- MUST add a test file under `e2e/tests/routes/<route>/` when a change adds a new `page.tsx` under `app/(app)/`, and MUST NOT remove a `data-testid` an existing test references without updating that test.
+- MUST update snapshots (`npm run test:e2e -- --update-snapshots`) only when the visual change is intentional, and state the reason the expected output changed. Snapshots are platform-specific — the path carries a `{/platform}` segment — so a local macOS update changes only the macOS snapshots, never the Linux ones CI compares against. CI re-runs with `--update-snapshots` and opens a pull request for any difference; that pull request is a prompt to review the visual change, not evidence it is acceptable.
 
 ## Scenario Coverage
 
@@ -65,6 +66,17 @@ This project measures e2e coverage as scenario coverage — which real user jour
 - MUST tag the test that asserts the journey's outcome, never one that merely passes through it — executed is not asserted.
 - MUST NOT rename a scenario id without updating every tag referencing it in the same change; the id is the contract between catalog and tests.
 - MUST keep `must`-priority scenarios at 100%: a `must` row with no passing asserting test blocks `npm run coverage:scenarios`.
+
+## Manual Verification
+
+Some surfaces have no automated proof, so they are checked by hand before a change is called done.
+
+**Guidelines:**
+
+- MUST load the affected route at `http://localhost:3000` via `npm run dev` when the change touches a `page.tsx`, `layout.tsx`, a route-local `_components/`, or `app/(app)/_/components/`.
+- MUST verify both published and draft states when a route renders CMS-managed content. Draft state is reached by appending `?draft=true` while authenticated through the Payload admin at `/admin`.
+- MUST render a blog post containing the affected construct end-to-end when the change touches the markdown pipeline.
+- SHOULD re-check under `npm run build && npm run start` when the change touches caching, images, or compiler behavior — dev and production diverge on transforms, caching, and asset handling.
 
 ## Test Hooks (`data-testid`)
 

@@ -79,4 +79,6 @@ A migration runs against production data exactly once, and a dropped or renamed 
 
 **Guidelines:**
 
+- MUST create a migration when a change to `payload/` alters the database schema — adding, removing, or renaming a field or collection, or changing a field type. Hook, access-control, and admin-UI changes alter no schema and need none.
 - MUST pair a migration under `payload/migrations/` that drops a column or renames a field on a collection holding production data with a data-backfill step, and escalate the change to the maintainer rather than deciding it alone.
+- MUST NOT edit an already-applied migration file; create a new one instead. `README.md` records the migration commands.

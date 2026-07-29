@@ -47,6 +47,9 @@ An unhandled failure ends its journey at the top-level boundary, so that boundar
 - MUST keep `app/(app)/global-error.tsx` as the last-resort boundary for the whole application, calling `captureException(error)` inside a `useEffect` so unexpected React render errors are reported. Route-level `error.tsx` files may follow the same pattern.
 - MUST keep Sentry initialization in `instrumentation.ts`, `instrumentation-client.ts`, `sentry.server.config.ts`, and `sentry.edge.config.ts` rather than scattering it across feature modules, and refresh the vendor documentation before changing any of them or the source-map setup.
 - MUST NOT attach secrets, raw request bodies, raw markdown, access tokens, draft content, Payload session data, or private CMS fields to Sentry context. Prefer route names, public slugs, operation names, and booleans; `slug`, `url`, and `filename` are intentionally public and make issues actionable.
+- MUST NOT call `captureException()` from a `not-found.tsx`; `notFound()` is normal control flow, and reporting it would bury real errors in noise.
+- MUST NOT lower `replaysOnErrorSampleRate` below `1.0` in `instrumentation-client.ts` — error-time replay is the most diagnostic signal available.
+- SHOULD report an unexpected non-thrown state rather than ignoring it, using the idiom `markdown.ts`'s `unknownHandler` established: ``captureException(new Error(`Handled unknown mdast node (type: ${node.type}).`))``.
 - SHOULD write an error message that identifies the failing function or condition on its own, since a Sentry issue is usually read with the stack trace minified or several clicks away — `retrieveImageFromVercelBlob() was called but the Vercel Blob token is null.` rather than `Token is missing.`
 
 ## Capture Settings Already in Force
