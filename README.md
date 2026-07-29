@@ -62,8 +62,8 @@ Development in this repository is agent-assisted via
 consume the same guidance — Claude Code is one supported option among others.
 Human and agent contributors follow the same loop: plan → implement →
 self-review → verify → report, and changes made without an agent meet the same
-bar: branch, implement, run the checks below, open a pull request, and get it
-reviewed before merge.
+bar: branch, implement, run the [checks](#commands), open a pull request, and
+get it reviewed before merge.
 
 ### Agent skills
 
