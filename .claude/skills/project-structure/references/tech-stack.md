@@ -20,4 +20,4 @@ This website is built as a Next.js App Router app backed by Payload CMS. Markdow
 - MUST route markdown rendering changes through the project's markdown-processing capability, which owns the pipeline.
 - MUST route App Router mechanics — rendering, caching, route handlers, metadata, the server/client boundary — through the Next.js app development capability, and this skill's [routing-conventions.md](./routing-conventions.md) for the shapes this repository gives them.
 - MUST route commands — running the dev server, tests, build, format, lint, or a migration — through `README.md`, which is this project's contributor documentation and the source of truth for them.
-- SHOULD keep technology-stack summaries here instead of duplicating them in `CLAUDE.md`, which is deliberately limited to how agents work in this repository.
+- SHOULD keep durable technology-stack rules here. `README.md`'s tech-stack table is the human-facing orientation summary and is expected to overlap with the table above; `CLAUDE.md` carries neither, holding only how agents work in this repository.
