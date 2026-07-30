@@ -7,6 +7,8 @@ user-invocable: false
 
 # Visual Identity
 
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html).
+
 Apply this skill whenever designing, writing, or reviewing a user-facing surface of this website.
 
 It holds the half of UI work that is particular to btnopen.com: what the site looks like, what each named tier means here, and the CSS conventions that carry those decisions into stylesheets. The general craft sits in installed capabilities and is not restated — the high-fidelity UI design capability owns contrast targets, hierarchy, and interaction-state completeness; the React component styling capability owns styling mechanics such as token layering and adaptive rules in the abstract; the wireframe design capability owns low-fidelity layout exploration. When one of those says "the project's convention", this is the convention.

@@ -7,6 +7,8 @@ user-invocable: false
 
 # Project Structure
 
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html).
+
 Apply this skill when navigating this repository, placing or naming new files, or answering a question about how this particular project does something.
 
 This skill is deliberately narrow: it holds the project-specific half of rules whose general half lives in an installed capability. The Next.js app development capability owns App Router mechanics; this skill owns the route paths and directory layout this repository actually uses. The code maintainability capability owns the tier model in the abstract; this skill names the tiers. The application security capability owns access control as a discipline; this skill records how Payload enforces it here. The software instrumentation capability owns logging and error tracking; this skill names the logger, the tracker, and the module conventions. When a general capability says "follow the project's convention", this is the convention.

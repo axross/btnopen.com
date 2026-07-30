@@ -23,7 +23,7 @@ output — they exist for self-review, not for the pull-request thread.
 
 - **Important** — MUST be addressed before merge: a finding that breaks
   behavior, corrupts persisted state, leaks data, regresses accessibility,
-  violates a MUST rule of a matching skill in the `AGENTS.md` skill index, or
+  violates a MUST rule of a skill whose trigger matches the change, or
   leaves an acceptance criterion unmet or unverifiable from the diff.
 - **Nit** — safe to defer: style, naming, and refactoring suggestions.
 
@@ -44,10 +44,10 @@ not skippable. Grade each miss by its real impact: a miss that breaks a hard
 requirement is **Important**, a gap that does not is a **Nit**. Cite the owning
 skill in the finding.
 
-- **Skill conformance** — verify the change conforms to **every** skill in the
-  [`AGENTS.md`](AGENTS.md) skill index whose routing condition matches the
-  changed files, and flag any deviation from a skill's stated rule, citing the
-  skill and the rule. A violated skill **MUST** rule is Important.
+- **Skill conformance** — verify the change conforms to **every** skill under
+  `.claude/skills/` whose `when_to_use` matches the changed files, and flag any
+  deviation from a skill's stated rule, citing the skill and the rule. A
+  violated skill **MUST** rule is Important.
 - **Acceptance criteria** — verify the diff against **every** acceptance
   criterion in the linked issue (the pull request body's `Closes #<n>`), when
   the pull request links one. Each criterion that is unmet, or that cannot be

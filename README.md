@@ -56,10 +56,12 @@ the result. For a production build, run `npm run build`, then `npm run start`.
 
 Development in this repository is agent-assisted via
 [Claude Code](https://claude.com/claude-code). The working agreement lives in
-[`AGENTS.md`](AGENTS.md) and routes to the detailed skills under
-[`.claude/skills/`](.claude/skills/), following the tool-agnostic
+[`AGENTS.md`](AGENTS.md), following the tool-agnostic
 [AGENTS.md](https://agents.md) convention so any AI coding assistant can
 consume the same guidance — Claude Code is one supported option among others.
+It states how every session runs and defers the detail to the skills under
+[`.claude/skills/`](.claude/skills/), which agents find through their own
+frontmatter rather than through an index.
 Human and agent contributors follow the same loop: plan → implement →
 self-review → verify → report, and changes made without an agent meet the same
 bar: branch, implement, run the [checks](#commands), open a pull request, and
@@ -103,8 +105,9 @@ know about it: [`project-structure`](.claude/skills/project-structure/SKILL.md)
 [`visual-identity`](.claude/skills/visual-identity/SKILL.md) (the site's design
 language and the CSS that encodes it), and
 [`markdown-processing-guidelines`](.claude/skills/markdown-processing-guidelines/SKILL.md)
-(the Remark/Rehype/Shiki pipeline). The full inventory is the skill index in
-[`AGENTS.md`](AGENTS.md).
+(the Remark/Rehype/Shiki pipeline). Every skill states its own scope in its
+frontmatter, which is how agents find it — there is no separate index to keep
+current.
 
 ### Delivering a unit of work end-to-end
 
@@ -139,7 +142,7 @@ agent-skills library that connects to this site through the Payload MCP server
 (below) and operates on drafts you review before publishing. This repository is
 the source of truth for the [CMS content model](#cms-content-model) those skills
 read and write, and keeps the code-facing skills — rendering, routing,
-components, and the rest of the [skill index](AGENTS.md) — here.
+components, and the rest — here.
 
 ### Claude Code environment setup
 
