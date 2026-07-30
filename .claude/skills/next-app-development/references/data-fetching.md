@@ -15,7 +15,7 @@ Three approaches are available, and a codebase that mixes them pays for all thre
 - MUST default to reading data in Server Components through a fenced data-access layer.
 - SHOULD adopt a second approach only for the cases the first cannot serve — client-driven refetching, polling, infinite scroll, or an endpoint with an external consumer.
 - MUST NOT fetch the same resource through two approaches in one codebase; pick the owner and route both call sites through it.
-- MUST follow the host repository's server-state conventions where it has them; how queries, keys, and invalidation are organized belongs to the project, not to this skill.
+- MUST follow the host repository's server-state conventions where it has them; how queries, keys, and invalidation are organized belongs to the project — or to a TanStack Query development capability where the project uses that library — not to this skill.
 
 ## The Data-Access Layer
 

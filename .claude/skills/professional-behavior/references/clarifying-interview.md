@@ -2,7 +2,7 @@
 
 Apply this reference once the triage has separated the items you may settle from the decisions the human owns, and you are holding at least one of the latter. It covers what to do with that bucket. It is one continuous conversation, not a form to fill in: each answer changes which questions are still worth asking, so the question set is derived as you go rather than fixed up front.
 
-Whether two questions may share a single prompt is governed by the project's question-asking conventions, where the host defines them; dependency, established below, is what such a rule keys on.
+How each question actually reaches the human — the channel, the option framing, and whether two questions may share a single prompt — is owned by [asking-the-human.md](./asking-the-human.md); dependency, established below, is what its one-decision-per-prompt rule keys on.
 
 ## Walking the Decision Tree
 

@@ -11,6 +11,8 @@ Use this capability to judge whether a change has been adequately verified befor
 
 The severity labels used throughout (Critical, Major, Minor) are owned by the project's review severity model; consult it for each tier's definition, fixed floors, and verdict mapping.
 
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html).
+
 ## Verification Evidence
 
 See [verification-evidence.md](./references/verification-evidence.md) for:

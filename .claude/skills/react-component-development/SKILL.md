@@ -13,11 +13,13 @@ It does **not** own how a component looks. Design tokens, colour, typography, sp
 
 Two further boundaries keep this skill portable:
 
-- **Server-state libraries are out of scope.** How queries, mutations, cache keys, and invalidation are organized follows the host project's own server-state conventions. This skill stops at the boundary: a component consumes server state, it does not fetch.
+- **Server-state libraries are out of scope.** How queries, mutations, cache keys, and invalidation are organized follows the host project's own server-state conventions, or a TanStack Query development capability where the project uses that library. This skill stops at the boundary: a component consumes server state, it does not fetch.
 - **Framework specifics are out of scope.** React Server Components, `"use client"`, Suspense streaming, framework caching directives, navigator wiring, and native-module concerns follow the host project's own framework conventions; safe-area styling belongs to the styling capability above.
 - **Semantics and keyboard behaviour are out of scope.** Which element carries which role, what an accessible name says, and how focus moves belong to a high-fidelity UI design capability. This skill states only what follows for a test hook (see [testability.md](./references/testability.md)).
 
 **The host project's existing convention always wins.** Every rule here names a default for a project that has not decided yet. Where the surrounding codebase, its linter, or its formatter already answers a question — barrel files, export syntax, `readonly` style, the styling mechanism, the virtualization library — match what is there and do not migrate the codebase toward this skill as a side effect of an unrelated change.
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html).
 
 ## Composition
 

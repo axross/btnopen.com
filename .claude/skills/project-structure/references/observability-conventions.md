@@ -1,14 +1,16 @@
 # Observability Conventions
 
-Apply this reference when writing or reviewing code that logs, throws, catches, or reports an error. The practices themselves — where `try`/`catch` belongs, how to choose a level, the "Started / Completed" message shape, what may not enter telemetry — belong to the software instrumentation capability, which names roles rather than SDKs. This reference fills in the roles for this repository.
+Apply this reference when writing or reviewing code that logs, throws, catches, or reports an error. Two installed capabilities own most of this: the software instrumentation capability owns the practices — where `try`/`catch` belongs, how to choose a level, the "Started / Completed" message shape, what may not enter telemetry — naming roles rather than SDKs, and the Sentry instrumentation capability owns the Sentry vendor layer beneath it, including SDK choice, `dataCollection`, sampling, replay masking, and per-framework initialization. This reference fills in the roles and records the decisions this repository has made inside them.
 
-| Role | This project |
-| --- | --- |
-| Structured logger | [Pino](https://getpino.io/), via `rootLogger` exported from `app/(app)/_/logger.ts` |
-| Error tracker | [Sentry](https://sentry.io/), via `@sentry/nextjs` |
-| Analytics | [Mixpanel](https://mixpanel.com/) |
+| Role | This project | Vendor layer |
+| --- | --- | --- |
+| Structured logger | [Pino](https://getpino.io/), via `rootLogger` exported from `app/(app)/_/logger.ts` | none installed — the conventions below are the whole of it |
+| Error tracker | [Sentry](https://sentry.io/), via `@sentry/nextjs` | the Sentry instrumentation capability |
+| Analytics | [Mixpanel](https://mixpanel.com/) | none installed — see [third-party-services.md](./third-party-services.md) |
 
 ## Logger Usage
+
+Pino has no installed vendor capability, so these conventions are the complete contract for logging here.
 
 **Example:**
 
@@ -35,26 +37,26 @@ Levels are the filter operators reach for under pressure, so a message at the wr
 **Guidelines:**
 
 - SHOULD use `logger.info()` for normal progress and `logger.warn()` for recoverable unexpected conditions.
-- MUST NOT use `logger.error()`. An error goes to Sentry via `captureException()` and then propagates; see [Error Reporting](#error-reporting).
+- MUST NOT use `logger.error()`. An error goes to Sentry via `captureException()` and then propagates.
 
-## Error Reporting
+## Where Sentry Lives Here
 
-An unhandled failure ends its journey at the top-level boundary, so that boundary's report is the last guarantee nothing fails invisibly — and everything below it depends on capture going through one SDK entry point with a bounded payload.
+The Sentry instrumentation capability owns how Sentry is configured and what may enter an event. What it defers to the project is which files hold that configuration and which surfaces this application routes through them.
+
+| Surface | File |
+| --- | --- |
+| Server and edge initialization | `sentry.server.config.ts`, `sentry.edge.config.ts`, imported from `instrumentation.ts` |
+| Browser initialization | `instrumentation-client.ts` |
+| Build-time wrapper | `withSentryConfig` in `next.config.ts` |
+| Last-resort error boundary | `app/(app)/global-error.tsx` |
 
 **Guidelines:**
 
-- MUST import Sentry helpers from `@sentry/nextjs`, never `@sentry/node` or another Sentry package.
-- MUST keep `app/(app)/global-error.tsx` as the last-resort boundary for the whole application, calling `captureException(error)` inside a `useEffect` so unexpected React render errors are reported. Route-level `error.tsx` files may follow the same pattern.
-- MUST keep Sentry initialization in `instrumentation.ts`, `instrumentation-client.ts`, `sentry.server.config.ts`, and `sentry.edge.config.ts` rather than scattering it across feature modules, and refresh the vendor documentation before changing any of them or the source-map setup.
-- MUST NOT attach secrets, raw request bodies, raw markdown, access tokens, draft content, Payload session data, or private CMS fields to Sentry context. Prefer route names, public slugs, operation names, and booleans; `slug`, `url`, and `filename` are intentionally public and make issues actionable.
-- MUST NOT call `captureException()` from a `not-found.tsx`; `notFound()` is normal control flow, and reporting it would bury real errors in noise.
-- MUST NOT lower `replaysOnErrorSampleRate` below `1.0` in `instrumentation-client.ts` — error-time replay is the most diagnostic signal available.
+- MUST keep `app/(app)/global-error.tsx` as the last-resort boundary for the whole application; route-level `error.tsx` files may follow the same pattern.
+- MUST NOT call `captureException()` from a `not-found.tsx`; `notFound()` is normal control flow here, and reporting it would bury real errors in noise.
+- MUST NOT attach draft content, Payload session data, raw markdown, or private CMS fields to a Sentry event. `slug`, `url`, and `filename` are intentionally public in this project and make issues actionable; the general secret and PII boundary belongs to the Sentry instrumentation capability's data-collection rules.
 - SHOULD report an unexpected non-thrown state rather than ignoring it, using the idiom `markdown.ts`'s `unknownHandler` established: ``captureException(new Error(`Handled unknown mdast node (type: ${node.type}).`))``.
 - SHOULD write an error message that identifies the failing function or condition on its own, since a Sentry issue is usually read with the stack trace minified or several clicks away — `retrieveImageFromVercelBlob() was called but the Vercel Blob token is null.` rather than `Token is missing.`
-
-## Capture Settings Already in Force
-
-The privacy consequences of a new surface depend on what the existing configuration already captures; [third-party-services.md](./third-party-services.md) records the current settings and what they imply for a new form or component.
 
 ## Environment Divergence
 

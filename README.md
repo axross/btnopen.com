@@ -68,16 +68,30 @@ get it reviewed before merge.
 ### Agent skills
 
 Most of the guidance agents follow here is **installed**, not written in this
-repository. Twenty skills come from the shared
+repository. Twenty-one skills come from the shared
 [axross/skills](https://github.com/axross/skills) library and are copied into
 [`.claude/skills/`](.claude/skills/) with the
 [vercel-labs/skills](https://github.com/vercel-labs/skills) CLI, pinned by
 [`skills-lock.json`](skills-lock.json):
 
 ```bash
-# refresh every installed skill from the library
-npx skills add axross/skills --agent claude-code --skill '*' --yes --copy
+# refresh exactly the skills this project already manages
+npx skills add axross/skills --agent claude-code --yes --copy \
+  $(node -p "Object.keys(require('./skills-lock.json').skills).map(s => '--skill ' + s).join(' ')")
 ```
+
+**Do not use `--skill '*'` here.** Against an external source it installs the
+library's *entire* catalogue, not the subset in `skills-lock.json` — today that
+would silently adopt the Expo, TanStack Query, Amplitude, and
+technical-document layers, none of which this project uses. The command above
+derives the list from the lockfile instead, so it stays correct as the set
+changes.
+
+Adopting a new skill means naming it explicitly, and `--skill` takes exactly
+one skill per flag: repeat the flag (`--skill a --skill b`) rather than passing
+a comma-separated list. A comma-separated value matches nothing, installs
+nothing, writes no lockfile, and reports an available-skill list that reads
+like ordinary help rather than a failure.
 
 Those copies are **generated artifacts**. Editing one is pointless — the next
 install discards it — so a change to an installed skill goes upstream to the

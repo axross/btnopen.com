@@ -13,6 +13,8 @@ The conventions are framework-agnostic — they hold whether the project runs Je
 
 A unit test earns its place when it exercises a small exported contract quickly, independently, and from the outside. It becomes a liability when it overfits implementation details or stands in for higher-confidence integration or e2e coverage — so part of this capability is knowing when _not_ to write one, and routing that behavior to a broader test instead.
 
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html).
+
 ## Testing Scope
 
 See [testing-scope.md](./references/testing-scope.md) for:

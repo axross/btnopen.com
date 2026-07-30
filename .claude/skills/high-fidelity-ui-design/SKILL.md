@@ -13,6 +13,8 @@ This skill owns **how a surface looks and responds** at full fidelity, in design
 
 The normative rules live in the topic references below, each distilled from reputable design sources — Nielsen Norman Group, Material Design 3, Apple Human Interface Guidelines, W3C/WAI WCAG, Laws of UX, and shadcn/ui — with reasoning, do/don't examples, and citations. Several carry a verification technique you run against the actual render, not the intent: the grayscale squint test for hierarchy, per-theme contrast re-measurement, side-by-side interaction-state coverage, a color-blindness/grayscale pass, and reflow to a 320px viewport. Load the reference whose topic matches the decision in front of you; consult all six before calling a high-fidelity surface done.
 
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html).
+
 ## Design Tokens and Theming
 
 See [tokens-and-theming.md](./references/tokens-and-theming.md) for:

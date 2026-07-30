@@ -47,7 +47,7 @@ flowchart TD
 
 ## Logger Setup
 
-One shared root logger owns severity and transport configuration; per-module child loggers make every line attributable to the code that emitted it without each module re-deciding how logging works.
+One shared root logger owns severity and transport configuration; per-module child loggers make every line attributable to the code that emitted it without each module re-deciding how logging works. When a transport also forwards a line onward — mirroring it into a breadcrumb, or turning a designated level into a product event — [product-event-tracking.md](./product-event-tracking.md) owns that fan-out and where it belongs.
 
 **Guidelines:**
 

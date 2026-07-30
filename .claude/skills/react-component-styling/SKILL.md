@@ -20,6 +20,8 @@ This skill is self-contained and prescribes token **shapes**, never token **valu
 
 Everything outside those two references is platform-neutral and applies either way.
 
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html).
+
 ## Style Composition
 
 See [style-composition.md](./references/style-composition.md) for:

@@ -2,7 +2,7 @@
 
 Apply this reference when connecting an error tracker, a logger, tracing, or analytics to a Next.js application, or reviewing whether a change leaves its failures visible.
 
-This reference owns only the **framework wiring** — which file, which hook, which runtime. Log levels, capture semantics, breadcrumb design, and PII boundaries belong to a software instrumentation capability, and its rules apply in full to whatever is passed through these hooks.
+This reference owns only the **framework wiring** — which file, which hook, which runtime. Log levels, capture semantics, breadcrumb design, and PII boundaries belong to a software instrumentation capability, and its rules apply in full to whatever is passed through these hooks. The concrete package names, build-plugin options, and integrations of whichever tracker is installed belong to that vendor's own instrumentation capability — including which of its build options the default bundler silently ignores. Consult it alongside this reference whenever the change touches the tracker's own configuration.
 
 ## `instrumentation.ts`
 

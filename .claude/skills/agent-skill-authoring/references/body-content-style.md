@@ -54,6 +54,7 @@ RFC-2119 keywords mark how strongly a rule applies. They let future agents disti
 
 - MUST capitalize the keyword when it carries requirement-level meaning.
 - MUST use RFC-2119 keywords for every normative guideline bullet.
+- MUST state the RFC-2119 interpretation contract once in every `SKILL.md` that carries normative bullets, as the last intro paragraph before the first `##` heading, so an installed skill declares its own vocabulary instead of depending on the host project's instructions to define it.
 - SHOULD reserve MUST and MUST NOT for non-negotiable rules.
 - SHOULD use SHOULD and SHOULD NOT when valid exceptions exist.
 - MAY use ordinary prose without RFC-2119 keywords for definitions, examples, and explanatory paragraphs.

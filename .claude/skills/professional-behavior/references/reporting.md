@@ -1,6 +1,6 @@
 # Reporting
 
-Apply this reference whenever you hand something back — an answer, a set of findings, a progress note, a completion summary. It governs the conversational reply. Structured artifacts with their own formats — a review report, a pull request body, a plan document, a specification — follow the conventions of whatever owns them.
+Apply this reference whenever you hand something back — an answer, a set of findings, a progress note, a completion summary. It governs the conversational reply. Structured artifacts with their own formats — a review report, a pull request body, a plan document, a specification — follow the conventions of whatever owns them; where the project ships a technical-document authoring capability, that capability owns the writing craft of a document, while this reference keeps the reply.
 
 ## Lead With the Answer
 

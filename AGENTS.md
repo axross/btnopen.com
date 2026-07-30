@@ -59,7 +59,8 @@ Consult the skill whose trigger matches the surface being changed. Discovery res
 | Any GitHub read or write | `github-operation` |
 | Naming, complexity, abstraction boundaries, dead code | `code-maintainability` |
 | Secrets, untrusted input, injection, SSRF, access control, dependencies | `application-security` |
-| Logging, error handling, error reporting, analytics events | `software-instrumentation` |
+| Logging, error handling, error reporting, metrics, product-event tracking | `software-instrumentation` |
+| Anything touching Sentry — `Sentry.init`, `withSentryConfig`, DSNs, source maps, sampling, replay masking, `dataCollection` | `sentry-instrumentation`, the vendor layer beneath it |
 | Jest unit tests | `unit-testing` |
 | Playwright end-to-end tests | `end-to-end-testing` |
 | App Router mechanics — rendering, caching, route handlers, metadata, the server/client boundary | `next-app-development` |
@@ -85,6 +86,6 @@ Consult the skill whose trigger matches the surface being changed. Discovery res
 - MUST establish design intent before implementing a user-facing change — hierarchy, interaction states, accessibility intent, responsive behavior, copy — and express it in user-facing terms before translating it into components and CSS.
 - MUST run the verification the changed surface requires, using the commands in the [README](README.md), and report what ran, what was skipped, and the residual risk.
 - MUST treat auth, access control, markdown/XSS, SSRF and embed fetching, migrations, public route contracts, production config, data-loss risk, and large refactors as high-risk, and route them to the independent review in [REVIEW.md](REVIEW.md) rather than self-certifying.
-- MUST begin every agent-authored GitHub comment with this project's one fixed marker line, `<!-- agent -->`, reused identically across every run and session, so a later run can tell its own output from human input. The installed `github-operation` skill owns the practice but illustrates it with a different string; this repository's marker is the one above, and it is what every existing agent comment already carries.
+- MUST begin every agent-authored GitHub comment with this project's one fixed marker line, `<!-- agent -->`, reused identically across every run and session, so a later run can tell its own output from human input. The installed `github-operation` skill owns the practice and defers the string to the host project, falling back to `<!-- ai-agent -->` only where none is defined; this line is what defines it here, and it is what every existing agent comment already carries.
 - MUST NOT push to the default branch; work on a `claude/`-prefixed branch and leave merging to the maintainer, @axross.
 - SHOULD propose a skill update when work exposes a durable convention this repository owns, and say so when skill maintenance was deliberately skipped.

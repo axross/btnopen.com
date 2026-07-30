@@ -27,6 +27,8 @@ This skill deliberately does not own everything a spec touches. It owns the docu
 
 Keeping those mechanics out is what lets this document stay stable when the implementation approach changes, and keeps review focused on outcomes.
 
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html).
+
 ## Summary and Background Framing
 
 See [problem-and-scope.md](./references/problem-and-scope.md) for:

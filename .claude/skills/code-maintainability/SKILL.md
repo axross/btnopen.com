@@ -16,6 +16,8 @@ Where the project's development or structure conventions own a rule — or a pro
 - MUST defer each rule to its owning skill by name where one exists (the project's development, structure, component, routing, or domain conventions), summarizing rather than duplicating its wording.
 - MUST treat a concern gated on a project-specific convention as inapplicable — not a violation — on a project that does not ship that convention.
 
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html).
+
 ## Naming and Organization
 
 See [naming-and-organization.md](./references/naming-and-organization.md) for:

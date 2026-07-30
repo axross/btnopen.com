@@ -13,6 +13,8 @@ A review has one job — decide whether a change is safe to merge and say why, w
 
 **Review target.** The target is the change already under review: the working tree against the base branch by default, or a specific pull-request reference, branch name, or commit range when one is named. Establish the diff for that target before reading anything else (see [scoping.md](./references/scoping.md)).
 
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html).
+
 ## The Review Loop
 
 Every review runs the same loop: reset into reviewer mode, scope the change from its diff, assess that diff through the review lenses, classify each finding by severity, report with evidence, and escalate anything too risky to self-approve. The reset is what makes the rest trustworthy — the reviewer inspects what the code _does_, as if someone else wrote it, instead of re-affirming the reasoning that produced it; this matters most in self-review, where the author and reviewer are the same agent. Do not read any code before the reset — it is the first normative step, owned by [scoping.md](./references/scoping.md). The sections below route to the reference that owns each step, ordered as a review applies them.

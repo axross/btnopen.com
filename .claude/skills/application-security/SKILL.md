@@ -14,6 +14,8 @@ Use this capability whenever you write or review code that handles untrusted inp
 
 The framing is the **OWASP Top 10:2025**. Each reference below carries both modes for one risk. The references are written against a common web-application shape — a framework with a public/client-exposed env-var prefix, a content renderer, an image optimizer, metadata routes. When your project differs, apply the same rule to your project's equivalent surface rather than skipping it; when a rule depends on another discipline (dependency justification, review scoping), it points to that discipline in words, so this capability stays usable on its own.
 
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html).
+
 ## OWASP Top 10:2025 Coverage
 
 Two 2025 relocations matter for routing: **SSRF** is no longer its own category — it folded into **A01 Broken Access Control** — and vulnerable/outdated components expanded into the new **A03 Software Supply Chain Failures**.

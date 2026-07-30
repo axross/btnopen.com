@@ -1,7 +1,7 @@
 ---
 name: software-instrumentation
-description: The ability to instrument software so its behavior is observable in production — the three telemetry signals (logs, metrics, traces) plus the error handling and error tracking that make them actionable. Covers structured-logger usage and module child loggers, log-level choice with a decision flow, "Started / Completed" log messages, try/catch placement and error propagation to the root call site with a caught-error decision flow, error-reporting capture calls, breadcrumbs, top-level error boundaries, trace/replay sampling, PII boundaries in telemetry, product/usage event tracking, and a signal-selection guide. Names roles ("your structured logger", "your error tracker", "your analytics tool") rather than specific SDKs.
-when_to_use: Use whenever writing, reviewing, or modifying code that logs, throws, catches, reports an error, tracks an event, or configures a logger, error tracker, tracing, or analytics tool — even when the request only mentions "logging", "log level", "structured logs", "capture exception", "error boundary", "breadcrumb", "trace sampling", "observability", "instrumentation", "metrics", "analytics", "event tracking", or debugging an unhandled exception.
+description: The ability to instrument software so its behavior is observable in production — the three telemetry signals (logs, metrics, traces) plus the error handling and error tracking that make them actionable. Covers structured-logger usage and module child loggers, log-level choice with a decision flow, "Started / Completed" log messages, try/catch placement and error propagation to the root call site with a caught-error decision flow, error-reporting capture calls, breadcrumbs, top-level error boundaries, trace/replay sampling, metric instrument types and label cardinality, and product-event tracking end to end — the one-module SDK boundary, a typed event schema, event naming, property and PII discipline, call-site placement, identity and session calls, consent gating, verification, and migration. Names roles ("your structured logger", "your error tracker", "your analytics tool") rather than specific SDKs.
+when_to_use: Use whenever writing, reviewing, or modifying code that logs, throws, catches, reports an error, tracks a product event, identifies a user, or configures a logger, error tracker, tracing, or analytics tool, or gates whether telemetry may fire at all — analytics withheld until the user consents to cookies — even when the request only mentions "logging", "log level", "capture exception", "error boundary", "breadcrumb", "trace sampling", "metrics", "cardinality", "analytics", "event name", "event schema", "user property", "identify", "reset on logout", "cookie consent", or debugging an unhandled exception.
 user-invocable: false
 ---
 
@@ -11,7 +11,11 @@ Use this capability whenever you instrument software to make its behavior observ
 
 The guidance is deliberately tool-agnostic. It names roles — **your structured logger**, **your error tracker** (error-reporting service), **your analytics tool** — rather than specific SDKs, and the code snippets use placeholder function names such as `logger.info(...)`, `reportError(...)`, and `trackEvent(...)` that map onto whatever your project has adopted. Substitute the concrete names when applying a rule; keep the shape.
 
-Observability rests on three signal types — **logs**, **metrics**, and **traces** — made actionable by disciplined **error handling** and a dedicated **error tracker**. Each reference below owns one of those concerns; load the ones the change touches.
+That substitution is where a vendor-specific capability takes over. Which package to depend on, which option controls what is collected, how source maps reach the service, and where its build-time token may appear are vendor questions this skill deliberately does not answer; the installed tracker's own instrumentation capability owns them. Use both together: this skill decides what to instrument, the vendor's decides how that is carried out.
+
+Observability rests on three signal types — **logs**, **metrics**, and **traces** — made actionable by disciplined **error handling** and a dedicated **error tracker**. **Product events** sit alongside them: the same act of measurement pointed at user behavior instead of system health, with its own naming, identity, and consent rules. Each reference below owns one of those concerns; load the ones the change touches.
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html).
 
 ## Choosing a Signal
 
@@ -24,12 +28,12 @@ flowchart TD
   Q --> R3[Follow one request across service or module boundaries]
   Q --> R4[Measure user behavior - a feature used, a funnel step, a conversion]
   R1 --> S1[Log line - see Logging]
-  R2 --> S2[Metric - see Metrics and Product Analytics]
+  R2 --> S2[Metric - see Metrics]
   R3 --> S3[Trace - see Error Tracking, trace/replay sampling]
-  R4 --> S4[Product event - see Metrics and Product Analytics]
+  R4 --> S4[Product event - see Product Event Tracking]
 ```
 
-An unexpected failure is not on this flow because it is not a fourth choice: report it to the error tracker (see Error Handling and Error Tracking), and let disciplined logging supply the breadcrumb trail that leads up to it.
+An unexpected failure is not on this flow because it is not one of these choices: report it to the error tracker (see Error Handling and Error Tracking), and let disciplined logging supply the breadcrumb trail that leads up to it.
 
 ## Error Handling
 
@@ -58,11 +62,22 @@ See [logging.md](./references/logging.md) for:
 - Deriving module-scoped child loggers from one shared root logger
 - Structured context objects and "Started / Completed" message conventions
 
-## Metrics and Product Analytics
+## Metrics
 
-See [metrics-and-analytics.md](./references/metrics-and-analytics.md) for:
+See [metrics.md](./references/metrics.md) for:
 
-- Emitting metrics and product/usage events through one typed, centralized wrapper
-- Stable event and property naming conventions
-- Gating telemetry behind a runtime flag and honoring user consent
-- Keeping PII and raw content out of event properties
+- Deciding when a health signal earns a metric rather than a log line
+- Choosing between a counter, a gauge, and a distribution, and declaring the unit
+- Keeping labels low-cardinality, and the identifiers that must never become one
+- Emitting through one wrapper that is gated, non-blocking, and cannot throw
+
+## Product Event Tracking
+
+See [product-event-tracking.md](./references/product-event-tracking.md) for:
+
+- The one module that owns the analytics SDK, and the typed event schema in front of it
+- Naming an event so it survives a redesign, and normalizing names and keys at one boundary
+- Event properties versus user properties, cardinality, and what never belongs in a payload
+- Emitting where the fact becomes true, including the failure path and the server-side case
+- Identity calls, reset on logout, session definitions, and consent-gated initialization
+- Asserting an event in tests, and migrating or retiring one without emptying a chart

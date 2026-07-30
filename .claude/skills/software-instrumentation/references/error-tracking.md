@@ -4,6 +4,8 @@ Apply this reference when instrumenting or reviewing error-tracker setup, except
 
 An **error tracker** (error-reporting service such as Sentry, Rollbar, Bugsnag, or Honeybadger) is where unexpected failures become visible: it groups exceptions, attaches stack traces and breadcrumbs, and alerts. This file uses `reportError(...)` for its capture call and `addBreadcrumb(...)` for its breadcrumb call; substitute your project's actual names.
 
+The rules below govern **what** to capture and what an event may carry, whichever tracker is installed. The mechanics of the tracker itself — its packages, its initialization options, its source-map upload, its sampling and privacy settings — belong to that vendor's own instrumentation capability; consult it whenever a change touches the tracker's configuration rather than what the application reports.
+
 ## Integration Boundaries
 
 An error tracker touches production diagnostics and user privacy at once, so its initialization and imports deserve a single, well-guarded home rather than being scattered across feature modules.

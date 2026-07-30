@@ -15,6 +15,8 @@ This skill is a self-contained change loop that can serve as a project's default
 
 The concrete tooling named throughout — GitHub issues and pull requests, the `mcp__github__*` MCP channel, `AskUserQuestion`, `send_later`, a CI review bot triggered by `@claude review` — is the **reference harness** (Claude Code + GitHub MCP). On a harness that works the same way, substitute its equivalents; the loop's shape is unchanged.
 
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html).
+
 ## Execution Model
 
 You are the only long-lived actor. Advance the work as far as you can autonomously within each phase, and stop the turn whenever the next step needs a human, so an idle run consumes nothing. A stopped run is resumed by one of three triggers:
@@ -40,7 +42,7 @@ Every human-gated decision with options goes through the harness's question tool
 
 See [asking-the-human.md](./references/asking-the-human.md) for:
 
-- framing a decision as concrete options with a marked default, and ordering dependent questions
+- framing a decision as concrete options in dependency order, and where the general rule is owned
 - re-presenting a question when the tool closes or errors, and reading a bare answer token next turn
 - keeping an open question in the status block, and sending pure notifications to the turn output
 - what may be attributed to the human, and why a bare continuation is a resume signal, not approval

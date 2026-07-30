@@ -15,6 +15,8 @@ The kit is [wireframe-kit.html](./assets/wireframe-kit.html) — a self-containe
 
 The normative rules below are grounded in the external field consensus distilled in this skill's **Research-Grounded Best Practices** references (the routing section at the end of this document) — 18 principles across five topic files, each expanded with reasoning, do/don't examples, and citations to reputable sources (Nielsen Norman Group, the Interaction Design Foundation, Smashing Magazine, Basecamp's _Shape Up_, platform design systems). The MUST/SHOULD rules in this document are authoritative.
 
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html).
+
 ## Choosing the Artifact
 
 Low fidelity is not one artifact — pick the cheapest one that answers the open question. Reach for the HTML kit only when the question is about a screen's regions and hierarchy; when the question is a flow's steps, breadboard it in words first, and when the 2D arrangement _is_ the question, a fat-marker sketch beats any tool.

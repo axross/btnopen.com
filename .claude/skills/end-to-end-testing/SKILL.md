@@ -19,6 +19,8 @@ Code examples use one concrete runner (usually Playwright) as the shape. Transla
 
 This skill owns the E2E level: whole-system checks against a real build. A check that mocks its dependencies to isolate one unit belongs at the unit level instead — if the project ships a unit-testing skill, defer to it for those conventions.
 
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html).
+
 ## Running End-to-End Tests
 
 See [commands.md](./references/commands.md) for:

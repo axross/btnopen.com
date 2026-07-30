@@ -18,7 +18,7 @@ Because the agent shares the operator's identity, a reader cannot tell an agent 
 
 **Guidelines:**
 
-- MUST begin every agent-authored comment with the project's one fixed HTML marker line — reused identically across every run and session. When the project defines no marker, use `<!-- agent -->` and keep it consistent.
+- MUST begin every agent-authored comment with the project's one fixed HTML marker line — reused identically across every run and session. When the project defines no marker, use `<!-- ai-agent -->` and keep it consistent.
 - MUST treat any comment carrying that marker as agent output, and any comment without it as human input, when reconstructing a thread's state.
 - MUST tell a separate bot identity — a CI reviewer that posts under its own login — apart by that author login, not the marker.
 - MUST NOT embed another automation's trigger phrase (such as a review workflow's `@claude review`) in a status, breadcrumb, or summary comment; comment-triggered workflows match the phrase anywhere in the body and will spuriously fire.

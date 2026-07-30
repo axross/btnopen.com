@@ -11,6 +11,8 @@ Use this capability whenever you write a Git commit message or title a pull requ
 
 This skill is **self-contained**: it names no repository-specific file or layout, and the contract it carries is the same wherever it is installed. Where a host project narrows the rules — a restricted type list, a mandatory scope, a commit trailer its own tooling reads — follow the host's convention on that point and keep the structure below.
 
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html).
+
 ## Overall Format
 
 ```

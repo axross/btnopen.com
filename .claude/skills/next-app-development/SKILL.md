@@ -11,6 +11,8 @@ Use this capability whenever you write or review a Next.js application built on 
 
 It carries **both voices**. Every reference states the authoring rule — what to write — and, where the surface has a known failure mode, the review check: what to look for in a diff and how severe it is when found. A reviewer loads this one skill to know what to review on a Next.js change; there is no separate review skill to pair it with.
 
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html).
+
 ## Baseline and Scope
 
 **Next.js 16 is the baseline.** Every rule here is written against v16 semantics and verified against the 16.2.x documentation. No rule is qualified as holding only on 14 or 15 — where a v16 rule inverts an older one, the older behaviour appears solely in the arrival checklist in [version-and-tooling.md](./references/version-and-tooling.md).
