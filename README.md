@@ -70,7 +70,11 @@ get it reviewed before merge.
 
 ### Agent skills
 
-Most of the guidance agents follow here is **installed**, not written in this
+Agent guidance here comes from two places, and the difference matters to anyone
+who goes to change one — it decides whether an edit survives, and where a fix
+belongs.
+
+Most of that guidance is **installed**, not written in this
 repository. Twenty-two skills come from the shared
 [axross/skills](https://github.com/axross/skills) library and are copied into
 [`.claude/skills/`](.claude/skills/) with the
@@ -106,9 +110,10 @@ know about it: [`project-structure`](.claude/skills/project-structure/SKILL.md)
 [`visual-identity`](.claude/skills/visual-identity/SKILL.md) (the site's design
 language and the CSS that encodes it), and
 [`markdown-processing-guidelines`](.claude/skills/markdown-processing-guidelines/SKILL.md)
-(the Remark/Rehype/Shiki pipeline). Every skill states its own scope in its
-frontmatter, which is how agents find it — there is no separate index to keep
-current.
+(the Remark/Rehype/Shiki pipeline). They hold only what the library cannot know
+about this repository; everything else it once maintained was replaced by a
+library counterpart. Every skill states its own scope in its frontmatter, which
+is how agents find it — there is no separate index to keep current.
 
 ### Delivering a unit of work end-to-end
 
