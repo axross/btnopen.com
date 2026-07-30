@@ -32,7 +32,7 @@ output — they exist for self-review, not for the pull-request thread.
 - MUST label every posted finding exactly **Important** or **Nit** — no other
   labels appear in a posted review.
 - MUST label as Important every violated MUST rule of a matching
-  `AGENTS.md`-indexed skill, every acceptance criterion that is unmet or cannot
+  skill whose trigger matches, every acceptance criterion that is unmet or cannot
   be confirmed from the diff, and every mandatory-check miss that breaks a hard
   requirement.
 - MUST label style, naming, and refactoring suggestions Nit at most.

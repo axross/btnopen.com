@@ -56,12 +56,13 @@ the result. For a production build, run `npm run build`, then `npm run start`.
 
 Development in this repository is agent-assisted via
 [Claude Code](https://claude.com/claude-code). The working agreement lives in
-[`AGENTS.md`](AGENTS.md), following the tool-agnostic
-[AGENTS.md](https://agents.md) convention so any AI coding assistant can
-consume the same guidance — Claude Code is one supported option among others.
-It states how every session runs and defers the detail to the skills under
-[`.claude/skills/`](.claude/skills/), which agents find through their own
-frontmatter rather than through an index.
+[`CLAUDE.md`](CLAUDE.md). It states how every session runs and defers the
+detail to the skills under [`.claude/skills/`](.claude/skills/), which agents
+find through their own frontmatter rather than through an index. Another
+assistant reading this repository should treat `CLAUDE.md` as its working
+agreement, the way the tool-agnostic [AGENTS.md](https://agents.md) convention
+would otherwise signal.
+
 Human and agent contributors follow the same loop: plan → implement →
 self-review → verify → report, and changes made without an agent meet the same
 bar: branch, implement, run the [checks](#commands), open a pull request, and

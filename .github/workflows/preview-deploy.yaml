@@ -139,7 +139,6 @@ jobs:
               ".data/",
             ];
             const ignoredExactPaths = new Set([
-              "AGENTS.md",
               "CLAUDE.md",
               "README.md",
               "REVIEW.md",
