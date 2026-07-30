@@ -115,6 +115,12 @@
       "skillPath": "skills/software-instrumentation/SKILL.md",
       "computedHash": "6f5976dffbf87a90f842251a5202ce1cbd1275a0d819188591a5ded1f120dd42"
     },
+    "technical-document-authoring": {
+      "source": "axross/skills",
+      "sourceType": "github",
+      "skillPath": "skills/technical-document-authoring/SKILL.md",
+      "computedHash": "88a46419afe65500c2e1aaa7d3f7d14f11d3dd1fa479b974eef45945d629f005"
+    },
     "unit-testing": {
       "source": "axross/skills",
       "sourceType": "github",

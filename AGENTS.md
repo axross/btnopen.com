@@ -55,6 +55,7 @@ Consult the skill whose trigger matches the surface being changed. Discovery res
 | ---------- | ------- |
 | Reviewing a diff, pull request, or your own change before calling it done | `code-review`, plus `quality-assurance` for whether the verification is adequate |
 | A spec, plan document, or issue description | `product-requirement-document-authoring` |
+| The prose of any technical document — `README.md`, a file under `docs/`, a project skill, an ADR or runbook | `technical-document-authoring` |
 | A commit message or pull request title | `conventional-commits` |
 | Any GitHub read or write | `github-operation` |
 | Naming, complexity, abstraction boundaries, dead code | `code-maintainability` |
