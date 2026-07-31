@@ -1,7 +1,7 @@
 ---
 name: project-structure
-description: The structure and conventions of this Next.js + Payload CMS blog — the facts a shared skill library cannot know about it. Covers the tech stack and third-party services, the directory tree and tier model, TypeScript path aliases, repository support files and the enforced Biome thresholds, file placement and naming, the architecture boundaries between the app, the data layer, and the Payload realm, App Router route-path and route-file conventions, React component anatomy and the loaded/loading split, Payload access control, drafts, query bounds and cache invalidation, the `runtime.ts` environment barrel with the project's SSRF, CSRF, and input-validation surfaces, Sentry/Pino observability wiring, the lowercase-first source-comment voice, and the Jest, Playwright, and `data-testid` testing conventions.
-when_to_use: Use when locating files, placing or naming a new module, or resolving any "how does THIS project do it" question that a general capability defers to the project on — where data access lives, which tier a module belongs in, how a route directory is laid out, how a component splits across the server/client boundary, how Payload collections gate access, how environment values are read, which log level or logger to use, how comments are cased, how tests and test IDs are named. Consult it alongside the general capability for the surface being changed, which owns the underlying practice; this skill owns only what is specific to this repository.
+description: The structure and conventions of this Next.js + Payload CMS blog — the facts a shared skill library cannot know about it. Covers the tech stack and third-party services, the directory tree and tier model, TypeScript path aliases, repository support files and the enforced Biome thresholds, file placement and naming, the architecture boundaries between the app, the data layer, and the Payload realm, App Router route-path and route-file conventions, React component anatomy and the loaded/loading split, Payload access control, drafts, query bounds and cache invalidation, the `runtime.ts` environment barrel with the project's SSRF, CSRF, and input-validation surfaces, Sentry/Pino observability wiring, the lowercase-first source-comment voice, the Jest, Playwright, and `data-testid` testing conventions, and the register of accepted deviations from the installed skill library.
+when_to_use: Use when locating files, placing or naming a new module, or resolving any "how does THIS project do it" question that a general capability defers to the project on — where data access lives, which tier a module belongs in, how a route directory is laid out, how a component splits across the server/client boundary, how Payload collections gate access, how environment values are read, which log level or logger to use, how comments are cased, how tests and test IDs are named. Use it also when an installed capability's rule appears to collide with this codebase, or turns out to be wrong, outdated, or silent on a case here — its known-deviations reference owns that routing. Consult it alongside the general capability for the surface being changed, which owns the underlying practice; this skill owns only what is specific to this repository.
 user-invocable: false
 ---
 
@@ -85,7 +85,7 @@ See [component-conventions.md](./references/component-conventions.md) for:
 
 See [security-conventions.md](./references/security-conventions.md) for:
 
-- `app/(app)/_/runtime.ts` as the only sanctioned environment barrel, and the four files Biome whitelists for `process.env`
+- `app/(app)/_/runtime.ts` as the only sanctioned environment barrel, and the `biome-ignore` directive that marks each sanctioned `process.env` access
 - the webembed SSRF surface, the `URL.canParse` filter, `images.remotePatterns` scoping, and OG-image and sitemap fetch rules
 - `searchParams` value comparison, Zod validation on route handlers, and upload filename sanitization
 - the `serverExternalPackages` justification rule
@@ -130,3 +130,12 @@ See [testing-conventions.md](./references/testing-conventions.md) for:
 - Jest with `@jest/globals`, colocated `*.spec.ts`, and `it(...)` over `test(...)`
 - the `e2e/` layout, snapshot location, and the `e2e/scenarios.md` journey catalog
 - the scope-relative `data-testid` nesting pattern and the `-loading` suffix
+
+## Known Deviations from the Installed Skills
+
+See [known-deviations.md](./references/known-deviations.md) for:
+
+- the deviations this repository has accepted against an installed capability's rule, and the fact that none is currently recorded
+- telling a deviation (a collision this repository chose) from a gap (an installed capability that is wrong, outdated, or silent)
+- recording a new one, and why editing the installed copy is never the resolution
+- routing a gap upstream to [`axross/skills`](https://github.com/axross/skills) with the human's go-ahead, and what to do meanwhile
