@@ -6,9 +6,10 @@ product (e.g. Claude Code's managed Code Review) natively, and the CI
 reviewer ([`claude-review.yaml`](.github/workflows/claude-review.yaml)) via a
 system-prompt bootstrap. This file overrides reviewer defaults and
 complements the review **methodology** in
-[Code Review Guideline](.claude/skills/code-review-guideline/SKILL.md); where
+the installed [`code-review`](.claude/skills/code-review/SKILL.md) skill; where
 the two differ about what a posted review reports, this file wins (see that
-skill's [Repository Review Policy Overlay](.claude/skills/code-review-guideline/SKILL.md#repository-review-policy-overlay)).
+skill's [Posted and CI Reviews](.claude/skills/code-review/SKILL.md#posted-and-ci-reviews)
+section).
 
 This is a **strict** review: run every mandatory check below, verify the linked
 issue's acceptance criteria, and report every finding — do not wave anything
@@ -22,7 +23,7 @@ output — they exist for self-review, not for the pull-request thread.
 
 - **Important** — MUST be addressed before merge: a finding that breaks
   behavior, corrupts persisted state, leaks data, regresses accessibility,
-  violates a MUST rule of a matching skill in the `AGENTS.md` skill index, or
+  violates a MUST rule of a skill whose trigger matches the change, or
   leaves an acceptance criterion unmet or unverifiable from the diff.
 - **Nit** — safe to defer: style, naming, and refactoring suggestions.
 
@@ -31,7 +32,7 @@ output — they exist for self-review, not for the pull-request thread.
 - MUST label every posted finding exactly **Important** or **Nit** — no other
   labels appear in a posted review.
 - MUST label as Important every violated MUST rule of a matching
-  `AGENTS.md`-indexed skill, every acceptance criterion that is unmet or cannot
+  skill whose trigger matches, every acceptance criterion that is unmet or cannot
   be confirmed from the diff, and every mandatory-check miss that breaks a hard
   requirement.
 - MUST label style, naming, and refactoring suggestions Nit at most.
@@ -43,10 +44,10 @@ not skippable. Grade each miss by its real impact: a miss that breaks a hard
 requirement is **Important**, a gap that does not is a **Nit**. Cite the owning
 skill in the finding.
 
-- **Skill conformance** — verify the change conforms to **every** skill in the
-  [`AGENTS.md`](AGENTS.md) skill index whose routing condition matches the
-  changed files, and flag any deviation from a skill's stated rule, citing the
-  skill and the rule. A violated skill **MUST** rule is Important.
+- **Skill conformance** — verify the change conforms to **every** skill under
+  `.claude/skills/` whose `when_to_use` matches the changed files, and flag any
+  deviation from a skill's stated rule, citing the skill and the rule. A
+  violated skill **MUST** rule is Important.
 - **Acceptance criteria** — verify the diff against **every** acceptance
   criterion in the linked issue (the pull request body's `Closes #<n>`), when
   the pull request links one. Each criterion that is unmet, or that cannot be
@@ -58,8 +59,8 @@ skill in the finding.
 - MUST run both mandatory checks on every review and raise a finding for each
   miss.
 - MUST give each finding a severity label, `file:line` evidence, and a concrete
-  fix, per
-  [Code Review Guideline](.claude/skills/code-review-guideline/SKILL.md).
+  fix, per the installed
+  [`code-review`](.claude/skills/code-review/SKILL.md) skill.
 
 ## Do Not Report
 
@@ -96,5 +97,5 @@ and nothing is summarized away — the tally counts every finding.
   separate top-level conversation comments.
 - MUST post any pull-request review as a **COMMENT**-type review — never
   APPROVE or REQUEST_CHANGES — per
-  [GitHub Operation Guidelines](.claude/skills/github-operation-guidelines/SKILL.md); this reviewer
-  is advisory and does not gate merges.
+  the installed [`github-operation`](.claude/skills/github-operation/SKILL.md)
+  skill; this reviewer is advisory and does not gate merges.

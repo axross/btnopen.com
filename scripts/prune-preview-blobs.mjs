@@ -5,7 +5,7 @@
  * Used by the preview-deploy teardown job to delete a closed pull request's
  * uploaded media, which lives under a `pr-<n>/` prefix in the dedicated preview
  * store (see `.github/workflows/preview-deploy.yaml` and
- * `.claude/skills/development-guidelines/references/preview-deployments.md`).
+ * `docs/preview-deployments.md`).
  *
  * Deliberately dependency-light: it imports only `@vercel/blob` so the teardown
  * job can run it from a throwaway directory with a standalone install, never

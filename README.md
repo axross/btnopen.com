@@ -56,46 +56,89 @@ the result. For a production build, run `npm run build`, then `npm run start`.
 
 Development in this repository is agent-assisted via
 [Claude Code](https://claude.com/claude-code). The working agreement lives in
-[`AGENTS.md`](AGENTS.md) and routes to the detailed skills under
-[`.claude/skills/`](.claude/skills/), following the tool-agnostic
-[AGENTS.md](https://agents.md) convention so any AI coding assistant can
-consume the same guidance — Claude Code is one supported option among others.
+[`CLAUDE.md`](CLAUDE.md). It states how every session runs and defers the
+detail to the skills under [`.claude/skills/`](.claude/skills/), which agents
+find through their own frontmatter rather than through an index. Another
+assistant reading this repository should treat `CLAUDE.md` as its working
+agreement, the way the tool-agnostic [AGENTS.md](https://agents.md) convention
+would otherwise signal.
+
 Human and agent contributors follow the same loop: plan → implement →
 self-review → verify → report, and changes made without an agent meet the same
-bar: branch, implement, run the checks below, open a pull request, and get it
-reviewed before merge.
+bar: branch, implement, run the [checks](#commands), open a pull request, and
+get it reviewed before merge.
 
-### `/address` — deliver a unit of work end-to-end
+### Agent skills
 
-[`/address`](.claude/skills/address/SKILL.md) is the main delivery entry point. It
-takes one unit of work — a GitHub issue, a pull request, or a free-form
-prompt — from intake to a merge-ready pull request in a single continuing
-session:
+Agent guidance here comes from two places, and the difference matters to anyone
+who goes to change one — it decides whether an edit survives, and where a fix
+belongs.
+
+Most of that guidance is **installed**, not written in this
+repository. Twenty-two skills come from the shared
+[axross/skills](https://github.com/axross/skills) library and are copied into
+[`.claude/skills/`](.claude/skills/) with the
+[vercel-labs/skills](https://github.com/vercel-labs/skills) CLI, pinned by
+[`skills-lock.json`](skills-lock.json):
+
+```bash
+# refresh exactly the skills this project already manages
+npx skills add axross/skills --agent claude-code --yes --copy \
+  $(node -p "Object.keys(require('./skills-lock.json').skills).map(s => '--skill ' + s).join(' ')")
+```
+
+**Do not use `--skill '*'` here.** Against an external source it installs the
+library's *entire* catalogue, not the subset in `skills-lock.json` — today that
+would silently adopt the Expo, TanStack Query, and Amplitude layers, none of
+which this project uses. The command above derives the list from the lockfile
+instead, so it stays correct as the set changes.
+
+Adopting a new skill means naming it explicitly, and `--skill` takes exactly
+one skill per flag: repeat the flag (`--skill a --skill b`) rather than passing
+a comma-separated list. A comma-separated value matches nothing, installs
+nothing, writes no lockfile, and reports an available-skill list that reads
+like ordinary help rather than a failure.
+
+Those copies are **generated artifacts**. Editing one is pointless — the next
+install discards it — so a change to an installed skill goes upstream to the
+library as an issue or pull request there. Commit the regenerated directories
+and `skills-lock.json` together.
+
+Only three skills are this repository's own, holding what the library cannot
+know about it: [`project-structure`](.claude/skills/project-structure/SKILL.md)
+(layout, tiers, boundaries, Payload, observability, and test conventions),
+[`visual-identity`](.claude/skills/visual-identity/SKILL.md) (the site's design
+language and the CSS that encodes it), and
+[`markdown-processing-guidelines`](.claude/skills/markdown-processing-guidelines/SKILL.md)
+(the Remark/Rehype/Shiki pipeline). They hold only what the library cannot know
+about this repository; everything else it once maintained was replaced by a
+library counterpart. Every skill states its own scope in its frontmatter, which
+is how agents find it — there is no separate index to keep current.
+
+### Delivering a unit of work end-to-end
+
+The change loop is the library's `loop-engineering` skill. It runs
+model-invoked — there is no slash command — so describing the work is enough: a
+GitHub issue, a pull request, or a free-form request drives from intake to a
+merge-ready pull request in one continuing session.
 
 1. **Plan** — reads the issue and its thread, asks the product and scope
    questions the spec leaves open, and rewrites the issue body into a
-   reviewable plan with acceptance criteria.
-2. **Code + verify** — implements on an agent-namespaced branch, runs the
-   checks the changed surface requires, and self-reviews the diff.
+   reviewable plan with acceptance criteria. It then **pauses for approval**:
+   nothing is built until you review the plan and say to continue.
+2. **Code + verify** — implements on an agent-namespaced `claude/` branch, runs
+   the checks the changed surface requires, and self-reviews the diff.
 3. **Independent review** — opens a draft pull request and requests the CI
    reviewer, a separate bot session, so the code's author never certifies its
    own work.
 4. **Address** — fixes review findings and CI failures, tying each resolved
    thread to the resolving commit, for up to eight rounds.
-5. **Ready** — flips the pull request to ready and pings the maintainer once
-   CI is green and the review is clean. Merging always stays a human decision.
+5. **Ready** — flips the pull request to ready once CI is green and the review
+   is clean. Merging always stays a human decision.
 
 The run pauses whenever it genuinely needs a human — an ambiguous requirement,
-a plan approval, a judgment call on conflicting changes — and `/address
-continue` picks it back up where it stopped.
-
-### `/handoff` — suspend work for another session
-
-[`/handoff`](.claude/skills/handoff/SKILL.md) packages in-progress work — goal,
-current state, remaining to-dos, uncommitted changes — into a downloadable
-`handoff-<epoch>.md` (plus an optional zip of supporting files). Use it when a
-session is running low on context, or to park work for later; a fresh session
-takes the package over with `/address continue`.
+the plan approval, a judgment call on conflicting changes — and telling the
+session to continue picks it back up where it stopped.
 
 ### Blog post authoring
 
@@ -105,7 +148,7 @@ agent-skills library that connects to this site through the Payload MCP server
 (below) and operates on drafts you review before publishing. This repository is
 the source of truth for the [CMS content model](#cms-content-model) those skills
 read and write, and keeps the code-facing skills — rendering, routing,
-components, and the rest of the [skill index](AGENTS.md) — here.
+components, and the rest — here.
 
 ### Claude Code environment setup
 
@@ -288,20 +331,55 @@ vice versa. A production key writes to the live CMS, so prefer a
 **draft-scoped** key: the authoring workflow operates on drafts you review at
 `/posts/<slug>?draft=true` before publishing.
 
-## Testing
+## Commands
+
+This table is the authoritative list of the repository's commands, for human
+contributors and agents alike. `package.json` pins Node.js `>=24.0.0` and npm
+`>=10.0.0`; respect those when running or upgrading.
+
+| Command | What it does | When to run it |
+| ------- | ------------ | -------------- |
+| `npm run dev` | Starts the development server at `http://localhost:3000`, with Pino logs pretty-printed. | Manual browser verification of UI, route, metadata, or CMS-driven output. |
+| `npm run build` | Builds the production bundle. | When a change affects routes, metadata, Payload config, runtime config, dependencies, or TypeScript signatures. |
+| `npm run start` | Serves the build produced by `npm run build`. | Verifying production-only caching, image, or compiler behavior. |
+| `npm run format` | Formats code and documentation with Biome. | After every set of edits, before committing. |
+| `npm run lint` | Runs `biome check` — formatting and lint rules together. | After formatting; fix every reported error before finishing. |
+| `npm run test:unit` | Runs the Jest unit suite. | When a change affects code the unit suite covers. |
+| `npm run test:e2e` | Runs the Playwright end-to-end suite. | When a change affects a UI output surface or e2e coverage. |
+| `npm run test:e2e -- --update-snapshots` | Regenerates Playwright snapshots for the local platform. | Only when a visual change is intentional — pair it with the reason. |
+| `npm run coverage:scenarios` | Runs the e2e suite, then enforces the scenario-coverage gate. | When a change adds or alters a user journey in `e2e/scenarios.md`. |
+| `npm run migrate:status` | Shows the Payload migration status. | When investigating migration drift. |
+| `npm run migrate:create` | Creates a migration after a schema change. | Immediately after changing a Payload collection schema. |
+| `npm run migrate:up` | Applies pending migrations to the selected database. | Locally, before testing a schema change. |
 
 Unit tests ([Jest](https://jestjs.io)) cover pure logic and schema behavior;
 end-to-end tests ([Playwright](https://playwright.dev)) cover route output and
-browser behavior. Run format + lint after every change, and the suites relevant
-to the changed surface before opening a pull request — see the Verification
-section of [`AGENTS.md`](AGENTS.md).
+browser behavior. `npm run lint` and `npm run test:unit` are the two checks CI
+gates a merge on. Never edit an already-applied migration file — create a new
+one instead. If a required command cannot be run, say so — naming the command,
+the reason, and the residual risk — rather than presenting the change as fully
+verified.
 
-| Check | Command |
-| ----- | ------- |
-| Format | `npm run format` |
-| Lint | `npm run lint` |
-| Unit tests | `npm run test:unit` |
-| E2E tests | `npm run test:e2e` |
+## Deployment
+
+Two pipelines deploy this site, and both build on the GitHub Actions runner and
+let Vercel publish only the result, so neither spends Vercel build credit.
+
+- **Production** — [`docs/production-deployments.md`](docs/production-deployments.md).
+  On push to `main`, lint and e2e run, then the deployment job applies pending
+  Payload migrations to the production database **before** building and
+  promoting the new code, so production never serves code whose schema outruns
+  its database. Migration and credential failures are deliberately fatal. A
+  destructive schema change must be split expand-then-contract across releases,
+  because the promotion window briefly runs old code against the new schema.
+- **Preview** — [`docs/preview-deployments.md`](docs/preview-deployments.md).
+  Each pull request gets its own preview at a stable URL, backed by a fresh
+  Turso database seeded from the repository's fixtures and a preview-only Blob
+  store namespaced under a `pr-<n>/` prefix. A preview therefore holds no
+  production data; both are destroyed when the pull request closes. That
+  document also carries the one-time setup, the first-run verification, orphan
+  cleanup, and the isolation rules that keep production credentials out of a
+  preview.
 
 ## Related links
 
@@ -316,5 +394,5 @@ section of [`AGENTS.md`](AGENTS.md).
 - Pull requests can get their own isolated preview deployment; because Payload
   is backed by a single Turso (SQLite) database, previews use a per-PR Turso
   branch so they never touch production data — see
-  [`development-guidelines › preview-deployments`](.claude/skills/development-guidelines/references/preview-deployments.md)
-  for the architecture and the one-time setup.
+  [`docs/preview-deployments.md`](docs/preview-deployments.md) for the
+  architecture and the one-time setup.

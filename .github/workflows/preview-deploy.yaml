@@ -8,9 +8,9 @@ name: Preview Deploy
 # preview deployment (which self-seeds from `payload/helpers/seed.ts` on first
 # boot), and destroyed when the PR closes. Uploaded media goes to a dedicated
 # preview Blob store under a per-PR `pr-<n>/` prefix, pruned on close. See
-# .claude/skills/development-guidelines/references/preview-deployments.md for
+# docs/preview-deployments.md for
 # the architecture and the required one-time account setup, and
-# .claude/skills/application-security-requirements/references/privacy-and-exposure.md
+# the Data Isolation and Exposure section of docs/preview-deployments.md
 # for the data-exposure trade-offs.
 #
 # The pipeline is inert until that setup exists: the `preflight` job skips the
@@ -105,7 +105,7 @@ jobs:
             echo "ready=true" >> "${GITHUB_OUTPUT}"
           else
             echo "ready=false" >> "${GITHUB_OUTPUT}"
-            echo "::notice::Preview deploy skipped: required secrets/vars are not configured. See .claude/skills/development-guidelines/references/preview-deployments.md."
+            echo "::notice::Preview deploy skipped: required secrets/vars are not configured. See docs/preview-deployments.md."
           fi
       - name: Detect Deploy-Affecting Changes
         id: changes
@@ -128,20 +128,21 @@ jobs:
           script: |
             // Non-deployable path prefixes and exact root files. Keep in sync
             // with the deploy-affecting-path guideline in
-            // .claude/skills/development-guidelines/references/preview-deployments.md.
+            // docs/preview-deployments.md.
             const ignoredPrefixes = [
               ".claude/",
               ".github/",
+              "docs/",
               "e2e/",
               ".vscode/",
               ".zed/",
               ".data/",
             ];
             const ignoredExactPaths = new Set([
-              "AGENTS.md",
               "CLAUDE.md",
               "README.md",
               "REVIEW.md",
+              "skills-lock.json",
               ".mcp.json",
               ".pino-prettyrc",
               ".gitignore",
