@@ -54,4 +54,5 @@ A package excluded from the bundler keeps running from `node_modules` at runtime
 
 **Guidelines:**
 
-- MUST justify a new entry in `next.config.ts` `serverExternalPackages`. The existing entries — `pino`, `pino-pretty` — are there because they are stream-based and incompatible with Next's bundler; the list should stay minimal.
+- MUST justify a new entry in `next.config.ts` `serverExternalPackages`. The existing entries — `re2`, `pino`, `pino-pretty` — are there because they are native or stream-based and incompatible with Next's bundler; the list should stay minimal.
+- MUST NOT prune an entry merely because no file imports it. `re2` is declared nowhere in `package.json` and imported nowhere in this repository, yet removing it fails `npm run build` with `non-ecmascript placeable asset`: it is a native binding reached transitively through `@metascraper/helpers` → `metascraper-title` → `app/(app)/_/repositories/get-webembed-metadata.ts`. Trace an entry's provenance through the lockfile before concluding it is dead.
