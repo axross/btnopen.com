@@ -2,18 +2,15 @@
 
 import { cacheLife, cacheTag } from "next/cache";
 import { getPayload } from "payload";
-import { rootLogger } from "@/logger";
 import { config } from "@/payload/config";
-import {
-	buildCommentThreads,
-	type ThreadableComment,
-} from "../helpers/comments";
+import { buildCommentThreads, type ThreadableComment } from "@/shared/comments";
+import { rootLogger } from "@/shared/logger";
 import {
 	PayloadComment,
 	type PayloadCommentStatus,
 	type PayloadLocale,
 	PayloadUser,
-} from "./payload-types";
+} from "@/shared/payload-types";
 
 const logger = rootLogger.child({ module: "📥" });
 

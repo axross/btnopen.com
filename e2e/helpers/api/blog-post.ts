@@ -1,7 +1,7 @@
 import type { Page, TestInfo } from "@playwright/test";
 import { NIL as uuidNIL, v5 as uuidV5 } from "uuid";
 import type z from "zod";
-import { PayloadBlogPost } from "@/repositories/payload-types";
+import { PayloadBlogPost } from "@/shared/payload-types";
 import { getCreatedDocId, getCurrentUserId, isRecord } from "./mcp";
 
 export const exampleBlogPostSlug = "markdown-example";

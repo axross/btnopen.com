@@ -10,9 +10,9 @@ import type { ImageResponseOptions, NextRequest } from "next/server";
 import sharp from "sharp";
 import { Logo } from "@/components/logo";
 import { defaultLocale } from "@/helpers/i18n";
-import { rootLogger } from "@/logger";
 import { getBlogPost } from "@/repositories/get-blog-post";
 import { urlOrigin, vercelBlobPrefix, vercelBlobToken } from "@/runtime";
+import { rootLogger } from "@/shared/logger";
 
 const logger = rootLogger.child({ module: "👽" });
 const selfDirname = dirname(new URL(import.meta.url).pathname);

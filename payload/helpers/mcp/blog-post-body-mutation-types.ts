@@ -1,5 +1,5 @@
 import z from "zod";
-import { PayloadBlogPost, PayloadLocale } from "@/repositories/payload-types";
+import { PayloadBlogPost, PayloadLocale } from "@/shared/payload-types";
 
 const BlogPostBodyNodeLocation = z
 	.array(z.number().int())

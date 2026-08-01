@@ -8,7 +8,6 @@ import {
 } from "@payloadcms/richtext-lexical";
 import type { Payload, SanitizedConfig } from "payload";
 import { NIL as uuidNIL, v5 as uuidV5 } from "uuid";
-import { rootLogger } from "@/logger";
 import type {
 	AvatarImage,
 	BlogPost,
@@ -19,8 +18,7 @@ import type {
 	User,
 } from "../types";
 import { editor } from "./editor";
-
-const logger = rootLogger.child({ module: "🚢" });
+import { logger } from "./logger";
 
 const selfDirname = dirname(new URL(import.meta.url).pathname);
 

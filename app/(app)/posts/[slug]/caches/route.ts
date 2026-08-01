@@ -1,6 +1,6 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import type { NextRequest } from "next/server";
-import { rootLogger } from "@/logger";
+import { rootLogger } from "@/shared/logger";
 
 const logger = rootLogger.child({ module: "🌏" });
 

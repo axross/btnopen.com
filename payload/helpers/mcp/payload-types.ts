@@ -1,8 +1,5 @@
 import z from "zod";
-import {
-	PayloadNonEmptyString,
-	PayloadUpload,
-} from "@/repositories/payload-types";
+import { PayloadNonEmptyString, PayloadUpload } from "@/shared/payload-types";
 
 interface PayloadRichTextNodeValue {
 	children?: PayloadRichTextNodeValue[];

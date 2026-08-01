@@ -7,10 +7,10 @@ import {
 import { cacheLife, cacheTag } from "next/cache";
 import { getPayload } from "payload";
 import type z from "zod";
-import { rootLogger } from "@/logger";
 import { config } from "@/payload/config";
 import { editor } from "@/payload/editor";
-import { type PayloadLocale, PayloadWebsite } from "./payload-types";
+import { rootLogger } from "@/shared/logger";
+import { type PayloadLocale, PayloadWebsite } from "@/shared/payload-types";
 
 const logger = rootLogger.child({ module: "📥" });
 
