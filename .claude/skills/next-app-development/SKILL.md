@@ -1,6 +1,6 @@
 ---
 name: next-app-development
-description: The ability to build and review a Next.js App Router application on the version 16 baseline — project layout, route files and route modules, navigation, the universal/server/client boundary, the three directives, rendering and streaming, data fetching, mutations, route handlers, caching, error handling, metadata, images and fonts, the proxy, configuration and environment, authentication, internationalization, observability wiring, bundling, testing, deployment, and version discipline. Covers `src/` feature directories under thin `app/` entrypoints, `server-only` fencing versus `"use server"` exposure, `"use cache"` with `cacheLife`/`cacheTag` under `cacheComponents`, `proxy.ts` on the Node.js runtime, server functions that authenticate and authorize inside every call, and the review finding each surface earns when it goes wrong. The Pages Router is out of scope.
+description: The ability to build and review a Next.js App Router application on the version 16 baseline — project layout, route files and route modules, navigation, the universal/server/client boundary, the three directives, rendering and streaming, data fetching, mutations, route handlers, caching, error handling, metadata, images and fonts, the proxy, configuration and environment, authentication, internationalization, observability wiring, bundling, testing, deployment, and version discipline. Covers `src/` domain directories under thin `app/` entrypoints, `server-only` fencing versus `"use server"` exposure, `"use cache"` with `cacheLife`/`cacheTag` under `cacheComponents`, `proxy.ts` on the Node.js runtime, server functions that authenticate and authorize inside every call, and the review finding each surface earns when it goes wrong. The Pages Router is out of scope.
 when_to_use: Use when writing or reviewing any Next.js App Router change — "app router", "server component", "use client", "use cache", "server action", "server function", "route handler", "proxy", "middleware", "generateMetadata", "revalidateTag", "next/image", "next.config", "instrumentation", "cacheComponents", a hydration or serialization error, or a route that renders dynamically when it should be static. For a component's own composition, props, and state use a React component development capability; for CSS, tokens, and themes use a React component styling capability.
 user-invocable: false
 ---
@@ -39,8 +39,9 @@ This skill stops where another capability owns the subject:
 
 See [project-structure.md](./references/project-structure.md) for:
 
-- placing a source root and organizing feature directories beneath it
-- keeping `app/` as thin route entrypoints that import from feature directories
+- placing a source root and organizing domain directories beneath it, each with per-kind subdirectories
+- keeping `app/` as thin route entrypoints that import from domain directories
+- separating the `common/` and `core/` cross-cutting tiers, and when a module earns a place in `common/`
 - choosing the import alias, and the kebab-case file naming default
 - deciding whether barrel files belong in this repository
 - which files stay at the repository root even when a source root exists

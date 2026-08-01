@@ -19,10 +19,10 @@ Three approaches are available, and a codebase that mixes them pays for all thre
 
 ## The Data-Access Layer
 
-Route modules should not contain queries. A fenced module per feature gives the query one home, one place to enforce authorization, and one place to shape what leaves the server.
+Route modules should not contain queries. A fenced module per domain gives the query one home, one place to enforce authorization, and one place to shape what leaves the server.
 
 ```ts
-// src/article/article-repository.ts
+// src/article/models/article-repository.ts
 import "server-only";
 
 export async function getPublishedArticle(

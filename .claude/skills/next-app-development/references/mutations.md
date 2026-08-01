@@ -7,7 +7,7 @@ Apply this reference when writing or reviewing anything that changes state — a
 A server function is an async function marked `"use server"` that the client may call directly. The framework generates the endpoint, the client calls it as a POST, and the result comes back in the same round trip that re-renders the affected tree.
 
 ```tsx
-// src/article/article-actions.ts
+// src/article/models/article-actions.ts
 "use server";
 
 export async function publishArticle(formData: FormData) {

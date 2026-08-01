@@ -75,7 +75,7 @@ Directory names carry meaning beyond their spelling:
 - MUST name routable segments in lowercase kebab-case; the segment becomes the URL, and a mixed-case path is a permanent, externally visible inconsistency.
 - SHOULD shape paths as resources rather than actions — `/articles/[slug]/edit`, not `/edit-article?id=`.
 - SHOULD use a route group to give a set of routes a shared layout without inventing a URL segment for it.
-- SHOULD use a private folder for colocated non-route code only when the repository colocates at all; a feature directory outside `app/` is the stronger default.
+- SHOULD use a private folder for colocated non-route code only when the repository colocates at all; a domain directory outside `app/` is the stronger default.
 - MUST supply an optional catch-all rather than a plain catch-all when the parent path must also match, since `[...slug]` does not match the bare parent.
 
 ## Colocation
@@ -85,7 +85,7 @@ Files under `app/` that are not one of the special names are not routable — th
 **Guidelines:**
 
 - MAY colocate a component used by exactly one route beside that route's `page.tsx`.
-- SHOULD move a colocated file into a feature directory as soon as a second route imports it.
+- SHOULD move a colocated file into a domain directory as soon as a second route imports it.
 - MUST NOT rely on colocation for privacy: a file under `app/` is not routable, but it is still bundled into whatever imports it.
 
 ## Pairs That Cannot Coexist
