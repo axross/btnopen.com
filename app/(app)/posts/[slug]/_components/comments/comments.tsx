@@ -7,8 +7,8 @@ import {
 	type BlogPostComment,
 	getBlogPostComments,
 } from "@/repositories/get-blog-post-comments";
-import type { PayloadLocale } from "@/repositories/payload-types";
 import { isClerkAvailable } from "@/runtime";
+import type { PayloadLocale } from "@/shared/payload-types";
 import { CommentAvatar } from "./comment-avatar";
 import { CommentComposer } from "./comment-composer";
 import css from "./comments.module.css";

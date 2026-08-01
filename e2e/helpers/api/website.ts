@@ -1,6 +1,6 @@
 import type { Page, TestInfo } from "@playwright/test";
 import type z from "zod";
-import { PayloadWebsite } from "@/repositories/payload-types";
+import { PayloadWebsite } from "@/shared/payload-types";
 
 export async function getWebsite({
 	page,

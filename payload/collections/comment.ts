@@ -1,7 +1,7 @@
 import type { CollectionConfig, PayloadRequest } from "payload";
-import { isReplyToReply, MAX_COMMENT_BODY_LENGTH } from "@/helpers/comments";
-import { urlOrigin } from "@/runtime";
+import { isReplyToReply, MAX_COMMENT_BODY_LENGTH } from "@/shared/comments";
 import { logger } from "../helpers/logger";
+import { urlOrigin } from "../helpers/runtime";
 
 /**
  * Reader comments on blog posts. Reader-created rows are always top-level and

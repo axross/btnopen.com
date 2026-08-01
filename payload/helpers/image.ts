@@ -1,8 +1,8 @@
 import type { ImageSize, ImageUploadFormatOptions } from "payload";
+import { vercelBlobToken } from "./runtime";
 
 export function getStaticDir(collection: string) {
-	// biome-ignore lint/style/noProcessEnv: only place accessing env vars in payload realm
-	if (process.env.BLOB_PAYLOAD_READ_WRITE_TOKEN) {
+	if (vercelBlobToken) {
 		return collection;
 	}
 

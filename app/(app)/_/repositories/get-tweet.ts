@@ -2,7 +2,7 @@
 
 import { cacheLife } from "next/cache";
 import z from "zod";
-import { rootLogger } from "@/logger";
+import { rootLogger } from "@/shared/logger";
 import {
 	deriveSyndicationToken,
 	extractTweetId,

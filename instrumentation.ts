@@ -1,6 +1,6 @@
 import { captureRequestError } from "@sentry/nextjs";
-import { rootLogger } from "@/logger";
 import { runtimeType, sentryDsn } from "@/runtime";
+import { rootLogger } from "@/shared/logger";
 
 const logger = rootLogger.child({ module: "🥾" });
 

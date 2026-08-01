@@ -1,7 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { PayloadLocale } from "@/repositories/payload-types";
+import { PayloadLocale } from "@/shared/payload-types";
 import { localeCookieName } from "./i18n";
 
 // one year, expressed in seconds (365 days)

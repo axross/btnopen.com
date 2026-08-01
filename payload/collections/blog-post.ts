@@ -1,10 +1,28 @@
 import type { CollectionConfig } from "payload";
-import { shouldInvalidatePostCaches } from "@/helpers/post-cache-invalidation";
-import { urlOrigin } from "@/runtime";
 import { logger } from "../helpers/logger";
+import { shouldInvalidatePostCaches } from "../helpers/post-cache-invalidation";
+import { urlOrigin } from "../helpers/runtime";
 
 export const blogPostCollection: CollectionConfig = {
 	slug: "blog-posts",
+	access: {
+		// public REST reads see published posts only; drafts stay behind the filter.
+		// the site's own render path uses the local API (which bypasses this) and
+		// gates drafts itself, so this rule guards `/api/blog-posts` alone.
+		read: ({ req }) => {
+			if (req.user) {
+				return true;
+			}
+
+			return { _status: { equals: "published" } };
+		},
+		// writes stay authenticated-only, matching Payload's default. The MCP write
+		// path runs with `overrideAccess: false` and the API key's user, so a key
+		// saved without one is denied here rather than writing anonymously.
+		create: ({ req }) => Boolean(req.user),
+		update: ({ req }) => Boolean(req.user),
+		delete: ({ req }) => Boolean(req.user),
+	},
 	fields: [
 		{
 			name: "title",

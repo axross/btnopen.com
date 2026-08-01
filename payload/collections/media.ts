@@ -1,6 +1,7 @@
 import type { CollectionConfig } from "payload";
 import { v7 as uuidV7 } from "uuid";
 import { getStaticDir, webpFormatOptions } from "../helpers/image";
+import { createUploadFilenameHook } from "../helpers/upload-filename";
 
 export const mediaCollection: CollectionConfig = {
 	slug: "media",
@@ -30,25 +31,15 @@ export const mediaCollection: CollectionConfig = {
 		},
 	],
 	access: {
+		// public: uploads are served as static assets, so the files themselves are
+		// already reachable by URL. Writes stay authenticated-admin-only.
 		read: () => true,
+		create: ({ req }) => Boolean(req.user),
+		update: ({ req }) => Boolean(req.user),
+		delete: ({ req }) => Boolean(req.user),
 	},
 	hooks: {
-		beforeOperation: [
-			({ req, operation, args }) => {
-				if ((operation === "create" || operation === "update") && req.file) {
-					const id = args.data.id;
-
-					if (!id) {
-						throw new Error("No id is set for the media.");
-					}
-
-					const parts = req.file.name.split(".");
-					const extention = parts.at(-1);
-
-					req.file.name = `${id}.${extention}`;
-				}
-			},
-		],
+		beforeOperation: [createUploadFilenameHook("media")],
 	},
 	admin: {
 		useAsTitle: "filename",

@@ -6,7 +6,7 @@ import metascraperImage from "metascraper-image";
 import metascraperTitle from "metascraper-title";
 import metascraperUrl from "metascraper-url";
 import { cacheLife } from "next/cache";
-import { rootLogger } from "@/logger";
+import { rootLogger } from "@/shared/logger";
 import { decodeHtml } from "./webembed-html";
 
 const logger = rootLogger.child({ module: "🌏" });

@@ -3,8 +3,8 @@ import Image from "next/image";
 import { getPayload } from "payload";
 import type { ComponentProps, JSX } from "react";
 import { resolveMediaId } from "@/helpers/media-src";
-import { rootLogger } from "@/logger";
 import { config } from "@/payload/config";
+import { rootLogger } from "@/shared/logger";
 
 const logger = rootLogger.child({ module: "🖼️" });
 

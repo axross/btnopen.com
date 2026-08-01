@@ -1,6 +1,6 @@
 // biome-ignore-all lint/style/noProcessEnv: only place accessing env vars in public realm
 
-import { resolveUrlOrigin } from "@/helpers/url-origin";
+import { resolveUrlOrigin } from "@/shared/url-origin";
 
 let resolvedRuntimeType: "client" | "node" | "edge" | "unknown" = "unknown";
 

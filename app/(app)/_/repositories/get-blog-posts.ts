@@ -3,13 +3,13 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { getPayload } from "payload";
 import z from "zod";
-import { rootLogger } from "@/logger";
 import { config } from "@/payload/config";
+import { rootLogger } from "@/shared/logger";
 import {
 	PayloadBlogPost,
 	type PayloadLocale,
 	resolveThumbnailImage,
-} from "./payload-types";
+} from "@/shared/payload-types";
 
 const logger = rootLogger.child({ module: "📥" });
 

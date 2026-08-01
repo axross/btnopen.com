@@ -40,7 +40,11 @@ const customJestConfig = {
 		]),
 	),
 	testEnvironment: "node",
-	testMatch: ["<rootDir>/payload/**/*.spec.ts", "<rootDir>/app/**/*.spec.ts"],
+	testMatch: [
+		"<rootDir>/payload/**/*.spec.ts",
+		"<rootDir>/app/**/*.spec.ts",
+		"<rootDir>/shared/**/*.spec.ts",
+	],
 };
 
 module.exports = createJestConfig(customJestConfig);

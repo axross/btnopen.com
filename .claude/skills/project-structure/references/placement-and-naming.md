@@ -4,19 +4,22 @@ Apply this reference when deciding where a new file goes and what to call it. Th
 
 ## Directory Tier
 
-The project has three tiers, plus a separate realm for the Payload data layer. Resolve the tier from the caller count, not from where a file is convenient to drop.
+The project has three tiers, plus a separate realm for the Payload data layer and a realm-neutral tier the two share. Resolve the tier from the caller count, not from where a file is convenient to drop.
 
 | Tier | Path | When to use |
 | --- | --- | --- |
 | Route-local | `app/(app)/<route>/_components/`, `app/(app)/<route>/_/` | Used only by `page.tsx` / `layout.tsx` / sibling files of one route |
 | Route-group-shared | `app/(app)/_/components/`, `app/(app)/_/helpers/`, `app/(app)/_/repositories/` | Used by two or more routes inside `(app)/` |
 | Payload realm | `payload/collections/`, `payload/globals/`, `payload/helpers/` | Runs inside the Payload CMS realm only |
+| Realm-neutral | `shared/` | Imported by **both** `app/` and `payload/` — the only way the Payload realm reaches shared logic without importing `app/` |
 
 **Guidelines:**
 
 - MUST pull a file placed in `app/(app)/_/` down into a route's `_/` or `_components/` when only that one route consumes it.
 - MUST promote a file from a route-local `_components/` to `app/(app)/_/components/` once a second route imports it.
 - MUST place CMS schema, hook, access-control, and admin customization code under `payload/`, never under `app/(app)/_/`.
+- MUST promote a module to `shared/` once the Payload realm needs it, rather than importing it from `app/` or copying it; a module used by only one realm belongs to that realm, so `shared/` stays small enough to read.
+- MUST keep `shared/` free of React, Next.js, and Payload imports. `payload/config.ts` is loaded by the Payload CLI outside Next's bundler, so a framework import here breaks `npm run migrate:*` rather than failing at build time.
 - MUST NOT add files under `app/(payload)/` — Payload owns that route segment.
 - MUST NOT place a helper or component at the repository root or directly inside `app/` (outside an `_/` or `_components/` directory); Next.js would treat the directory as a route segment.
 - MUST place static public assets under `public/`; route-generated metadata images belong under the route segment that owns them.
