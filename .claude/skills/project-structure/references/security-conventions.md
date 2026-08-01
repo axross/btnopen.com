@@ -54,4 +54,4 @@ A package excluded from the bundler keeps running from `node_modules` at runtime
 
 **Guidelines:**
 
-- MUST justify a new entry in `next.config.ts` `serverExternalPackages`. The existing entries — `re2`, `pino`, `pino-pretty` — are there because they are native or stream-based and incompatible with Next's bundler; the list should stay minimal.
+- MUST justify a new entry in `next.config.ts` `serverExternalPackages`. The existing entries — `pino`, `pino-pretty` — are there because they are stream-based and incompatible with Next's bundler; the list should stay minimal.

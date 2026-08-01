@@ -51,7 +51,7 @@ const nextConfig: NextConfig = {
 			new URL("https://avatars.githubusercontent.com/**"),
 		],
 	},
-	serverExternalPackages: ["re2", "pino", "pino-pretty"],
+	serverExternalPackages: ["pino", "pino-pretty"],
 	experimental: {
 		viewTransition: true,
 		globalNotFound: true,
