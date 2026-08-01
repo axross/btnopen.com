@@ -18,7 +18,7 @@ They look similar and do entirely different things. Confusing the first two is a
 `server-only` is a package whose import throws at build time if the module ends up in a client bundle. It adds no runtime behaviour and exposes nothing. It is the correct marker for a module that reads secrets, queries a database, or holds anything that must never ship.
 
 ```ts
-// src/article/article-repository.ts
+// src/article/models/article-repository.ts
 import "server-only";
 
 export async function getArticleBySlug(slug: string) {
@@ -39,7 +39,7 @@ export async function getArticleBySlug(slug: string) {
 This is a public surface. Anyone who can reach the application can invoke it, with arguments of their choosing, in any order, regardless of what UI you built around it.
 
 ```ts
-// src/article/article-actions.ts
+// src/article/models/article-actions.ts
 "use server";
 
 export async function publishArticle(id: string) {

@@ -135,7 +135,7 @@ See [testing-conventions.md](./references/testing-conventions.md) for:
 
 See [known-deviations.md](./references/known-deviations.md) for:
 
-- the deviations this repository has accepted against an installed capability's rule, and the fact that none is currently recorded
+- the deviations this repository has accepted against an installed capability's rule, currently one: `app/(app)/_/` grouping feature-agnostic modules by kind rather than by domain
 - telling a deviation (a collision this repository chose) from a gap (an installed capability that is wrong, outdated, or silent)
 - recording a new one, and why editing the installed copy is never the resolution
 - routing a gap upstream to [`axross/skills`](https://github.com/axross/skills) with the human's go-ahead, and what to do meanwhile

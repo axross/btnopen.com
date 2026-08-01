@@ -1,12 +1,14 @@
 # Project Structure
 
-Apply this reference when creating a Next.js application's directory layout, adding a feature to an existing one, or judging where a new file belongs in a review.
+Apply this reference when creating a Next.js application's directory layout, adding a domain to an existing one, or judging where a new file belongs in a review.
 
-## Source Root and Feature Directories
+## Source Root and Domain Directories
 
 The router only cares about one directory. Everything else is yours to organize, and the failure mode is letting `app/` absorb code that has nothing to do with routing — a route directory that accumulates components, queries, and helpers becomes unmovable, because every import points at a URL path rather than at a capability.
 
-The default is a `src/` source root holding feature directories, with `src/app/` as the router's entrypoint layer:
+Group what remains by the **domain** it serves — the bounded concern a reader would name — not by the technical kind of file it is. A by-kind top level (`components/`, `hooks/`, `utils/`, `queries/`) scatters one domain across four directories and makes the blast radius of a change invisible; a by-domain top level keeps a domain's components, hooks, models, and helpers adjacent, so deleting the domain is deleting a directory. Per-kind subdirectories are the organizing axis _inside_ a domain, never above it.
+
+The default is a `src/` source root holding domain directories, with `src/app/` as the router's entrypoint layer:
 
 ```
 src/
@@ -14,19 +16,24 @@ src/
 │   ├── layout.tsx
 │   ├── page.tsx
 │   └── articles/[slug]/page.tsx
-├── article/                  # a feature: everything about articles
-│   ├── article-repository.ts
-│   ├── article-card.tsx
-│   └── article-detail.tsx
-├── auth/
-└── shared/                   # cross-feature primitives
+├── article/                  # a domain
+│   ├── components/
+│   ├── helpers/
+│   ├── hooks/
+│   ├── models/
+│   └── stores/
+├── auth/                     # another domain
+├── common/                   # shared primitives
+└── core/                     # app-wide infrastructure
 ```
 
-A route file then reads as a composition of feature imports rather than as an implementation:
+The App Router owns the screen layer, so a domain here has no `screens/` subdirectory; its routable surface lives in `app/` and composes from the domain.
+
+A route file then reads as a composition of domain imports rather than as an implementation:
 
 ```tsx
 // src/app/articles/[slug]/page.tsx
-import { ArticleDetail } from "@/article/article-detail";
+import { ArticleDetail } from "@/article/components/article-detail";
 
 export default async function Page(props: PageProps<"/articles/[slug]">) {
   const { slug } = await props.params;
@@ -37,11 +44,23 @@ export default async function Page(props: PageProps<"/articles/[slug]">) {
 **Guidelines:**
 
 - MUST follow the host repository's existing source-root convention when it has one — a repository-root `app/` is as valid as `src/app/`, and moving it is a migration, not a side effect of a feature change.
-- SHOULD default a new application to a `src/` source root with feature directories beneath it, and `src/app/` reserved for route entrypoints.
-- MUST keep `app/` route files thin: a route module composes and configures, and imports its substance from a feature directory.
-- SHOULD group by feature rather than by file kind — an `article/` directory holding its component, its queries, and its types beats parallel `components/`, `queries/`, and `types/` trees that force a three-directory edit per change.
-- SHOULD place code shared by more than one feature in a clearly named shared directory rather than in whichever feature happened to need it first.
-- MUST NOT import from one feature's internals into another when the owning feature exposes a public surface; cross-feature reuse is a signal to promote the code to the shared directory.
+- SHOULD default a new application to a `src/` source root with domain directories beneath it, and `src/app/` reserved for route entrypoints.
+- MUST keep `app/` route files thin: a route module composes and configures, and imports its substance from a domain directory.
+- MUST group modules under the source root by domain and name each directory for that domain — an `article/` directory beats parallel `components/`, `queries/`, and `types/` trees that force a three-directory edit per change.
+- MUST NOT introduce top-level `components/`, `hooks/`, `utils/`, or `queries/` directories as the application's primary organizing axis.
+- SHOULD keep a domain's components, helpers, hooks, models, and stores in per-kind subdirectories inside that domain's directory.
+- MUST NOT reach into another domain's internals from outside it; when a second domain needs the code, promote it to `common/` rather than importing across the boundary.
+
+## Cross-Cutting Tiers
+
+Two directories sit outside the domains. `common/` holds reusable primitives that know nothing about this application — a button, a date formatter. `core/` holds the app-wide infrastructure it is wired from — environment access, the query client, the error tracker. The test is portability: a `common/` module lifts into another application unchanged, a `core/` module does not, because it encodes this one's configuration.
+
+**The tier pair and the bar a module clears to enter `common/` belong to an Expo app development capability** — that skill owns them in full, for web and native alike; defer to its treatment where it is present. What follows is what a Next application needs to apply them.
+
+**Guidelines:**
+
+- MUST keep `common/` to primitives carrying no domain vocabulary and no application configuration, and `core/` to app-wide infrastructure rather than to shared UI.
+- SHOULD start a module in the domain that uses it and move it into `common/` only once a second domain imports it, never on first use in anticipation of reuse.
 
 ## Import Alias
 
@@ -51,7 +70,7 @@ A relative import that climbs more than one level stops describing where the tar
 
 - SHOULD default a new application to the `@/*` alias mapped at the source root, declared once in `tsconfig.json`'s `paths` and left for the framework to resolve.
 - MUST match the host repository's existing alias when it has one — `~/*` and `@/*` are equally valid, and mixing them in one codebase is the defect.
-- SHOULD use the alias for any cross-directory import, and reserve relative imports for siblings and direct children within one feature.
+- SHOULD use the alias for any cross-directory import, and reserve relative imports for siblings and direct children within one domain.
 
 ## File Naming
 
@@ -102,11 +121,11 @@ A layout change touches every import that crosses it, which makes it the kind of
 **Guidelines:**
 
 - MUST NOT restructure a repository's layout as a side effect of an unrelated change; propose it as its own change with its own review.
-- SHOULD move one feature at a time when a restructure is agreed, keeping each step independently reviewable and the build green between steps.
+- SHOULD move one domain at a time when a restructure is agreed, keeping each step independently reviewable and the build green between steps.
 - MUST update the alias mapping and every affected import in the same commit as a move, so no intermediate state fails to resolve.
 
 **Review checks:**
 
-- A new component, query, or helper defined inside an `app/` route directory when the repository keeps those in feature directories — **Minor**, or **Major** when it duplicates a feature module that already exists.
+- A new component, query, or helper defined inside an `app/` route directory when the repository keeps those in domain directories — **Minor**, or **Major** when it duplicates a domain module that already exists.
 - A `proxy.ts`, `instrumentation.ts`, or `.env` file placed at a level where the framework does not load it — **Major**; the file looks active and does nothing.
 - A second import alias or a second file-naming convention introduced alongside an established one — **Minor**.

@@ -40,7 +40,7 @@ The proxy check can be bypassed. As the proxy reference explains, server functio
 Session verification is called from many places in one request — a layout, a page, two server components, a server function. React's `cache()` makes the repeats free within the request.
 
 ```ts
-// src/auth/session.ts
+// src/auth/helpers/session.ts
 import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
