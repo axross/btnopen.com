@@ -51,8 +51,7 @@ try {
 		});
 
 		if (blobs.length > 0) {
-			// delete this page before fetching the next one, so a large store is
-			// never held in memory all at once.
+			// delete this page before fetching the next
 			await del(
 				blobs.map((blob) => blob.url),
 				{ token },
