@@ -23,6 +23,14 @@ const sentryProject = process.env.SENTRY_PROJECT;
 // deploy workflows (local dev, tests), where `undefined` leaves Next.js on its
 // default behavior.
 const deploymentId = process.env.DEPLOYMENT_ID?.slice(0, maxDeploymentIdLength);
+// the release the source-map upload is filed under. The three `Sentry.init`
+// calls report the same commit SHA (via `sha` in app/(app)/_/runtime.ts), so an
+// event and its source maps always resolve to one release. Leaving this to the
+// plugin's own detection would diverge on preview deployments, where it falls
+// back to GITHUB_SHA — the pull request's merge commit, not the head commit the
+// build actually shipped. Unset outside the deploy workflows, where the plugin's
+// detection is left to run.
+const sentryRelease = process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA;
 // biome-ignore-end lint/style/noProcessEnv: nextjs config needs to access env vars
 
 const nextConfig: NextConfig = {
@@ -74,10 +82,5 @@ export default withSentryConfig(withPayload(withNextIntl(nextConfig)), {
 	silent: !isCi,
 	widenClientFileUpload: true,
 	tunnelRoute: "/monitoring",
-	webpack: {
-		automaticVercelMonitors: true,
-		treeshake: {
-			removeDebugLogging: true,
-		},
-	},
+	release: { name: sentryRelease },
 });
