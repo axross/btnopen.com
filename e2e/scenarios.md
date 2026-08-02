@@ -81,3 +81,5 @@ carries its `@scenario:<id>` tag. The reporter
 | post.agentic.noindex | The agentic view opts out of search indexing | metadata | should |
 | index.thumbnail | The index Open Graph thumbnail image endpoint renders | metadata | should |
 | post.thumbnail | A blog post's Open Graph thumbnail image endpoint renders | metadata | should |
+| metadata.robots | The robots.txt route serves the generated robots file with its sitemap pointer | metadata | should |
+| metadata.sitemap | The sitemap.xml route serves the generated sitemap listing the index and published posts | metadata | should |

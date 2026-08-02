@@ -19,7 +19,7 @@ Route groups organize files without changing the URL; underscore-prefixed direct
 
 **Guidelines:**
 
-- SHOULD use route groups (`(group-name)` directories) to organize routes logically without affecting the URL structure — `(app)/` wraps all main application routes, `(index)/` groups the index route's files.
+- SHOULD use route groups (`(group-name)` directories) to organize routes logically without affecting the URL structure — `(app)/` wraps all main application routes, `(index)/` groups the index route's files. The one exception is the metadata files below, which the framework resolves only at the `app/` root.
 - MUST prefix non-route directories with `_` to exclude them from routing.
   - Use `_/` for feature-agnostic shared modules such as components, helpers, and repositories scoped to a layout level.
   - Use `_components/` for UI components specific to the nearest layout or page.
@@ -46,6 +46,18 @@ export interface PageProps {
 - MUST NOT place a route handler (`route.ts`) in the same directory as a `page.tsx`.
 - SHOULD place route handlers in a dedicated sub-directory named after the resource they manage, such as `posts/[slug]/caches/route.ts` rather than `posts/[slug]/route.ts`. The five handlers in the tree are `posts/caches/` (`DELETE`), `posts/[slug]/caches/` (`DELETE`), `posts/[slug]/comments/` (`POST`), and its two children `comments/token/` (`GET`) and `comments/caches/` (`DELETE`).
 - MAY nest a handler under the resource it serves rather than the resource it is addressed by, when co-location is what makes it findable. `comments/token/` issues a CSRF token that is not slug-specific at all; the `[slug]` segment above it buys nothing functionally and exists so the endpoint sits beside the write path it protects.
+
+## Root-Level Metadata Files
+
+`robots.ts` and `sitemap.ts` live at `app/robots.ts` and `app/sitemap.ts` — at the `app/` root, outside the `(app)` group that holds every other reader-facing route. That is a framework constraint rather than a preference. Next.js anchors its `robots` matcher (and its `manifest` matcher) to the app root, so a `robots.ts` inside a route group generates no route at all: the build succeeds, lint passes, and `/robots.txt` serves the 404 page. `sitemap.ts` is matched at any depth and would work inside the group; it sits beside `robots.ts` so both follow one rule a reader can see in the tree.
+
+Route groups also rename the metadata *image* routes they contain. `app/(app)/icon.tsx` serves `/icon-xg4ifa`, not `/icon`, because Next.js hashes the group-bearing parent path into the route name. That is harmless — the generated `link rel="icon"` points at the hashed path — but it is why a metadata route's URL cannot be read off the directory tree alone.
+
+**Guidelines:**
+
+- MUST keep `robots.ts` and `sitemap.ts` at the `app/` root; moving either into `(app)` silently drops `/robots.txt`, which is how the site shipped without one until [#182](https://github.com/axross/btnopen.com/issues/182).
+- MUST NOT report a metadata file at the `app/` root as a violation of the convention that `(app)/` wraps every application route; this section is that convention's stated exception.
+- SHOULD confirm a new or moved metadata route appears in `.next/app-path-routes-manifest.json` after `npm run build`, because a misplaced metadata file fails silently rather than erroring.
 
 ## Route Handler Exposure
 
