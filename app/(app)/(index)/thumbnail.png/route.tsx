@@ -1,6 +1,10 @@
 import { ImageResponse } from "next/og";
 import type { NextRequest } from "next/server";
 import { Logo } from "@/components/logo";
+import {
+	indexThumbnailBackgroundColor,
+	thumbnailForegroundColor,
+} from "@/helpers/brand-colors";
 import { thumbnailHeight, thumbnailWidth } from "@/helpers/thumbnail";
 
 export const maxDuration = 30;
@@ -18,7 +22,7 @@ export async function GET(_: NextRequest): Promise<Response> {
 				display: "flex",
 				alignItems: "center",
 				justifyContent: "center",
-				backgroundColor: "#b016ff",
+				backgroundColor: indexThumbnailBackgroundColor,
 				overflow: "hidden",
 			}}
 		>
@@ -26,7 +30,7 @@ export async function GET(_: NextRequest): Promise<Response> {
 				style={{
 					width: 596.4,
 					height: 120.5,
-					color: "#ffffff",
+					color: thumbnailForegroundColor,
 				}}
 			/>
 		</div>,

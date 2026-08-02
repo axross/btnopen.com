@@ -10,7 +10,7 @@
 
 			--variant: "mobile";
 
-			@container (min-width: 50rem) {
+			@container (width > 50rem) {
 				row-gap: var(--size-24);
 
 				--variant: "desktop";

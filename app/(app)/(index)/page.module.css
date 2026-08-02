@@ -31,7 +31,7 @@
 		.intro {
 			display: flex;
 			width: stretch;
-			max-width: var(--max-width);
+			max-inline-size: var(--max-width);
 			/* container: intro / inline-size; */
 			align-items: center;
 			flex-direction: column;
@@ -91,7 +91,8 @@
 			right: calc(var(--size-2) * -1);
 			--grunge-outline: oklch(from var(--accent-9) l c calc(h - 32));
 			background-color: var(--neutral-0);
-			animation: noise-fast 2s infinite linear alternate-reverse;
+			animation: noise-fast var(--duration-glitch-fast) infinite linear
+				alternate-reverse;
 			z-index: -4;
 		}
 
@@ -99,7 +100,8 @@
 			right: var(--size-2);
 			--grunge-outline: oklch(from var(--accent-9) l c calc(h + 32));
 			background-color: var(--neutral-0);
-			animation: noise-slow 15s infinite linear alternate-reverse;
+			animation: noise-slow var(--duration-glitch-slow) infinite linear
+				alternate-reverse;
 			z-index: -3;
 		}
 
@@ -141,7 +143,7 @@
 
 		.section {
 			width: stretch;
-			max-width: var(--max-width);
+			max-inline-size: var(--max-width);
 			margin-block-start: var(--size-48);
 			padding-inline: var(--size-16);
 

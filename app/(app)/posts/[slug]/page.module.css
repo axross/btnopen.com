@@ -22,12 +22,12 @@
 
 		.header {
 			width: stretch;
-			max-width: var(--max-width);
+			max-inline-size: var(--max-width);
 		}
 
 		.content {
 			width: stretch;
-			max-width: var(--max-width);
+			max-inline-size: var(--max-width);
 			margin-block-start: var(--size-32);
 			padding-inline: var(--size-16);
 

@@ -11,6 +11,7 @@ import {
 } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { type ReactNode, Suspense } from "react";
+import { themeColorDark, themeColorLight } from "@/helpers/brand-colors";
 import { getActiveLocale, htmlLangByLocale } from "@/helpers/i18n";
 import { getWebsite } from "@/repositories/get-website";
 import { isClerkAvailable, sha, urlOrigin, vercelEnvironment } from "@/runtime";
@@ -65,8 +66,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export const viewport: Viewport = {
 	themeColor: [
-		{ media: "(prefers-color-scheme: light)", color: "#eedfff" },
-		{ media: "(prefers-color-scheme: dark)", color: "#1c1025" },
+		{ media: "(prefers-color-scheme: light)", color: themeColorLight },
+		{ media: "(prefers-color-scheme: dark)", color: themeColorDark },
 	],
 };
 

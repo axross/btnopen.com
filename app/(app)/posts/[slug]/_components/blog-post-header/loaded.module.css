@@ -16,7 +16,7 @@
 
 		.coverImage {
 			width: 100cqw;
-			max-width: var(--max-width);
+			max-inline-size: var(--max-width);
 			height: auto;
 			aspect-ratio: 1600 / 840;
 			object-fit: cover;

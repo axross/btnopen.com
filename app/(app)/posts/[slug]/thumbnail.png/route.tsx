@@ -9,6 +9,12 @@ import { ImageResponse } from "next/og";
 import type { ImageResponseOptions, NextRequest } from "next/server";
 import sharp from "sharp";
 import { Logo } from "@/components/logo";
+import {
+	postThumbnailBackgroundColor,
+	postThumbnailCoverTintColor,
+	postThumbnailLogoColor,
+	thumbnailForegroundColor,
+} from "@/helpers/brand-colors";
 import { defaultLocale } from "@/helpers/i18n";
 import { thumbnailHeight, thumbnailWidth } from "@/helpers/thumbnail";
 import { getBlogPost } from "@/repositories/get-blog-post";
@@ -73,7 +79,7 @@ export async function GET(
 				overflow: "hidden",
 				// dark base so the light title stays legible when there is no
 				// cover image behind it (the background photo covers it otherwise).
-				backgroundColor: "#16002a",
+				backgroundColor: postThumbnailBackgroundColor,
 			}}
 		>
 			{thumbnailImage && backgroundImageBuffer ? (
@@ -113,15 +119,15 @@ export async function GET(
 					style={{
 						width: 298.2,
 						height: 60.25,
-						color: "#cf87ff",
+						color: postThumbnailLogoColor,
 					}}
 				/>
 
 				<div
 					style={{
 						display: "block",
-						color: "#ffffff",
-						textShadow: "0 0 4px #16002a",
+						color: thumbnailForegroundColor,
+						textShadow: `0 0 4px ${postThumbnailBackgroundColor}`,
 						fontSize: 72,
 						fontFamily: "IBM Plex Sans JP",
 						fontWeight: 700,
@@ -260,7 +266,7 @@ async function manipulateImage(image: ArrayBuffer): Promise<ArrayBuffer> {
 	logger.info("Started manipulating image.");
 
 	const manipulated = await sharp(image)
-		.tint("#9070af")
+		.tint(postThumbnailCoverTintColor)
 		.blur(BLUR_RADIUS)
 		.jpeg({ quality: 90 })
 		.toBuffer();
