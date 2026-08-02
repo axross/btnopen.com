@@ -1,8 +1,9 @@
-"use server";
+import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
 import { getPayload } from "payload";
 import type z from "zod";
+import { canReadDrafts } from "@/helpers/draft-access";
 import { config } from "@/payload/config";
 import { rootLogger } from "@/shared/logger";
 import {
@@ -27,6 +28,11 @@ const BlogPostDetail = PayloadBlogPost.transform((blogPost) => ({
 
 export type BlogPostDetail = z.infer<typeof BlogPostDetail>;
 
+/**
+ * Loads a post for the detail view. `draft: true` is honoured only for a
+ * request carrying a Payload session; an unauthenticated caller is served the
+ * published version (or nothing) instead.
+ */
 export async function getBlogPost({
 	slug,
 	locale,
@@ -35,6 +41,24 @@ export async function getBlogPost({
 	slug: string;
 	locale: PayloadLocale;
 	draft?: boolean;
+}): Promise<BlogPostDetail | null> {
+	// short-circuits so the published path never reads `headers()` and stays
+	// statically renderable.
+	return await findBlogPost({
+		slug,
+		locale,
+		draft: draft && (await canReadDrafts()),
+	});
+}
+
+async function findBlogPost({
+	slug,
+	locale,
+	draft,
+}: {
+	slug: string;
+	locale: PayloadLocale;
+	draft: boolean;
 }): Promise<BlogPostDetail | null> {
 	"use cache";
 

@@ -8,13 +8,11 @@ import { urlOrigin } from "@/runtime";
 
 export async function BlogPostingJsonLd({
 	blogPost: blogPostPromise,
-	draft: draftPromise,
 }: {
 	blogPost: Promise<BlogPostDetail | null>;
-	draft?: Promise<boolean>;
 }): Promise<JSX.Element | null> {
 	const [website, blogPost] = await Promise.all([
-		getWebsite({ draft: await draftPromise, locale: await getActiveLocale() }),
+		getWebsite({ locale: await getActiveLocale() }),
 		blogPostPromise,
 	]);
 

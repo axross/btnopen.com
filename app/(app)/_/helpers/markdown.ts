@@ -1,4 +1,4 @@
-"use server";
+import "server-only";
 
 import { captureException } from "@sentry/nextjs";
 import rehypeShikiFromHighlighter from "@shikijs/rehype/core";

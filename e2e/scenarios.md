@@ -30,11 +30,13 @@ carries its `@scenario:<id>` tag. The reporter
 | index.landmarks | The index page exposes the introduction and posts landmark regions | index | should |
 | index.heading-structure | The index page has a single top-level heading and list semantics | index | should |
 | index.published-post | The public index page lists the published seed post and omits the draft one | index | should |
+| index.draft.unauthenticated | A signed-out `?draft=true` request for the index lists only published posts | index | must |
 | posts.redirect | The /posts route redirects to the index route | posts | should |
 | post.header | A blog post page shows its title, date, cover image, author, and tags | posts | must |
 | post.content | A blog post page renders its Markdown content | posts | must |
 | post.heading-structure | A blog post page has a single top-level heading (the title), with no h1 in the body | posts | should |
 | post.published.public | A published post is publicly reachable and renders its content and seeded comments | posts | should |
+| post.draft.unauthenticated | A signed-out `?draft=true` request for an unpublished post shows the not-found page instead of the draft | posts | must |
 | post.embed | A blog post page renders an embed block as a web-embed card linking to the embedded URL | posts | should |
 | post.embed.x | A blog post page renders an `x.com` embed block as a first-party tweet card that links out to the tweet without an iframe or X widget | posts | should |
 | post.banner | A blog post page renders note and warning banner blocks as callouts with a type label and rich-text body | posts | should |
@@ -81,5 +83,6 @@ carries its `@scenario:<id>` tag. The reporter
 | post.agentic.noindex | The agentic view opts out of search indexing | metadata | should |
 | index.thumbnail | The index Open Graph thumbnail image endpoint renders | metadata | should |
 | post.thumbnail | A blog post's Open Graph thumbnail image endpoint renders | metadata | should |
+| post.thumbnail.draft-unauthenticated | A signed-out request for an unpublished post's thumbnail responds 404 instead of rendering the draft | metadata | must |
 | metadata.robots | The robots.txt route serves the generated robots file with its sitemap pointer | metadata | should |
 | metadata.sitemap | The sitemap.xml route serves the generated sitemap listing the index and published posts | metadata | should |
