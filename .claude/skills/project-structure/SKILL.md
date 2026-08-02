@@ -28,7 +28,7 @@ See [tech-stack.md](./references/tech-stack.md) for:
 See [third-party-services.md](./references/third-party-services.md) for:
 
 - Sentry and Mixpanel as runtime and privacy-sensitive integrations
-- the capture settings already in force (`sendDefaultPii`, Session Replay, Mixpanel autocapture) and what they mean for a new surface
+- the capture settings already in force (Sentry's `dataCollection` posture, Session Replay, Mixpanel autocapture) and what they mean for a new surface
 - keeping service inventory out of unrelated workflow docs
 
 ## Directory Structure
