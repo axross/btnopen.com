@@ -11,7 +11,7 @@ Payload CMS runs in-process with Next.js: `payload/` owns collections and config
 **Guidelines:**
 
 - MUST route data access through a function under `app/(app)/_/repositories/` (or a route-local `_/repositories/`); a Server Component or `route.ts` that calls `getPayload({ config })` or `payload.find(…)` directly is the finding.
-- MUST have a repository function return a Zod-parsed view type (`BlogPostDetail`, `BlogPostSummary`) rather than the raw Payload document type (`BlogPost` from `@/payload/types`). The repository layer owns the schema-to-domain transform, via `PayloadBlogPost.parse(…)`.
+- MUST have a repository function return a Zod-parsed view type (`BlogPostDetail`, `BlogPostSummary`) rather than the raw Payload document type (`BlogPost` from `@/payload/types`). The repository layer owns the schema-to-domain transform, via `PayloadBlogPost.parse(…)` from `@/shared/payload-types`.
 - MUST keep repositories UI-free: a repository that calls a React API or imports from `react`, `next/link`, or a component module is the finding.
 - MUST keep repositories read-only. A Server Component that mutates data is the finding; mutations belong in a `route.ts` handler or a Payload hook.
 
@@ -42,8 +42,10 @@ An import that runs against the tier hierarchy couples layers meant to stay inde
 **Guidelines:**
 
 - MUST NOT import from `app/` inside `payload/`. The Payload realm owns collections and config and stays UI-free; `app/` reaches it only through Payload's local API, via repositories.
+- MUST route logic both realms need through `shared/` (imported as `@/shared/*`) rather than importing it from `app/`. `shared/logger.ts`, `shared/url-origin.ts`, `shared/comments.ts`, and `shared/payload-types.ts` are the current members; each is framework-free, and `shared/` itself imports from neither realm.
+- MUST read environment values inside `payload/` through `payload/helpers/runtime.ts`, the realm's own barrel, not through `app/(app)/_/runtime.ts`. The two resolve the origin with the same shared `resolveUrlOrigin`, so they cannot drift, while the realm keeps a dependency graph the Payload CLI can load outside Next's bundler.
 - MUST NOT import a specific route's `_components/` or `_/` from an `app/(app)/_/` module. Shared code must not depend on route-local code.
-- SHOULD prefer the configured path aliases (`@/components`, `@/repositories`, `@/helpers`, `@/logger`, `@/runtime`, `@/payload/...`) over deep relative imports (`../../../`) that cross more than two directory levels.
+- SHOULD prefer the configured path aliases (`@/components`, `@/repositories`, `@/helpers`, `@/runtime`, `@/shared/...`, `@/payload/...`) over deep relative imports (`../../../`) that cross more than two directory levels.
 
 ## Markdown Pipeline Boundary
 

@@ -6,10 +6,10 @@ import {
 } from "@payloadcms/richtext-lexical";
 import { cacheLife, cacheTag } from "next/cache";
 import { getPayload } from "payload";
-import { rootLogger } from "@/logger";
 import { config } from "@/payload/config";
 import { editor } from "@/payload/editor";
-import type { PayloadLocale } from "./payload-types";
+import { rootLogger } from "@/shared/logger";
+import type { PayloadLocale } from "@/shared/payload-types";
 
 const logger = rootLogger.child({ module: "📥" });
 

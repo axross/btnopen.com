@@ -2,11 +2,11 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import type { NextRequest } from "next/server";
 import { getPayload } from "payload";
 import { hasMatchingCommentCsrfToken } from "@/helpers/comment-csrf";
-import { CommentSubmission } from "@/helpers/comments";
 import { isSameSiteRequest } from "@/helpers/request-origin";
-import { rootLogger } from "@/logger";
 import { config } from "@/payload/config";
 import { isClerkAvailable } from "@/runtime";
+import { CommentSubmission } from "@/shared/comments";
+import { rootLogger } from "@/shared/logger";
 
 const logger = rootLogger.child({ module: "💬" });
 

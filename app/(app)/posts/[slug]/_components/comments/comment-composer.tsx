@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { type FormEvent, type JSX, useState } from "react";
 import { COMMENT_CSRF_HEADER } from "@/helpers/comment-csrf";
-import { MAX_COMMENT_BODY_LENGTH } from "@/helpers/comments";
+import { MAX_COMMENT_BODY_LENGTH } from "@/shared/comments";
 import { CommentAvatar } from "./comment-avatar";
 import css from "./comment-composer.module.css";
 

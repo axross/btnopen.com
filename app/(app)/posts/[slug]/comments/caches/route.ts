@@ -1,7 +1,7 @@
 import { revalidateTag } from "next/cache";
 import type { NextRequest } from "next/server";
 import { isSameSiteRequest } from "@/helpers/request-origin";
-import { rootLogger } from "@/logger";
+import { rootLogger } from "@/shared/logger";
 
 const logger = rootLogger.child({ module: "🌏" });
 

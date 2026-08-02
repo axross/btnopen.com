@@ -159,7 +159,14 @@ export const payloadMcpPlugin = mcpPlugin({
 	}),
 	overrideAuth: async (req, getDefaultMcpAccessSettings) => {
 		const accessSettings = await getDefaultMcpAccessSettings();
-		req.user = accessSettings.user as TypedUser;
+
+		// an API key's `user` is optional (see `makeMcpApiKeyUserOptional`), so this
+		// can legitimately be absent. Normalizing the absent case to `null` rather
+		// than asserting a `TypedUser` keeps the collections' `access` rules gating
+		// on the value that is actually there — a key with no user reads as
+		// unauthenticated and is denied, instead of slipping past a rule written
+		// against the cast.
+		req.user = (accessSettings.user as TypedUser | null | undefined) ?? null;
 
 		return accessSettings;
 	},

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { type JSX, useTransition } from "react";
 import { setLocale } from "@/helpers/set-locale";
-import type { PayloadLocale } from "@/repositories/payload-types";
+import type { PayloadLocale } from "@/shared/payload-types";
 import css from "./language-switcher.module.css";
 
 // endonyms: each locale is labelled in its own language so the option is

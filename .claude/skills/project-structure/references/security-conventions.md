@@ -8,14 +8,15 @@ Values reach the browser or the server through exactly one barrel, so a review o
 
 | File | Why it may read `process.env` |
 | --- | --- |
-| `app/(app)/_/runtime.ts` | The single sanctioned barrel, exporting `urlOrigin`, `vercelEnvironment`, `sentryDsn`, `mixpanelToken`, and friends |
+| `app/(app)/_/runtime.ts` | The app realm's sanctioned barrel, exporting `urlOrigin`, `vercelEnvironment`, `sentryDsn`, `mixpanelToken`, and friends |
+| `payload/helpers/runtime.ts` | The Payload realm's counterpart, exporting `urlOrigin` and `vercelBlobToken`. It exists so the realm never imports `app/`, and resolves the origin through the same `shared/url-origin.ts` the app barrel uses |
 | `payload/config.ts` | The Payload realm needs database and storage credentials at build time |
 | `next.config.ts` | Config-time access to `CI`, `SENTRY_ORG`, `SENTRY_PROJECT` |
 | `playwright.config.ts` | Test config-time access to `CI`, `PLAYWRIGHT_BASE_URL`, `VERCEL_AUTOMATION_BYPASS_SECRET` |
 
 **Guidelines:**
 
-- MUST read environment values through `app/(app)/_/runtime.ts` from any component, repository, helper, route handler, or Payload collection.
+- MUST read environment values through `app/(app)/_/runtime.ts` from any component, repository, helper, or route handler, and through `payload/helpers/runtime.ts` from anything inside `payload/`.
 - MUST carry a `// biome-ignore lint/style/noProcessEnv:` directive with a reason on any sanctioned direct `process.env` access. That comment — not a config whitelist — is what exempts every file in the table above, and it is the marker a review looks for.
 - MUST NOT rely on lint to catch a stray `process.env`. `biome.jsonc` sets `noProcessEnv` to `warn`, and its `off` overrides cover only `*.config.js`, `*.config.cjs`, `e2e/reporters/*.ts`, `e2e/check-scenario-coverage.mjs`, and `scripts/*.mjs` — none of the files above. An unsanctioned access therefore surfaces as a warning while `npm run lint` still exits successfully.
 - MUST NOT add a `biome.jsonc` override to exempt application code from `noProcessEnv`; the directive-per-site rule is what keeps the sanctioned set enumerable.
@@ -44,9 +45,9 @@ Everything crossing into the app from a URL, a request body, or an upload is att
 - MUST compare a `searchParams` flag by value, not truthiness — `params.draft === "true"`, as `app/(app)/(index)/page.tsx` and `app/(app)/posts/[slug]/page.tsx` do. A truthy check treats `?draft=false` as enabled.
 - MUST do that comparison at the route boundary rather than in the data layer. `app/(app)/_/repositories/get-blog-post.ts` takes `draft` as an already-parsed `boolean`, so a repository re-parsing a query string is a sign the boundary leaked.
 - MUST validate `request.json()`, `request.formData()`, or `request.url` in a `route.ts` handler with a Zod schema or equivalent runtime check before use.
-- MUST parse Payload documents through the matching schema in `app/(app)/_/repositories/payload-types.ts` before returning them from a route handler or server action; returning them directly leaks fields the consumer never requested, including draft-only ones.
+- MUST parse Payload documents through the matching schema in `shared/payload-types.ts` before returning them from a route handler or server action; returning them directly leaks fields the consumer never requested, including draft-only ones.
 - MUST validate attribute values in a new custom MDAST directive, as `remarkEmbeds` does with `URL.canParse(href)`.
-- MUST sanitize uploaded filenames in a new collection's `beforeOperation` hook. The `media.ts` and `cover-image.ts` hooks rewrite `req.file.name` to `${uuid}.${ext}` — match that.
+- MUST sanitize uploaded filenames in a new upload collection by adding `createUploadFilenameHook(<collection label>)` from `payload/helpers/upload-filename.ts` to its `beforeOperation` hooks. It rewrites `req.file.name` to `${uuid}.${ext}`; reuse it rather than copying the body, so the sanitization keeps one definition to audit.
 
 ## Dependencies
 
