@@ -4,14 +4,17 @@ import {
 	replayIntegration,
 } from "@sentry/nextjs";
 import Mixpanel from "mixpanel-browser";
-import { mixpanelToken, sentryDsn } from "@/runtime";
+import { mixpanelToken, sentryDsn, sha, vercelEnvironment } from "@/runtime";
 
 if (sentryDsn) {
 	initializeSentry({
 		dsn: sentryDsn,
+		// the same commit SHA next.config.ts hands the build plugin, so an event
+		// and its uploaded source maps can never file under different releases.
+		release: sha,
+		environment: vercelEnvironment,
 		integrations: [replayIntegration()],
 		tracesSampleRate: 1,
-		enableLogs: true,
 		replaysSessionSampleRate: 0.1,
 		replaysOnErrorSampleRate: 1.0,
 		// diagnostic context is allowed, user content is not. every category is set

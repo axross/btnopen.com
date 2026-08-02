@@ -1,10 +1,27 @@
-import { init as initializeSentry } from "@sentry/nextjs";
-import { sentryDsn } from "@/runtime";
+import {
+	init as initializeSentry,
+	requestDataIntegration,
+} from "@sentry/nextjs";
+import { sentryDsn, sha, vercelEnvironment } from "@/runtime";
 
 initializeSentry({
 	dsn: sentryDsn,
+	// `dataCollection.httpBodies` below does NOT cover the request body on its
+	// own. As of @sentry/nextjs 10.69 only two call sites read that field (server
+	// actions and tRPC); the Node HTTP server reads the incoming body into the
+	// isolation scope purely on `maxIncomingRequestBodySize`, and this
+	// integration then hard-codes `data: true` when copying the scope onto an
+	// event or a span. Overriding it by name — it is a default integration in
+	// both the Node and edge SDKs — is what actually keeps a comment's POST body
+	// out of both. Reaching for `httpIntegration` to stop the read itself is not
+	// available here: Next.js also traces this module into the edge bundle, whose
+	// `@sentry/nextjs` entry has no such export, and the build fails on it.
+	integrations: [requestDataIntegration({ include: { data: false } })],
+	// the same commit SHA next.config.ts hands the build plugin, so an event
+	// and its uploaded source maps can never file under different releases.
+	release: sha,
+	environment: vercelEnvironment,
 	tracesSampleRate: 1,
-	enableLogs: true,
 	// diagnostic context is allowed, user content is not. every category is set
 	// explicitly: once `dataCollection` is present, an omitted category falls back
 	// to the SDK's all-on default rather than to the narrow posture the replaced
@@ -20,6 +37,8 @@ initializeSentry({
 		stackFrameVariables: true,
 		frameContextLines: 5,
 		// content — comment submissions, /api/mcp payloads, and post rows stay out.
+		// httpBodies alone does not achieve that; the integration override above is
+		// what makes this line true on the Node runtime.
 		cookies: false,
 		httpBodies: [],
 		databaseQueryData: false,

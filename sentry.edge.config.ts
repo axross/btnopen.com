@@ -1,10 +1,21 @@
-import { init as initializeSentry } from "@sentry/nextjs";
-import { sentryDsn } from "@/runtime";
+import {
+	init as initializeSentry,
+	requestDataIntegration,
+} from "@sentry/nextjs";
+import { sentryDsn, sha, vercelEnvironment } from "@/runtime";
 
 initializeSentry({
 	dsn: sentryDsn,
+	// kept identical to sentry.server.config.ts. The edge SDK never reads a
+	// request body onto the scope today, so this is belt-and-braces rather than
+	// an active fix — but the two runtimes sharing one posture is what stops the
+	// next person from narrowing one and forgetting the other.
+	integrations: [requestDataIntegration({ include: { data: false } })],
+	// the same commit SHA next.config.ts hands the build plugin, so an event
+	// and its uploaded source maps can never file under different releases.
+	release: sha,
+	environment: vercelEnvironment,
 	tracesSampleRate: 1,
-	enableLogs: true,
 	// diagnostic context is allowed, user content is not. every category is set
 	// explicitly: once `dataCollection` is present, an omitted category falls back
 	// to the SDK's all-on default rather than to the narrow posture the replaced
@@ -20,6 +31,8 @@ initializeSentry({
 		stackFrameVariables: true,
 		frameContextLines: 5,
 		// content — comment submissions, /api/mcp payloads, and post rows stay out.
+		// httpBodies alone does not achieve that; the integration override above is
+		// what makes this line true on the Node runtime.
 		cookies: false,
 		httpBodies: [],
 		databaseQueryData: false,
