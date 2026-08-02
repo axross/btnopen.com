@@ -377,6 +377,7 @@ contributors and agents alike. `package.json` pins Node.js `>=24.0.0` and npm
 | `npm run start` | Serves the build produced by `npm run build`. | Verifying production-only caching, image, or compiler behavior. |
 | `npm run format` | Formats code and documentation with Biome. | After every set of edits, before committing. |
 | `npm run lint` | Runs `biome check` — formatting and lint rules together. | After formatting; fix every reported error before finishing. |
+| `npm run typecheck` | Runs `tsc --noEmit`. Needs no prior build. | After any change to TypeScript signatures, types, or imports. |
 | `npm run test:unit` | Runs the Jest unit suite. | When a change affects code the unit suite covers. |
 | `npm run test:e2e` | Runs the Playwright end-to-end suite. | When a change affects a UI output surface or e2e coverage. |
 | `npm run test:e2e -- --update-snapshots` | Regenerates Playwright snapshots for the local platform. | Only when a visual change is intentional — pair it with the reason. |
@@ -387,9 +388,11 @@ contributors and agents alike. `package.json` pins Node.js `>=24.0.0` and npm
 
 Unit tests ([Jest](https://jestjs.io)) cover pure logic and schema behavior;
 end-to-end tests ([Playwright](https://playwright.dev)) cover route output and
-browser behavior. `npm run lint` and `npm run test:unit` are the two checks CI
-gates a merge on. Never edit an already-applied migration file — create a new
-one instead. If a required command cannot be run, say so — naming the command,
+browser behavior across two responsive tiers — the `pixel` project at 412px for
+mobile and `tablet` at 712px for tablet. `npm run lint`, `npm run typecheck`,
+and `npm run test:unit` are the three checks CI gates a merge on; the e2e suite
+and its scenario-coverage gate run after merge, on `main`. Never edit an
+already-applied migration file — create a new one instead. If a required command cannot be run, say so — naming the command,
 the reason, and the residual risk — rather than presenting the change as fully
 verified.
 
@@ -399,7 +402,9 @@ Two pipelines deploy this site, and both build on the GitHub Actions runner and
 let Vercel publish only the result, so neither spends Vercel build credit.
 
 - **Production** — [`docs/production-deployments.md`](docs/production-deployments.md).
-  On push to `main`, lint and e2e run, then the deployment job applies pending
+  On push to `main`, lint runs, then the e2e suite runs against a production
+  build (`PLAYWRIGHT_SERVER_MODE=production`) followed by the scenario-coverage
+  gate, then the deployment job applies pending
   Payload migrations to the production database **before** building and
   promoting the new code, so production never serves code whose schema outruns
   its database. Migration and credential failures are deliberately fatal. A

@@ -20,13 +20,14 @@
     "test:e2e": "playwright test",
     "coverage:scenarios": "playwright test && node e2e/check-scenario-coverage.mjs",
     "test:unit": "jest --config jest.config.cjs",
-    "build": "next build | pino-pretty",
+    "build": "bash -o pipefail -c 'next build | pino-pretty'",
     "start": "next start | pino-pretty",
     "migrate:status": "bash -o pipefail -c 'payload migrate:status | pino-pretty'",
     "migrate:create": "bash -o pipefail -c 'payload migrate:create | pino-pretty'",
     "migrate:up": "bash -o pipefail -c 'payload migrate | pino-pretty'",
     "lint": "biome check",
-    "format": "biome format --write"
+    "format": "biome format --write",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

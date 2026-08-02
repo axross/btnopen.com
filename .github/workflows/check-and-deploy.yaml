@@ -58,7 +58,22 @@ jobs:
       - name: Push Database Migrations
         run: npm run migrate:up
       - name: Run Playwright Tests
+        # PLAYWRIGHT_SERVER_MODE=production makes playwright.config.ts serve the
+        # suite from `npm run build && npm run start` instead of `next dev`, so
+        # this run exercises cacheComponents and reactCompiler the way production
+        # does. Local and pull-request runs are unaffected and stay on the dev
+        # server.
+        env:
+          PLAYWRIGHT_SERVER_MODE: production
         run: npx playwright test --update-snapshots
+      - name: Enforce Scenario Coverage
+        # Gate on e2e/scenarios.md: a `must` row with no passing asserting test
+        # fails the pipeline. This reads the summary artifact the scenario-
+        # coverage reporter wrote during the run above, so it reuses that run
+        # rather than repeating it — `npm run coverage:scenarios` would execute
+        # the whole suite a second time *without* --update-snapshots and fail on
+        # the snapshot drift the step above just absorbed.
+        run: node e2e/check-scenario-coverage.mjs
       - name: Create Pull Request for Snapshot Updates
         if: ${{ !cancelled() }}
         uses: peter-evans/create-pull-request@v8
