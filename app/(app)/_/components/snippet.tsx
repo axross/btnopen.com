@@ -5,12 +5,11 @@ import css from "./snippet.module.css";
 export function Snippet({
 	className,
 	children,
-}: ComponentProps<"pre">): JSX.Element {
+	...props
+}: ComponentProps<"div">): JSX.Element {
 	return (
-		<div className={clsx(css.snippet, className)}>
+		<div className={clsx(css.snippet, className)} {...props}>
 			<pre className={css.viewer}>{children}</pre>
-
-			{/* <CopyButton value={code} size="sm" className={css["copy-button"]} /> */}
 		</div>
 	);
 }

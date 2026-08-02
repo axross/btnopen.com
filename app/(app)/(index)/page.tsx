@@ -11,7 +11,7 @@ import {
 } from "@/helpers/i18n";
 import { getWebsite, type Website } from "@/repositories/get-website";
 import { urlOrigin } from "@/runtime";
-import { BlogJsonLd } from "./_components/blog-json-jd";
+import { BlogJsonLd } from "./_components/blog-json-ld";
 import { BlogPostList } from "./_components/blog-post-list";
 import { BrushGrunge } from "./_components/brush-grunge";
 import { SocialLinkList } from "./_components/social-link-list";

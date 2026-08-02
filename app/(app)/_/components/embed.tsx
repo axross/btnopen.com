@@ -1,5 +1,5 @@
 import { captureException } from "@sentry/nextjs";
-import type { ComponentProps, JSX } from "react";
+import type { HTMLAttributes, JSX } from "react";
 import { Suspense } from "react";
 import { TweetEmbedLoaded } from "./tweetembed/loaded";
 import { TweetEmbedLoading } from "./tweetembed/loading";
@@ -20,7 +20,12 @@ export function Embed({
 	options: _options,
 	className,
 	...props
-}: Omit<ComponentProps<"a">, "href" | "type"> & {
+	// this component forwards its rest props to whichever embed it dispatches to —
+	// a plain <a>, the tweet card's <blockquote>, or a skeleton's <div> — so the
+	// pass-through is typed against `HTMLElement` rather than any one of them.
+	// element-specific props (`ref`, `href`) belong to the branch that renders
+	// them, not to this contract.
+}: HTMLAttributes<HTMLElement> & {
 	url?: string;
 	type?: string;
 	options?: string;
@@ -44,6 +49,7 @@ export function Embed({
 					<TweetEmbedLoading
 						className={className}
 						data-testid="embed-loading"
+						{...props}
 					/>
 				}
 			>
@@ -51,6 +57,7 @@ export function Embed({
 					href={url}
 					className={className}
 					data-testid="embed"
+					{...props}
 				/>
 			</Suspense>
 		);

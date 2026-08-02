@@ -1,5 +1,5 @@
 @layer components {
-	@scope (.agenticView) {
+	@scope (.blogPostAgenticViewLoading) {
 		:where(:scope) {
 			display: flex;
 			width: stretch;
@@ -68,14 +68,11 @@
 			font-weight: 700;
 		}
 
+		/* the skeleton's stand-in for the markdown block <MarkdownContent> renders
+		   on the loaded side; it pairs with `loaded.module.css`'s `.empty`, which
+		   fills the same slot when a post carries neither section. */
 		.placeholderText {
 			color: var(--neutral-12);
-			font-size: var(--text-md);
-			line-height: var(--leading-lg);
-		}
-
-		.empty {
-			color: var(--neutral-10);
 			font-size: var(--text-md);
 			line-height: var(--leading-lg);
 		}

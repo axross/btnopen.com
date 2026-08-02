@@ -76,27 +76,32 @@ export async function Markdown({
 		const name = key as keyof typeof defaultComponents;
 		const component = value as ElementType;
 
-		components[key] = memo(({ className, ...props }) =>
-			createElement(component, {
+		components[key] = memo(({ className, ...props }) => {
+			const mergedClassName = classNames[name]
+				? clsx(classNames[name], className)
+				: className;
+
+			return createElement(component, {
 				...props,
-				className: classNames[name]
-					? clsx(classNames[name], className)
-					: className,
+				className: mergedClassName,
 				// the <Table> component renders a non-scrolling outer wrapper <div>,
 				// an inner scroll area, a <table>, and a scrollbar with a thumb.
 				// it receives dedicated class names for those parts via the
 				// `tableWrapper` / `tableScrollArea` / `tableScrollbar` /
-				// `tableScrollbarThumb` sentinel keys in the classNames map.
+				// `tableScrollbarThumb` sentinel keys in the classNames map. the
+				// wrapper is the element `<Table>` roots, so it takes `className`
+				// and the <table> element's own class travels on `tableClassName`.
 				...(name === "table"
 					? {
-							wrapperClassName: classNames.tableWrapper,
+							className: classNames.tableWrapper,
+							tableClassName: mergedClassName,
 							scrollAreaClassName: classNames.tableScrollArea,
 							scrollbarClassName: classNames.tableScrollbar,
 							scrollbarThumbClassName: classNames.tableScrollbarThumb,
 						}
 					: {}),
-			}),
-		);
+			});
+		});
 	}
 
 	const markdownElement = await renderMarkdown({
