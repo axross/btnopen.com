@@ -1,5 +1,3 @@
-"use client";
-
 import { clsx } from "clsx";
 import type { ComponentProps, JSX } from "react";
 import {

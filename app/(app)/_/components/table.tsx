@@ -3,20 +3,24 @@ import type { ComponentProps, JSX } from "react";
 
 export function Table({
 	className,
-	wrapperClassName,
+	tableClassName,
 	scrollAreaClassName,
 	scrollbarClassName,
 	scrollbarThumbClassName,
 	children,
 	...props
-}: ComponentProps<"table"> & {
-	wrapperClassName?: string;
+}: ComponentProps<"div"> & {
+	tableClassName?: string;
 	scrollAreaClassName?: string;
 	scrollbarClassName?: string;
 	scrollbarThumbClassName?: string;
 }): JSX.Element {
+	// `className` and `...props` address the wrapper this component actually
+	// roots, so a caller-supplied `data-testid` labels the same element the
+	// hard-coded one does; the inner <table>'s own class arrives separately on
+	// `tableClassName`.
 	return (
-		<div className={wrapperClassName} data-testid="table">
+		<div className={className} data-testid="table" {...props}>
 			<ScrollArea.Root>
 				{/* the viewport MUST be keyboard-focusable so users can scroll an
 				    overflowing table with arrow keys (see GFM table a11y spec §7);
@@ -26,9 +30,7 @@ export function Table({
 					className={scrollAreaClassName}
 					data-testid="table-scroll-area"
 				>
-					<table className={className} {...props}>
-						{children}
-					</table>
+					<table className={tableClassName}>{children}</table>
 				</ScrollArea.Viewport>
 
 				{/* unmounts while the table has no horizontal overflow */}

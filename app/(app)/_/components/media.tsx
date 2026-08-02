@@ -12,7 +12,13 @@ export async function Media({
 	src,
 	alt,
 	className,
-}: ComponentProps<"img">): Promise<JSX.Element | null> {
+	...props
+}: Omit<
+	ComponentProps<"img">,
+	// next/image owns these: the intrinsic dimensions come from the media record
+	// resolved below, and `ref` / `srcSet` / `loading` are not part of its props.
+	"ref" | "width" | "height" | "srcSet" | "loading"
+>): Promise<JSX.Element | null> {
 	"use cache";
 
 	cacheLife("hours");
@@ -33,6 +39,7 @@ export async function Media({
 
 				return (
 					<Image
+						{...props}
 						src={src}
 						alt={alt ?? fileAlt ?? ""}
 						loading="lazy"

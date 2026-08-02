@@ -1,6 +1,6 @@
 import { clsx } from "clsx";
 import Image from "next/image";
-import type { JSX } from "react";
+import type { HTMLAttributes, JSX } from "react";
 import css from "./comment-avatar.module.css";
 
 /**
@@ -18,12 +18,14 @@ export function CommentAvatar({
 	fallback,
 	className,
 	"data-testid": dataTestId,
-}: {
+	...props
+	// the avatar roots either the <Image> or the initial fallback's <span>, so the
+	// pass-through is typed against `HTMLElement` rather than either one.
+}: Omit<HTMLAttributes<HTMLElement>, "children"> & {
 	src?: string | null;
 	alt: string;
 	isAuthor?: boolean;
 	fallback?: string;
-	className?: string;
 	"data-testid"?: string;
 }): JSX.Element {
 	if (src) {
@@ -35,6 +37,7 @@ export function CommentAvatar({
 				width={40}
 				height={40}
 				data-testid={dataTestId}
+				{...props}
 			/>
 		);
 	}
@@ -44,6 +47,7 @@ export function CommentAvatar({
 			className={clsx(css.avatarFallback, className)}
 			aria-hidden="true"
 			data-testid={dataTestId ? `${dataTestId}-fallback` : undefined}
+			{...props}
 		>
 			{fallback}
 		</span>

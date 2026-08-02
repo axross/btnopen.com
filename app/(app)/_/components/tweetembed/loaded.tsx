@@ -1,26 +1,26 @@
 import { captureException } from "@sentry/nextjs";
 import { clsx } from "clsx";
-import type { JSX } from "react";
+import { format } from "date-fns";
+import type { HTMLAttributes, JSX } from "react";
+import { dateFnsLocaleByLocale, getActiveLocale } from "@/helpers/i18n";
 import { getTweet } from "@/repositories/get-tweet";
 import type { TweetSegment } from "@/repositories/tweet";
 import css from "./loaded.module.css";
 
-const dateFormatter = new Intl.DateTimeFormat("en", {
-	year: "numeric",
-	month: "short",
-	day: "numeric",
-});
-
 export async function TweetEmbedLoaded({
 	href,
 	className,
-	"data-testid": dataTestId,
-}: {
+	...props
+	// an unresolvable tweet degrades to a plain <a>, so this component roots either
+	// a <blockquote> or an <a> and types its pass-through against `HTMLElement`
+	// rather than committing to one of them.
+}: Omit<HTMLAttributes<HTMLElement>, "children"> & {
 	href: string;
-	className?: string;
-	"data-testid"?: string;
 }): Promise<JSX.Element> {
-	const tweet = await getTweet({ url: href });
+	const [tweet, locale] = await Promise.all([
+		getTweet({ url: href }),
+		getActiveLocale(),
+	]);
 
 	// a deleted/protected/unresolvable tweet degrades to a plain external link —
 	// reported so authoring or upstream faults surface without breaking the post.
@@ -37,7 +37,7 @@ export async function TweetEmbedLoaded({
 				target="_blank"
 				rel="noopener noreferrer"
 				className={className}
-				data-testid={dataTestId}
+				{...props}
 			>
 				{href}
 			</a>
@@ -48,7 +48,7 @@ export async function TweetEmbedLoaded({
 		<blockquote
 			cite={tweet.url}
 			className={clsx(css.tweet, className)}
-			data-testid={dataTestId}
+			{...props}
 		>
 			<p className={css.body}>
 				{tweet.segments.map((segment, index) => renderSegment(segment, index))}
@@ -69,7 +69,9 @@ export async function TweetEmbedLoaded({
 					rel="noopener noreferrer"
 				>
 					<time dateTime={tweet.createdAt}>
-						{dateFormatter.format(new Date(tweet.createdAt))}
+						{format(new Date(tweet.createdAt), "PPP", {
+							locale: dateFnsLocaleByLocale[locale],
+						})}
 					</time>
 				</a>
 			</footer>

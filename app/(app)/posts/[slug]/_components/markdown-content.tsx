@@ -1,4 +1,5 @@
-import type { JSX } from "react";
+import { clsx } from "clsx";
+import type { ComponentProps, JSX } from "react";
 import { Markdown } from "@/components/markdown";
 import css from "./markdown-content.module.css";
 
@@ -10,11 +11,13 @@ import css from "./markdown-content.module.css";
  */
 export function MarkdownContent({
 	markdown,
-}: {
+	className,
+	...props
+}: ComponentProps<"div"> & {
 	markdown: string;
 }): JSX.Element {
 	return (
-		<div className={css.markdownContent}>
+		<div className={clsx(css.markdownContent, className)} {...props}>
 			<Markdown markdown={markdown} classNames={markdownClassNames} />
 		</div>
 	);
