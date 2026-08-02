@@ -13,8 +13,8 @@ const logger = rootLogger.child({ module: "🌏" });
  * The Payload hook's same-process `fetch` carries no browser origin headers and
  * so passes the same-site check, while a browser-driven cross-site call is
  * rejected. (A shared-secret header would harden this further against direct
- * calls; deferred for consistency with the existing `posts/[slug]/caches`
- * endpoint, and because the effect is only an idempotent tag revalidation.)
+ * calls; deferred deliberately across all three cache endpoints, because the
+ * effect is only an idempotent tag revalidation.)
  */
 export async function DELETE(
 	request: NextRequest,
