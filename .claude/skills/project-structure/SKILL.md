@@ -1,7 +1,7 @@
 ---
 name: project-structure
-description: The structure and conventions of this Next.js + Payload CMS blog — the facts a shared skill library cannot know about it. Covers the tech stack and third-party services, the directory tree and tier model, TypeScript path aliases, repository support files and the enforced Biome thresholds, file placement and naming, the architecture boundaries between the app, the data layer, and the Payload realm, App Router route-path and route-file conventions, React component anatomy and the loaded/loading split, Payload access control, drafts, query bounds and cache invalidation, the `runtime.ts` environment barrel with the project's SSRF, CSRF, and input-validation surfaces, Sentry/Pino observability wiring, the lowercase-first source-comment voice, and the Jest, Playwright, and `data-testid` testing conventions.
-when_to_use: Use when locating files, placing or naming a new module, or resolving any "how does THIS project do it" question that a general capability defers to the project on — where data access lives, which tier a module belongs in, how a route directory is laid out, how a component splits across the server/client boundary, how Payload collections gate access, how environment values are read, which log level or logger to use, how comments are cased, how tests and test IDs are named, and where a collision with an installed skill is recorded. Consult it alongside the general capability for the surface being changed, which owns the underlying practice; this skill owns only what is specific to this repository.
+description: The structure and conventions of this Next.js + Payload CMS blog — the facts a shared skill library cannot know about it. Covers the tech stack and third-party services, the directory tree and tiers, TypeScript path aliases, repository support files and enforced Biome thresholds, file placement and naming, the app / data / Payload realm boundaries, App Router route-path and route-file shapes, React component anatomy and the loaded/loading split, Payload access control, drafts, query bounds and cache invalidation, the Clerk-authenticated comments subsystem, the `runtime.ts` environment barrel with the SSRF, CSRF, and input-validation surfaces, Sentry/Pino observability wiring, the lowercase-first source-comment voice, and the Jest, Playwright, and `data-testid` testing conventions.
+when_to_use: Use when locating files, placing or naming a module, or resolving any "how does THIS project do it" question that a general capability defers to the project on — where data access lives, which tier a module belongs in, how a route directory is laid out, how a component splits across the server/client boundary, how Payload collections gate access, how a commenter is authenticated, how environment values are read, which logger and level to use, how source comments are cased, how tests and test IDs are named, and where a collision with an installed skill is recorded. Consult it alongside the general capability for the surface being changed, which owns the underlying practice; this skill owns only what is specific to this repository.
 user-invocable: false
 ---
 
@@ -114,6 +114,15 @@ See [payload-conventions.md](./references/payload-conventions.md) for:
 - the `users` auth lockout settings and Payload's ownership of sessions and cookies
 - query bounds (`select`, `depth`, `limit`, `where`, `locale`), N+1 patterns, and the singleton client
 - `"use cache"` / `cacheLife()` policy and the `posts/caches` invalidation pairing
+
+## Comments Subsystem
+
+See [comments-subsystem.md](./references/comments-subsystem.md) for:
+
+- the file inventory spanning all four tiers, and the `isClerkAvailable` gate every Clerk touchpoint sits behind
+- the ordered checks on `POST /posts/[slug]/comments`, the application's only public write path
+- the pending-by-default moderation model, author-only one-level replies, and the read path's cache-tag pairing
+- the four snapshotted reader-identity fields, and why none of them is an email address
 
 ## Observability Conventions
 
