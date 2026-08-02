@@ -14,17 +14,34 @@ import { type PayloadLocale, PayloadWebsite } from "@/shared/payload-types";
 
 const logger = rootLogger.child({ module: "📥" });
 
-const Website = PayloadWebsite.transform((website) => ({
-	name: website.name,
-	description: website.description,
-	keywords: website.keywords?.map((entry) => entry.keyword) ?? [],
-	creator: {
-		...website.creator,
-		bioMarkdown: "",
-	},
-}));
+// built per call rather than at module scope so the Lexical→markdown
+// conversion runs inside the transform: `convertLexicalToMarkdown` needs a
+// resolved editor config, which only an async caller can supply. the object
+// `safeParse` returns is therefore already complete, and nothing mutates it
+// afterwards.
+function createWebsiteSchema(
+	editorConfig: Parameters<typeof convertLexicalToMarkdown>[0]["editorConfig"],
+) {
+	return PayloadWebsite.transform((website) => ({
+		name: website.name,
+		description: website.description,
+		keywords: website.keywords?.map((entry) => entry.keyword) ?? [],
+		creator: {
+			name: website.creator.name,
+			avatarImage: website.creator.avatarImage,
+			// the raw Lexical `bio` is editor state, not view data, so it is
+			// converted here and left off the exported type — no consumer reads it.
+			bioMarkdown: website.creator.bio
+				? convertLexicalToMarkdown({
+						data: website.creator.bio,
+						editorConfig,
+					})
+				: "",
+		},
+	}));
+}
 
-export type Website = z.infer<typeof Website>;
+export type Website = z.infer<ReturnType<typeof createWebsiteSchema>>;
 
 // the `website` global declares no `versions`, so Payload never looks for a
 // draft version of it (`findOne` consults one only when drafts are enabled for
@@ -45,40 +62,36 @@ export async function getWebsite({
 	logger.info("Started fetching website record.");
 
 	const payload = await getPayload({ config });
-	const doc = await payload.findGlobal({
-		slug: "website",
-		select: {
-			name: true,
-			description: true,
-			keywords: true,
-			creator: {
+	const [doc, editorConfig] = await Promise.all([
+		payload.findGlobal({
+			slug: "website",
+			select: {
 				name: true,
-				avatarImage: true,
-				bio: true,
+				description: true,
+				keywords: true,
+				creator: {
+					name: true,
+					avatarImage: true,
+					bio: true,
+				},
 			},
-		},
-		depth: 4,
-		locale,
-	});
+			// level 1 resolves the `creator` relationship, level 2 the avatar upload
+			// inside it (at level 1 `avatarImage` is a bare id, which the schema
+			// rejects). level 3 is one level of margin for uploads embedded in the
+			// localized `bio` rich text, which this repository's fixture content
+			// cannot exercise.
+			depth: 3,
+			locale,
+		}),
+		editorConfigFactory.fromEditor({ config: await config, editor }),
+	]);
 
-	const websiteParseResult = Website.safeParse(doc);
+	const websiteParseResult = createWebsiteSchema(editorConfig).safeParse(doc);
 
 	if (websiteParseResult.success) {
-		const website = websiteParseResult.data;
-
-		if (website.creator.bio) {
-			website.creator.bioMarkdown = convertLexicalToMarkdown({
-				data: website.creator.bio,
-				editorConfig: await editorConfigFactory.fromEditor({
-					config: await config,
-					editor,
-				}),
-			});
-		}
-
 		logger.info("Successfully fetched the website record.");
 
-		return website;
+		return websiteParseResult.data;
 	}
 
 	logger.info(

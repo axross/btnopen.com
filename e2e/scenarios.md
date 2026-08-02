@@ -73,6 +73,7 @@ carries its `@scenario:<id>` tag. The reporter
 | localization.japanese | A Japanese browser gets Japanese chrome and locale metadata | localization | must |
 | localization.english | An English browser gets the English chrome and locale metadata fallback | localization | should |
 | localization.switcher-persists | An explicit locale choice persists across reloads via cookie | localization | should |
+| localization.media-alt | A body image's alt text follows the reader's negotiated locale | localization | should |
 | mcp.auth-required | The MCP endpoint rejects requests without an API key | mcp | must |
 | mcp.body-mutation | MCP exposes only its scoped tools and mutates blog post body nodes | mcp | should |
 | metadata.foundational | The index page emits the foundational document metadata | metadata | should |

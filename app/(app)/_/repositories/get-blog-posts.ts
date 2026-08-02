@@ -86,6 +86,10 @@ async function findBlogPosts({
 		},
 		locale,
 		sort: ["-publishedAt"],
+		// intentional cap: the index renders one unpaginated list, and this returns
+		// `result.docs` directly, so a 51st post would be dropped from it silently.
+		// the site is far from that count; raising the cap or paginating the index
+		// is the fix if it ever approaches it.
 		limit: 50,
 		draft,
 	});

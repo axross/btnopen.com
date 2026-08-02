@@ -27,6 +27,18 @@ const selfDirname = dirname(new URL(import.meta.url).pathname);
 // not each carry their own copy of the same fixture image.
 const sharedMediaId = "019d1223-94d4-754c-8f57-47337be15c9e";
 
+// The seed's lookups match on non-localized fields (id, slug, email, filename),
+// so passing this only makes explicit the locale Payload would default to
+// (`localization.defaultLocale` in `payload/config.ts`). It is stated so that a
+// localized field added to one of those selections cannot silently start
+// resolving under an unstated locale.
+const seedLocale = "ja-JP";
+
+// The locale the shared media's English `alt` is written to, so a body image in
+// a seeded post renders localized alt text and local development and preview
+// deployments exercise the site's ja-primary / en-fallback model.
+const fallbackSeedLocale = "en-US";
+
 /**
  * Describes one seed blog post. Both posts share the create/lookup logic in
  * `seedBlogPost`; only these per-post inputs differ. The body/outline/authoring
@@ -219,6 +231,7 @@ async function seedExampleUser({
 				equals: testUserEmail,
 			},
 		},
+		locale: seedLocale,
 		limit: 1,
 	});
 	let testUser: User | null = users.docs[0] ?? null;
@@ -324,6 +337,7 @@ async function seedExampleTag({ payload }: { payload: Payload }) {
 				equals: "example",
 			},
 		},
+		locale: seedLocale,
 	});
 	let tag: Tag | null = tags.docs[0] ?? null;
 
@@ -365,6 +379,7 @@ async function seedSharedMedia({
 				equals: sharedMediaId,
 			},
 		},
+		locale: seedLocale,
 	});
 	let media: Media | null = medias.docs[0] ?? null;
 
@@ -379,6 +394,18 @@ async function seedSharedMedia({
 				alt: "2560 x 1600 のプレースホルダー画像",
 			},
 			filePath: resolve(selfDirname, "./seed/media.webp"),
+		});
+
+		// `alt` is localized, and the create above wrote only the default locale.
+		// A second write fills the English one, so an English reader sees English
+		// alt text on a body image instead of the Japanese fallback.
+		await payload.update({
+			collection: "media",
+			id: media.id,
+			data: {
+				alt: "A 2560 x 1600 placeholder image",
+			},
+			locale: fallbackSeedLocale,
 		});
 
 		logger.info(
@@ -413,6 +440,7 @@ async function seedBlogPost({
 				equals: descriptor.slug,
 			},
 		},
+		locale: seedLocale,
 		limit: 1,
 		// include drafts so the draft post is found on re-seed and not recreated.
 		draft: true,

@@ -112,8 +112,10 @@ export async function Markdown({
 				// the directive's own attributes reach the component as props (see the
 				// `leafDirective` handler in `helpers/markdown.ts`), so this injection
 				// comes after the spread: a `::embed{locale="…"}` authored into a post
-				// must not override the locale negotiated for the request.
-				...(name === "embed" ? { locale } : {}),
+				// must not override the locale negotiated for the request. `<Media>`
+				// takes it for the same reason — it resolves the media document's
+				// localized `alt` — and gets it the same way.
+				...(name === "embed" || name === "img" ? { locale } : {}),
 			});
 		});
 	}

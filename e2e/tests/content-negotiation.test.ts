@@ -1,7 +1,20 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Locator, type Page, test } from "@playwright/test";
 import { authenticatedStorageState } from "@/e2e/helpers/api/auth";
+import { publishedBlogPostSlug } from "@/e2e/helpers/api/blog-post";
+import { getSharedMediaAlt, sharedMediaId } from "@/e2e/helpers/api/media";
 
 test.use({ storageState: authenticatedStorageState });
+
+// The body image the seed embeds. `next/image` rewrites the src into
+// `/_next/image?url=…`, which percent-encodes the slashes but leaves the media
+// id intact, so matching on the id locates the image under both the optimized
+// and the unoptimized src.
+function getBodyImage(page: Page): Locator {
+	return page
+		.getByTestId("page")
+		.getByTestId("content")
+		.locator(`img[src*="${sharedMediaId}"]`);
+}
 
 test.describe("English content negotiation", () => {
 	test.use({ locale: "en-US" });
@@ -48,6 +61,32 @@ test.describe("English content negotiation", () => {
 			).toHaveAttribute("aria-checked", "true");
 		});
 	});
+
+	test(
+		"renders a body image's English alt text",
+		{
+			tag: [
+				"@scenario:localization.media-alt",
+				"@area:localization",
+				"@priority:should",
+			],
+		},
+		async ({ page }, testInfo) => {
+			let alt: string;
+
+			await test.step("Read the shared media's English alt from the CMS", async () => {
+				alt = await getSharedMediaAlt({ locale: "en-US", page, testInfo });
+			});
+
+			await test.step("Navigate to the published post route", async () => {
+				await page.goto(`/posts/${publishedBlogPostSlug}`);
+			});
+
+			await test.step("Verify the body image carries the English alt", async () => {
+				await expect(getBodyImage(page)).toHaveAttribute("alt", alt);
+			});
+		},
+	);
 });
 
 test.describe("Japanese content negotiation", () => {
@@ -87,6 +126,32 @@ test.describe("Japanese content negotiation", () => {
 			).toBeVisible();
 		});
 	});
+
+	test(
+		"renders a body image's Japanese alt text",
+		{
+			tag: [
+				"@scenario:localization.media-alt",
+				"@area:localization",
+				"@priority:should",
+			],
+		},
+		async ({ page }, testInfo) => {
+			let alt: string;
+
+			await test.step("Read the shared media's Japanese alt from the CMS", async () => {
+				alt = await getSharedMediaAlt({ locale: "ja-JP", page, testInfo });
+			});
+
+			await test.step("Navigate to the published post route", async () => {
+				await page.goto(`/posts/${publishedBlogPostSlug}`);
+			});
+
+			await test.step("Verify the body image carries the Japanese alt", async () => {
+				await expect(getBodyImage(page)).toHaveAttribute("alt", alt);
+			});
+		},
+	);
 });
 
 test.describe("language switcher", () => {

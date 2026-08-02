@@ -194,6 +194,10 @@ async function bustCommentCache(
 			depth: 0,
 			req,
 			select: { slug: true },
+			// `slug` is not localized, so this changes nothing today. it is stated
+			// anyway because a localized field added to the select above would
+			// otherwise start resolving under whatever locale the request carries.
+			locale: "ja-JP",
 		});
 
 		const slug = (post as { slug?: string } | null)?.slug;

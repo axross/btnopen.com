@@ -158,6 +158,10 @@ export async function validateRichTextReferences(
 				id: mediaId,
 				collection: "media",
 				depth: 0,
+				// an existence check selecting only the non-localized `id`, so the
+				// locale never reaches the result. stated anyway so no `media` read
+				// in this realm resolves under an unstated locale.
+				locale: "ja-JP",
 				overrideAccess: false,
 				req,
 				select: {
