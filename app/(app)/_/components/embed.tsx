@@ -1,6 +1,7 @@
 import { captureException } from "@sentry/nextjs";
 import type { HTMLAttributes, JSX } from "react";
 import { Suspense } from "react";
+import type { PayloadLocale } from "@/shared/payload-types";
 import { TweetEmbedLoaded } from "./tweetembed/loaded";
 import { TweetEmbedLoading } from "./tweetembed/loading";
 import { WebEmbedLoaded } from "./webembed/loaded";
@@ -17,6 +18,11 @@ export function Embed({
 	url,
 	type = "webpage",
 	title,
+	// the tweet card formats its date in the active locale, which cannot be
+	// resolved here: this component renders inside `<Markdown>`'s cache scope.
+	// destructured rather than left in the pass-through so it never reaches a DOM
+	// element as an unknown attribute on the branches that do not use it.
+	locale,
 	options: _options,
 	className,
 	...props
@@ -29,6 +35,7 @@ export function Embed({
 	url?: string;
 	type?: string;
 	options?: string;
+	locale: PayloadLocale;
 }): JSX.Element | null {
 	// restrict every rendered href to http(s) so a dangerous protocol (e.g.
 	// javascript:) authored into content can never reach an anchor.
@@ -55,6 +62,7 @@ export function Embed({
 			>
 				<TweetEmbedLoaded
 					href={url}
+					locale={locale}
 					className={className}
 					data-testid="embed"
 					{...props}

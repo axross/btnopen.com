@@ -22,5 +22,5 @@ export async function BlogPostContent({
 		return null;
 	}
 
-	return <MarkdownContent markdown={markdown} {...props} />;
+	return <MarkdownContent markdown={markdown} locale={locale} {...props} />;
 }
