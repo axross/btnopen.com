@@ -2,13 +2,18 @@ import { captureException } from "@sentry/nextjs";
 import { clsx } from "clsx";
 import { format } from "date-fns";
 import type { HTMLAttributes, JSX } from "react";
-import { dateFnsLocaleByLocale, getActiveLocale } from "@/helpers/i18n";
+import { dateFnsLocaleByLocale } from "@/helpers/i18n";
 import { getTweet } from "@/repositories/get-tweet";
 import type { TweetSegment } from "@/repositories/tweet";
+import type { PayloadLocale } from "@/shared/payload-types";
 import css from "./loaded.module.css";
 
 export async function TweetEmbedLoaded({
 	href,
+	// the locale arrives as a prop rather than from `getActiveLocale()`: this
+	// component renders inside `<Markdown>`'s cache scope, where reading the
+	// request's cookies is not allowed.
+	locale,
 	className,
 	...props
 	// an unresolvable tweet degrades to a plain <a>, so this component roots either
@@ -16,11 +21,9 @@ export async function TweetEmbedLoaded({
 	// rather than committing to one of them.
 }: Omit<HTMLAttributes<HTMLElement>, "children"> & {
 	href: string;
+	locale: PayloadLocale;
 }): Promise<JSX.Element> {
-	const [tweet, locale] = await Promise.all([
-		getTweet({ url: href }),
-		getActiveLocale(),
-	]);
+	const tweet = await getTweet({ url: href });
 
 	// a deleted/protected/unresolvable tweet degrades to a plain external link —
 	// reported so authoring or upstream faults surface without breaking the post.

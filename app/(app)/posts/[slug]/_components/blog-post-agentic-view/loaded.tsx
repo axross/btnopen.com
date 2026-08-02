@@ -56,7 +56,7 @@ export async function BlogPostAgenticViewLoaded({
 						{outline ? (
 							<section className={css.section} data-testid="outline">
 								<h2 className={css.sectionHeading}>{t("outline-heading")}</h2>
-								<MarkdownContent markdown={outline} />
+								<MarkdownContent markdown={outline} locale={locale} />
 							</section>
 						) : null}
 
@@ -65,7 +65,7 @@ export async function BlogPostAgenticViewLoaded({
 								<h2 className={css.sectionHeading}>
 									{t("authoring-notes-heading")}
 								</h2>
-								<MarkdownContent markdown={authoringNotes} />
+								<MarkdownContent markdown={authoringNotes} locale={locale} />
 							</section>
 						) : null}
 					</>

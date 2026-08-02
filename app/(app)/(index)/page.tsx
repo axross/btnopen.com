@@ -49,9 +49,14 @@ async function IndexPageMain({
 	website: Promise<Website | null>;
 	draft?: Promise<boolean>;
 }): Promise<JSX.Element> {
-	const [website, t] = await Promise.all([
+	const [website, t, locale] = await Promise.all([
 		websitePromise,
 		getTranslations("index"),
+		// the bio is CMS-authored markdown, so it can grow an embed that formats a
+		// date in the active locale. `<Markdown>` renders that inside a cache scope
+		// and cannot resolve the locale itself, so it is resolved here — inside the
+		// Suspense boundary this component already sits behind.
+		getActiveLocale(),
 	]);
 
 	if (!website) {
@@ -92,7 +97,7 @@ async function IndexPageMain({
 
 				<div className={css.bio}>
 					<div className={css.bioContent} data-testid="bio">
-						<Markdown markdown={website.creator.bioMarkdown} />
+						<Markdown markdown={website.creator.bioMarkdown} locale={locale} />
 					</div>
 
 					<SocialLinkList data-testid="social-links" />

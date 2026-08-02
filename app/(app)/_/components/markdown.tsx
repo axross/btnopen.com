@@ -11,6 +11,7 @@ import { Media } from "@/components/media";
 import { Snippet } from "@/components/snippet";
 import { Table, TableHeaderCell } from "@/components/table";
 import { renderMarkdown } from "@/helpers/markdown";
+import type { PayloadLocale } from "@/shared/payload-types";
 
 const defaultComponents = {
 	a: "a",
@@ -61,9 +62,17 @@ const fallbackClassNames = {};
 
 export async function Markdown({
 	markdown,
+	locale,
 	classNames = fallbackClassNames,
 }: {
 	markdown: string;
+	// this component opens a cache scope, where reading a request-scoped value
+	// (the locale cookie, via `getActiveLocale()`) throws. the components it maps
+	// to still need the active locale — `<Embed>` formats a tweet card's date in
+	// it — so the caller resolves it outside and passes it in. being required
+	// rather than defaulted means a new call site has to say where its locale
+	// came from instead of silently falling back to the default one.
+	locale: PayloadLocale;
 	classNames?: Partial<Record<keyof typeof defaultComponents, string>>;
 }) {
 	"use cache";
@@ -100,6 +109,11 @@ export async function Markdown({
 							scrollbarThumbClassName: classNames.tableScrollbarThumb,
 						}
 					: {}),
+				// the directive's own attributes reach the component as props (see the
+				// `leafDirective` handler in `helpers/markdown.ts`), so this injection
+				// comes after the spread: a `::embed{locale="…"}` authored into a post
+				// must not override the locale negotiated for the request.
+				...(name === "embed" ? { locale } : {}),
 			});
 		});
 	}
