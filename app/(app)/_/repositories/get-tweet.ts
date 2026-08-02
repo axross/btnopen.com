@@ -1,4 +1,4 @@
-"use server";
+import "server-only";
 
 import { cacheLife } from "next/cache";
 import z from "zod";

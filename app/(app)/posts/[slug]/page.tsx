@@ -73,7 +73,7 @@ export default async function BlogPostPage({
 			</article>
 
 			<Suspense>
-				<BlogPostingJsonLd blogPost={blogPost} draft={draft} />
+				<BlogPostingJsonLd blogPost={blogPost} />
 			</Suspense>
 
 			<Suspense>
@@ -161,7 +161,7 @@ export async function generateMetadata({
 	}
 
 	const [website, blogPost] = await Promise.all([
-		getWebsite({ draft: isDraft, locale }),
+		getWebsite({ locale }),
 		getBlogPost({ slug, draft: isDraft, locale }),
 	]);
 

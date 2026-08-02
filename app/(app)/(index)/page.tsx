@@ -20,12 +20,10 @@ import type { PageProps } from "./page-props";
 
 async function IndexPage({ searchParams }: PageProps): Promise<JSX.Element> {
 	const draft = searchParams.then((params) => params.draft === "true");
-	// resolve the locale inside the promise callback (not as an eagerly
-	// evaluated argument) so the dynamic cookie read happens within the Suspense
-	// boundaries that await `website`.
-	const website = draft.then(async (isDraft) =>
-		getWebsite({ draft: isDraft, locale: await getActiveLocale() }),
-	);
+	// chain off `getActiveLocale()` rather than awaiting it here (it does nothing
+	// before its own first `await`) so the dynamic cookie read happens within the
+	// Suspense boundaries that await `website`.
+	const website = getActiveLocale().then((locale) => getWebsite({ locale }));
 
 	return (
 		<>

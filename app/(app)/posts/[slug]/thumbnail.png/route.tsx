@@ -228,6 +228,15 @@ async function retrieveImageViaAPI(pathname: string): Promise<ArrayBuffer> {
 
 	const url = new URL(pathname, urlOrigin);
 
+	// `pathname` comes from the stored media document, so an absolute value
+	// would resolve away from this deployment and turn the render into an
+	// outbound fetch of someone else's host. only serve our own media.
+	if (url.origin !== new URL(urlOrigin).origin) {
+		throw new Error(
+			`Refused to fetch a thumbnail image from a foreign origin (${url.origin}).`,
+		);
+	}
+
 	const imageResponse = await fetch(url);
 
 	const imageBuffer = await imageResponse.arrayBuffer();

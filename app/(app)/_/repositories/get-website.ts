@@ -1,4 +1,4 @@
-"use server";
+import "server-only";
 
 import {
 	convertLexicalToMarkdown,
@@ -26,12 +26,14 @@ const Website = PayloadWebsite.transform((website) => ({
 
 export type Website = z.infer<typeof Website>;
 
+// the `website` global declares no `versions`, so Payload never looks for a
+// draft version of it (`findOne` consults one only when drafts are enabled for
+// the global). it therefore takes no `draft` parameter — passing one would
+// suggest a draft view that does not exist.
 export async function getWebsite({
 	locale,
-	draft = false,
 }: {
 	locale: PayloadLocale;
-	draft?: boolean;
 }): Promise<Website | null> {
 	"use cache";
 
@@ -57,7 +59,6 @@ export async function getWebsite({
 		},
 		depth: 4,
 		locale,
-		draft,
 	});
 
 	const websiteParseResult = Website.safeParse(doc);

@@ -1,4 +1,4 @@
-"use server";
+import "server-only";
 
 import clsx from "clsx";
 import { cacheLife } from "next/cache";
