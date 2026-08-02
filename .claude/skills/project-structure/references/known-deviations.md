@@ -8,7 +8,7 @@ That matters because an unrecorded deviation reads to the next agent, and to a r
 
 ## Currently Recorded Deviations
 
-One deviation is recorded, below. The register is exhaustive, which is what makes it useful: anything in this codebase that departs from an installed rule and is not listed here is a finding. Do not read the register as licence to assume an unlisted departure was already blessed, and do not add an entry for a rule this repository merely has not exercised yet — a deviation is recorded when it is accepted, not when it is anticipated.
+Two deviations are recorded, below. The register is exhaustive, which is what makes it useful: anything in this codebase that departs from an installed rule and is not listed here is a finding. Do not read the register as licence to assume an unlisted departure was already blessed, and do not add an entry for a rule this repository merely has not exercised yet — a deviation is recorded when it is accepted, not when it is anticipated.
 
 **Guidelines:**
 
@@ -31,6 +31,22 @@ Nothing else in that capability is affected. Its source-root rule already blesse
 - MUST NOT introduce a `src/` source root, a `common/` tier, a `core/` tier, or a top-level domain directory in order to satisfy the installed capability; doing so would split the codebase across two conventions.
 - MUST NOT report a by-kind placement under `app/(app)/_/` as a review finding against the installed capability's grouping rules; every other rule in that reference still applies in full.
 - SHOULD treat a proposal to adopt the domain axis as a standalone migration with its own issue, plan, and review — never as part of a change that happens to touch the affected files.
+
+### Sentry's debug and logging statements ship in the production bundle
+
+The Sentry instrumentation capability's [delivery-and-footprint reference](../../sentry-instrumentation/references/delivery-and-footprint.md) makes stripping them a MUST — "MUST strip debug and logging statements from production builds; they exist for development and ship otherwise" — and presents it as a build-plugin option that costs nothing at runtime to enable.
+
+This repository does not strip them, because on its bundler there is no option to enable. `@sentry/nextjs` exposes the control only as `webpack.treeshake.removeDebugLogging`, which the SDK reads solely in its webpack path and turns into `DefinePlugin` defines; `next build` on Next.js 16 runs Turbopack, so the option produced nothing during the whole time it was set. `bundleSizeOptimizations` reads like the bundler-agnostic equivalent but is not one: the SDK hands it only to the post-compile hook, which never applies the resulting replacement values and runs after compilation regardless. Sentry's own build-options documentation records no Turbopack equivalent. Verified against `@sentry/nextjs` 10.69.0.
+
+A substitute exists outside the SDK. Next.js's `compiler.define` would replace `__SENTRY_DEBUG__`, which is exactly the flag the SDK's `DEBUG_BUILD` guard reads, and it is bundler-agnostic. It was put to the maintainer in axross/btnopen.com#162 and declined: it means this repository maintaining a bundler-level mechanism of its own, needing its own bundle-content verification, to recover a few kilobytes on a personal blog. The inert option was deleted instead, in #188, which leaves the bundle exactly as it already was rather than leaving configuration that reads as though the rule were satisfied.
+
+Both routes in the section below apply here, because this is a deviation and a gap at once. The deviation is the declined substitute. The gap is that the capability states the MUST without acknowledging that the vendor supplies no mechanism under what is now Next.js's default bundler, so a Turbopack project cannot comply through the SDK at all. That generalizes past this repository, so it is also filed upstream as [axross/skills#181](https://github.com/axross/skills/issues/181) — which asks the Bundle Footprint section to carry the same bundler-split qualifier its own neighbouring section already applies to component annotation. This entry stands until that lands, and nothing here waits on it.
+
+**Guidelines:**
+
+- MUST NOT re-add `webpack.treeshake` or reach for `bundleSizeOptimizations` in the `withSentryConfig` call to satisfy the rule; neither reaches a Turbopack build, and `next.config.ts` carries a comment saying so.
+- MUST NOT report Sentry debug logging present in the production bundle as a review finding against the installed capability while this entry stands.
+- SHOULD delete this entry rather than leave it standing once `@sentry/nextjs` gains a Turbopack tree-shaking option, and strip the statements then.
 
 ## Recording a New Deviation or Gap
 
