@@ -69,11 +69,14 @@ review — CI blocks the merge regardless, so restating them costs the author's
 attention without adding a gate. This exclusion governs **posted** reviews
 only; internal self-review triage still flags these findings.
 
-- Anything CI already enforces — the Biome lint run (`npm run lint`) and the
-  Jest unit-test run (`npm run test:unit`) in the Merge Checks workflow
+- Anything CI already enforces — the Biome lint run (`npm run lint`), the
+  TypeScript run (`npm run typecheck`), and the Jest unit-test run
+  (`npm run test:unit`) in the Merge Checks workflow
   ([`merge-checks.yaml`](.github/workflows/merge-checks.yaml)), and the lint
-  and Playwright e2e runs in the Check and Deploy workflow
-  ([`check-and-deploy.yaml`](.github/workflows/check-and-deploy.yaml)).
+  run, the Playwright e2e run, and the e2e scenario-coverage gate
+  (`node e2e/check-scenario-coverage.mjs`, which fails a `must`-priority row in
+  `e2e/scenarios.md` that has no passing asserting test) in the Check and Deploy
+  workflow ([`check-and-deploy.yaml`](.github/workflows/check-and-deploy.yaml)).
 - Lockfiles and generated files (including Playwright snapshot files under
   `e2e/**/__snapshots__/`, which CI regenerates).
 

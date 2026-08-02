@@ -88,6 +88,15 @@ async function renderMarkdown({
 		})
 		.use(rehypeShikiFromHighlighter, highlighter, {
 			theme: "css-variables",
+			// shiki decorates its root <pre> with an inline `background-color` /
+			// `color` pair and `tabindex="0"`. `<Snippet>` roots its own wrapper and
+			// styles it from its CSS Module, and its `...props` spread would now
+			// apply both: the inline colors reference variables this theme never
+			// defines (so they'd invalidate the module's own background) and the
+			// tabindex would make a non-scrolling wrapper focusable. suppress them
+			// here, at the source, rather than discarding them in the component.
+			rootStyle: false,
+			tabindex: false,
 		})
 		.use(rehypeUnnestPre)
 		.use(rehypeReact, rehypeReactOptions)

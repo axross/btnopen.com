@@ -12,10 +12,7 @@ import { type BlogPostDetail, getBlogPost } from "@/repositories/get-blog-post";
 import { getBlogPostAgentic } from "@/repositories/get-blog-post-agentic";
 import { getWebsite } from "@/repositories/get-website";
 import { urlOrigin } from "@/runtime";
-import {
-	BlogPostAgenticView,
-	BlogPostAgenticViewLoading,
-} from "./_components/blog-post-agentic-view";
+import { BlogPostAgenticView } from "./_components/blog-post-agentic-view";
 import { BlogPostContent } from "./_components/blog-post-content";
 import { BlogPostHeader } from "./_components/blog-post-header";
 import { BlogPostingJsonLd } from "./_components/blog-posting-json-ld";
@@ -37,11 +34,7 @@ export default async function BlogPostPage({
 	const draft = Promise.resolve(draftParam === "true");
 
 	if (agentic === "true") {
-		return (
-			<Suspense fallback={<BlogPostAgenticViewLoading />}>
-				<BlogPostAgenticView slug={slug} draft={draft} />
-			</Suspense>
-		);
+		return <BlogPostAgenticView slug={slug} draft={draft} data-testid="page" />;
 	}
 
 	const preview = searchParams.then((p) => p.preview === "true");

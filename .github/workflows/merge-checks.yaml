@@ -40,6 +40,27 @@ jobs:
       - name: Lint
         run: npm run lint
 
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: package.json
+          cache: npm
+      - name: Install Dependencies
+        run: npm ci
+      - name: Typecheck
+        # `tsc --noEmit` needs no prior `npm run build`: the app declares its own
+        # PageProps/LayoutProps interfaces rather than relying on the route types
+        # Next generates into .next/types, so a bare `npm ci` checkout — with no
+        # .next/ and no next-env.d.ts — type-checks on its own.
+        run: npm run typecheck
+
   test:
     name: Unit Tests
     runs-on: ubuntu-latest

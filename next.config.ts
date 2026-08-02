@@ -23,6 +23,14 @@ const sentryProject = process.env.SENTRY_PROJECT;
 // deploy workflows (local dev, tests), where `undefined` leaves Next.js on its
 // default behavior.
 const deploymentId = process.env.DEPLOYMENT_ID?.slice(0, maxDeploymentIdLength);
+// the release the source-map upload is filed under. The three `Sentry.init`
+// calls report the same commit SHA (via `sha` in app/(app)/_/runtime.ts), so an
+// event and its source maps always resolve to one release. Leaving this to the
+// plugin's own detection would diverge on preview deployments, where it falls
+// back to GITHUB_SHA — the pull request's merge commit, not the head commit the
+// build actually shipped. Unset outside the deploy workflows, where the plugin's
+// detection is left to run.
+const sentryRelease = process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA;
 // biome-ignore-end lint/style/noProcessEnv: nextjs config needs to access env vars
 
 const nextConfig: NextConfig = {
@@ -51,6 +59,11 @@ const nextConfig: NextConfig = {
 			new URL("https://avatars.githubusercontent.com/**"),
 		],
 	},
+	// re2 looks unused because nothing here imports it. It arrives as a plain
+	// dependency of @metascraper/helpers, which get-webembed-metadata.ts pulls
+	// into the server graph, and it is a native binding — leaving it to the
+	// bundler fails the build with "non-ecmascript placeable asset". pino and
+	// pino-pretty are stream-based and equally incompatible.
 	serverExternalPackages: ["re2", "pino", "pino-pretty"],
 	experimental: {
 		viewTransition: true,
@@ -68,16 +81,25 @@ const nextConfig: NextConfig = {
 	],
 };
 
+// options nested under withSentryConfig's `webpack` key apply only to a webpack
+// build, and `next build` on Next.js 16 runs Turbopack, so the block that used
+// to sit here never took effect. Neither of its options is replaced, because
+// neither has a working Turbopack equivalent:
+// - `automaticVercelMonitors` selects a Pages-Router-only strategy and reads
+//   cron jobs from vercel.json, which this repository does not have. Vercel cron
+//   monitors are therefore not wired up; wire them up deliberately if a cron job
+//   is ever added.
+// - `treeshake.removeDebugLogging` becomes webpack DefinePlugin defines.
+//   `bundleSizeOptimizations` looks like the bundler-agnostic equivalent but is
+//   not: the SDK only hands it to the post-compile hook, which never applies the
+//   replacements. Sentry's debug logging therefore stays in the bundle, as it
+//   already did while the option was inert.
+// the options below all apply to Turbopack builds.
 export default withSentryConfig(withPayload(withNextIntl(nextConfig)), {
 	org: sentryOrg,
 	project: sentryProject,
 	silent: !isCi,
 	widenClientFileUpload: true,
 	tunnelRoute: "/monitoring",
-	webpack: {
-		automaticVercelMonitors: true,
-		treeshake: {
-			removeDebugLogging: true,
-		},
-	},
+	release: { name: sentryRelease },
 });

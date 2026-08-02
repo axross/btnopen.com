@@ -1,4 +1,8 @@
 import type { CollectionConfig } from "payload";
+import {
+	BLOG_POST_SLUG_VALIDATION_MESSAGE,
+	BlogPostSlug,
+} from "@/shared/blog-post-slug";
 import { logger } from "../helpers/logger";
 import { shouldInvalidatePostCaches } from "../helpers/post-cache-invalidation";
 import { urlOrigin } from "../helpers/runtime";
@@ -35,6 +39,22 @@ export const blogPostCollection: CollectionConfig = {
 			type: "text",
 			required: true,
 			unique: true,
+			// the slug reaches `revalidatePath()` and a cache tag through
+			// `posts/[slug]/caches`, which rejects anything failing this same
+			// schema — validating here keeps the CMS from minting a slug whose
+			// publish would then silently skip cache invalidation.
+			validate: (value: unknown) => {
+				// a custom `validate` replaces Payload's built-in text validation, so
+				// the `required` check lives here too; the schema rejects an empty or
+				// missing value. Draft and autosave writes skip validation entirely
+				// (the collection does not opt into draft validation), so this gates
+				// publishing rather than every keystroke.
+				if (!BlogPostSlug.safeParse(value).success) {
+					return BLOG_POST_SLUG_VALIDATION_MESSAGE;
+				}
+
+				return true;
+			},
 		},
 		{
 			type: "tabs",

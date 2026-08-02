@@ -61,6 +61,8 @@ carries its `@scenario:<id>` tag. The reporter
 | post.comments.sign-in | A signed-out reader sees the Sign in with GitHub affordance (needs Clerk test tokens) | posts | may |
 | post.comments.submit | A signed-in reader submits a comment that stays pending until approved (needs Clerk test tokens) | posts | may |
 | post.comments.draft-no-composer | A draft/preview post view renders the comments section without the composer (needs Clerk configured) | posts | should |
+| post.caches.csrf | The post cache-invalidation endpoints reject a cross-site call but accept the hook's own | posts | should |
+| post.caches.invalid-slug | The post cache-invalidation endpoint rejects an implausible slug | posts | should |
 | not-found.status | An unknown route responds with a 404 status | not-found | must |
 | post.not-found | An unknown post slug shows the not-found page | not-found | must |
 | post.agentic.not-found | An unknown slug on the agentic view shows the not-found page | not-found | should |
@@ -82,3 +84,5 @@ carries its `@scenario:<id>` tag. The reporter
 | index.thumbnail | The index Open Graph thumbnail image endpoint renders | metadata | should |
 | post.thumbnail | A blog post's Open Graph thumbnail image endpoint renders | metadata | should |
 | post.thumbnail.draft-unauthenticated | A signed-out request for an unpublished post's thumbnail responds 404 instead of rendering the draft | metadata | must |
+| metadata.robots | The robots.txt route serves the generated robots file with its sitemap pointer | metadata | should |
+| metadata.sitemap | The sitemap.xml route serves the generated sitemap listing the index and published posts | metadata | should |

@@ -51,7 +51,7 @@ try {
 		});
 
 		if (blobs.length > 0) {
-			// biome-ignore lint/performance/noAwaitInLoops: delete this page before fetching the next
+			// delete this page before fetching the next
 			await del(
 				blobs.map((blob) => blob.url),
 				{ token },

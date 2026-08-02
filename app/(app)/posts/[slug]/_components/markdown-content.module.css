@@ -25,8 +25,6 @@
 					.blockquote,
 					.ol,
 					.ul,
-					/* TODO: maybe remove .img */
-						.img,
 					.media,
 					.snippet,
 					.embed,
@@ -49,8 +47,6 @@
 					.blockquote,
 					.ol,
 					.ul,
-					/* TODO: maybe remove .img */
-						.img,
 					.media,
 					.snippet,
 					.embed,
@@ -235,16 +231,6 @@
 			background-size: 0.625rem 0.625rem;
 			border: none;
 			color: var(--accent-6);
-		}
-
-		/* TODO: maybe remove this */
-		.img {
-			max-inline-size: 100%;
-			border-radius: var(--radius-md);
-
-			@container style(--theme: dark) {
-				filter: brightness(0.9);
-			}
 		}
 
 		.picture {
