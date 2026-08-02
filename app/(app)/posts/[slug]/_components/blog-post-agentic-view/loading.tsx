@@ -33,7 +33,7 @@ export function BlogPostAgenticViewLoading({
 					<h2 className={css.sectionHeading}>
 						<LoadingPlaceholderText sampleText="Outline" maxLines={1} />
 					</h2>
-					<p className={css.placeholderText}>
+					<p className={css.bodyText}>
 						<LoadingPlaceholderText
 							sampleText="Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt"
 							maxLines={4}
@@ -45,7 +45,7 @@ export function BlogPostAgenticViewLoading({
 					<h2 className={css.sectionHeading}>
 						<LoadingPlaceholderText sampleText="Authoring notes" maxLines={1} />
 					</h2>
-					<p className={css.placeholderText}>
+					<p className={css.bodyText}>
 						<LoadingPlaceholderText
 							sampleText="Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore"
 							maxLines={4}

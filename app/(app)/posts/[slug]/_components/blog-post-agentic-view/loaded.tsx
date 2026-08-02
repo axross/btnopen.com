@@ -48,7 +48,7 @@ export async function BlogPostAgenticViewLoaded({
 
 			<main className={css.content} data-testid="content">
 				{isEmpty ? (
-					<p className={css.empty} data-testid="empty">
+					<p className={css.bodyText} data-testid="empty">
 						{t("empty")}
 					</p>
 				) : (
