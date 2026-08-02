@@ -7,6 +7,9 @@ Apply this reference when adding or changing a test, or a component's test hooks
 | Unit tests | Jest, colocated `*.spec.ts`, run with `npm run test:unit` |
 | End-to-end tests | Playwright under `e2e/`, run with `npm run test:e2e` |
 | Scenario-coverage gate | `npm run coverage:scenarios` |
+| Type check | `tsc --noEmit`, run with `npm run typecheck` |
+
+`npm run lint`, `npm run typecheck`, and `npm run test:unit` gate a merge (the Merge Checks workflow). The e2e suite and the scenario-coverage gate run after merge, in the Check and Deploy workflow, so a `must`-priority coverage regression fails on `main` rather than on the pull request that introduced it.
 
 ## Unit Tests
 
@@ -53,6 +56,9 @@ Playwright writes run artifacts to `.playwright-results/` and keeps visual snaps
 - MUST define API call functions in `e2e/helpers/api/`, named-exported, taking `page` and `testInfo`, and using `page.request` so calls share the test's authenticated state.
 - SHOULD reuse the saved authenticated state with `test.use({ storageState: authenticatedStorageState })` rather than logging in per test. The `setup` project authenticates with `PAYLOAD_TEST_USER_EMAIL` / `PAYLOAD_TEST_USER_PASSWORD` and saves state under `e2e/.data/`.
 - SHOULD target a deployed environment only by setting `PLAYWRIGHT_BASE_URL` deliberately, such as `PLAYWRIGHT_BASE_URL=https://btnopen.com npm run test:e2e`.
+- MUST keep the suite's device projects to the two responsive tiers that carry a structural transformation — `pixel` (412px, mobile) and `tablet` (712px, tablet), both on Chromium. The five mobile→tablet structural transformations in [responsive-layout.md](../../visual-identity/references/responsive-layout.md) all fire across that pair. The desktop tier is deliberately uncovered: it adjusts density rather than structure, and `workers: 1` means every added project serializes another full pass. Adding one is a cost decision for @axross, not a default.
+- MUST let CI generate a new device project's Linux snapshot baselines. Check and Deploy runs `--update-snapshots` and opens a snapshot pull request; the matching darwin baselines come from a maintainer running `npm run test:e2e -- --update-snapshots` on macOS. A baseline captured in a cloud session does not match the GitHub runner's rendering.
+- SHOULD run `PLAYWRIGHT_SERVER_MODE=production npm run test:e2e` when verifying caching, image, or compiler behaviour. Local and pull-request runs use `next dev`; only Check and Deploy sets that variable, so `main` is the one pipeline that exercises the production build. The production mode never reuses an already-running server, so stop any local dev server first.
 - MUST add a test file under `e2e/tests/routes/<route>/` when a change adds a new `page.tsx` under `app/(app)/`, and MUST NOT remove a `data-testid` an existing test references without updating that test.
 - MUST update snapshots (`npm run test:e2e -- --update-snapshots`) only when the visual change is intentional, and state the reason the expected output changed. Snapshots are platform-specific — the path carries a `{/platform}` segment — so a local macOS update changes only the macOS snapshots, never the Linux ones CI compares against. CI re-runs with `--update-snapshots` and opens a pull request for any difference; that pull request is a prompt to review the visual change, not evidence it is acceptable.
 
