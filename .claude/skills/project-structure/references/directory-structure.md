@@ -17,7 +17,14 @@ Use this tree to decide where repository-level files and app features belong bef
 │   │   │   ├── _components/   # index route sub-components
 │   │   │   └── page.tsx       # index page
 │   │   ├── posts/             # posts routes
-│   │   │   └── ...
+│   │   │   ├── caches/        # blog post list cache invalidation (route.ts)
+│   │   │   └── [slug]/        # blog post route
+│   │   │       ├── _components/   # post route sub-components, incl. comments/
+│   │   │       ├── caches/        # post cache invalidation (route.ts)
+│   │   │       ├── comments/      # comment create (route.ts)
+│   │   │       │   ├── caches/    # comment cache invalidation (route.ts)
+│   │   │       │   └── token/     # CSRF token issuance (route.ts)
+│   │   │       └── ...
 │   │   ├── variables.css      # css variables
 │   │   ├── globals.css        # global styles
 │   │   ├── layers.css         # css layers definitions

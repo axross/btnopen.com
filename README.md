@@ -19,6 +19,7 @@ fallback for other locales.
 | Unit tests | Jest |
 | E2E tests | Playwright |
 | Content layer | Payload CMS |
+| Comment authentication | Clerk |
 | Error tracking / logging | Sentry / Pino |
 | Analytics | Mixpanel |
 | Hosting | Vercel |
