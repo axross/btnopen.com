@@ -3,6 +3,7 @@ import { authenticatedStorageState } from "@/e2e/helpers/api/auth";
 import { createPublishedBlogPost } from "@/e2e/helpers/api/blog-post";
 import { createComment, deleteComment } from "@/e2e/helpers/api/comment";
 import { deleteBlogPost } from "@/e2e/helpers/api/mcp";
+import { uniqueSlug } from "@/e2e/helpers/unique-slug";
 
 test.use({ storageState: authenticatedStorageState });
 
@@ -10,10 +11,6 @@ const forbiddenStatus = 403;
 // the fallback badge is sized to the avatar box; a bare glyph is well under this.
 const avatarFallbackMinSizePx = 32;
 const avatarFallbackSquareTolerancePx = 1;
-
-function uniqueSlug(prefix: string, repeat: number, worker: number): string {
-	return `${prefix}-${repeat}-${worker}-${Date.now()}`;
-}
 
 // no locator-native matcher exists for a computed `filter`, so read it via
 // getComputedStyle (the sanctioned exception, as with pseudo-element state),

@@ -254,5 +254,26 @@ test(
 				`${testInfo.project.use.baseURL}`,
 			);
 		});
+
+		await test.step("Verify the og:image declaration matches the served thumbnail", async () => {
+			await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+				"content",
+				`${testInfo.project.use.baseURL}/thumbnail.png`,
+			);
+
+			await expect(
+				page.locator('meta[property="og:image:width"]'),
+			).toHaveAttribute("content", "1200");
+
+			await expect(
+				page.locator('meta[property="og:image:height"]'),
+			).toHaveAttribute("content", "630");
+		});
+
+		await test.step("Verify og:image:alt describes the site", async () => {
+			await expect(
+				page.locator('meta[property="og:image:alt"]'),
+			).toHaveAttribute("content", website.name);
+		});
 	},
 );

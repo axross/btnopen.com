@@ -8,6 +8,7 @@ import {
 	getActiveLocale,
 	openGraphLocaleByLocale,
 } from "@/helpers/i18n";
+import { thumbnailHeight, thumbnailWidth } from "@/helpers/thumbnail";
 import { type BlogPostDetail, getBlogPost } from "@/repositories/get-blog-post";
 import { getBlogPostAgentic } from "@/repositories/get-blog-post-agentic";
 import { getWebsite } from "@/repositories/get-website";
@@ -182,8 +183,9 @@ export async function generateMetadata({
 			images: [
 				{
 					url: `${urlOrigin}/posts/${blogPost.slug}/thumbnail.png`,
-					width: 1200,
-					height: 630,
+					width: thumbnailWidth,
+					height: thumbnailHeight,
+					alt: blogPost.title,
 				},
 			],
 			type: "article",
