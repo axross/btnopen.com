@@ -109,7 +109,7 @@
 			margin-block: calc(var(--paragraph-block-margin) * 1.5);
 			padding-block: calc(var(--paragraph-block-margin) * 0.5);
 			padding-inline: var(--size-16);
-			border-left: var(--size-4) var(--accent-7) solid;
+			border-inline-start: var(--size-4) var(--accent-7) solid;
 			font-weight: 500;
 			font-style: italic;
 		}

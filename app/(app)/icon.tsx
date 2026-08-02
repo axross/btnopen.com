@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { ImageResponse } from "next/og";
+import { faviconColorDark, faviconColorLight } from "@/helpers/brand-colors";
 
 export const alt = "Favicon";
 
@@ -33,7 +34,7 @@ export default async function Image() {
 					width: "100%",
 					height: "100%",
 					backgroundColor: "transparent",
-					color: preferDarkMode ? "#E463FF" : "#7F00D0",
+					color: preferDarkMode ? faviconColorDark : faviconColorLight,
 				}}
 			>
 				<path

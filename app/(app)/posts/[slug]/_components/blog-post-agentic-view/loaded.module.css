@@ -23,7 +23,7 @@
 		.header {
 			display: flex;
 			width: stretch;
-			max-width: var(--max-width);
+			max-inline-size: var(--max-width);
 			flex-direction: column;
 			gap: var(--size-8);
 			padding-inline: var(--size-16);
@@ -44,7 +44,7 @@
 		.content {
 			display: flex;
 			width: stretch;
-			max-width: var(--max-width);
+			max-inline-size: var(--max-width);
 			flex-direction: column;
 			gap: var(--size-32);
 			margin-block-start: var(--size-32);

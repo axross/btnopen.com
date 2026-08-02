@@ -34,13 +34,15 @@
 			&::before {
 				left: calc(var(--size-2) * -1);
 				color: oklch(from var(--accent-9) l c calc(h - 16));
-				animation: noise-fast 2s infinite linear alternate-reverse;
+				animation: noise-fast var(--duration-glitch-fast) infinite linear
+					alternate-reverse;
 			}
 
 			&::after {
 				left: var(--size-2);
 				color: oklch(from var(--accent-9) l c calc(h + 16));
-				animation: noise-slow 15s infinite linear alternate-reverse;
+				animation: noise-slow var(--duration-glitch-slow) infinite linear
+					alternate-reverse;
 			}
 
 			@media (prefers-reduced-motion: reduce) {
