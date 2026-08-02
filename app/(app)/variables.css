@@ -75,6 +75,15 @@
 		--duration-2xl: 1100ms;
 		--duration-3xl: 1950ms;
 
+		/* Role-named cadences that sit outside the interaction tier above. The
+		   skeleton pulse is shared so every placeholder in the app pulses in
+		   phase; the two glitch cadences drive the 404 status code and the
+		   index portrait's grunge layers, which read as one effect and so must
+		   stay on one pair of values. */
+		--duration-pulse: 500ms;
+		--duration-glitch-fast: 2s;
+		--duration-glitch-slow: 15s;
+
 		--ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 
 		--accent-chroma: 0.3;
