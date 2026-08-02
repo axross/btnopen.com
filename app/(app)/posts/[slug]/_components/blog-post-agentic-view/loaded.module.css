@@ -1,5 +1,5 @@
 @layer components {
-	@scope (.agenticView) {
+	@scope (.blogPostAgenticViewLoaded) {
 		:where(:scope) {
 			display: flex;
 			width: stretch;
@@ -68,13 +68,12 @@
 			font-weight: 700;
 		}
 
-		.placeholderText {
-			color: var(--neutral-12);
-			font-size: var(--text-md);
-			line-height: var(--leading-lg);
-		}
-
-		.empty {
+		/* a paragraph of body-sized prose in the content column. the loaded side
+		   uses it for the empty-state message; the loading side uses it for the
+		   placeholder lines, where only the font metrics apply (the shimmer spans
+		   paint their own background, so `color` is inert on the loading side).
+		   keep this rule byte-identical to its counterpart in the paired module. */
+		.bodyText {
 			color: var(--neutral-10);
 			font-size: var(--text-md);
 			line-height: var(--leading-lg);

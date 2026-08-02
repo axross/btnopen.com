@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
 import { formatDistanceToNow } from "date-fns";
 import { getTranslations } from "next-intl/server";
-import type { JSX } from "react";
+import type { ComponentProps, JSX } from "react";
 import { dateFnsLocaleByLocale, getActiveLocale } from "@/helpers/i18n";
 import {
 	type BlogPostComment,
@@ -31,7 +31,9 @@ import { LeaveAReviewIllustration } from "./leave-a-review";
 export async function Comments({
 	slug,
 	draft,
-}: {
+	className,
+	...props
+}: Omit<ComponentProps<"section">, "children"> & {
 	slug: string;
 	draft: boolean;
 }): Promise<JSX.Element | null> {
@@ -47,9 +49,10 @@ export async function Comments({
 
 	return (
 		<section
-			className={css.comments}
+			className={clsx(css.comments, className)}
 			aria-label={t("heading")}
 			data-testid="comments"
+			{...props}
 		>
 			<div className={css.head}>
 				<h2 className={css.heading}>{t("heading")}</h2>

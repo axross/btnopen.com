@@ -1,19 +1,14 @@
-"use client";
-
 import { clsx } from "clsx";
-import type { JSX } from "react";
+import type { ComponentProps, JSX } from "react";
 import { LoadingPlaceholderText } from "@/components/loading-placeholder";
 import css from "./loading.module.css";
 
 export function TweetEmbedLoading({
 	className,
-	"data-testid": dataTestId,
-}: {
-	className?: string;
-	"data-testid"?: string;
-}): JSX.Element {
+	...props
+}: ComponentProps<"div">): JSX.Element {
 	return (
-		<div className={clsx(css.tweet, className)} data-testid={dataTestId}>
+		<div className={clsx(css.tweet, className)} {...props}>
 			<div className={css.body}>
 				<LoadingPlaceholderText
 					sampleText="Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod tempor incididunt"
@@ -22,8 +17,11 @@ export function TweetEmbedLoading({
 			</div>
 
 			<div className={css.cite}>
+				{/* the sample tracks the loaded cite line, whose date is `date-fns`
+				    `PPP` in the active locale, so the skeleton and the content it
+				    replaces stay the same width */}
 				<LoadingPlaceholderText
-					sampleText="Lorem Ipsum @loremipsum · Jul 15, 2026"
+					sampleText="Lorem Ipsum @loremipsum · July 15th, 2026"
 					maxLines={1}
 				/>
 			</div>
