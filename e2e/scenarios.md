@@ -59,6 +59,8 @@ carries its `@scenario:<id>` tag. The reporter
 | post.comments.sign-in | A signed-out reader sees the Sign in with GitHub affordance (needs Clerk test tokens) | posts | may |
 | post.comments.submit | A signed-in reader submits a comment that stays pending until approved (needs Clerk test tokens) | posts | may |
 | post.comments.draft-no-composer | A draft/preview post view renders the comments section without the composer (needs Clerk configured) | posts | should |
+| post.caches.csrf | The post cache-invalidation endpoints reject a cross-site call but accept the hook's own | posts | should |
+| post.caches.invalid-slug | The post cache-invalidation endpoint rejects an implausible slug | posts | should |
 | not-found.status | An unknown route responds with a 404 status | not-found | must |
 | post.not-found | An unknown post slug shows the not-found page | not-found | must |
 | post.agentic.not-found | An unknown slug on the agentic view shows the not-found page | not-found | should |
