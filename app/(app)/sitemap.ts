@@ -3,7 +3,6 @@ import { defaultLocale } from "@/helpers/i18n";
 import { getBlogPosts } from "@/repositories/get-blog-posts";
 import { urlOrigin } from "@/runtime";
 
-// biome-ignore lint/style/noDefaultExport: sitemap needs default export
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	// slugs are not localized, so the sitemap lists each post once under the
 	// default locale regardless of the visitor's negotiated language.

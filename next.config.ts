@@ -51,6 +51,11 @@ const nextConfig: NextConfig = {
 			new URL("https://avatars.githubusercontent.com/**"),
 		],
 	},
+	// re2 looks unused because nothing here imports it. It arrives as a plain
+	// dependency of @metascraper/helpers, which get-webembed-metadata.ts pulls
+	// into the server graph, and it is a native binding — leaving it to the
+	// bundler fails the build with "non-ecmascript placeable asset". pino and
+	// pino-pretty are stream-based and equally incompatible.
 	serverExternalPackages: ["re2", "pino", "pino-pretty"],
 	experimental: {
 		viewTransition: true,
