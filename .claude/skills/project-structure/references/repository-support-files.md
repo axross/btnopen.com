@@ -17,6 +17,8 @@ Repository support files define runtime, build, type-checking, test, and observa
 | `.env.example` | Documented environment-variable shape |
 | `.pino-prettyrc` | Local pretty-printing for Pino logs |
 | `e2e/.data/` | Local e2e fixture/runtime data |
+| `.github/workflows/` | Merge gating, production deploy, per-pull-request preview, and the independent reviewer |
+| `.github/dependabot.yml` | Dependabot version-update schedule for the `github-actions` and `npm` ecosystems |
 
 ## Enforced Complexity Budget
 
@@ -45,5 +47,6 @@ Each of these files fails globally rather than locally: a small mistake in one b
 - MUST consult [observability-conventions.md](./observability-conventions.md) before changing instrumentation, Sentry config, or logger setup.
 - MUST refresh the vendor's current documentation before changing a surface it governs, because memory of these goes stale between releases: Next.js for `page.tsx` async props, `generateMetadata`, file-based metadata routes, route handlers, `cacheLife()`, or `next.config.ts`; Payload for collections, fields, access control, admin behavior, or migrations; Sentry for the instrumentation and config files, `captureException()` behavior, source maps, or PII settings; Playwright and Biome for `playwright.config.ts`, snapshot behavior, `biome.jsonc`, or suppression syntax.
 - MUST consult [testing-conventions.md](./testing-conventions.md) before changing `playwright.config.ts` or files under `e2e/`.
+- MUST consult the CI workflow supply chain section of [security-conventions.md](./security-conventions.md) before adding or changing a `uses:` entry under `.github/workflows/`, or an ecosystem in `.github/dependabot.yml`. A third-party action is pinned to a commit SHA here, the pin has a specific shape, and `npm run lint` checks nothing in that directory.
 - MUST treat generated outputs as non-source unless the task explicitly concerns generation, and MUST NOT review them for code style: `.next/`, `node_modules/`, `payload/types.ts` (produced by `payload generate:types`), the Payload-owned routes under `app/(payload)/`, and the migrations under `payload/migrations/`. A migration is worth a finding only when it appears to drop a column or rename a field destructively without a data backfill, per [payload-conventions.md](./payload-conventions.md).
 - MUST treat every skill under `.claude/skills/` except this repository's own project skills as generated: those copies come from the shared skill library, are reproduced by reinstalling, and discard any hand-edit. The agent skill management capability owns the install, lockfile, and refresh workflow; `README.md` records this repository's commands for it.

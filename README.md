@@ -110,7 +110,7 @@ know about it: [`project-structure`](.claude/skills/project-structure/SKILL.md)
 (layout, tiers, boundaries, Payload, observability, and test conventions),
 [`visual-identity`](.claude/skills/visual-identity/SKILL.md) (the site's design
 language and the CSS that encodes it), and
-[`markdown-processing-guidelines`](.claude/skills/markdown-processing-guidelines/SKILL.md)
+[`markdown-pipeline-development`](.claude/skills/markdown-pipeline-development/SKILL.md)
 (the Remark/Rehype/Shiki pipeline). They hold only what the library cannot know
 about this repository; everything else it once maintained was replaced by a
 library counterpart. Every skill states its own scope in its frontmatter, which

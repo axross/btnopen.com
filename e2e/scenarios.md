@@ -31,12 +31,14 @@ carries its `@scenario:<id>` tag. The reporter
 | index.heading-structure | The index page has a single top-level heading and list semantics | index | should |
 | index.published-post | The public index page lists the published seed post and omits the draft one | index | should |
 | index.draft.unauthenticated | A signed-out `?draft=true` request for the index lists only published posts | index | must |
+| index.draft.freshness | A draft edit shows on the next load of the index's `?draft=true` list | index | should |
 | posts.redirect | The /posts route redirects to the index route | posts | should |
 | post.header | A blog post page shows its title, date, cover image, author, and tags | posts | must |
 | post.content | A blog post page renders its Markdown content | posts | must |
 | post.heading-structure | A blog post page has a single top-level heading (the title), with no h1 in the body | posts | should |
 | post.published.public | A published post is publicly reachable and renders its content and seeded comments | posts | should |
 | post.draft.unauthenticated | A signed-out `?draft=true` request for an unpublished post shows the not-found page instead of the draft | posts | must |
+| post.draft.freshness | A draft edit shows on the next load of a post's live-preview URL, in both its title and its body | posts | must |
 | post.embed | A blog post page renders an embed block as a web-embed card linking to the embedded URL | posts | should |
 | post.embed.x | A blog post page renders an `x.com` embed block as a first-party tweet card that links out to the tweet without an iframe or X widget | posts | should |
 | post.banner | A blog post page renders note and warning banner blocks as callouts with a type label and rich-text body | posts | should |
@@ -45,6 +47,7 @@ carries its `@scenario:<id>` tag. The reporter
 | post.agentic | A blog post's agentic view renders its outline Markdown and authoring notes | posts | must |
 | post.agentic.empty | The agentic view shows an empty state when the post has no authoring content | posts | should |
 | post.agentic.draft-fallback | The draft agentic view falls back to the published authoring fields when the draft version has none | posts | should |
+| post.agentic.draft-freshness | A draft edit to the authoring fields shows on the next load of the agentic view | posts | should |
 | post.avatar-fallback | The author avatar falls back to initials when the image fails to load | posts | may |
 | post.table.narrow-fits | A narrow content table fits the reading column | posts | should |
 | post.table.wide-scrolls | A wide content table overflows and scrolls horizontally | posts | should |

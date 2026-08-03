@@ -4,7 +4,7 @@ Apply this reference when writing or reviewing code that logs, throws, catches, 
 
 | Role | This project | Vendor layer |
 | --- | --- | --- |
-| Structured logger | [Pino](https://getpino.io/), via `rootLogger` exported from `app/(app)/_/logger.ts` | none installed — the conventions below are the whole of it |
+| Structured logger | [Pino](https://getpino.io/), via `rootLogger` exported from `shared/logger.ts` | none installed — the conventions below are the whole of it |
 | Error tracker | [Sentry](https://sentry.io/), via `@sentry/nextjs` | the Sentry instrumentation capability |
 | Analytics | [Mixpanel](https://mixpanel.com/) | none installed — see [third-party-services.md](./third-party-services.md) |
 
@@ -15,7 +15,7 @@ Pino has no installed vendor capability, so these conventions are the complete c
 **Example:**
 
 ```typescript
-import { rootLogger } from "@/logger";
+import { rootLogger } from "@/shared/logger";
 
 const logger = rootLogger.child({ module: "📥" });
 
@@ -23,10 +23,29 @@ logger.info({ slug, draft }, "Started fetching post.");
 logger.info({ slug, duration: performance.now() - startedAt }, "Completed fetching post.");
 ```
 
+The `module` emoji identifies a **category of work**, not an individual file. That is what makes `module: 📥` a useful filter: it selects every Payload read at once, which is the question a log search actually asks. Several modules sharing one emoji is the scheme working, not a collision.
+
+| Emoji | Category | Modules today |
+| --- | --- | --- |
+| `📥` | Payload reads through the repository layer | seven of the nine `app/(app)/_/repositories/get-*.ts` — all but `get-tweet.ts` and `get-webembed-metadata.ts`, which have their own rows below — plus `posts/[slug]/comments/_/repositories/get-commentable-blog-post.ts`, for eight in total |
+| `🌏` | outbound web requests to a third party | `app/(app)/_/repositories/get-webembed-metadata.ts` |
+| `𝕏` | tweet retrieval | `app/(app)/_/repositories/get-tweet.ts` |
+| `🧹` | cache invalidation | the three `caches/route.ts` handlers under `posts/` |
+| `💬` | the comment write path | `app/(app)/posts/[slug]/comments/route.ts` |
+| `🔐` | draft authorization | `app/(app)/_/helpers/draft-access.ts` |
+| `👁️` | Payload live preview | `app/(app)/posts/[slug]/_components/payload-live-preview/refresh.ts` |
+| `🖼️` | media and image handling | `app/(app)/_/components/media.tsx` |
+| `👽` | OG image generation | `app/(app)/posts/[slug]/thumbnail.png/route.tsx` |
+| `🚢` | the Payload realm | `payload/helpers/logger.ts` |
+| `🤖` | the Payload MCP server | `payload/helpers/mcp/logger.ts` |
+
+A repository that fetches a third party takes that party's category rather than `📥` — `get-tweet.ts` and `get-webembed-metadata.ts` are the worked examples. `📥` means "read from our own CMS".
+
 **Guidelines:**
 
-- MUST use the `rootLogger` exported from `app/(app)/_/logger.ts` as the base logger; do not construct a `pino()` instance directly.
-- MUST create a child logger per module, setting a `module` field with an emoji identifier — `📥` for data fetching, `🌏` for external web requests, `🖼️` for image handling. Keep the emoji unique per module so log lines filter by module without reading the full path.
+- MUST use the `rootLogger` exported from `shared/logger.ts` as the base logger, imported as `@/shared/logger`; do not construct a `pino()` instance directly.
+- MUST create a child logger per module, setting a `module` field with the emoji of the category that module belongs to, from the table above.
+- MUST keep the emoji unique per **category**, so a filter on one emoji selects that whole category and nothing else. Reuse an existing emoji when the module joins an existing category; add a row to the table when it genuinely starts a new one.
 - MUST end every log message with a period.
 - SHOULD pass context as Pino's first argument and the message as the second, including identifiers (`slug`, `url`, `filename`) and, on completion lines for latency-sensitive operations, a `duration`.
 

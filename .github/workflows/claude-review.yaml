@@ -158,8 +158,21 @@ jobs:
           }
           JSON
 
+      # Third-party action, so it is pinned to a commit SHA rather than the
+      # moving @v1 tag, which its owner can repoint at any commit. This step
+      # hands the action CLAUDE_CODE_OAUTH_TOKEN, and its job holds
+      # CLAUDE_OTEL_EXPORTER_OTLP_HEADERS plus a GITHUB_TOKEN that can write
+      # pull requests, issues, and checks. Dependabot bumps the SHA and its
+      # trailing comment together (.github/dependabot.yml); that comment must
+      # name a RELEASE tag and never the v1 alias, or dependabot-core#14716
+      # bumps the pin to the branch HEAD and leaves the comment stale.
+      # This action's tags are ANNOTATED, so `git ls-remote` returns tag-object
+      # SHAs that will not resolve in `uses:` — peel them
+      # (`refs/tags/v1.0.183^{}`) to get the commit. The full convention is in
+      # the CI workflow supply chain section of project-structure's
+      # security-conventions.md.
       - name: Claude Review
-        uses: anthropics/claude-code-action@v1
+        uses: anthropics/claude-code-action@be7b93b1907a4abad570368f3c74b6fe3807510b # v1.0.183
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           # Run the official code-review plugin against this PR. The plugin

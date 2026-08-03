@@ -35,7 +35,7 @@ Payload owns authentication in this project. Lockout settings are the only brake
 - MUST NOT weaken `payload/collections/user.ts`'s auth settings: `lockTime` below `1000 * 60 * 5` (5 minutes), `maxLoginAttempts` above `5`, or the `auth: { … }` block removed entirely (Payload then defaults to no lockout).
 - MUST NOT add a field to the `users` collection that stores a credential — credentials belong in environment variables, not the database. `users` records also carry email addresses and locked-out state, so `access.read` stays admin-only.
 - MUST NOT read or write session cookies directly through `cookies()` from `next/headers`. Payload owns cookie management; bypassing it desynchronizes auth state. Derive identity from `req.user` on the `getPayload({ config })` context instead.
-- MUST authenticate the caller in a new `route.ts` mutation handler (`POST`, `PUT`, `PATCH`, `DELETE`). The existing `posts/caches/route.ts` `DELETE` revalidation endpoint is unauthenticated; a new endpoint should carry rate-limiting or a shared-secret header, since even cache-busting endpoints can be abused.
+- MUST authenticate or origin-gate the caller in a new `route.ts` mutation handler (`POST`, `PUT`, `PATCH`, `DELETE`). All three `caches/route.ts` `DELETE` revalidation endpoints reject a cross-site caller through `isSameSiteRequest` — the Payload hook's same-process `fetch` carries no browser origin headers and so passes, while a browser-driven cross-site call does not. Their source comments record that a shared-secret header was deferred deliberately, on the grounds that the effect is an idempotent revalidation; an endpoint whose effect is not idempotent does not get to inherit that reasoning.
 
 ## Query Bounds
 

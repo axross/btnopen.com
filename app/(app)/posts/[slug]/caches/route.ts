@@ -4,7 +4,7 @@ import { isSameSiteRequest } from "@/helpers/request-origin";
 import { BlogPostSlug } from "@/shared/blog-post-slug";
 import { rootLogger } from "@/shared/logger";
 
-const logger = rootLogger.child({ module: "🌏" });
+const logger = rootLogger.child({ module: "🧹" });
 
 /**
  * Busts the cached output for one blog post. Called by the blog post collection

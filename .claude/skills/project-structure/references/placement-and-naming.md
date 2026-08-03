@@ -42,7 +42,7 @@ A symbol named or cased unlike its neighbors makes the reader stop to check whet
 **Guidelines:**
 
 - MUST prefix repository functions with `get…` to match their siblings (`getBlogPost`, `getBlogPosts`, `getWebsite`); `fetchBlogPost` is the finding.
-- MUST give each module's child logger a unique emoji, per the project's observability conventions in [observability-conventions.md](./observability-conventions.md); a duplicated emoji makes module filtering ambiguous.
+- MUST set a child logger's `module` emoji from the category table in [observability-conventions.md](./observability-conventions.md) — the emoji names a category of work, so modules doing the same kind of work share one deliberately, and a new emoji means a new category and a new row in that table.
 - SHOULD carry the `Promise` suffix alias on an unresolved async prop at the receiving component, so a promise prop reads as one at its destination.
 - SHOULD prefer full words over opaque abbreviations in new identifiers — `blogPost`, not `bp`; `user`, not `usr`.
 
@@ -54,4 +54,4 @@ A bare literal forces every later reader to reverse-engineer what it means, and 
 
 - MUST source an origin or absolute URL from `urlOrigin`, exported by `app/(app)/_/runtime.ts`, rather than hard-coding `"https://btnopen.com"` or `"http://localhost:3000"`.
 - MUST pair a magic number or string with one of: a design token (`var(--spacing-4)`, per the project's visual-identity conventions), a named constant, or a `// biome-ignore lint/style/noMagicNumbers: <reason>` comment explaining the meaning.
-- MAY use a regex for a tightly bounded match — `mediaSrcRegex` in `app/(app)/_/components/media.tsx` is the established example — rather than forcing `String.prototype.split` or `URL.parse` where they read worse.
+- MAY use a regex for a tightly bounded match — `mediaSrcRegex` in `app/(app)/_/helpers/media-src.ts` is the established example — rather than forcing `String.prototype.split` or `URL.parse` where they read worse.

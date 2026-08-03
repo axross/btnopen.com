@@ -4,6 +4,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { getPayload } from "payload";
 import z from "zod";
 import { canReadDrafts } from "@/helpers/draft-access";
+import { resolvePostReadMode } from "@/helpers/post-read-mode";
 import { config } from "@/payload/config";
 import { rootLogger } from "@/shared/logger";
 import {
@@ -39,7 +40,9 @@ export type BlogPostAgentic = z.infer<typeof BlogPostAgentic>;
 /**
  * Loads a post's authoring fields for the agentic view. `draft: true` is
  * honoured only for a request carrying a Payload session; an unauthenticated
- * caller is served the published fields (or nothing) instead.
+ * caller is served the published fields (or nothing) instead. The published
+ * read is cached and tagged; the draft read is not — see
+ * {@link resolvePostReadMode}.
  */
 export async function getBlogPostAgentic({
 	slug,
@@ -50,13 +53,33 @@ export async function getBlogPostAgentic({
 	locale: PayloadLocale;
 	draft?: boolean;
 }): Promise<BlogPostAgentic | null> {
-	// short-circuits so the published path never reads `headers()` and stays
-	// statically renderable.
-	return await findBlogPostAgentic({
-		slug,
-		locale,
-		draft: draft && (await canReadDrafts()),
+	const mode = resolvePostReadMode({
+		requested: draft,
+		// short-circuits so the published path never reads `headers()` and stays
+		// statically renderable.
+		permitted: draft ? await canReadDrafts() : false,
 	});
+
+	return mode === "draft"
+		? await findBlogPostAgentic({ slug, locale, draft: true })
+		: await findPublishedBlogPostAgentic({ slug, locale });
+}
+
+async function findPublishedBlogPostAgentic({
+	slug,
+	locale,
+}: {
+	slug: string;
+	locale: PayloadLocale;
+}): Promise<BlogPostAgentic | null> {
+	"use cache";
+
+	cacheLife("hours");
+	// shares the post's tag so revalidating a post busts its agentic view across
+	// every locale too.
+	cacheTag(`blog-post:${slug}`);
+
+	return await findBlogPostAgentic({ slug, locale, draft: false });
 }
 
 async function findBlogPostAgentic({
@@ -68,13 +91,6 @@ async function findBlogPostAgentic({
 	locale: PayloadLocale;
 	draft: boolean;
 }): Promise<BlogPostAgentic | null> {
-	"use cache";
-
-	cacheLife("hours");
-	// shares the post's tag so revalidating a post busts its agentic view across
-	// every locale too.
-	cacheTag(`blog-post:${slug}`);
-
 	logger.info({ slug, draft }, "Started fetching post agentic fields.");
 
 	const payload = await getPayload({ config });
