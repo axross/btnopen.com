@@ -1,6 +1,6 @@
 # Security Conventions
 
-Apply this reference when touching environment access, an outbound fetch, a route handler's input, or an upload. The OWASP-level discipline belongs to the application security capability; this records where each of those surfaces actually lives in this repository and what already guards it.
+Apply this reference when touching environment access, an outbound fetch, a route handler's input, an upload, or a `uses:` entry in a GitHub Actions workflow. The OWASP-level discipline belongs to the application security capability; this records where each of those surfaces actually lives in this repository and what already guards it.
 
 ## Environment Access
 
@@ -52,6 +52,23 @@ Everything crossing into the app from a URL, a request body, or an upload is att
 - MUST parse Payload documents through the matching schema in `shared/payload-types.ts` before returning them from a route handler or server action; returning them directly leaks fields the consumer never requested, including draft-only ones.
 - MUST validate attribute values in a new custom MDAST directive, as `remarkEmbeds` does with `URL.canParse(href)`.
 - MUST sanitize uploaded filenames in a new upload collection by adding `createUploadFilenameHook(<collection label>)` from `payload/helpers/upload-filename.ts` to its `beforeOperation` hooks. It rewrites `req.file.name` to `${uuid}.${ext}`; reuse it rather than copying the body, so the sanitization keeps one definition to audit.
+
+## CI Workflow Supply Chain
+
+A `uses:` entry is someone else's code running in a job that holds this repository's tokens. Six distinct actions are referenced across `.github/workflows/`; the two third-party ones are pinned to a commit SHA, and GitHub's own `actions/*` are deliberately not.
+
+The exposure is per **job**, not per repository. `peter-evans/create-pull-request` runs in `check-and-deploy.yaml`'s `e2e-tests` job, whose `GITHUB_TOKEN` carries `contents: write` — and `actions/checkout` persists that token into `.git/config`, so every later step in the job can read it. A push to `main` is what starts the production deploy, which makes that token, rather than any deployment credential, the escalation worth closing. `anthropics/claude-code-action` runs in `claude-review.yaml` beside `CLAUDE_CODE_OAUTH_TOKEN` and `CLAUDE_OTEL_EXPORTER_OTLP_HEADERS`. No third-party action shares a job with `VERCEL_TOKEN`, `LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN`, `BLOB_PAYLOAD_READ_WRITE_TOKEN`, or `TURSO_API_TOKEN`: every job holding those runs `actions/*` exclusively, and that separation is worth preserving on its own.
+
+The installed application security capability has no rule about any of this — its supply-chain reference covers the dependency manifest and the lockfile only, and names no CI surface. What follows is this repository's own convention, decided in axross/btnopen.com#181, not a restatement of an installed one.
+
+**Guidelines:**
+
+- MUST pin a new third-party `uses:` entry to a full 40-hex commit SHA with the release tag as a trailing comment — `uses: owner/action@<sha> # v1.2.3` — and MUST give it an automated bump path in `.github/dependabot.yml` rather than leaving the pin to rot.
+- MUST take that SHA from a **release** tag rather than a floating major alias, and MUST peel an annotated tag to its commit (`git ls-remote <url> 'refs/tags/v1.2.3^{}'`) — a tag-object SHA is not usable in `uses:`. Dependabot bumps a SHA that carries no direct release tag to the containing branch's HEAD and leaves the version comment stale (`dependabot/dependabot-core#14716`).
+- MUST NOT write a pinned SHA that was not resolved with `git ls-remote`; a wrong SHA fails at the run that first uses it, never at lint time.
+- MUST leave GitHub's own `actions/*` entries on their major tags, and MUST NOT report that as a review finding — it is the recorded decision, not an oversight.
+- MUST NOT rely on `npm run lint` to check anything under `.github/`. Biome's `files.ignoreUnknown` leaves the directory unprocessed — `biome check .github/` reports zero files — so a YAML error there survives a green lint. Parse the file explicitly instead.
+- MUST NOT assume GitHub's immutable releases make a tag reference safe: they protect the tag cut for a release, never a floating `v1`-style alias, which the upstream owner repoints on every release.
 
 ## Dependencies
 
