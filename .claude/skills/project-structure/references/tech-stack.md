@@ -9,6 +9,7 @@ This website is built as a Next.js App Router app backed by Payload CMS. Markdow
 | Markdown processing | [Remark](https://remark.js.org/) |
 | Syntax highlighting | [Shiki](https://shiki.style/) |
 | Comment authentication | [Clerk](https://clerk.com/) |
+| Internationalization | [next-intl](https://next-intl.dev/) |
 | Unit testing | [Jest](https://jestjs.io/) |
 | End-to-end testing | [Playwright](https://playwright.dev/) |
 | Formatting and linting | [Biome](https://biomejs.dev/) |

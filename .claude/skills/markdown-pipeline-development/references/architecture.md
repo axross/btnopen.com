@@ -9,6 +9,7 @@ The pipeline is defined in `app/(app)/_/helpers/markdown.ts` and follows this or
 ```
 Markdown string
   → remarkParse          (markdown → MDAST)
+  → remarkCjkFriendly    (CJK-aware emphasis boundaries)
   → remarkDirective      (enables directive syntax)
   → remarkPartialGfm     (GFM: strikethrough, tables)
   → remarkEmbeds         (link paragraphs → embed directives)
