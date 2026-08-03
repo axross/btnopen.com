@@ -12,7 +12,10 @@ export function Header({ className, ...props }: ComponentProps<"header">) {
 				<Logo className={css.logo} />
 			</Link>
 
-			<LanguageSwitcher className={css.switcher} />
+			<LanguageSwitcher
+				className={css.switcher}
+				data-testid="language-switcher"
+			/>
 		</header>
 	);
 }

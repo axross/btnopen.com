@@ -74,12 +74,65 @@
 			}
 		}
 
+		/* The brush-mark backdrop behind the portrait. The artwork lives at
+		   /images/brush-grunge.svg and is painted by masking it over a box the
+		   palette colours, so the mark follows --accent-9 in both schemes
+		   instead of baking a colour into the asset.
+
+		   Each layer paints the mark twice: ::before is the offset shadow copy
+		   and ::after the mark itself, in that order because ::after paints
+		   over ::before — which is how the SVG's own feDropShadow composited
+		   them. Neither pseudo element carries the layer's background-color, so
+		   the glitch layers' opaque plate stays a full rectangle rather than
+		   being clipped to the mark's silhouette. */
 		.portraitGrunge,
 		.portraitGrungeGlitchFirst,
 		.portraitGrungeGlitchSecond {
+			/* the artwork's own viewBox, so the box ratio and the shadow offset
+			   below read in the units the SVG was authored in. */
+			--grunge-artwork-width: 763;
+			--grunge-artwork-height: 932;
+			/* feDropShadow's dx was in those user units rather than pixels, so
+			   the CSS copy is offset by the same fraction of the box and keeps
+			   scaling with the viewport the way the filter did. */
+			--grunge-shadow-offset: 2;
+
 			position: absolute;
 			top: 0;
+			left: 0;
+			aspect-ratio: var(--grunge-artwork-width) / var(--grunge-artwork-height);
 			color: var(--accent-9);
+		}
+
+		.portraitGrunge::before,
+		.portraitGrunge::after,
+		.portraitGrungeGlitchFirst::before,
+		.portraitGrungeGlitchFirst::after,
+		.portraitGrungeGlitchSecond::before,
+		.portraitGrungeGlitchSecond::after {
+			content: "";
+			position: absolute;
+			inset: 0;
+			mask-image: url("/images/brush-grunge.svg");
+			mask-size: 100% 100%;
+			mask-repeat: no-repeat;
+		}
+
+		.portraitGrunge::before,
+		.portraitGrungeGlitchFirst::before,
+		.portraitGrungeGlitchSecond::before {
+			background-color: var(--grunge-outline, transparent);
+			translate: calc(
+				var(--grunge-shadow-offset) /
+				var(--grunge-artwork-width) *
+				100%
+			);
+		}
+
+		.portraitGrunge::after,
+		.portraitGrungeGlitchFirst::after,
+		.portraitGrungeGlitchSecond::after {
+			background-color: currentColor;
 		}
 
 		.portraitGrunge {
@@ -90,6 +143,7 @@
 		.portraitGrungeGlitchFirst {
 			right: calc(var(--size-2) * -1);
 			--grunge-outline: oklch(from var(--accent-9) l c calc(h - 32));
+			--grunge-shadow-offset: -2;
 			background-color: var(--neutral-0);
 			animation: noise-fast var(--duration-glitch-fast) infinite linear
 				alternate-reverse;
@@ -99,6 +153,7 @@
 		.portraitGrungeGlitchSecond {
 			right: var(--size-2);
 			--grunge-outline: oklch(from var(--accent-9) l c calc(h + 32));
+			--grunge-shadow-offset: 2;
 			background-color: var(--neutral-0);
 			animation: noise-slow var(--duration-glitch-slow) infinite linear
 				alternate-reverse;

@@ -3,41 +3,24 @@ import "./(app)/globals.css";
 import "./(app)/variables.css";
 
 import type { Metadata } from "next";
-import {
-	IBM_Plex_Sans,
-	IBM_Plex_Sans_JP,
-	JetBrains_Mono,
-} from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { type JSX, Suspense } from "react";
 import { NotFoundContent } from "@/components/not-found-content";
+import { fontVariablesClassName } from "@/fonts";
 import { getActiveLocale, htmlLangByLocale } from "@/helpers/i18n";
+import { getWebsite } from "@/repositories/get-website";
 import { Header } from "./(app)/_components/header";
 
-const ibmPlexSans = IBM_Plex_Sans({
-	variable: "--font-ibm-plex-sans",
-	subsets: ["latin", "latin-ext"],
-	weight: "variable",
-	display: "block",
-});
+export async function generateMetadata(): Promise<Metadata> {
+	const website = await getWebsite({ locale: await getActiveLocale() });
 
-const ibmPlexSansJp = IBM_Plex_Sans_JP({
-	variable: "--font-ibm-plex-sans-jp",
-	weight: ["400", "700"],
-	display: "block",
-});
-
-const jetBrainsMono = JetBrains_Mono({
-	variable: "--font-jetbrains-mono",
-	subsets: ["latin", "latin-ext"],
-	weight: "variable",
-	display: "block",
-});
-
-export const metadata: Metadata = {
-	title: "Not Found | <btn open />",
-};
+	// this route bypasses the root layout, so its `%s | <site name>` template
+	// never applies here and the title is composed in full. with no website
+	// record there is no name to compose from, so no title is emitted at all —
+	// the same answer the root layout gives that case.
+	return website ? { title: `Not Found | ${website.name}` } : {};
+}
 
 export default function GlobalNotFound(): JSX.Element {
 	// the document depends on the negotiated locale (a request-time cookie
@@ -56,9 +39,7 @@ async function NotFoundDocument(): Promise<JSX.Element> {
 
 	return (
 		<html lang={htmlLangByLocale[locale]}>
-			<body
-				className={`${ibmPlexSans.variable} ${ibmPlexSansJp.variable} ${jetBrainsMono.variable}`}
-			>
+			<body className={fontVariablesClassName}>
 				<NextIntlClientProvider>
 					<Header data-testid="header" />
 
