@@ -13,23 +13,23 @@ export default async function globalSetup(): Promise<void> {
 	// available here regardless of module import order.
 	nextEnv.loadEnvConfig(process.cwd());
 
-	// Only prepare Clerk testing tokens when both dev-instance keys are present.
-	// Unconfigured runs (local without setup, PR CI, forked previews) skip Clerk
-	// entirely, mirroring the app's `isClerkAvailable` gate and the env-gated
-	// comment-auth tests — so the suite stays green without Clerk credentials.
-	// Both keys are required because clerkSetup() needs the secret key too.
-	// biome-ignore-start lint/style/noProcessEnv: env-driven gate mirroring runtime `isClerkAvailable`
-	const clerkConfigured =
-		process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
-		process.env.CLERK_SECRET_KEY;
-	// biome-ignore-end lint/style/noProcessEnv: env-driven gate mirroring runtime `isClerkAvailable`
-
-	if (!clerkConfigured) {
+	// Only prepare Clerk testing tokens when Clerk is configured — the app's
+	// `isClerkAvailable` signal, the publishable key. Unconfigured runs (local
+	// without setup, PR CI, forked previews) skip Clerk entirely, so the suite
+	// stays green without Clerk credentials.
+	//
+	// This deliberately does not read CLERK_SECRET_KEY (security-conventions.md
+	// forbids reading it anywhere in the repo): clerkSetup() reads and validates
+	// the secret from the environment itself and throws if it is missing or a
+	// production key, so the secret stays the library's concern.
+	// biome-ignore lint/style/noProcessEnv: env-driven gate mirroring runtime `isClerkAvailable`
+	if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
 		return;
 	}
 
-	// Reads NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY + CLERK_SECRET_KEY and stores the
-	// fetched testing token on process.env.CLERK_TESTING_TOKEN. It throws on a
-	// production secret key, pinning the suite to a development instance.
+	// clerkSetup() reads NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY + CLERK_SECRET_KEY from
+	// the environment and stores the fetched testing token on
+	// process.env.CLERK_TESTING_TOKEN. It throws on a production secret key,
+	// pinning the suite to a development instance.
 	await clerkSetup();
 }

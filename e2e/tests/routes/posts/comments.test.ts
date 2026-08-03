@@ -17,14 +17,15 @@ const forbiddenStatus = 403;
 const avatarFallbackMinSizePx = 32;
 const avatarFallbackSquareTolerancePx = 1;
 
-// The Clerk-authenticated reader tests need the full test configuration — both
-// Clerk dev-instance keys and the +clerk_test reader — so they are defined only
-// when all three are provided (there is no default reader email). Without them
-// these scenarios stay uncovered rather than failing on missing configuration.
+// The Clerk-authenticated reader tests need Clerk mounted (the publishable key)
+// and the +clerk_test reader (TEST_CLERK_READER_EMAIL, no default) to sign in, so
+// they are defined only when both are set; without them these scenarios stay
+// uncovered rather than failing on missing configuration. The Clerk secret key is
+// validated by clerkSetup() in global-setup, not read here — security-
+// conventions.md forbids reading CLERK_SECRET_KEY anywhere in the repo.
 // biome-ignore-start lint/style/noProcessEnv: env-driven gate mirroring the CI test config
 const canRunClerkReaderTests = Boolean(
 	process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
-		process.env.CLERK_SECRET_KEY &&
 		process.env.TEST_CLERK_READER_EMAIL,
 );
 // biome-ignore-end lint/style/noProcessEnv: env-driven gate mirroring the CI test config
