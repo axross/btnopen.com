@@ -37,7 +37,7 @@
 		}
 
 		.name {
-			min-width: 0;
+			min-inline-size: 0;
 			overflow-wrap: anywhere;
 			color: var(--neutral-11);
 			font-size: var(--text-md);
@@ -45,7 +45,7 @@
 		}
 
 		.handle {
-			min-width: 0;
+			min-inline-size: 0;
 			overflow-wrap: anywhere;
 		}
 

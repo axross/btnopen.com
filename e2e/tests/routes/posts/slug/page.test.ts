@@ -492,8 +492,8 @@ test(
 						"@type": "ImageObject",
 						"@id": `${testInfo.project.use.baseURL}/posts/${blogPost.slug}/thumbnail.png`,
 						url: `${testInfo.project.use.baseURL}/posts/${blogPost.slug}/thumbnail.png`,
-						height: "1200",
-						width: "630",
+						width: "1200",
+						height: "630",
 					}),
 					isPartOf: expect.objectContaining({
 						"@type": "Blog",
@@ -561,6 +561,27 @@ test(
 				"content",
 				`${testInfo.project.use.baseURL}/posts/${blogPost.slug}`,
 			);
+		});
+
+		await test.step("Verify the og:image declaration matches the served thumbnail", async () => {
+			await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+				"content",
+				`${testInfo.project.use.baseURL}/posts/${blogPost.slug}/thumbnail.png`,
+			);
+
+			await expect(
+				page.locator('meta[property="og:image:width"]'),
+			).toHaveAttribute("content", "1200");
+
+			await expect(
+				page.locator('meta[property="og:image:height"]'),
+			).toHaveAttribute("content", "630");
+		});
+
+		await test.step("Verify og:image:alt describes the post", async () => {
+			await expect(
+				page.locator('meta[property="og:image:alt"]'),
+			).toHaveAttribute("content", blogPost.title);
 		});
 	},
 );

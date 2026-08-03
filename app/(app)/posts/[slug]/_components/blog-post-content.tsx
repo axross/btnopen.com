@@ -1,4 +1,4 @@
-import type { JSX } from "react";
+import type { ComponentProps, JSX } from "react";
 import { getActiveLocale } from "@/helpers/i18n";
 import { getBlogPostMarkdown } from "@/repositories/get-blog-post-markdown";
 import { MarkdownContent } from "./markdown-content";
@@ -6,7 +6,8 @@ import { MarkdownContent } from "./markdown-content";
 export async function BlogPostContent({
 	slug: slugPromise,
 	draft: draftPromise,
-}: {
+	...props
+}: Omit<ComponentProps<"div">, "children"> & {
 	slug: Promise<string>;
 	draft?: Promise<boolean>;
 }): Promise<JSX.Element | null> {
@@ -21,5 +22,5 @@ export async function BlogPostContent({
 		return null;
 	}
 
-	return <MarkdownContent markdown={markdown} />;
+	return <MarkdownContent markdown={markdown} locale={locale} {...props} />;
 }

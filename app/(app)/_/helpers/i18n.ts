@@ -1,5 +1,5 @@
 import { enUS, ja, type Locale } from "date-fns/locale";
-import { PayloadLocale } from "@/repositories/payload-types";
+import { PayloadLocale } from "@/shared/payload-types";
 
 /**
  * Locales the front end can serve, aligned one-to-one with the Payload

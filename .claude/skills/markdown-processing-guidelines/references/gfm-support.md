@@ -34,7 +34,7 @@ GFM table nodes (`table`, `tableRow`, `tableCell`) are **standard MDAST node typ
 
 ## Table Rendering
 
-Tables are fully rendered end-to-end. The table family (`table`, `thead`, `tbody`, `tr`, `th`, `td`) is mapped in `defaultComponents` in `app/(app)/_/components/markdown.tsx`; `table` and `th` have dedicated React components (horizontal-scroll wrapper, forced `scope="col"`) and the rest map to their native tags with CSS-module class injection. See [react-component-mapping.md › Table Family and the `tableWrapper` Sentinel](./react-component-mapping.md#table-family-and-the-tablewrapper-sentinel) for the mapping mechanics and the sentinel-key pattern.
+Tables are fully rendered end-to-end. The table family (`table`, `thead`, `tbody`, `tr`, `th`, `td`) is mapped in `defaultComponents` in `app/(app)/_/components/markdown.tsx`; `table` and `th` have dedicated React components (horizontal-scroll wrapper, forced `scope="col"`) and the rest map to their native tags with CSS-module class injection. See [react-component-mapping.md › Table Family and the `tableWrapper` Sentinel](./react-component-mapping.md#table-family-and-type-only-sentinel-keys) for the mapping mechanics and the sentinel-key pattern.
 
 **Guidelines:**
 

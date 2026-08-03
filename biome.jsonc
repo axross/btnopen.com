@@ -17,9 +17,15 @@
 			"!payload/types.ts",
 			"!payload/migrations",
 			"!app/(payload)/admin/importMap.js",
-			// Workflow-tool scripts use top-level return, which Biome cannot
-			// parse; they are hand-formatted to the tab-indent house style.
-			"!.claude/workflows"
+			// Agent skills installed from the shared library are generated
+			// artifacts reproduced byte-for-byte by `npx skills` (see README's
+			// "Agent skills" section). Formatting or linting them would rewrite
+			// upstream-owned files to the house style and diverge them from
+			// their source, so the whole skill root is excluded — the validator
+			// scripts these skills ship are standalone Node CLIs written to
+			// their own conventions, and the rest of the tree is Markdown that
+			// Biome does not process anyway.
+			"!.claude/skills"
 		]
 	},
 	"formatter": {
@@ -69,16 +75,6 @@
 				"useParseIntRadix": "off",
 				"noReactPropAssignments": "error",
 				"noRenderReturnValue": "error",
-				"noRestrictedElements": {
-					"level": "error",
-					"options": {
-						"elements": {
-							"TouchableHighlight": "this is not deprecated but marked as not future-proof. Use Pressable instead.",
-							"TouchableOpacity": "this is not deprecated but marked as not future-proof. Use Pressable instead.",
-							"TouchableWithoutFeedback": "this is not deprecated but marked as not future-proof. Use Pressable instead."
-						}
-					}
-				},
 				"noUndeclaredDependencies": "error",
 				"noUndeclaredVariables": {
 					"level": "error",
@@ -128,7 +124,7 @@
 				"useSortedClasses": {
 					"level": "warn",
 					"options": {
-						"functions": ["clsx", "cva", "tw", "tw.*"]
+						"functions": ["clsx"]
 					}
 				}
 			},
@@ -170,17 +166,6 @@
 				"noParameterProperties": "error",
 				"noProcessEnv": "warn",
 				"noRestrictedGlobals": "error",
-				"noRestrictedImports": {
-					"level": "error",
-					"options": {
-						"paths": {
-							"react-native": {
-								"importNames": ["StyleSheet"],
-								"message": "Use StyleSheet from react-native-unistyles instead."
-							}
-						}
-					}
-				},
 				"noRestrictedTypes": {
 					"level": "error",
 					"options": {
@@ -316,12 +301,7 @@
 			}
 		},
 		{
-			"includes": [
-				"**/*.spec.ts",
-				"**/*.spec.tsx",
-				"jest/**/*.ts",
-				"jest/**/*.tsx"
-			],
+			"includes": ["**/*.spec.ts", "**/*.spec.tsx"],
 			"linter": {
 				"rules": {
 					"complexity": {
@@ -338,23 +318,12 @@
 			}
 		},
 		{
-			"includes": ["app/**/*.tsx", "app/sitemap.ts", "app/robots.ts"],
+			"includes": ["app/**/*.tsx", "app/**/sitemap.ts", "app/**/robots.ts"],
 			"linter": {
 				"rules": {
 					"style": {
 						// off because route components requires default exports
 						"noDefaultExport": "off"
-					}
-				}
-			}
-		},
-		{
-			"includes": ["app/**/opengraph-image.tsx"],
-			"linter": {
-				"rules": {
-					"correctness": {
-						// off because opengraph-image.tsx needs some nodejs modules
-						"noNodejsModules": "off"
 					}
 				}
 			}
@@ -373,11 +342,11 @@
 			}
 		},
 		{
-			"includes": ["*.config.ts", "*.config.mts", "*.config.cts", "codegen.ts"],
+			"includes": ["*.config.ts", "*.config.mts", "*.config.cts"],
 			"linter": {
 				"rules": {
 					"style": {
-						// off because graphql codegen config requires default exports
+						// off because config files are loaded from their default export
 						"noDefaultExport": "off"
 					}
 				}

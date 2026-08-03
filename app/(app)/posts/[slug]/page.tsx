@@ -8,14 +8,12 @@ import {
 	getActiveLocale,
 	openGraphLocaleByLocale,
 } from "@/helpers/i18n";
+import { thumbnailHeight, thumbnailWidth } from "@/helpers/thumbnail";
 import { type BlogPostDetail, getBlogPost } from "@/repositories/get-blog-post";
 import { getBlogPostAgentic } from "@/repositories/get-blog-post-agentic";
 import { getWebsite } from "@/repositories/get-website";
 import { urlOrigin } from "@/runtime";
-import {
-	BlogPostAgenticView,
-	BlogPostAgenticViewLoading,
-} from "./_components/blog-post-agentic-view";
+import { BlogPostAgenticView } from "./_components/blog-post-agentic-view";
 import { BlogPostContent } from "./_components/blog-post-content";
 import { BlogPostHeader } from "./_components/blog-post-header";
 import { BlogPostingJsonLd } from "./_components/blog-posting-json-ld";
@@ -37,11 +35,7 @@ export default async function BlogPostPage({
 	const draft = Promise.resolve(draftParam === "true");
 
 	if (agentic === "true") {
-		return (
-			<Suspense fallback={<BlogPostAgenticViewLoading />}>
-				<BlogPostAgenticView slug={slug} draft={draft} />
-			</Suspense>
-		);
+		return <BlogPostAgenticView slug={slug} draft={draft} data-testid="page" />;
 	}
 
 	const preview = searchParams.then((p) => p.preview === "true");
@@ -73,7 +67,7 @@ export default async function BlogPostPage({
 			</article>
 
 			<Suspense>
-				<BlogPostingJsonLd blogPost={blogPost} draft={draft} />
+				<BlogPostingJsonLd blogPost={blogPost} />
 			</Suspense>
 
 			<Suspense>
@@ -161,7 +155,7 @@ export async function generateMetadata({
 	}
 
 	const [website, blogPost] = await Promise.all([
-		getWebsite({ draft: isDraft, locale }),
+		getWebsite({ locale }),
 		getBlogPost({ slug, draft: isDraft, locale }),
 	]);
 
@@ -189,8 +183,9 @@ export async function generateMetadata({
 			images: [
 				{
 					url: `${urlOrigin}/posts/${blogPost.slug}/thumbnail.png`,
-					width: 1200,
-					height: 630,
+					width: thumbnailWidth,
+					height: thumbnailHeight,
+					alt: blogPost.title,
 				},
 			],
 			type: "article",

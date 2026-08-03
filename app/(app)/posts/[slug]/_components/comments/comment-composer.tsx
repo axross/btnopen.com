@@ -4,9 +4,16 @@ import { SignInButton, useUser } from "@clerk/nextjs";
 import { clsx } from "clsx";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { type FormEvent, type JSX, useState } from "react";
+import {
+	type ComponentProps,
+	type FormEvent,
+	type HTMLAttributes,
+	type JSX,
+	useState,
+} from "react";
+import { GitHubMarkIcon } from "@/components/social-icon";
 import { COMMENT_CSRF_HEADER } from "@/helpers/comment-csrf";
-import { MAX_COMMENT_BODY_LENGTH } from "@/helpers/comments";
+import { MAX_COMMENT_BODY_LENGTH } from "@/shared/comments";
 import { CommentAvatar } from "./comment-avatar";
 import css from "./comment-composer.module.css";
 
@@ -21,66 +28,44 @@ type SubmitState = "idle" | "submitting" | "submitted" | "error";
  *
  * Only mounted when Clerk is configured — its Clerk hooks require the provider.
  */
-export function CommentComposer({ slug }: { slug: string }): JSX.Element {
+export function CommentComposer({
+	slug,
+	className,
+	...props
+	// the composer roots a <div>, a <p>, or a <form> depending on sign-in and
+	// submit state, so the pass-through is typed against `HTMLElement` rather than
+	// committing to whichever branch happens to render.
+}: Omit<HTMLAttributes<HTMLElement>, "children"> & {
+	slug: string;
+}): JSX.Element {
 	const t = useTranslations("comments");
 	const { isLoaded, isSignedIn, user } = useUser();
-	// `mode="modal"` opens the sign-in on the current route without navigating to
-	// a sign-in page, so Clerk never records a `redirect_url`; after the GitHub
-	// OAuth round-trip it would otherwise fall back to its default of `/`. pinning
-	// the redirect to the current path returns the reader to the post they were on
-	// (`signUp…` covers first-time account creation via the same button).
-	const pathname = usePathname();
 	const [body, setBody] = useState("");
 	const [state, setState] = useState<SubmitState>("idle");
 
 	if (!isLoaded) {
 		return (
-			<div className={css.composer} data-testid="composer" aria-busy="true" />
+			<div
+				className={clsx(css.composer, className)}
+				data-testid="composer"
+				aria-busy="true"
+				{...props}
+			/>
 		);
 	}
 
 	if (!isSignedIn) {
-		return (
-			<div className={css.composer} data-testid="composer">
-				<div className={css.composerField}>
-					{/* a non-interactive preview of the composer: signed-out readers see
-					 * the textarea they'd get, with the sign-in button in the same
-					 * bottom-right slot the submit button occupies once signed in.
-					 * decorative only — hidden from assistive tech and the tab order so
-					 * the sign-in button is the sole control. */}
-					<textarea
-						className={clsx(css.textarea, css.textareaPreview)}
-						placeholder={t("placeholder")}
-						readOnly
-						aria-hidden="true"
-						tabIndex={-1}
-						data-testid="textarea-preview"
-					/>
-
-					<div className={clsx(css.composerRow, css.composerRowEnd)}>
-						<SignInButton
-							mode="modal"
-							forceRedirectUrl={pathname}
-							signUpForceRedirectUrl={pathname}
-						>
-							<button
-								type="button"
-								className={clsx(css.submit, css.signIn)}
-								data-testid="sign-in"
-							>
-								<GitHubIcon className={css.signInIcon} />
-								{t("sign-in")}
-							</button>
-						</SignInButton>
-					</div>
-				</div>
-			</div>
-		);
+		return <SignedOutComposer className={className} {...props} />;
 	}
 
 	if (state === "submitted") {
 		return (
-			<p className={css.hint} role="status" data-testid="submitted">
+			<p
+				className={clsx(css.hint, className)}
+				role="status"
+				data-testid="submitted"
+				{...props}
+			>
 				{t("submitted")}
 			</p>
 		);
@@ -148,9 +133,10 @@ export function CommentComposer({ slug }: { slug: string }): JSX.Element {
 
 	return (
 		<form
-			className={css.composer}
+			className={clsx(css.composer, className)}
 			onSubmit={handleSubmit}
 			data-testid="composer"
+			{...props}
 		>
 			<CommentAvatar
 				src={user.imageUrl}
@@ -189,16 +175,58 @@ export function CommentComposer({ slug }: { slug: string }): JSX.Element {
 	);
 }
 
-function GitHubIcon({ className }: { className?: string }): JSX.Element {
+/**
+ * A non-interactive preview of the composer for signed-out readers: the textarea
+ * they would get, with the sign-in button in the same bottom-right slot the
+ * submit button occupies once signed in. The textarea is decorative — hidden
+ * from assistive tech and the tab order so the sign-in button is the sole
+ * control.
+ */
+function SignedOutComposer({
+	className,
+	...props
+}: Omit<ComponentProps<"div">, "children">): JSX.Element {
+	const t = useTranslations("comments");
+	// `mode="modal"` opens the sign-in on the current route without navigating to
+	// a sign-in page, so Clerk never records a `redirect_url`; after the GitHub
+	// OAuth round-trip it would otherwise fall back to its default of `/`. pinning
+	// the redirect to the current path returns the reader to the post they were on
+	// (`signUp…` covers first-time account creation via the same button).
+	const pathname = usePathname();
+
 	return (
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			viewBox="0 0 24 24"
-			fill="currentColor"
-			aria-hidden="true"
-			className={className}
+		<div
+			className={clsx(css.composer, className)}
+			data-testid="composer"
+			{...props}
 		>
-			<path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2Z" />
-		</svg>
+			<div className={css.composerField}>
+				<textarea
+					className={clsx(css.textarea, css.textareaPreview)}
+					placeholder={t("placeholder")}
+					readOnly
+					aria-hidden="true"
+					tabIndex={-1}
+					data-testid="textarea-preview"
+				/>
+
+				<div className={clsx(css.composerRow, css.composerRowEnd)}>
+					<SignInButton
+						mode="modal"
+						forceRedirectUrl={pathname}
+						signUpForceRedirectUrl={pathname}
+					>
+						<button
+							type="button"
+							className={clsx(css.submit, css.signIn)}
+							data-testid="sign-in"
+						>
+							<GitHubMarkIcon className={css.signInIcon} />
+							{t("sign-in")}
+						</button>
+					</SignInButton>
+				</div>
+			</div>
+		</div>
 	);
 }

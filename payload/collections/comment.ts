@@ -1,7 +1,7 @@
 import type { CollectionConfig, PayloadRequest } from "payload";
-import { isReplyToReply, MAX_COMMENT_BODY_LENGTH } from "@/helpers/comments";
-import { urlOrigin } from "@/runtime";
+import { isReplyToReply, MAX_COMMENT_BODY_LENGTH } from "@/shared/comments";
 import { logger } from "../helpers/logger";
+import { urlOrigin } from "../helpers/runtime";
 
 /**
  * Reader comments on blog posts. Reader-created rows are always top-level and
@@ -194,6 +194,10 @@ async function bustCommentCache(
 			depth: 0,
 			req,
 			select: { slug: true },
+			// `slug` is not localized, so this changes nothing today. it is stated
+			// anyway because a localized field added to the select above would
+			// otherwise start resolving under whatever locale the request carries.
+			locale: "ja-JP",
 		});
 
 		const slug = (post as { slug?: string } | null)?.slug;

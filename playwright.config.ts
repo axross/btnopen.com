@@ -8,7 +8,34 @@ const isCI = !!process.env.CI;
 const baseUrl = process.env.PLAYWRIGHT_BASE_URL;
 const vercelAutomationBypassSecret =
 	process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+// compared by equality so an empty value is safely non-production: `.env.example`
+// is copied verbatim to `.env.local` in cloud sessions, so a blank line must not
+// flip the suite onto the slower production server.
+const isProductionServer = process.env.PLAYWRIGHT_SERVER_MODE === "production";
 // biome-ignore-end lint/style/noProcessEnv: config needs to access env-vars
+
+// the suite serves itself two ways locally: from a production build when
+// PLAYWRIGHT_SERVER_MODE is "production" — the mode the Check and Deploy
+// workflow sets, so `main` exercises cacheComponents and reactCompiler the way
+// production does — and from `next dev` otherwise, which is what every local and
+// pull-request run uses.
+const localWebServer = isProductionServer
+	? {
+			command: "npm run build && npm run start",
+			url: "http://localhost:3000",
+			// this command builds before it serves, which overruns playwright's 60s
+			// default on a cold cache.
+			timeout: 300_000,
+			// never adopt an already-running server here. a stray `npm run dev` on
+			// the same port would be served instead, and the run would pass while
+			// proving nothing about the production build this mode exists to test.
+			reuseExistingServer: false,
+		}
+	: {
+			command: "npm run dev",
+			url: "http://localhost:3000",
+			reuseExistingServer: true,
+		};
 
 export default defineConfig({
 	testDir: "./e2e/tests",
@@ -74,6 +101,13 @@ export default defineConfig({
 			testMatch: "**/teardown.test.ts",
 			repeatEach: 1,
 		},
+		// two device projects, one per responsive tier the design defines a
+		// structural transformation across (see
+		// .claude/skills/visual-identity/references/responsive-layout.md): `pixel`
+		// at 412px for mobile, `tablet` at 712px for tablet. both run on chromium,
+		// the only engine CI installs. the desktop tier is deliberately uncovered —
+		// it changes density, not structure, and a third project would add another
+		// serialized pass for that alone.
 		{
 			name: "pixel",
 			// the setup/teardown files belong to the setup/cleanup projects; keep
@@ -82,27 +116,16 @@ export default defineConfig({
 			use: devices["Pixel 7"],
 			dependencies: ["setup"],
 		},
-		// disabled these per-browser projects for now to reduce CI costs
-		// {
-		// 	name: "iphone",
-		// 	use: { ...devices["iPhone 15"] },
-		// 	dependencies: ["setup"],
-		// },
-		// {
-		// 	name: "ipad",
-		// 	use: { ...devices["iPad (gen 11)"] },
-		// 	dependencies: ["setup"],
-		// },
-		// {
-		// 	name: "desktop-chrome",
-		// 	use: { ...devices["Desktop Chrome"] },
-		// 	dependencies: ["setup"],
-		// },
-		// {
-		// 	name: "desktop-edge",
-		// 	use: { ...devices["Desktop Edge"] },
-		// 	dependencies: ["setup"],
-		// },
+		{
+			name: "tablet",
+			testIgnore: ["**/setup.test.ts", "**/teardown.test.ts"],
+			// Galaxy Tab S4 is 712x1138 and chromium-backed. the iPad descriptors sit
+			// in the same tier but default to webkit, which would mean installing a
+			// second engine and reading every future snapshot diff as a mix of engine
+			// and width differences.
+			use: devices["Galaxy Tab S4"],
+			dependencies: ["setup"],
+		},
 	],
 	webServer:
 		isCI && baseUrl
@@ -111,9 +134,5 @@ export default defineConfig({
 					url: baseUrl,
 					reuseExistingServer: true,
 				}
-			: {
-					command: "npm run dev",
-					url: "http://localhost:3000",
-					reuseExistingServer: true,
-				},
+			: localWebServer,
 });

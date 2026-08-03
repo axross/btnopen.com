@@ -1,0 +1,748 @@
+<!--
+  Wireframe Kit (low fidelity) — a project-agnostic breadboard UI vocabulary
+  ==========================================================================
+  A self-contained, theme-aware template for low-fidelity wireframes of any
+  client app — mobile OR web/desktop. It carries grey breadboard primitives, a
+  component library, two device canvases (a mobile phone frame and a browser
+  window), screen archetypes for both, and an options-comparison layout.
+  Regions, hierarchy, and flow only — no brand color, no final type.
+  Copy this file to a scratch location, delete the parts you are not presenting,
+  fill it for the screen(s) at hand, and publish/export it. See the wireframe-design skill.
+  Self-contained: no external fetches; system font stacks only.
+  Fill-in points are marked with "FILL:" comments throughout.
+-->
+<title>Wireframe Kit — breadboard UI</title>
+<style>
+  /* =========================================================================
+     PAGE CHROME (theme-aware) — the surface the mockups sit on.
+     This is general page craft, NOT the mocked app's tokens. Keep it neutral
+     so the device mockups read as the subject. The breadboard greys below are
+     deliberately colorless — the wireframe shows regions, not brand.
+     ========================================================================= */
+  :root {
+    --ground: #f4f5f7;
+    --panel: #ffffff;
+    --ink: #1c2024;
+    --ink-soft: #60646c;
+    --line: #d9d9e0;
+    --accent: #0588f0;
+    --danger: #dc3e42;
+    --anno: #8e4ec6; /* annotation layer — reserved; distinct from accent & danger */
+    --radius: 14px;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+    /* Breadboard greys — WIREFRAME MODE only. Deliberately colorless. */
+    --wire-fill: #e7e8ec;
+    --wire-fill-2: #dfe1e6;
+    --wire-line: #b9bcc4;
+    --wire-ink: #7a7f88;
+    --wire-solid: #c3c6cd;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #0e0f11; --panel: #17181b; --ink: #edeef0; --ink-soft: #b0b4ba;
+      --line: #2c2e33; --accent: #3b9eff; --danger: #ec5d5e; --anno: #bf7af0;
+      --wire-fill: #232529; --wire-fill-2: #2a2c31; --wire-line: #43464d;
+      --wire-ink: #8b8f98; --wire-solid: #3a3d43;
+    }
+  }
+  /* A host may stamp data-theme on <html> when the viewer toggles the theme
+     (e.g. the Claude Code Artifact sandbox); these overrides must win in both directions. */
+  :root[data-theme="light"] {
+    --ground: #f4f5f7; --panel: #ffffff; --ink: #1c2024; --ink-soft: #60646c;
+    --line: #d9d9e0; --accent: #0588f0; --danger: #dc3e42; --anno: #8e4ec6;
+    --wire-fill: #e7e8ec; --wire-fill-2: #dfe1e6; --wire-line: #b9bcc4;
+    --wire-ink: #7a7f88; --wire-solid: #c3c6cd;
+  }
+  :root[data-theme="dark"] {
+    --ground: #0e0f11; --panel: #17181b; --ink: #edeef0; --ink-soft: #b0b4ba;
+    --line: #2c2e33; --accent: #3b9eff; --danger: #ec5d5e; --anno: #bf7af0;
+    --wire-fill: #232529; --wire-fill-2: #2a2c31; --wire-line: #43464d;
+    --wire-ink: #8b8f98; --wire-solid: #3a3d43;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink); font-family: var(--sans); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 44px 24px 80px; }
+  a { color: var(--accent); }
+
+  header.masthead { margin-bottom: 8px; }
+  .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin: 0 0 12px; }
+  h1 { font-size: clamp(26px, 3.4vw, 38px); line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.02em; text-wrap: balance; }
+  .lede { max-width: 64ch; color: var(--ink-soft); font-size: 16px; margin: 0; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 10px; margin-top: 18px; font-family: var(--mono); font-size: 12px; }
+  .tag { border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px; color: var(--ink-soft); background: var(--panel); }
+  .tag strong { color: var(--ink); font-weight: 600; }
+
+  h2.section { font-size: 13px; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-soft); margin: 56px 0 20px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+  .lead-note { max-width: 66ch; color: var(--ink-soft); font-size: 14.5px; margin: -6px 0 22px; }
+  .lead-note code { font-family: var(--mono); font-size: 12.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; }
+
+  .grid-shared { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 20px; }
+  .grid-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 22px; }
+
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+  /* .card.rec highlights the (Recommended) option in an options round. */
+  .card.rec { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .card-head h3 { margin: 0; font-size: 17px; letter-spacing: -0.01em; }
+  .card-head .opt { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+  .badge { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; background: var(--accent); border-radius: 999px; padding: 3px 9px; white-space: nowrap; }
+  .shared-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); margin: 0; }
+  .note { margin: 0; font-size: 14px; color: var(--ink-soft); }
+  .note b { color: var(--ink); font-weight: 600; }
+  .note code { font-family: var(--mono); font-size: 12px; }
+  /* Rationale / Trade-offs / Responsive labels for each option. */
+  .note.rationale::before { content: "Rationale"; display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--wire-ink); margin-bottom: 3px; }
+  .note.tradeoff::before { content: "Trade-offs"; display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--wire-ink); margin-bottom: 3px; }
+  .note.responsive::before { content: "Responsive"; display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--wire-ink); margin-bottom: 3px; }
+  .caption { text-align: center; font-family: var(--mono); font-size: 10.5px; color: var(--wire-ink); letter-spacing: 0.04em; margin: 2px 0 0; }
+  /* =========================================================================
+     WIREFRAME MODE — grey breadboard phone + primitives.
+     A wireframe shows places, affordances, and flow — regions and their
+     arrangement — not fonts, exact spacing, or final copy.
+     ========================================================================= */
+  .phone { --pad: 12px; background: var(--ground); border: 1.5px solid var(--wire-line); border-radius: 22px; padding: 10px; width: 100%; max-width: 260px; margin: 0 auto; aspect-ratio: 9 / 17.5; display: flex; flex-direction: column; overflow: hidden; }
+  .screen { flex: 1; background: var(--panel); border-radius: 13px; border: 1px solid var(--wire-line); display: flex; flex-direction: column; overflow: hidden; position: relative; }
+  .navbar { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-bottom: 1px solid var(--wire-line); font-family: var(--mono); font-size: 11px; color: var(--wire-ink); }
+  .navbar .title { color: var(--ink); font-weight: 600; }
+  .navbar .back::before { content: "\2039"; font-size: 15px; }
+  .navbar .spacer { flex: 1; }
+  .body { flex: 1; padding: var(--pad); display: flex; flex-direction: column; gap: 9px; overflow: hidden; }
+  .body.center { justify-content: center; align-items: center; text-align: center; gap: 11px; }
+
+  /* Breadboard primitives ------------------------------------------------- */
+  .w-mark { width: 46px; height: 46px; border-radius: 12px; background: var(--wire-fill-2); border: 1px solid var(--wire-line); }        /* app mark / icon */
+  .w-h { height: 12px; border-radius: 4px; background: var(--wire-solid); }                                                             /* heading / label */
+  .w-h.lg { height: 15px; width: 70%; }
+  .w-t { height: 8px; border-radius: 4px; background: var(--wire-fill-2); }                                                             /* body text line */
+  .w-t.w80 { width: 80%; } .w-t.w60 { width: 60%; } .w-t.w40 { width: 40%; }
+  .center .w-h, .center .w-t { align-self: center; }
+  .center .w-h.lg { width: 62%; } .center .w-t.w80 { width: 78%; } .center .w-t.w60 { width: 58%; }
+
+  .field { display: flex; flex-direction: column; gap: 4px; }                                                                          /* input field */
+  .field .lbl { height: 7px; width: 34%; border-radius: 3px; background: var(--wire-fill-2); }
+  .field .box { height: 26px; border-radius: 7px; border: 1px dashed var(--wire-line); background: var(--wire-fill); display: flex; align-items: center; padding: 0 8px; }  /* dashed = input */
+  .field .box .ph { height: 7px; width: 55%; border-radius: 3px; background: var(--wire-line); opacity: 0.65; }
+  .field .box.filled .ph { width: 40%; background: var(--wire-ink); opacity: 0.5; }
+
+  .btn { height: 30px; border-radius: 8px; background: var(--wire-solid); display: flex; align-items: center; justify-content: center; margin-top: 2px; }  /* solid = button */
+  .btn.primary { background: var(--accent); }                                                                                          /* accent = primary/active */
+  .btn .cap { height: 8px; width: 42%; border-radius: 3px; background: var(--panel); opacity: 0.9; }
+  .btn.primary .cap { background: #fff; opacity: 0.95; }
+
+  .err { display: flex; align-items: center; gap: 6px; }                                                                               /* error row */
+  .err .dot { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--danger); flex: none; }
+  .err .ln { height: 7px; width: 62%; border-radius: 3px; background: var(--danger); opacity: 0.55; }
+
+  .tabbar { display: flex; border-top: 1px solid var(--wire-line); padding: 7px 4px 5px; }                                             /* tab bar */
+  .tabbar .tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .tabbar .tab .ic { width: 16px; height: 16px; border-radius: 5px; background: var(--wire-fill-2); border: 1px solid var(--wire-line); }
+  .tabbar .tab .tl { height: 6px; width: 60%; border-radius: 3px; background: var(--wire-fill-2); }
+  .tabbar .tab.active .ic { background: var(--accent); border-color: var(--accent); }
+  .tabbar .tab.active .tl { background: var(--accent); }
+
+  .group { display: flex; flex-direction: column; gap: 6px; }                                                                          /* settings / list group */
+  .group .gh { height: 8px; width: 30%; border-radius: 3px; background: var(--wire-solid); margin-left: 2px; }
+  .rows { border: 1px solid var(--wire-line); border-radius: 10px; overflow: hidden; background: var(--wire-fill); }
+  .row { display: flex; align-items: center; gap: 8px; padding: 9px 10px; border-bottom: 1px solid var(--wire-line); }
+  .row:last-child { border-bottom: 0; }
+  .row .av { width: 20px; height: 20px; border-radius: 50%; background: var(--wire-fill-2); border: 1px solid var(--wire-line); flex: none; }
+  .row .ic { width: 16px; height: 16px; border-radius: 4px; background: var(--wire-fill-2); border: 1px solid var(--wire-line); flex: none; }
+  .row .col { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+  .row .col .a { height: 7px; width: 60%; border-radius: 3px; background: var(--wire-solid); }
+  .row .col .b { height: 6px; width: 44%; border-radius: 3px; background: var(--wire-fill-2); }
+  .row.danger .lbl { height: 8px; width: 34%; border-radius: 3px; background: var(--danger); opacity: 0.6; }                            /* danger = destructive */
+
+  .modal-scrim { position: absolute; inset: 0; background: color-mix(in srgb, var(--ink) 32%, transparent); }                          /* modal sheet */
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: var(--panel); border-top-left-radius: 16px; border-top-right-radius: 16px; border: 1px solid var(--wire-line); border-bottom: 0; padding: 8px 12px 12px; display: flex; flex-direction: column; gap: 8px; }
+  .grabber { width: 34px; height: 4px; border-radius: 2px; background: var(--wire-line); align-self: center; margin-bottom: 2px; }
+  .sheet-head { display: flex; align-items: center; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--wire-ink); }
+  .sheet-head .t { color: var(--ink); font-weight: 600; font-size: 11px; }
+  .dim { opacity: 0.4; }
+  .inline-card { border: 1px solid var(--wire-line); border-radius: 11px; background: var(--wire-fill); padding: 10px; display: flex; flex-direction: column; gap: 8px; width: 100%; }
+
+  /* Breadboard (words) — places, affordances, connection lines; no pixels. */
+  .breadboard { display: flex; flex-direction: column; gap: 4px; font-family: var(--mono); font-size: 11px; width: 100%; }
+  .breadboard .place { border: 1px solid var(--wire-line); border-radius: 8px; background: var(--wire-fill); padding: 7px 9px; display: flex; flex-direction: column; gap: 4px; }
+  .breadboard .place-name { color: var(--ink); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }  /* underlined = a place */
+  .breadboard .afford { color: var(--wire-ink); }                                                                          /* [ affordances ] a user acts on */
+  .breadboard .conn { color: var(--wire-ink); padding-left: 9px; }                                                         /* connection line to the next place */
+  .breadboard .conn::before { content: "\2193  "; }                                                                        /* ↓ primary connection */
+  .breadboard .conn.alt { border-left: 2px dashed var(--wire-line); margin-left: 3px; padding-left: 6px; font-style: italic; }  /* dashed = alternative / edge path */
+  .breadboard .conn.alt::before { content: "\21B3  "; }                                                                    /* ↳ branch */
+
+  /* Wireflow — mini screens joined by control-rooted arrows. */
+  .wireflow { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; width: 100%; }
+  .flowarrow { position: relative; flex: none; width: 52px; height: 22px; }                                               /* solid = primary path */
+  .flowarrow::before { content: ""; position: absolute; left: 2px; right: 8px; top: 10px; border-top: 2px solid var(--wire-line); }
+  .flowarrow::after { content: ""; position: absolute; right: 6px; top: 5px; width: 7px; height: 7px; border-top: 2px solid var(--wire-line); border-right: 2px solid var(--wire-line); transform: rotate(45deg); }
+  .flowarrow.alt::before { border-top-style: dashed; }                                                                     /* dashed = alternative / edge path */
+  .flowarrow .lbl { position: absolute; left: 0; right: 0; top: -6px; text-align: center; font-family: var(--mono); font-size: 8px; color: var(--wire-ink); }  /* the control that triggers it */
+
+  /* Annotation layer — reserved --anno color, used nowhere else. */
+  .anno-wrap { display: flex; gap: 12px; align-items: flex-start; width: 100%; }
+  .anno-notes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .anno { display: flex; gap: 7px; align-items: flex-start; }
+  .anno-mark { flex: none; width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--anno); color: var(--anno); font-family: var(--mono); font-size: 9px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; }
+  .anno-note { font-size: 11px; color: var(--anno); line-height: 1.42; }
+  .anno-mark.pin { position: absolute; z-index: 2; background: var(--panel); }                                            /* leader marker pinned onto a region */
+
+  /* Legend: name every primitive so a reviewer can read the breadboard. */
+  .legend { display: flex; flex-wrap: wrap; gap: 14px 22px; margin-top: 16px; font-size: 13px; color: var(--ink-soft); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .sw { width: 26px; height: 15px; border-radius: 4px; border: 1px solid var(--wire-line); }
+  .sw.solid { background: var(--wire-solid); } .sw.dashed { background: var(--wire-fill); border-style: dashed; }
+  .sw.accent { background: var(--accent); border-color: var(--accent); } .sw.danger { background: transparent; border-color: var(--danger); }
+  .sw.anno { background: transparent; border-color: var(--anno); }
+  /* Component-library layout: flexbox so cards grow to fill each row. */
+  .el-grid { display: flex; flex-wrap: wrap; gap: 14px; }
+  .el-grid > .el-card { flex: 1 1 240px; }
+  .el-card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .el-tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+  .el-stage { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 54px; padding: 10px; background: var(--wire-fill); border: 1px solid var(--wire-line); border-radius: 8px; }
+  .el-stage > .w100 { width: 100%; }
+  .el-card.wide { flex: 2 1 500px; } .el-card.wide3 { flex: 3 1 760px; }
+  .el-sub { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 26px 0 12px; }
+  /* ---- wireframe component specimens (breadboard greys) ---- */
+  .wc-lbl { height: 7px; border-radius: 3px; background: var(--wire-fill-2); }
+  .wc-solid { height: 8px; border-radius: 3px; background: var(--wire-solid); }
+  .wc-check { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--wire-line); background: var(--wire-fill); position: relative; flex: none; }
+  .wc-check.on { background: var(--accent); border-color: var(--accent); }
+  .wc-check.on::after { content: ""; position: absolute; left: 5px; top: 2px; width: 4px; height: 8px; border: solid var(--panel); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+  .wc-radio { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--wire-line); background: var(--wire-fill); display: inline-flex; align-items: center; justify-content: center; flex: none; }
+  .wc-radio.on { border-color: var(--accent); }
+  .wc-radio.on::after { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+  .wc-opt { display: flex; align-items: center; gap: 8px; } .wc-opt .wc-lbl { width: 60%; }
+  .wc-switch { width: 34px; height: 20px; border-radius: 999px; background: var(--wire-line); position: relative; flex: none; }
+  .wc-switch.on { background: var(--accent); }
+  .wc-switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--panel); }
+  .wc-switch.on::after { left: 16px; }
+  .wc-slider { height: 18px; display: flex; align-items: center; }
+  .wc-slider .track { height: 4px; border-radius: 2px; background: var(--wire-line); flex: 1; position: relative; }
+  .wc-slider .fill { position: absolute; left: 0; top: 0; height: 100%; width: 55%; background: var(--accent); border-radius: 2px; }
+  .wc-slider .thumb { position: absolute; left: 55%; top: 50%; transform: translate(-50%, -50%); width: 14px; height: 14px; border-radius: 50%; background: var(--panel); border: 1.5px solid var(--accent); }
+  .wc-prog { height: 6px; border-radius: 3px; background: var(--wire-line); overflow: hidden; width: 100%; }
+  .wc-prog .fill { height: 100%; width: 62%; background: var(--accent); }
+  .wc-av { width: 32px; height: 32px; border-radius: 50%; background: var(--wire-fill-2); border: 1px solid var(--wire-line); flex: none; }
+  .wc-avstack { display: flex; } .wc-avstack .wc-av + .wc-av { margin-left: -9px; box-shadow: 0 0 0 2px var(--panel); }
+  .wc-badge { display: inline-flex; align-items: center; justify-content: center; height: 20px; min-width: 34px; padding: 0 10px; border-radius: 999px; background: var(--wire-solid); }
+  .wc-badge .t { height: 6px; width: 22px; border-radius: 3px; background: var(--wire-ink); opacity: 0.7; }
+  .wc-badge.count { min-width: 20px; width: 20px; height: 20px; padding: 0; } .wc-badge.count .t { width: 8px; }
+  .wc-div { height: 1px; background: var(--wire-line); width: 100%; }
+  .wc-divlbl { display: flex; align-items: center; gap: 8px; width: 100%; } .wc-divlbl .wc-div { flex: 1; } .wc-divlbl .t { height: 7px; width: 30px; border-radius: 3px; background: var(--wire-fill-2); }
+  .wc-skel { display: flex; flex-direction: column; gap: 7px; width: 100%; } .wc-skel .b { height: 9px; border-radius: 4px; background: linear-gradient(90deg, var(--wire-fill-2), var(--wire-line), var(--wire-fill-2)); } .wc-skel .b.w60 { width: 60%; }
+  .wc-textarea { height: 52px; border-radius: 7px; border: 1px dashed var(--wire-line); background: var(--wire-fill); width: 100%; }
+  .wc-select { height: 28px; border-radius: 7px; border: 1px solid var(--wire-line); background: var(--wire-fill); display: flex; align-items: center; justify-content: space-between; padding: 0 9px; width: 100%; }
+  .wc-select .ph { height: 7px; width: 45%; border-radius: 3px; background: var(--wire-line); opacity: 0.6; }
+  .wc-cv { width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid var(--wire-ink); flex: none; }
+  .wc-hint { font-family: var(--mono); font-size: 9px; color: var(--wire-ink); letter-spacing: 0.03em; }
+
+  .wc-menu { border: 1px solid var(--wire-line); border-radius: 9px; background: var(--panel); padding: 5px; display: flex; flex-direction: column; gap: 3px; box-shadow: 0 8px 18px rgba(0,0,0,0.12); width: 100%; }
+  .wc-menu .mi { height: 10px; border-radius: 3px; background: var(--wire-fill-2); } .wc-menu .mi.w70 { width: 70%; } .wc-menu .mi.w50 { width: 50%; } .wc-menu .sep { height: 1px; background: var(--wire-line); margin: 2px 0; }
+  .wc-card { border: 1px solid var(--wire-line); border-radius: 10px; background: var(--panel); overflow: hidden; display: flex; flex-direction: column; width: 100%; }
+  .wc-card .media { height: 38px; background: var(--wire-fill-2); }
+  .wc-card .cbody { padding: 9px; display: flex; flex-direction: column; gap: 6px; }
+  .wc-card .cfoot { padding: 9px; border-top: 1px solid var(--wire-line); display: flex; gap: 6px; }
+  .wc-alert { display: flex; gap: 8px; align-items: flex-start; border: 1px solid var(--wire-line); border-radius: 8px; background: var(--wire-fill); padding: 9px; width: 100%; }
+  .wc-alert .ic { width: 14px; height: 14px; border-radius: 4px; background: var(--wire-solid); flex: none; margin-top: 1px; }
+  .wc-alert.danger { border-color: var(--danger); } .wc-alert.danger .ic { background: var(--danger); opacity: 0.6; }
+  .wc-alert .col { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+  .wc-tabseg { display: flex; gap: 10px; border-bottom: 1px solid var(--wire-line); width: 100%; }
+  .wc-tabseg .t { padding-bottom: 7px; } .wc-tabseg .t .l { height: 8px; width: 30px; border-radius: 3px; background: var(--wire-fill-2); }
+  .wc-tabseg .t.on { border-bottom: 2px solid var(--accent); margin-bottom: -1px; } .wc-tabseg .t.on .l { background: var(--wire-solid); }
+  .wc-pagerow { display: flex; gap: 5px; align-items: center; }
+  .wc-pagerow .pg { width: 24px; height: 24px; border-radius: 6px; border: 1px solid var(--wire-line); background: var(--wire-fill); } .wc-pagerow .pg.on { background: var(--accent); border-color: var(--accent); }
+  .wc-tipwrap { display: flex; flex-direction: column; align-items: center; width: 100%; }
+  .wc-tip { position: relative; background: var(--wire-ink); border-radius: 8px; padding: 10px 14px; width: min(160px, 100%); margin-bottom: 15px; }
+  .wc-tip .l { height: 8px; width: 100%; border-radius: 3px; background: #fff; opacity: 0.9; }
+  /* diamond tail — same background as the bubble, so tip and balloon are one colour */
+  .wc-tip::after { content: ""; position: absolute; left: 50%; bottom: -5px; width: 13px; height: 13px; background: var(--wire-ink); border-radius: 2px; transform: translateX(-50%) rotate(45deg); }
+  .wc-tip-target { width: 30px; height: 30px; border-radius: 8px; background: var(--wire-fill-2); border: 1px solid var(--wire-line); }
+  .wc-toaststack { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+  .wc-toast { border: 1px solid var(--wire-line); border-radius: 9px; background: var(--panel); padding: 9px; display: flex; gap: 8px; align-items: center; box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+  .wc-toast .ic { width: 14px; height: 14px; border-radius: 50%; background: var(--accent); flex: none; } .wc-toast .col { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+  .wc-table { border: 1px solid var(--wire-line); border-radius: 8px; overflow: hidden; width: 100%; }
+  .wc-table .thead, .wc-table .trow { display: flex; align-items: center; gap: 8px; padding: 7px 9px; border-bottom: 1px solid var(--wire-line); } .wc-table .trow:last-child { border-bottom: 0; }
+  .wc-table .thead { background: var(--wire-fill); }
+  .wc-table .cell { height: 7px; border-radius: 3px; background: var(--wire-fill-2); flex: 1; } .wc-table .thead .cell { background: var(--wire-solid); } .wc-table .cell.sm { flex: 0 0 22px; }
+  .wc-table .cbx { width: 14px; height: 14px; border-radius: 4px; border: 1px solid var(--wire-line); flex: none; }
+  .wc-cal { border: 1px solid var(--wire-line); border-radius: 8px; background: var(--panel); padding: 8px; width: 100%; }
+  .wc-cal .chead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; } .wc-cal .chead .wc-lbl { width: 46px; }
+  .wc-cal .cgrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .wc-cal .d { aspect-ratio: 1; border-radius: 4px; background: var(--wire-fill-2); } .wc-cal .d.on { background: var(--accent); }
+  .wc-carousel { display: flex; gap: 8px; align-items: center; width: 100%; }
+  .wc-carousel .slide { flex: none; width: 62%; height: 54px; border-radius: 8px; background: var(--wire-fill-2); border: 1px solid var(--wire-line); }
+  .wc-carousel .peek { flex: none; width: 16%; height: 42px; border-radius: 8px; background: var(--wire-fill); border: 1px solid var(--wire-line); }
+  .wc-dots { display: flex; gap: 4px; justify-content: center; margin-top: 7px; } .wc-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--wire-line); } .wc-dots i.on { background: var(--accent); }
+  .wc-btngroup { display: inline-flex; } .wc-btngroup .b { height: 28px; padding: 0 14px; background: var(--wire-solid); border-right: 1.5px solid var(--panel); } .wc-btngroup .b:first-child { border-radius: 8px 0 0 8px; } .wc-btngroup .b:last-child { border-radius: 0 8px 8px 0; border-right: 0; } .wc-btngroup .b.on { background: var(--accent); }
+  .wc-msgs { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+  .wc-bubble { max-width: 76%; border-radius: 12px; padding: 8px 9px; display: flex; flex-direction: column; gap: 4px; }
+  .wc-bubble.in { background: var(--wire-fill-2); align-self: flex-start; border-bottom-left-radius: 3px; }
+  .wc-bubble.out { background: var(--accent); align-self: flex-end; border-bottom-right-radius: 3px; }
+  .wc-bubble .l { height: 6px; width: 70px; border-radius: 3px; background: var(--wire-line); } .wc-bubble.out .l { background: var(--panel); opacity: 0.85; }
+
+  /* device-context specimens (overlays / mobile nav) live in a mini frame */
+  .wc-frame { position: relative; height: 150px; background: var(--panel); border: 1px solid var(--wire-line); border-radius: 10px; overflow: hidden; width: 100%; }
+  .wc-frame .dimbody { padding: 10px; display: flex; flex-direction: column; gap: 6px; opacity: 0.4; }
+  .wc-frame .scrim { position: absolute; inset: 0; background: color-mix(in srgb, var(--ink) 30%, transparent); }
+  .wc-dialog { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 80%; background: var(--panel); border: 1px solid var(--wire-line); border-radius: 10px; padding: 11px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 12px 26px rgba(0,0,0,0.25); }
+  .wc-dialog .actions { display: flex; gap: 6px; justify-content: flex-end; margin-top: 2px; }
+  .wc-sheet { position: absolute; left: 0; right: 0; bottom: 0; background: var(--panel); border: 1px solid var(--wire-line); border-bottom: 0; border-radius: 14px 14px 0 0; padding: 8px 11px 12px; display: flex; flex-direction: column; gap: 8px; }
+  .wc-sheet .grab { width: 34px; height: 4px; border-radius: 2px; background: var(--wire-line); align-self: center; margin-bottom: 2px; }
+  .wc-btabs { position: absolute; left: 0; right: 0; bottom: 0; display: flex; border-top: 1px solid var(--wire-line); background: var(--panel); padding: 7px 4px 5px; }
+  .wc-btabs .tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .wc-btabs .tab .ic { width: 16px; height: 16px; border-radius: 5px; background: var(--wire-fill-2); border: 1px solid var(--wire-line); } .wc-btabs .tab .tl { height: 6px; width: 60%; border-radius: 3px; background: var(--wire-fill-2); }
+  .wc-btabs .tab.on .ic { background: var(--accent); border-color: var(--accent); } .wc-btabs .tab.on .tl { background: var(--accent); }
+  /* ---- component state variants (labeled rows within a card) ---- */
+  .wc-states { display: flex; flex-direction: column; gap: 9px; width: 100%; }
+  .wc-strow { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+  .wc-stlab { font-family: var(--mono); font-size: 9px; letter-spacing: 0.03em; text-transform: uppercase; color: var(--wire-ink); flex: none; width: 56px; }
+  .wc-strow > :not(.wc-stlab) { flex: 1; min-width: 0; }
+  .wc-strow.inline > :not(.wc-stlab) { flex: none; }
+  .is-disabled { opacity: 0.4; }
+  .field .box.focus { border-style: solid; border-color: var(--accent); }
+  .field .box.invalid { border-color: var(--danger); }
+  .wc-check.mixed { background: var(--accent); border-color: var(--accent); }
+  .wc-check.mixed::after { content: ""; position: absolute; left: 4px; right: 4px; top: 8px; height: 2px; width: auto; background: var(--panel); border: 0; transform: none; }
+  .wc-badge.accent { background: var(--accent); } .wc-badge.accent .t { background: #fff; opacity: 0.95; }
+  .wc-badge.danger { background: var(--danger); } .wc-badge.danger .t { background: #fff; opacity: 0.95; }
+  .btn.danger { background: var(--danger); opacity: 0.6; }
+  .wc-pagerow .pg.is-disabled { opacity: 0.4; }
+  .wc-table .trow.sel { background: color-mix(in srgb, var(--accent) 12%, var(--panel)); }
+  .wc-table .cbx.on { background: var(--accent); border-color: var(--accent); }
+  /* variant axes: importance / tone / size / loading */
+  .btn.ghost { background: transparent; border: 1px solid var(--wire-line); } .btn.ghost .cap { background: var(--wire-ink); opacity: 0.7; }
+  .btn.sm { height: 24px; } .btn.lg { height: 36px; }
+  .wc-spin { width: 12px; height: 12px; border-radius: 50%; border: 2px solid color-mix(in srgb, var(--panel) 55%, transparent); border-top-color: transparent; }
+  .wc-av.sm { width: 24px; height: 24px; } .wc-av.lg { width: 42px; height: 42px; }
+  .wc-av.fallback { display: flex; align-items: center; justify-content: center; } .wc-av.fallback::after { content: ""; width: 12px; height: 9px; border-radius: 2px; background: var(--wire-ink); opacity: 0.5; }
+  .wc-badge.outline { background: transparent; border: 1px solid var(--wire-line); } .wc-badge.outline .t { background: var(--wire-ink); opacity: 0.6; }
+
+  /* ---- web / desktop canvas (browser window) + web navigation ---- */
+  .browser { background: var(--panel); border: 1.5px solid var(--wire-line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; width: 100%; }
+  .browser .chrome { display: flex; align-items: center; gap: 9px; padding: 7px 10px; border-bottom: 1px solid var(--wire-line); background: var(--ground); }
+  .browser .chrome .dots { display: flex; gap: 5px; } .browser .chrome .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--wire-line); display: inline-block; }
+  .browser .chrome .url { flex: 1; height: 15px; border-radius: 999px; background: var(--wire-fill); border: 1px solid var(--wire-line); }
+  .browser .win { position: relative; display: flex; flex-direction: column; min-height: 120px; }
+  .browser .win .scrim { position: absolute; inset: 0; background: color-mix(in srgb, var(--ink) 30%, transparent); }
+  .web-topnav { display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-bottom: 1px solid var(--wire-line); }
+  .web-topnav .brand { width: 26px; height: 12px; border-radius: 3px; background: var(--wire-solid); flex: none; }
+  .web-topnav .links { display: flex; gap: 12px; flex: 1; } .web-topnav .links .nl { width: 34px; height: 7px; border-radius: 3px; background: var(--wire-fill-2); } .web-topnav .links .nl.on { background: var(--accent); }
+  .web-topnav .actions { display: flex; gap: 7px; align-items: center; }
+  .web-shell { display: flex; flex: 1; min-height: 100px; }
+  .web-shell .side { width: 32%; border-right: 1px solid var(--wire-line); padding: 10px; display: flex; flex-direction: column; gap: 8px; background: var(--wire-fill); }
+  .web-shell .side .si { height: 8px; border-radius: 3px; background: var(--wire-fill-2); } .web-shell .side .si.on { background: var(--accent); }
+  .web-shell .main { flex: 1; padding: 11px; display: flex; flex-direction: column; gap: 9px; }
+  .web-drawer { position: absolute; top: 0; right: 0; bottom: 0; width: 58%; background: var(--panel); border-left: 1px solid var(--wire-line); padding: 11px; display: flex; flex-direction: column; gap: 8px; }
+
+  footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: 13px; }
+  footer code { font-family: var(--mono); font-size: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; }
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <p class="eyebrow">Wireframe Kit · Low fidelity · Project-agnostic</p>
+    <h1>Breadboard vocabulary for client-app wireframes</h1>
+    <p class="lede">Grey <b>breadboard</b> building blocks for wireframing any client app — <b>mobile or web/desktop</b>. A component library, two device canvases (a phone frame and a browser window), screen archetypes for both, and an options-comparison layout. Regions, hierarchy, and flow only; no brand color or final type. Delete the parts you are not presenting, fill in your screen(s), and publish or export the result. See the wireframe-design skill.</p>
+    <div class="meta">
+      <span class="tag"><strong>Fidelity</strong> wireframe · breadboard</span>
+      <span class="tag"><strong>Canvases</strong> mobile · web/desktop</span>
+      <span class="tag">Self-contained · theme-aware</span>
+    </div>
+  </header>
+
+  <h2 class="section">Wireframe component library</h2>
+  <p class="lead-note">The common UI components client apps share (the shadcn-UI / Material vocabulary), at breadboard fidelity (regions, hierarchy, flow — no color or final type). Each shows its common states and variant axes for clarity — states (default, filled, focus, invalid, selected, disabled), and where they apply importance (primary/secondary/tertiary), tone (neutral/accent/destructive), size (sm/md/lg), and loading. <!-- FILL: keep only the components, states, and variants your screen(s) use. --></p>
+
+  <p class="el-sub">Foundations</p>
+  <div class="el-grid">
+    <div class="el-card"><span class="el-tag">heading / label</span><div class="el-stage"><div class="w-h lg w100"></div></div></div>
+    <div class="el-card"><span class="el-tag">body text</span><div class="el-stage"><div class="w100" style="display:flex;flex-direction:column;gap:6px"><div class="w-t w80"></div><div class="w-t w60"></div></div></div></div>
+    <div class="el-card wide"><span class="el-tag">avatar</span><div class="el-stage"><div class="wc-states">
+      <div class="wc-strow inline"><span class="wc-stlab">sizes</span><span class="wc-av sm"></span><span class="wc-av"></span><span class="wc-av lg"></span></div>
+      <div class="wc-strow inline"><span class="wc-stlab">fallback</span><span class="wc-av fallback"></span></div>
+      <div class="wc-strow inline"><span class="wc-stlab">group</span><span class="wc-avstack"><span class="wc-av"></span><span class="wc-av"></span><span class="wc-av"></span></span></div>
+    </div></div></div>
+    <div class="el-card"><span class="el-tag">badge — tone / style</span><div class="el-stage"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="wc-badge"><span class="t"></span></span><span class="wc-badge accent"><span class="t"></span></span><span class="wc-badge danger"><span class="t"></span></span><span class="wc-badge outline"><span class="t"></span></span><span class="wc-badge count accent"><span class="t"></span></span></div></div></div>
+    <div class="el-card"><span class="el-tag">divider</span><div class="el-stage"><div class="w100" style="display:flex;flex-direction:column;gap:12px"><span class="wc-div"></span><span class="wc-divlbl"><span class="wc-div"></span><span class="t"></span><span class="wc-div"></span></span></div></div></div>
+    <div class="el-card"><span class="el-tag">skeleton</span><div class="el-stage"><div class="wc-skel"><span class="b"></span><span class="b"></span><span class="b w60"></span></div></div></div>
+    <div class="el-card wide"><span class="el-tag">canvas — mobile &amp; web</span><div class="el-stage"><div style="display:flex;gap:14px;width:100%;align-items:flex-start">
+      <div style="display:flex;flex-direction:column;gap:5px;align-items:center;flex:none"><div class="phone" style="max-width:78px;aspect-ratio:9/16;padding:5px;border-radius:12px"><div class="screen" style="border-radius:8px"><div class="navbar" style="padding:4px 6px"></div><div class="body" style="padding:5px;gap:4px"><span class="w-t w80"></span><span class="w-t w60"></span></div><div class="tabbar" style="padding:3px"><div class="tab"><span class="ic" style="width:9px;height:9px"></span></div><div class="tab"><span class="ic" style="width:9px;height:9px"></span></div></div></div></div><span class="wc-hint">mobile</span></div>
+      <div style="display:flex;flex-direction:column;gap:5px;align-items:center;flex:1"><div class="browser"><div class="chrome"><span class="dots"><i></i><i></i><i></i></span><span class="url"></span></div><div class="win" style="min-height:0"><div class="web-topnav" style="padding:6px 8px"><span class="brand"></span><span class="links"><span class="nl on"></span><span class="nl"></span></span></div><div style="padding:8px;display:flex;flex-direction:column;gap:5px"><span class="w-t w80"></span><span class="w-t w60"></span></div></div></div><span class="wc-hint">web / desktop</span></div>
+    </div></div></div>
+  </div>
+
+  <p class="el-sub">Inputs &amp; controls</p>
+  <div class="el-grid">
+    <div class="el-card"><span class="el-tag">text input</span><div class="el-stage"><div class="wc-states">
+      <div class="wc-strow"><span class="wc-stlab">default</span><div class="field"><div class="box"><span class="ph"></span></div></div></div>
+      <div class="wc-strow"><span class="wc-stlab">filled</span><div class="field"><div class="box filled"><span class="ph"></span></div></div></div>
+      <div class="wc-strow"><span class="wc-stlab">focus</span><div class="field"><div class="box focus"><span class="ph"></span></div></div></div>
+      <div class="wc-strow"><span class="wc-stlab">invalid</span><div class="field"><div class="box invalid filled"><span class="ph"></span></div></div></div>
+      <div class="wc-strow"><span class="wc-stlab">disabled</span><div class="field is-disabled"><div class="box"><span class="ph"></span></div></div></div>
+    </div></div></div>
+    <div class="el-card"><span class="el-tag">textarea</span><div class="el-stage"><div class="wc-states">
+      <div class="wc-strow"><span class="wc-stlab">default</span><div class="wc-textarea"></div></div>
+      <div class="wc-strow"><span class="wc-stlab">disabled</span><div class="wc-textarea is-disabled"></div></div>
+    </div></div></div>
+    <div class="el-card"><span class="el-tag">select — web</span><div class="el-stage"><div class="wc-states">
+      <div class="wc-strow"><span class="wc-stlab">default</span><div class="wc-select"><span class="ph"></span><span class="wc-cv"></span></div></div>
+      <div class="wc-strow"><span class="wc-stlab">selected</span><div class="wc-select"><span class="wc-solid" style="width:45%"></span><span class="wc-cv"></span></div></div>
+      <div class="wc-strow"><span class="wc-stlab">disabled</span><div class="wc-select is-disabled"><span class="ph"></span><span class="wc-cv"></span></div></div>
+      <span class="wc-hint">opens dropdown menu</span>
+    </div></div></div>
+    <div class="el-card"><span class="el-tag">select — mobile (native)</span><div class="el-stage"><div class="w100" style="display:flex;flex-direction:column;gap:5px"><div class="wc-select"><span class="ph"></span><span class="wc-cv"></span></div><span class="wc-hint">opens OS wheel picker</span></div></div></div>
+    <div class="el-card"><span class="el-tag">checkbox</span><div class="el-stage"><div class="wc-states">
+      <div class="wc-strow inline"><span class="wc-stlab">checked</span><span class="wc-check on"></span><span class="wc-lbl" style="width:64px"></span></div>
+      <div class="wc-strow inline"><span class="wc-stlab">unchecked</span><span class="wc-check"></span><span class="wc-lbl" style="width:64px"></span></div>
+      <div class="wc-strow inline"><span class="wc-stlab">mixed</span><span class="wc-check mixed"></span><span class="wc-lbl" style="width:64px"></span></div>
+      <div class="wc-strow inline is-disabled"><span class="wc-stlab">disabled</span><span class="wc-check"></span><span class="wc-lbl" style="width:64px"></span></div>
+    </div></div></div>
+    <div class="el-card"><span class="el-tag">radio group</span><div class="el-stage"><div class="wc-states">
+      <div class="wc-strow inline"><span class="wc-stlab">selected</span><span class="wc-radio on"></span><span class="wc-lbl" style="width:64px"></span></div>
+      <div class="wc-strow inline"><span class="wc-stlab">idle</span><span class="wc-radio"></span><span class="wc-lbl" style="width:64px"></span></div>
+      <div class="wc-strow inline is-disabled"><span class="wc-stlab">disabled</span><span class="wc-radio"></span><span class="wc-lbl" style="width:64px"></span></div>
+    </div></div></div>
+    <div class="el-card"><span class="el-tag">switch</span><div class="el-stage"><div class="wc-states">
+      <div class="wc-strow inline"><span class="wc-stlab">on</span><span class="wc-switch on"></span></div>
+      <div class="wc-strow inline"><span class="wc-stlab">off</span><span class="wc-switch"></span></div>
+      <div class="wc-strow inline is-disabled"><span class="wc-stlab">disabled</span><span class="wc-switch on"></span></div>
+    </div></div></div>
+    <div class="el-card"><span class="el-tag">slider</span><div class="el-stage"><div class="wc-states">
+      <div class="wc-strow"><span class="wc-stlab">default</span><div class="wc-slider"><div class="track"><span class="fill"></span><span class="thumb"></span></div></div></div>
+      <div class="wc-strow"><span class="wc-stlab">disabled</span><div class="wc-slider is-disabled"><div class="track"><span class="fill"></span><span class="thumb"></span></div></div></div>
+    </div></div></div>
+    <div class="el-card"><span class="el-tag">date picker</span><div class="el-stage"><div class="wc-cal"><div class="chead"><span class="wc-lbl"></span><span class="wc-cv"></span></div><div class="cgrid"><span class="d"></span><span class="d"></span><span class="d"></span><span class="d on"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span></div></div></div></div>
+  </div>
+
+  <p class="el-sub">Buttons &amp; menus</p>
+  <div class="el-grid">
+    <div class="el-card wide3"><span class="el-tag">button — variant axes</span><div class="el-stage"><div class="wc-states">
+      <div class="wc-strow inline"><span class="wc-stlab">importance</span><div class="btn primary" style="width:70px"><span class="cap"></span></div><div class="btn" style="width:70px"><span class="cap"></span></div><div class="btn ghost" style="width:70px"><span class="cap"></span></div><span class="wc-hint">primary · secondary · tertiary</span></div>
+      <div class="wc-strow inline"><span class="wc-stlab">tone</span><div class="btn" style="width:70px"><span class="cap"></span></div><div class="btn primary" style="width:70px"><span class="cap"></span></div><div class="btn danger" style="width:70px"><span class="cap"></span></div><span class="wc-hint">neutral · accent · destructive</span></div>
+      <div class="wc-strow inline"><span class="wc-stlab">size</span><div class="btn primary sm" style="width:56px"><span class="cap"></span></div><div class="btn primary" style="width:70px"><span class="cap"></span></div><div class="btn primary lg" style="width:84px"><span class="cap"></span></div><span class="wc-hint">sm · md · lg</span></div>
+      <div class="wc-strow inline"><span class="wc-stlab">state</span><div class="btn primary" style="width:70px"><span class="cap"></span></div><div class="btn primary" style="width:70px"><span class="wc-spin"></span></div><div class="btn primary is-disabled" style="width:70px"><span class="cap"></span></div><span class="wc-hint">default · loading · disabled</span></div>
+    </div></div></div>
+    <div class="el-card"><span class="el-tag">button group</span><div class="el-stage"><div class="wc-btngroup"><span class="b on"></span><span class="b"></span><span class="b"></span></div></div></div>
+    <div class="el-card"><span class="el-tag">dropdown menu</span><div class="el-stage"><div class="w100" style="display:flex;flex-direction:column;gap:6px;align-items:flex-start"><div class="wc-select" style="width:60%"><span class="ph"></span><span class="wc-cv"></span></div><div class="wc-menu"><span class="mi w70"></span><span class="mi w50"></span><span class="sep"></span><span class="mi w60"></span></div></div></div></div>
+    <div class="el-card"><span class="el-tag">tooltip</span><div class="el-stage"><div class="wc-tipwrap"><span class="wc-tip"><span class="l"></span></span><span class="wc-tip-target"></span></div></div></div>
+    <div class="el-card"><span class="el-tag">progress</span><div class="el-stage"><div class="wc-states">
+      <div class="wc-strow"><span class="wc-stlab">partial</span><div class="wc-prog"><span class="fill"></span></div></div>
+      <div class="wc-strow"><span class="wc-stlab">complete</span><div class="wc-prog"><span class="fill" style="width:100%"></span></div></div>
+    </div></div></div>
+  </div>
+
+  <p class="el-sub">Containers &amp; navigation</p>
+  <div class="el-grid">
+    <div class="el-card"><span class="el-tag">card</span><div class="el-stage"><div class="wc-card"><div class="media"></div><div class="cbody"><span class="wc-solid" style="width:60%"></span><span class="wc-lbl" style="width:90%"></span><span class="wc-lbl" style="width:75%"></span></div><div class="cfoot"><span class="btn primary" style="height:24px;width:64px"><span class="cap"></span></span><span class="btn" style="height:24px;width:64px"><span class="cap"></span></span></div></div></div></div>
+    <div class="el-card wide"><span class="el-tag">sectioned navigation (settings rows)</span><div class="el-stage"><div class="group w100"><div class="gh"></div><div class="rows"><div class="row"><span class="ic"></span><span class="col"><span class="a"></span><span class="b"></span></span><span style="width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:5px solid var(--wire-ink)"></span></div><div class="row"><span class="ic"></span><span class="col"><span class="a"></span></span><span style="width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:5px solid var(--wire-ink)"></span></div><div class="row danger"><span class="ic"></span><span class="lbl"></span></div></div></div></div></div>
+    <div class="el-card"><span class="el-tag">tabs</span><div class="el-stage"><div class="w100" style="display:flex;flex-direction:column;gap:9px"><div class="wc-tabseg"><span class="t on"><span class="l"></span></span><span class="t"><span class="l"></span></span><span class="t"><span class="l"></span></span></div><span class="wc-lbl" style="width:80%"></span></div></div></div>
+    <div class="el-card"><span class="el-tag">pagination</span><div class="el-stage"><div class="wc-pagerow"><span class="pg is-disabled"></span><span class="pg"></span><span class="pg on"></span><span class="pg"></span><span class="pg"></span></div></div></div>
+    <div class="el-card wide"><span class="el-tag">carousel</span><div class="el-stage"><div class="w100"><div class="wc-carousel"><span class="peek"></span><span class="slide"></span><span class="peek"></span></div><div class="wc-dots"><i class="on"></i><i></i><i></i></div></div></div></div>
+    <div class="el-card"><span class="el-tag">empty state</span><div class="el-stage"><div class="w100" style="display:flex;flex-direction:column;align-items:center;gap:7px"><span class="w-mark"></span><span class="wc-solid" style="width:56%"></span><span class="wc-lbl" style="width:72%"></span><span class="btn primary" style="width:62%;margin-top:2px"><span class="cap"></span></span></div></div></div>
+    <div class="el-card wide"><span class="el-tag">message (chat bubbles)</span><div class="el-stage"><div class="wc-msgs"><span class="wc-bubble in"><span class="l"></span><span class="l" style="width:52px"></span></span><span class="wc-bubble out"><span class="l"></span></span></div></div></div>
+  </div>
+
+  <p class="el-sub">Data</p>
+  <div class="el-grid">
+    <div class="el-card wide3"><span class="el-tag">table (data table)</span><div class="el-stage"><div class="w100" style="display:flex;flex-direction:column;gap:8px"><div style="display:flex;gap:6px"><div class="field" style="flex:1"><div class="box" style="height:26px"><span class="ph"></span></div></div><div class="btn" style="width:70px;height:26px"><span class="cap"></span></div></div><div class="wc-table"><div class="thead"><span class="cbx"></span><span class="cell"></span><span class="cell"></span><span class="cell sm"></span></div><div class="trow sel"><span class="cbx on"></span><span class="cell"></span><span class="cell"></span><span class="cell sm"></span></div><div class="trow"><span class="cbx"></span><span class="cell"></span><span class="cell"></span><span class="cell sm"></span></div><div class="trow"><span class="cbx"></span><span class="cell"></span><span class="cell"></span><span class="cell sm"></span></div></div><div style="display:flex;justify-content:space-between;align-items:center"><span class="wc-lbl" style="width:60px"></span><div class="wc-pagerow"><span class="pg"></span><span class="pg on"></span><span class="pg"></span></div></div></div></div></div>
+  </div>
+
+  <p class="el-sub">Feedback</p>
+  <div class="el-grid">
+    <div class="el-card wide"><span class="el-tag">banner (alert)</span><div class="el-stage"><div class="wc-alert"><span class="ic"></span><span class="col"><span class="wc-solid" style="width:50%"></span><span class="wc-lbl" style="width:85%"></span></span></div></div></div>
+    <div class="el-card wide"><span class="el-tag">banner — destructive</span><div class="el-stage"><div class="wc-alert danger"><span class="ic"></span><span class="col"><span class="wc-solid" style="width:50%"></span><span class="wc-lbl" style="width:80%"></span></span></div></div></div>
+    <div class="el-card wide"><span class="el-tag">toast (sonner)</span><div class="el-stage"><div class="wc-toaststack"><div class="wc-toast"><span class="ic"></span><span class="col"><span class="wc-solid" style="width:45%"></span><span class="wc-lbl" style="width:75%"></span></span></div><div class="wc-toast"><span class="ic"></span><span class="col"><span class="wc-solid" style="width:40%"></span></span></div></div></div></div>
+  </div>
+
+  <p class="el-sub">Navigation &amp; overlays — mobile + web (in device / browser frames)</p>
+  <div class="el-grid">
+    <div class="el-card wide"><span class="el-tag">dialog</span><div class="el-stage"><div class="wc-frame"><div class="dimbody"><span class="w-h"></span><span class="w-t w80"></span><span class="w-t w60"></span></div><div class="scrim"></div><div class="wc-dialog"><span class="wc-solid" style="width:55%"></span><span class="wc-lbl" style="width:90%"></span><span class="wc-lbl" style="width:70%"></span><div class="actions"><span class="btn" style="height:24px;width:56px"><span class="cap"></span></span><span class="btn primary" style="height:24px;width:56px"><span class="cap"></span></span></div></div></div></div></div>
+    <div class="el-card wide"><span class="el-tag">alert dialog</span><div class="el-stage"><div class="wc-frame"><div class="scrim"></div><div class="wc-dialog"><span class="wc-av" style="width:26px;height:26px;border-radius:7px"></span><span class="wc-solid" style="width:60%"></span><span class="wc-lbl" style="width:88%"></span><div class="actions"><span class="btn" style="height:24px;width:56px"><span class="cap"></span></span><span class="btn" style="height:24px;width:56px;background:var(--danger);opacity:.6"><span class="cap"></span></span></div></div></div></div></div>
+    <div class="el-card wide"><span class="el-tag">bottom sheet (drawer)</span><div class="el-stage"><div class="wc-frame"><div class="dimbody"><span class="w-h"></span><span class="w-t w80"></span></div><div class="scrim"></div><div class="wc-sheet"><span class="grab"></span><span class="wc-solid" style="width:45%"></span><span class="wc-lbl" style="width:85%"></span><span class="btn primary" style="margin-top:2px"><span class="cap"></span></span></div></div></div></div>
+    <div class="el-card wide"><span class="el-tag">bottom tabs (mobile)</span><div class="el-stage"><div class="wc-frame" style="height:96px"><div class="dimbody"><span class="w-t w60"></span><span class="w-t w40"></span></div><div class="wc-btabs"><div class="tab on"><span class="ic"></span><span class="tl"></span></div><div class="tab"><span class="ic"></span><span class="tl"></span></div><div class="tab"><span class="ic"></span><span class="tl"></span></div></div></div></div></div>
+    <div class="el-card wide"><span class="el-tag">top nav bar (web)</span><div class="el-stage"><div class="browser"><div class="chrome"><span class="dots"><i></i><i></i><i></i></span><span class="url"></span></div><div class="win" style="min-height:0"><div class="web-topnav"><span class="brand"></span><span class="links"><span class="nl on"></span><span class="nl"></span><span class="nl"></span></span><span class="actions"><span class="btn primary" style="width:44px;height:22px"><span class="cap"></span></span><span class="wc-av" style="width:20px;height:20px"></span></span></div></div></div></div></div>
+    <div class="el-card wide"><span class="el-tag">sidebar layout (web)</span><div class="el-stage"><div class="browser"><div class="chrome"><span class="dots"><i></i><i></i><i></i></span><span class="url"></span></div><div class="win"><div class="web-shell"><div class="side"><span class="si on"></span><span class="si"></span><span class="si"></span><span class="si"></span></div><div class="main"><span class="wc-solid" style="width:42%"></span><span class="w-t w80"></span><span class="w-t w60"></span></div></div></div></div></div></div>
+    <div class="el-card wide"><span class="el-tag">side drawer (web)</span><div class="el-stage"><div class="browser"><div class="chrome"><span class="dots"><i></i><i></i><i></i></span><span class="url"></span></div><div class="win"><div style="padding:10px;display:flex;flex-direction:column;gap:6px;opacity:.4"><span class="w-t w80"></span><span class="w-t w60"></span></div><div class="scrim"></div><div class="web-drawer"><span class="wc-solid" style="width:55%"></span><span class="wc-lbl" style="width:85%"></span><span class="wc-lbl" style="width:70%"></span><span class="btn primary" style="margin-top:2px"><span class="cap"></span></span></div></div></div></div></div>
+  </div>
+
+  <h2 class="section">Breadboard, wireflow &amp; annotation</h2>
+  <p class="lead-note">Flow-level artifacts for when the open question is topology, sequence, or intent rather than one screen's regions. Breadboard a flow in <b>words</b> before drawing it; join screens into a <b>wireflow</b> with arrows rooted on the control that drives each transition (solid = primary path, dashed = alternative / edge path); and carry intent in an <b>annotation</b> layer whose color (<code>--anno</code>) is reserved so a note is never read as an active element or an error. <!-- FILL: keep only the artifact(s) your review needs. --></p>
+  <div class="grid-shared">
+
+    <!-- Breadboard (words) -->
+    <div class="card">
+      <p class="shared-label">Breadboard (words)</p>
+      <div class="breadboard">
+        <div class="place"><span class="place-name">Doc page</span><span class="afford">[ Share ]</span></div>
+        <div class="conn">on Share</div>
+        <div class="place"><span class="place-name">Share dialog</span><span class="afford">[ Email field ] · [ Permission &#9662; ] · [ Send ]</span></div>
+        <div class="conn">on Send</div>
+        <div class="place"><span class="place-name">Confirmation toast</span><span class="afford">[ Undo ]</span></div>
+        <div class="conn alt">on Send failure</div>
+        <div class="place"><span class="place-name">Inline error (same dialog)</span><span class="afford">[ Retry ]</span></div>
+      </div>
+      <p class="caption">places · affordances · connection lines — no pixels</p>
+    </div>
+
+    <!-- Annotated screen -->
+    <div class="card">
+      <p class="shared-label">Annotated screen</p>
+      <div class="anno-wrap">
+        <div class="phone" style="max-width:104px;aspect-ratio:9/16;padding:5px;flex:none"><div class="screen" style="border-radius:9px">
+          <div class="navbar" style="padding:5px 7px"><span class="back"></span><span class="spacer"></span><span class="title" style="font-size:9px">Checkout</span><span class="spacer"></span></div>
+          <div class="body" style="padding:7px;gap:7px;position:relative">
+            <span class="anno-mark pin" style="top:2px;right:2px">1</span>
+            <div class="field"><span class="lbl"></span><span class="box"><span class="ph"></span></span></div>
+            <div class="field"><span class="lbl"></span><span class="box filled"><span class="ph"></span></span></div>
+            <span class="anno-mark pin" style="bottom:2px;right:2px">2</span>
+            <div class="btn primary" style="margin-top:auto"><span class="cap"></span></div>
+          </div>
+        </div></div>
+        <ol class="anno-notes">
+          <li class="anno"><span class="anno-mark">1</span><span class="anno-note">On Submit, validate the address async; on failure show an inline error and keep the entered data.</span></li>
+          <li class="anno"><span class="anno-mark">2</span><span class="anno-note">Primary action &#8594; confirmation screen; disabled until every required field is valid.</span></li>
+        </ol>
+      </div>
+      <p class="caption">numbered leader markers on the screen · notes in the reserved annotation color</p>
+    </div>
+  </div>
+
+  <!-- Wireflow gets its own full-width row so the three control-rooted screens stay on one line and the dashed edge-path arrow connects to the error screen, rather than wrapping inside a narrow grid column. -->
+  <div class="grid-shared" style="margin-top:20px">
+    <!-- Wireflow (control-rooted arrows) -->
+    <div class="card">
+      <p class="shared-label">Wireflow — control-rooted arrows</p>
+      <div class="wireflow">
+        <div class="phone" style="max-width:74px;aspect-ratio:9/16;padding:4px;border-radius:11px"><div class="screen" style="border-radius:8px"><div class="navbar" style="padding:4px 6px"><span class="title" style="font-size:8px">Address</span></div><div class="body" style="padding:5px;gap:5px"><div class="field"><span class="box" style="height:14px"><span class="ph"></span></span></div><div class="field"><span class="box" style="height:14px"><span class="ph"></span></span></div><div class="btn primary" style="height:16px"><span class="cap"></span></div></div></div></div>
+        <span class="flowarrow"><span class="lbl">Submit</span></span>
+        <div class="phone" style="max-width:74px;aspect-ratio:9/16;padding:4px;border-radius:11px"><div class="screen" style="border-radius:8px"><div class="body center" style="padding:5px;gap:5px"><span class="w-mark" style="width:22px;height:22px"></span><span class="w-h" style="width:60%"></span><span class="w-t w60"></span></div></div></div>
+        <span class="flowarrow alt"><span class="lbl">on error</span></span>
+        <div class="phone" style="max-width:74px;aspect-ratio:9/16;padding:4px;border-radius:11px"><div class="screen" style="border-radius:8px"><div class="body" style="padding:5px;gap:5px"><div class="field"><span class="box invalid filled" style="height:14px"><span class="ph"></span></span></div><div class="err"><span class="dot"></span><span class="ln"></span></div><div class="btn primary" style="height:16px"><span class="cap"></span></div></div></div></div>
+      </div>
+      <p class="caption">solid = primary path · dashed = alternative / edge path · arrow rooted on the control</p>
+    </div>
+  </div>
+
+  <h2 class="section">Screen archetypes — mobile &amp; web (optional starting points)</h2>
+  <p class="lead-note">Assembled breadboards you can copy and adapt, in a mobile phone canvas and a web/desktop browser canvas. They are <b>starting points, not mandatory</b> — reach for a primitive directly when an archetype does not fit, and never let the catalog flatten distinct screens into the same shape.</p>
+
+  <p class="el-sub">Mobile</p>
+  <div class="grid-shared">
+
+    <!-- Archetype: empty state -->
+    <div class="card">
+      <p class="shared-label">Empty state</p>
+      <div class="phone"><div class="screen">
+        <div class="body center">
+          <div class="w-mark"></div>
+          <div class="w-h lg"></div>
+          <div class="w-t w80"></div>
+          <div class="w-t w60"></div>
+          <div class="btn primary" style="width:70%;margin-top:8px"><span class="cap"></span></div>
+        </div>
+        <div class="tabbar">
+          <div class="tab active"><span class="ic"></span><span class="tl"></span></div>
+          <div class="tab"><span class="ic"></span><span class="tl"></span></div>
+        </div>
+      </div></div>
+      <p class="caption">mark · headline · sub · [ action ] · tab bar</p>
+    </div>
+
+    <!-- Archetype: form -->
+    <div class="card">
+      <p class="shared-label">Form (with error)</p>
+      <div class="phone"><div class="screen">
+        <div class="navbar"><span class="back"></span><span class="spacer"></span><span class="title">Title</span><span class="spacer"></span></div>
+        <div class="body">
+          <div class="field"><span class="lbl"></span><span class="box"><span class="ph"></span></span></div>
+          <div class="field"><span class="lbl"></span><span class="box filled"><span class="ph"></span></span></div>
+          <div class="field"><span class="lbl"></span><span class="box"><span class="ph"></span></span></div>
+          <div class="err"><span class="dot"></span><span class="ln"></span></div>
+          <div class="btn primary"><span class="cap"></span></div>
+        </div>
+      </div></div>
+      <p class="caption">nav + back · labeled fields · error slot · [ submit ]</p>
+    </div>
+
+    <!-- Archetype: settings / list group -->
+    <div class="card">
+      <p class="shared-label">Settings / list group</p>
+      <div class="phone"><div class="screen">
+        <div class="navbar"><span class="title">Settings</span></div>
+        <div class="body" style="gap:13px">
+          <div class="group">
+            <div class="gh"></div>
+            <div class="rows">
+              <div class="row"><span class="av"></span><span class="col"><span class="a"></span><span class="b"></span></span></div>
+              <div class="row danger"><span class="ic"></span><span class="lbl"></span></div>
+            </div>
+          </div>
+          <div class="group">
+            <div class="gh" style="width:22%"></div>
+            <div class="rows">
+              <div class="row"><span class="ic"></span><span class="col"><span class="a"></span></span></div>
+              <div class="row"><span class="ic"></span><span class="col"><span class="a"></span></span></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <p class="caption">grouped rows · avatar/icon · danger row (icon + label)</p>
+    </div>
+
+    <!-- Archetype: tab bar states -->
+    <div class="card">
+      <p class="shared-label">Tab bar — two states</p>
+      <div class="phone" style="aspect-ratio:9/6.4;justify-content:flex-end"><div class="screen" style="flex:none">
+        <div style="padding:10px 12px 4px" class="shared-label">two tabs</div>
+        <div class="tabbar">
+          <div class="tab active"><span class="ic"></span><span class="tl"></span></div>
+          <div class="tab"><span class="ic"></span><span class="tl"></span></div>
+        </div>
+        <div style="padding:10px 12px 4px" class="shared-label">three tabs</div>
+        <div class="tabbar">
+          <div class="tab active"><span class="ic"></span><span class="tl"></span></div>
+          <div class="tab"><span class="ic"></span><span class="tl"></span></div>
+          <div class="tab"><span class="ic"></span><span class="tl"></span></div>
+        </div>
+      </div></div>
+      <p class="caption">active tab uses the accent primitive</p>
+    </div>
+
+    <!-- Archetype: modal sheet -->
+    <div class="card">
+      <p class="shared-label">Modal sheet</p>
+      <div class="phone"><div class="screen">
+        <div class="body center dim" style="gap:9px">
+          <div class="w-mark"></div><div class="w-h lg"></div><div class="w-t w60"></div>
+        </div>
+        <div class="modal-scrim"></div>
+        <div class="sheet">
+          <span class="grabber"></span>
+          <div class="sheet-head"><span class="t">Sheet title</span><span>Cancel</span></div>
+          <div class="field"><span class="lbl"></span><span class="box"><span class="ph"></span></span></div>
+          <div class="field"><span class="lbl"></span><span class="box filled"><span class="ph"></span></span></div>
+          <div class="btn primary"><span class="cap"></span></div>
+        </div>
+      </div></div>
+      <p class="caption">scrim · grabber · sheet over a dimmed screen</p>
+    </div>
+
+    <!-- Archetype: inline card on a scrollable screen -->
+    <div class="card">
+      <p class="shared-label">Inline card</p>
+      <div class="phone"><div class="screen">
+        <div class="body" style="gap:10px;justify-content:center">
+          <div class="w-h lg" style="align-self:center"></div>
+          <div class="inline-card">
+            <div class="field"><span class="lbl"></span><span class="box"><span class="ph"></span></span></div>
+            <div class="field"><span class="lbl"></span><span class="box filled"><span class="ph"></span></span></div>
+            <div class="btn primary"><span class="cap"></span></div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div class="tab active"><span class="ic"></span><span class="tl"></span></div>
+          <div class="tab"><span class="ic"></span><span class="tl"></span></div>
+        </div>
+      </div></div>
+      <p class="caption">content embedded in a card on the primary surface</p>
+    </div>
+  </div>
+
+  <p class="el-sub">Web / desktop</p>
+  <div class="grid-shared">
+
+    <!-- Web archetype: app shell -->
+    <div class="card">
+      <p class="shared-label">App shell (nav + sidebar)</p>
+      <div class="browser"><div class="chrome"><span class="dots"><i></i><i></i><i></i></span><span class="url"></span></div><div class="win"><div class="web-topnav"><span class="brand"></span><span class="links"><span class="nl on"></span><span class="nl"></span><span class="nl"></span></span><span class="actions"><span class="wc-av" style="width:20px;height:20px"></span></span></div><div class="web-shell"><div class="side"><span class="si on"></span><span class="si"></span><span class="si"></span><span class="si"></span></div><div class="main"><span class="wc-solid" style="width:40%"></span><span class="w-t w80"></span><span class="w-t w60"></span><span class="w-t w80"></span></div></div></div></div>
+      <p class="caption">top nav · sidebar · content</p>
+    </div>
+
+    <!-- Web archetype: form page -->
+    <div class="card">
+      <p class="shared-label">Form page</p>
+      <div class="browser"><div class="chrome"><span class="dots"><i></i><i></i><i></i></span><span class="url"></span></div><div class="win"><div class="web-topnav"><span class="brand"></span><span class="links"><span class="nl on"></span><span class="nl"></span></span></div><div style="padding:12px;display:flex;flex-direction:column;gap:9px"><span class="wc-solid" style="width:45%"></span><div class="field"><span class="lbl"></span><span class="box"><span class="ph"></span></span></div><div class="field"><span class="lbl"></span><span class="box filled"><span class="ph"></span></span></div><div class="err"><span class="dot"></span><span class="ln"></span></div><div class="btn primary" style="width:40%"><span class="cap"></span></div></div></div></div>
+      <p class="caption">form · labeled fields · error · submit</p>
+    </div>
+
+    <!-- Web archetype: table page -->
+    <div class="card">
+      <p class="shared-label">Table / list page</p>
+      <div class="browser"><div class="chrome"><span class="dots"><i></i><i></i><i></i></span><span class="url"></span></div><div class="win"><div class="web-topnav"><span class="brand"></span><span class="links"><span class="nl"></span><span class="nl on"></span></span></div><div style="padding:11px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;gap:6px;align-items:center"><span class="wc-solid" style="width:28%"></span><span style="flex:1"></span><div class="field" style="width:38%"><div class="box" style="height:24px"><span class="ph"></span></div></div><div class="btn primary" style="width:58px;height:24px"><span class="cap"></span></div></div><div class="wc-table"><div class="thead"><span class="cbx"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell sm"></span></div><div class="trow sel"><span class="cbx on"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell sm"></span></div><div class="trow"><span class="cbx"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell sm"></span></div><div class="trow"><span class="cbx"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell sm"></span></div></div></div></div></div>
+      <p class="caption">toolbar · data table · row selection</p>
+    </div>
+
+    <!-- Web archetype: modal -->
+    <div class="card">
+      <p class="shared-label">Modal dialog</p>
+      <div class="browser"><div class="chrome"><span class="dots"><i></i><i></i><i></i></span><span class="url"></span></div><div class="win" style="min-height:140px"><div style="padding:10px;display:flex;flex-direction:column;gap:6px;opacity:.35"><span class="w-t w80"></span><span class="w-t w60"></span><span class="w-t w80"></span></div><div class="scrim"></div><div class="wc-dialog" style="width:72%"><span class="wc-solid" style="width:50%"></span><span class="wc-lbl" style="width:90%"></span><span class="wc-lbl" style="width:75%"></span><div class="actions"><span class="btn" style="height:24px;width:56px"><span class="cap"></span></span><span class="btn primary" style="height:24px;width:56px"><span class="cap"></span></span></div></div></div></div>
+      <p class="caption">centered dialog over a dimmed page</p>
+    </div>
+  </div>
+
+  <h2 class="section">Options-comparison layout</h2>
+  <p class="lead-note">An options round presents <b>at least three</b> distinct candidates side by side, in whichever canvas the project uses (mobile or web). Give each a label, a sketch, a rationale, and its trade-offs; mark exactly one <code>(Recommended)</code>. Screens shared across all options render once above the grid (omitted here). <!-- FILL: replace the three options below with your real candidates. --></p>
+  <div class="grid-options">
+
+    <!-- OPTION A (Recommended) -->
+    <div class="card rec">
+      <div class="card-head">
+        <div><span class="opt">Option A</span><h3>Short name</h3></div>
+        <span class="badge">Recommended</span>
+      </div>
+      <div class="phone"><div class="screen">
+        <div class="navbar"><span class="back"></span><span class="spacer"></span><span class="title">Screen</span><span class="spacer"></span></div>
+        <div class="body">
+          <div class="field"><span class="lbl"></span><span class="box"><span class="ph"></span></span></div>
+          <div class="field"><span class="lbl"></span><span class="box filled"><span class="ph"></span></span></div>
+          <div class="err"><span class="dot"></span><span class="ln"></span></div>
+          <div class="btn primary"><span class="cap"></span></div>
+        </div>
+      </div></div>
+      <p class="note rationale">Why this direction serves the requirement, and why it is recommended.</p>
+      <p class="note tradeoff">What it costs relative to Options B and C.</p>
+      <p class="note responsive">One line on how the layout adapts across device sizes, when the options differ there.</p>
+    </div>
+
+    <!-- OPTION B -->
+    <div class="card">
+      <div class="card-head"><div><span class="opt">Option B</span><h3>Short name</h3></div></div>
+      <div class="phone"><div class="screen">
+        <div class="body center dim" style="gap:9px"><div class="w-h lg"></div><div class="w-t w60"></div></div>
+        <div class="modal-scrim"></div>
+        <div class="sheet">
+          <span class="grabber"></span>
+          <div class="sheet-head"><span class="t">Screen</span><span>Cancel</span></div>
+          <div class="field"><span class="lbl"></span><span class="box"><span class="ph"></span></span></div>
+          <div class="field"><span class="lbl"></span><span class="box filled"><span class="ph"></span></span></div>
+          <div class="btn primary"><span class="cap"></span></div>
+        </div>
+      </div></div>
+      <p class="note rationale">A genuinely implementable alternative — never a straw-man.</p>
+      <p class="note tradeoff">What it costs relative to Options A and C.</p>
+    </div>
+
+    <!-- OPTION C (shown on the web canvas — options can compare either form factor) -->
+    <div class="card">
+      <div class="card-head"><div><span class="opt">Option C</span><h3>Short name (web)</h3></div></div>
+      <div class="browser"><div class="chrome"><span class="dots"><i></i><i></i><i></i></span><span class="url"></span></div><div class="win"><div class="web-topnav"><span class="brand"></span><span class="links"><span class="nl on"></span><span class="nl"></span></span></div><div class="web-shell"><div class="side"><span class="si on"></span><span class="si"></span><span class="si"></span></div><div class="main"><span class="wc-solid" style="width:40%"></span><span class="w-t w80"></span><span class="w-t w60"></span></div></div></div></div>
+      <p class="note rationale">Differs from A and B on a structural axis — hierarchy, layout, or treatment. Shown on the web canvas to make the point that options can compare either form factor.</p>
+      <p class="note tradeoff">What it costs relative to Options A and B.</p>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><span class="sw solid"></span> heading / label</span>
+    <span><span class="sw dashed"></span> input field</span>
+    <span><span class="sw accent"></span> primary / active</span>
+    <span><span class="sw danger"></span> danger (destructive / error)</span>
+    <span><span class="sw anno"></span> annotation (intent note)</span>
+  </div>
+
+  <footer>
+    Wireframe Kit (low fidelity) — a project-agnostic breadboard UI vocabulary for mobile and web/desktop client apps. Regions, hierarchy, and flow only; no brand color or final type. Fill guidance: the wireframe-design skill.
+  </footer>
+</div>

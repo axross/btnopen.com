@@ -4,9 +4,9 @@ import { Menu } from "@base-ui/react/menu";
 import { clsx } from "clsx";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { type JSX, useTransition } from "react";
+import { type ComponentProps, type JSX, useTransition } from "react";
 import { setLocale } from "@/helpers/set-locale";
-import type { PayloadLocale } from "@/repositories/payload-types";
+import type { PayloadLocale } from "@/shared/payload-types";
 import css from "./language-switcher.module.css";
 
 // endonyms: each locale is labelled in its own language so the option is
@@ -18,9 +18,8 @@ const options = [
 
 export function LanguageSwitcher({
 	className,
-}: {
-	className?: string;
-}): JSX.Element {
+	...props
+}: ComponentProps<"button">): JSX.Element {
 	const activeLocale = useLocale();
 	const t = useTranslations("language-switcher");
 	const router = useRouter();
@@ -45,6 +44,7 @@ export function LanguageSwitcher({
 				aria-label={t("label")}
 				disabled={isPending}
 				data-testid="language-switcher"
+				{...props}
 			>
 				<GlobeIcon className={css.triggerIcon} />
 			</Menu.Trigger>

@@ -1,0 +1,82 @@
+@layer components {
+	@scope (.blogPostAgenticViewLoading) {
+		:where(:scope) {
+			display: flex;
+			width: stretch;
+			container: page / inline-size;
+			flex-direction: column;
+			align-items: center;
+
+			--blog-post-content-negative-margin: var(--size-16);
+
+			@container (width > 30rem) {
+				--page-variant: "desktop";
+				--max-width: calc(30rem - var(--size-16) * 2);
+				--blog-post-content-negative-margin: 0;
+			}
+
+			@container (width > 50rem) {
+				--max-width: min(calc(50rem - var(--size-32) * 2), var(--measure));
+			}
+		}
+
+		.header {
+			display: flex;
+			width: stretch;
+			max-inline-size: var(--max-width);
+			flex-direction: column;
+			gap: var(--size-8);
+			padding-inline: var(--size-16);
+
+			@container style(--page-variant: "desktop") {
+				padding-inline: unset;
+			}
+		}
+
+		.title {
+			color: var(--neutral-12);
+			font-size: var(--text-3xl);
+			font-weight: 700;
+			line-height: var(--leading-sm);
+			word-break: break-word;
+		}
+
+		.content {
+			display: flex;
+			width: stretch;
+			max-inline-size: var(--max-width);
+			flex-direction: column;
+			gap: var(--size-32);
+			margin-block-start: var(--size-32);
+			padding-inline: var(--size-16);
+
+			@container style(--page-variant: "desktop") {
+				padding-inline: unset;
+			}
+		}
+
+		.section {
+			display: flex;
+			width: stretch;
+			flex-direction: column;
+			gap: var(--size-12);
+		}
+
+		.sectionHeading {
+			color: var(--neutral-12);
+			font-size: var(--text-xl);
+			font-weight: 700;
+		}
+
+		/* a paragraph of body-sized prose in the content column. the loaded side
+		   uses it for the empty-state message; the loading side uses it for the
+		   placeholder lines, where only the font metrics apply (the shimmer spans
+		   paint their own background, so `color` is inert on the loading side).
+		   keep this rule byte-identical to its counterpart in the paired module. */
+		.bodyText {
+			color: var(--neutral-10);
+			font-size: var(--text-md);
+			line-height: var(--leading-lg);
+		}
+	}
+}

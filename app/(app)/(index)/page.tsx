@@ -9,9 +9,10 @@ import {
 	getActiveLocale,
 	openGraphLocaleByLocale,
 } from "@/helpers/i18n";
+import { thumbnailHeight, thumbnailWidth } from "@/helpers/thumbnail";
 import { getWebsite, type Website } from "@/repositories/get-website";
 import { urlOrigin } from "@/runtime";
-import { BlogJsonLd } from "./_components/blog-json-jd";
+import { BlogJsonLd } from "./_components/blog-json-ld";
 import { BlogPostList } from "./_components/blog-post-list";
 import { BrushGrunge } from "./_components/brush-grunge";
 import { SocialLinkList } from "./_components/social-link-list";
@@ -20,12 +21,10 @@ import type { PageProps } from "./page-props";
 
 async function IndexPage({ searchParams }: PageProps): Promise<JSX.Element> {
 	const draft = searchParams.then((params) => params.draft === "true");
-	// resolve the locale inside the promise callback (not as an eagerly
-	// evaluated argument) so the dynamic cookie read happens within the Suspense
-	// boundaries that await `website`.
-	const website = draft.then(async (isDraft) =>
-		getWebsite({ draft: isDraft, locale: await getActiveLocale() }),
-	);
+	// chain off `getActiveLocale()` rather than awaiting it here (it does nothing
+	// before its own first `await`) so the dynamic cookie read happens within the
+	// Suspense boundaries that await `website`.
+	const website = getActiveLocale().then((locale) => getWebsite({ locale }));
 
 	return (
 		<>
@@ -49,9 +48,14 @@ async function IndexPageMain({
 	website: Promise<Website | null>;
 	draft?: Promise<boolean>;
 }): Promise<JSX.Element> {
-	const [website, t] = await Promise.all([
+	const [website, t, locale] = await Promise.all([
 		websitePromise,
 		getTranslations("index"),
+		// the bio is CMS-authored markdown, so it can grow an embed that formats a
+		// date in the active locale. `<Markdown>` renders that inside a cache scope
+		// and cannot resolve the locale itself, so it is resolved here — inside the
+		// Suspense boundary this component already sits behind.
+		getActiveLocale(),
 	]);
 
 	if (!website) {
@@ -92,7 +96,7 @@ async function IndexPageMain({
 
 				<div className={css.bio}>
 					<div className={css.bioContent} data-testid="bio">
-						<Markdown markdown={website.creator.bioMarkdown} />
+						<Markdown markdown={website.creator.bioMarkdown} locale={locale} />
 					</div>
 
 					<SocialLinkList data-testid="social-links" />
@@ -141,8 +145,9 @@ export async function generateMetadata(): Promise<Metadata> {
 			images: [
 				{
 					url: `${urlOrigin}/thumbnail.png`,
-					width: 1200,
-					height: 630,
+					width: thumbnailWidth,
+					height: thumbnailHeight,
+					alt: website.name,
 				},
 			],
 			siteName: website.name,

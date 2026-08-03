@@ -1,4 +1,4 @@
-"use server";
+import "server-only";
 
 import {
 	convertLexicalToMarkdown,
@@ -6,13 +6,19 @@ import {
 } from "@payloadcms/richtext-lexical";
 import { cacheLife, cacheTag } from "next/cache";
 import { getPayload } from "payload";
-import { rootLogger } from "@/logger";
+import { canReadDrafts } from "@/helpers/draft-access";
 import { config } from "@/payload/config";
 import { editor } from "@/payload/editor";
-import type { PayloadLocale } from "./payload-types";
+import { rootLogger } from "@/shared/logger";
+import type { PayloadLocale } from "@/shared/payload-types";
 
 const logger = rootLogger.child({ module: "📥" });
 
+/**
+ * Loads a post's body as markdown. `draft: true` is honoured only for a request
+ * carrying a Payload session; an unauthenticated caller is served the published
+ * body (or nothing) instead.
+ */
 export async function getBlogPostMarkdown({
 	slug,
 	locale,
@@ -21,6 +27,24 @@ export async function getBlogPostMarkdown({
 	slug: string;
 	locale: PayloadLocale;
 	draft?: boolean;
+}): Promise<string | null> {
+	// short-circuits so the published path never reads `headers()` and stays
+	// statically renderable.
+	return await findBlogPostMarkdown({
+		slug,
+		locale,
+		draft: draft && (await canReadDrafts()),
+	});
+}
+
+async function findBlogPostMarkdown({
+	slug,
+	locale,
+	draft,
+}: {
+	slug: string;
+	locale: PayloadLocale;
+	draft: boolean;
 }): Promise<string | null> {
 	"use cache";
 

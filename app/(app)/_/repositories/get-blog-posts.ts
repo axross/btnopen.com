@@ -1,15 +1,16 @@
-"use server";
+import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
 import { getPayload } from "payload";
 import z from "zod";
-import { rootLogger } from "@/logger";
+import { canReadDrafts } from "@/helpers/draft-access";
 import { config } from "@/payload/config";
+import { rootLogger } from "@/shared/logger";
 import {
 	PayloadBlogPost,
 	type PayloadLocale,
 	resolveThumbnailImage,
-} from "./payload-types";
+} from "@/shared/payload-types";
 
 const logger = rootLogger.child({ module: "📥" });
 
@@ -24,12 +25,31 @@ const BlogPostSummary = PayloadBlogPost.transform((blogPost) => ({
 
 export type BlogPostSummary = z.infer<typeof BlogPostSummary>;
 
+/**
+ * Loads the post list. `draft: true` is honoured only for a request carrying a
+ * Payload session; an unauthenticated caller is served the published posts.
+ */
 export async function getBlogPosts({
 	locale,
 	draft = false,
 }: {
 	locale: PayloadLocale;
 	draft?: boolean;
+}): Promise<BlogPostSummary[]> {
+	// short-circuits so the published path never reads `headers()` and stays
+	// statically renderable.
+	return await findBlogPosts({
+		locale,
+		draft: draft && (await canReadDrafts()),
+	});
+}
+
+async function findBlogPosts({
+	locale,
+	draft,
+}: {
+	locale: PayloadLocale;
+	draft: boolean;
 }): Promise<BlogPostSummary[]> {
 	"use cache";
 
@@ -55,15 +75,21 @@ export async function getBlogPosts({
 			updatedAt: true,
 		},
 		depth: 2,
-		where: draft
-			? undefined
-			: {
-					_status: {
-						equals: "published",
-					},
-				},
+		where: {
+			...(draft
+				? {}
+				: {
+						_status: {
+							equals: "published",
+						},
+					}),
+		},
 		locale,
 		sort: ["-publishedAt"],
+		// intentional cap: the index renders one unpaginated list, and this returns
+		// `result.docs` directly, so a 51st post would be dropped from it silently.
+		// the site is far from that count; raising the cap or paginating the index
+		// is the fix if it ever approaches it.
 		limit: 50,
 		draft,
 	});

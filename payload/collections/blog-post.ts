@@ -1,10 +1,32 @@
 import type { CollectionConfig } from "payload";
-import { shouldInvalidatePostCaches } from "@/helpers/post-cache-invalidation";
-import { urlOrigin } from "@/runtime";
+import {
+	BLOG_POST_SLUG_VALIDATION_MESSAGE,
+	BlogPostSlug,
+} from "@/shared/blog-post-slug";
 import { logger } from "../helpers/logger";
+import { shouldInvalidatePostCaches } from "../helpers/post-cache-invalidation";
+import { urlOrigin } from "../helpers/runtime";
 
 export const blogPostCollection: CollectionConfig = {
 	slug: "blog-posts",
+	access: {
+		// public REST reads see published posts only; drafts stay behind the filter.
+		// the site's own render path uses the local API (which bypasses this) and
+		// gates drafts itself, so this rule guards `/api/blog-posts` alone.
+		read: ({ req }) => {
+			if (req.user) {
+				return true;
+			}
+
+			return { _status: { equals: "published" } };
+		},
+		// writes stay authenticated-only, matching Payload's default. The MCP write
+		// path runs with `overrideAccess: false` and the API key's user, so a key
+		// saved without one is denied here rather than writing anonymously.
+		create: ({ req }) => Boolean(req.user),
+		update: ({ req }) => Boolean(req.user),
+		delete: ({ req }) => Boolean(req.user),
+	},
 	fields: [
 		{
 			name: "title",
@@ -17,6 +39,22 @@ export const blogPostCollection: CollectionConfig = {
 			type: "text",
 			required: true,
 			unique: true,
+			// the slug reaches `revalidatePath()` and a cache tag through
+			// `posts/[slug]/caches`, which rejects anything failing this same
+			// schema — validating here keeps the CMS from minting a slug whose
+			// publish would then silently skip cache invalidation.
+			validate: (value: unknown) => {
+				// a custom `validate` replaces Payload's built-in text validation, so
+				// the `required` check lives here too; the schema rejects an empty or
+				// missing value. Draft and autosave writes skip validation entirely
+				// (the collection does not opt into draft validation), so this gates
+				// publishing rather than every keystroke.
+				if (!BlogPostSlug.safeParse(value).success) {
+					return BLOG_POST_SLUG_VALIDATION_MESSAGE;
+				}
+
+				return true;
+			},
 		},
 		{
 			type: "tabs",

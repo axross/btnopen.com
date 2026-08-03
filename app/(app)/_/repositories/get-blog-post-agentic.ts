@@ -1,11 +1,15 @@
-"use server";
+import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
 import { getPayload } from "payload";
 import z from "zod";
-import { rootLogger } from "@/logger";
+import { canReadDrafts } from "@/helpers/draft-access";
 import { config } from "@/payload/config";
-import { type PayloadLocale, PayloadNonEmptyString } from "./payload-types";
+import { rootLogger } from "@/shared/logger";
+import {
+	type PayloadLocale,
+	PayloadNonEmptyString,
+} from "@/shared/payload-types";
 
 const logger = rootLogger.child({ module: "📥" });
 
@@ -32,6 +36,11 @@ const BlogPostAgentic = z
 
 export type BlogPostAgentic = z.infer<typeof BlogPostAgentic>;
 
+/**
+ * Loads a post's authoring fields for the agentic view. `draft: true` is
+ * honoured only for a request carrying a Payload session; an unauthenticated
+ * caller is served the published fields (or nothing) instead.
+ */
 export async function getBlogPostAgentic({
 	slug,
 	locale,
@@ -40,6 +49,24 @@ export async function getBlogPostAgentic({
 	slug: string;
 	locale: PayloadLocale;
 	draft?: boolean;
+}): Promise<BlogPostAgentic | null> {
+	// short-circuits so the published path never reads `headers()` and stays
+	// statically renderable.
+	return await findBlogPostAgentic({
+		slug,
+		locale,
+		draft: draft && (await canReadDrafts()),
+	});
+}
+
+async function findBlogPostAgentic({
+	slug,
+	locale,
+	draft,
+}: {
+	slug: string;
+	locale: PayloadLocale;
+	draft: boolean;
 }): Promise<BlogPostAgentic | null> {
 	"use cache";
 

@@ -1,5 +1,7 @@
-import type { JSX } from "react";
+import { clsx } from "clsx";
+import type { ComponentProps, JSX } from "react";
 import { Markdown } from "@/components/markdown";
+import type { PayloadLocale } from "@/shared/payload-types";
 import css from "./markdown-content.module.css";
 
 /**
@@ -10,12 +12,22 @@ import css from "./markdown-content.module.css";
  */
 export function MarkdownContent({
 	markdown,
-}: {
+	// `<Markdown>` renders inside a cache scope and so cannot resolve the request's
+	// locale itself; it travels down from the caller that already has it.
+	locale,
+	className,
+	...props
+}: ComponentProps<"div"> & {
 	markdown: string;
+	locale: PayloadLocale;
 }): JSX.Element {
 	return (
-		<div className={css.markdownContent}>
-			<Markdown markdown={markdown} classNames={markdownClassNames} />
+		<div className={clsx(css.markdownContent, className)} {...props}>
+			<Markdown
+				markdown={markdown}
+				locale={locale}
+				classNames={markdownClassNames}
+			/>
 		</div>
 	);
 }

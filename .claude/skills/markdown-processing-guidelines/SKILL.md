@@ -1,11 +1,13 @@
 ---
 name: markdown-processing-guidelines
-description: The conventions for this project's markdown rendering pipeline — `app/(app)/_/helpers/markdown.ts`, `app/(app)/_/components/markdown.tsx`, Shiki setup, and the `Markdown`/`renderMarkdown` server components. Covers the unified pipeline (remarkParse → remarkDirective → remarkPartialGfm → remarkEmbeds → remarkRehype → rehypeShiki → rehypeUnnestPre → rehypeReact), plugin-ordering rules, custom-plugin conventions, adding custom MDAST directive nodes (passThrough + handler + React component, all three levels), the `embed` directive and its Payload rich-text block with directive-form `jsx` markdown converters, partial-GFM three-level registration, HAST→React component mapping, Shiki singleton usage, server-only execution with `"use cache"`, Payload-Lexical content source, and Sentry-based unknown-node handling.
-when_to_use: Use when writing, reviewing, or modifying any markdown-pipeline code, even when the user only mentions "remark", "rehype", "mdast", "syntax highlighting", "blog post rendering", "embed", "webembed", "rich-text block", or a markdown bug.
+description: The conventions for this project's markdown rendering pipeline — `app/(app)/_/helpers/markdown.ts`, `app/(app)/_/components/markdown.tsx`, Shiki setup, and the `Markdown`/`renderMarkdown` server components. Covers the unified pipeline (remarkParse → remarkDirective → remarkPartialGfm → remarkEmbeds → remarkRehype → rehypeShiki → rehypeUnnestPre → rehypeReact), plugin-ordering rules, custom-plugin conventions, adding custom MDAST directive nodes (passThrough + handler + React component, all three levels), the `embed` directive and its Payload rich-text block with directive-form `jsx` markdown converters, partial-GFM three-level registration, HAST→React component mapping, Shiki singleton usage, server-only execution with `"use cache"`, Payload-Lexical content source, Sentry-based unknown-node handling, and the content-safety rules that keep CMS-authored markdown from breaking out of React's output encoding.
+when_to_use: Use when writing, reviewing, or modifying any markdown-pipeline code, even when the user only mentions "remark", "rehype", "mdast", "syntax highlighting", "blog post rendering", "embed", "webembed", "rich-text block", or a markdown bug. Also use when judging whether authored content can inject markup through this pipeline — it owns that surface's XSS rules.
 user-invocable: false
 ---
 
 # Markdown Processing Guidelines
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html).
 
 Apply these rules when writing, reviewing, or modifying code related to markdown parsing, transformation, or rendering.
 
@@ -111,6 +113,18 @@ See [content-source.md](./references/content-source.md) for:
 
 - Lexical-to-markdown conversion via `@payloadcms/richtext-lexical`
 - Prohibition on filesystem-based markdown at runtime
+
+## Content Safety
+
+The pipeline renders CMS-authored content, making it this project's principal untrusted-content surface.
+
+See [content-safety.md](./references/content-safety.md) for:
+
+- the defenses currently in force — `allowDangerousProtocol: true`, the permissive `unknownHandler`, and React's encoding through `rehypeReact` — and which compensating control each depends on
+- raw-HTML sinks that bypass React's output encoding, and the attribute-allowlist rule for CMS-controlled values
+- directive-specific rules for HAST handler properties, unescaped attribute values, and external-link isolation
+- the `images.remotePatterns` gate and what `unoptimized` skips
+- bypass paths: no HTML processing, no runtime filesystem or arbitrary-HTTP markdown
 
 ## Error Handling
 

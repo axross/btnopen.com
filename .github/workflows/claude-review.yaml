@@ -4,16 +4,17 @@ name: Claude Code Review
 # GitHub-hosted runner — a different session, on different infrastructure,
 # under a bot identity distinct from the connected operator — triggered by a
 # comment containing the review trigger phrase (`@claude review`; if you change
-# it, change it in .claude/skills/address/SKILL.md too). It bootstraps REVIEW.md
+# it, change it in the installed loop-engineering skill too). It bootstraps REVIEW.md
 # at the repo root as the review policy. This is the authoritative review for the
-# /address flow (.claude/skills/address/SKILL.md), which posts the trigger phrase
+# loop-engineering change loop (.claude/skills/loop-engineering/SKILL.md), which posts the trigger phrase
 # after opening a PR and then addresses the findings this workflow leaves.
 #
 # NOTE: issue_comment workflows run only from the version on the DEFAULT
 # branch, so this reviewer fires on PRs only once this file is merged there —
 # the PR that introduces it cannot be reviewed by it.
 #
-# Operator prerequisites (one-time; the workflow no-ops until both are done):
+# Operator prerequisites (one-time; the workflow no-ops until the first two
+# are done):
 #   1. Install the Claude GitHub App: https://github.com/apps/claude
 #   2. Generate a subscription token locally with `claude setup-token` and add
 #      it as the repo secret CLAUDE_CODE_OAUTH_TOKEN
@@ -21,6 +22,32 @@ name: Claude Code Review
 #      To use pay-as-you-go API billing instead of a subscription, set an
 #      ANTHROPIC_API_KEY secret and swap the `claude_code_oauth_token` input
 #      below for `anthropic_api_key`.
+#
+# Optional (telemetry; the reviewer runs exactly as it does without it):
+#   3. To export this session's Claude Code metrics and events to an OTLP
+#      collector, add the repo variable CLAUDE_OTEL_EXPORTER_OTLP_ENDPOINT and
+#      the repo secret CLAUDE_OTEL_EXPORTER_OTLP_HEADERS (for Grafana Cloud,
+#      both come from the stack's OpenTelemetry tile). Scope the access-policy
+#      token to metrics:write and logs:write only: the review session's own
+#      shell can read any job-level value, so the job environment is not a
+#      confidentiality boundary. The CLAUDE_ prefix is load-bearing here —
+#      this repository ships instrumentation.ts and instrumentation-client.ts,
+#      so unprefixed OTEL_EXPORTER_OTLP_* names would collide with the site's
+#      own application telemetry if it ever gains OTLP configuration. Leave
+#      them unset and the `env` block below disables telemetry outright rather
+#      than starting an exporter that fails.
+#
+#      Grafana Cloud accepts ONLY cumulative temporality: its OTLP gateway
+#      runs Prometheus's translator, which answers Claude Code's delta default
+#      with `400 otlp parse error: invalid temporality and type combination`.
+#      The rejection discards the whole request while telling the client
+#      nothing — Mimir returns HTTP 200 on partial ingestion and Claude Code
+#      prints no export error at any log level, so metrics simply never
+#      appear. Hence OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE below
+#      (axross/skills#151). Do NOT add an endpoint probe step: one was built
+#      there and removed (axross/skills#156), because rejection is counted
+#      after authentication, so it reported healthy all through the outage it
+#      was meant to expose.
 
 on:
   issue_comment:
@@ -61,14 +88,75 @@ jobs:
       cancel-in-progress: true
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # Telemetry for this review session. Left of each colon is the name Claude
+    # Code reads; right of it is where this repository keeps the value,
+    # namespaced under CLAUDE_ (see prerequisite 3 in the header). Setting them
+    # at job level is the whole wiring — no `with:` input and no prompt change
+    # — and is the arrangement axross/skills verified end to end. Note that
+    # claude-code-action documents no environment-forwarding contract, so a
+    # name ADDED to this block is worth confirming against a real run rather
+    # than assuming it reaches the CLI; that is why the attributes below ride
+    # in the --settings file instead. Gating enablement on the endpoint
+    # variable is what keeps observability from becoming a dependency of the
+    # review: with nothing configured, no exporter starts at all.
+    env:
+      CLAUDE_CODE_ENABLE_TELEMETRY: ${{ vars.CLAUDE_OTEL_EXPORTER_OTLP_ENDPOINT != '' && '1' || '0' }}
+      OTEL_METRICS_EXPORTER: otlp
+      OTEL_LOGS_EXPORTER: otlp
+      # Claude Code has no default protocol, and the Grafana Cloud OTLP gateway
+      # is HTTP rather than gRPC, so the HTTP form is set explicitly.
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${{ vars.CLAUDE_OTEL_EXPORTER_OTLP_ENDPOINT }}
+      OTEL_EXPORTER_OTLP_HEADERS: ${{ secrets.CLAUDE_OTEL_EXPORTER_OTLP_HEADERS }}
+      # The documented metrics default is 60000, and whether Claude Code
+      # force-flushes at process exit is undocumented, so a review finishing in
+      # under a minute would export nothing. The logs value restates that
+      # side's documented 5000 default, so the pair reads as one decision.
+      OTEL_METRIC_EXPORT_INTERVAL: "10000"
+      OTEL_LOGS_EXPORT_INTERVAL: "5000"
+      # Without this every metrics push is discarded; see the header.
+      OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE: cumulative
+      # Fallback only: the --settings file written below outranks this, because
+      # a settings file's `env` beats the process environment — the checkout's
+      # own .claude/settings.json would otherwise strip `ci` and `workflow`
+      # from this value. Kept so the session is still tagged if that file is
+      # ever missing, and so the intended value is visible in the job log
+      # beside the rest of the telemetry configuration. Values may not contain
+      # a space.
+      OTEL_RESOURCE_ATTRIBUTES: repository=btnopen,ci=github_actions,workflow=claude_review
     steps:
       # LOAD-BEARING SAFETY PROPERTY 2 of 3 — base-ref checkout. Check out the
       # base ref (the default branch), NEVER the PR head: the review reads the
       # diff through the GitHub API, so untrusted head code is never executed
-      # on the runner. The checkout only supplies CLAUDE.md / AGENTS.md,
-      # REVIEW.md, and the project skills as trusted review context.
+      # on the runner. The checkout only supplies CLAUDE.md, REVIEW.md, and
+      # the project skills as trusted review context.
       - name: Checkout
         uses: actions/checkout@v6
+
+      # The resource attributes that mark this session as CI. They cannot ride
+      # in the `env` block above: a settings file's `env` outranks the process
+      # environment, and the checkout's own .claude/settings.json sets
+      # OTEL_RESOURCE_ATTRIBUTES to repository=btnopen alone. Nor can they ride
+      # in a .claude/settings.local.json written here — claude-code-action
+      # deletes the entire .claude/ directory before launching the CLI
+      # (restore-config.ts), precisely because the CLI reads settings from cwd.
+      # A --settings file OUTSIDE the repository is the one source that both
+      # outranks the project file and survives that delete.
+      # OTEL_METRICS_INCLUDE_ENTRYPOINT rides along for the same reason: the
+      # repository's copy is deleted with .claude/, and it is the attribute
+      # that separates cloud, local, and CI sessions. Written unconditionally
+      # so --settings never points at a missing path; the attributes are inert
+      # when telemetry is off.
+      - name: Write the review session's telemetry settings
+        run: |
+          cat > "${RUNNER_TEMP}/claude-otel-settings.json" <<'JSON'
+          {
+            "env": {
+              "OTEL_METRICS_INCLUDE_ENTRYPOINT": "true",
+              "OTEL_RESOURCE_ATTRIBUTES": "repository=btnopen,ci=github_actions,workflow=claude_review"
+            }
+          }
+          JSON
 
       - name: Claude Review
         uses: anthropics/claude-code-action@v1
@@ -98,6 +186,7 @@ jobs:
             --allowedTools "mcp__github_inline_comment__create_inline_comment,Read,Grep,Glob,Bash"
             --disallowedTools "WebFetch,WebSearch,Task"
             --max-turns 200
+            --settings "${{ runner.temp }}/claude-otel-settings.json"
           # LOAD-BEARING SAFETY PROPERTY 3 of 3 — background-task denial
           # (--disallowedTools above). Denying Task forces a synchronous review
           # that completes and posts within the one turn: the plugin otherwise

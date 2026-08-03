@@ -1,7 +1,8 @@
 {
 	"effortLevel": "xhigh",
-	"permissions": {
-		"allow": ["Workflow(address-selfcheck)", "Workflow(address-criteria)"]
+	"env": {
+		"OTEL_METRICS_INCLUDE_ENTRYPOINT": "true",
+		"OTEL_RESOURCE_ATTRIBUTES": "repository=btnopen"
 	},
 	"hooks": {
 		"SessionStart": [
