@@ -383,6 +383,8 @@ contributors and agents alike. `package.json` pins Node.js `>=24.0.0` and npm
 | `npm run test:e2e` | Runs the Playwright end-to-end suite. | When a change affects a UI output surface or e2e coverage. |
 | `npm run test:e2e -- --update-snapshots` | Regenerates Playwright snapshots for the local platform. | Only when a visual change is intentional — pair it with the reason. |
 | `npm run coverage:scenarios` | Runs the e2e suite, then enforces the scenario-coverage gate. | When a change adds or alters a user journey in `e2e/scenarios.md`. |
+| `npx payload generate:importmap` | Regenerates `app/(payload)/admin/importMap.js` from the resolved Payload config. Invoked directly rather than through an npm script. | After adding or upgrading a Payload plugin, storage adapter, or custom admin component. |
+| `npx payload generate:types` | Regenerates `payload/types.ts` from the resolved Payload config. Invoked directly rather than through an npm script. | After changing a Payload collection, global, or field. |
 | `npm run migrate:status` | Shows the Payload migration status. | When investigating migration drift. |
 | `npm run migrate:create` | Creates a migration after a schema change. | Immediately after changing a Payload collection schema. |
 | `npm run migrate:up` | Applies pending migrations to the selected database. | Locally, before testing a schema change. |
@@ -391,11 +393,21 @@ Unit tests ([Jest](https://jestjs.io)) cover pure logic and schema behavior;
 end-to-end tests ([Playwright](https://playwright.dev)) cover route output and
 browser behavior across two responsive tiers — the `pixel` project at 412px for
 mobile and `tablet` at 712px for tablet. `npm run lint`, `npm run typecheck`,
-and `npm run test:unit` are the three checks CI gates a merge on; the e2e suite
-and its scenario-coverage gate run after merge, on `main`. Never edit an
-already-applied migration file — create a new one instead. If a required command cannot be run, say so — naming the command,
+`npm run test:unit`, and the **Payload Artifacts** drift check are the four
+checks CI gates a merge on; the e2e suite and its scenario-coverage gate run
+after merge, on `main`. Never edit an
+already-applied migration file — create a new one instead. If a required
+command cannot be run, say so — naming the command,
 the reason, and the residual risk — rather than presenting the change as fully
 verified.
+
+Both generated Payload artifacts — `app/(payload)/admin/importMap.js` and
+`payload/types.ts` — are committed, and neither is rewritten by `npm run build`.
+The import map is regenerated at runtime only by the development server's hot
+reload, so a stale one survives a restart and ships to production, where it
+blanks the admin document edit view. The Payload Artifacts job therefore
+regenerates both and fails on any diff; run the two `payload generate:`
+commands above and commit the result to clear it.
 
 ## Deployment
 
