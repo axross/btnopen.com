@@ -2,11 +2,13 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import type { NextRequest } from "next/server";
 import { getPayload } from "payload";
 import { hasMatchingCommentCsrfToken } from "@/helpers/comment-csrf";
+import { getActiveLocale } from "@/helpers/i18n";
 import { isSameSiteRequest } from "@/helpers/request-origin";
 import { config } from "@/payload/config";
 import { isClerkAvailable } from "@/runtime";
 import { CommentSubmission } from "@/shared/comments";
 import { rootLogger } from "@/shared/logger";
+import { getCommentableBlogPost } from "./_/repositories/get-commentable-blog-post";
 
 const logger = rootLogger.child({ module: "💬" });
 
@@ -69,22 +71,12 @@ export async function POST(
 		return Response.json({ error: "Invalid comment." }, { status: 400 });
 	}
 
-	const payload = await getPayload({ config });
-
-	const postResult = await payload.find({
-		collection: "blog-posts",
-		where: {
-			slug: { equals: slug },
-			_status: { equals: "published" },
-		},
-		select: { slug: true, isCommentsEnabled: true },
-		depth: 0,
-		limit: 1,
+	const post = await getCommentableBlogPost({
+		slug,
+		locale: await getActiveLocale(),
 	});
 
-	const post = postResult.docs[0];
-
-	if (!post || post.isCommentsEnabled === false) {
+	if (!post?.isCommentsEnabled) {
 		return Response.json(
 			{ error: "Comments are closed for this post." },
 			{ status: 404 },
@@ -97,6 +89,10 @@ export async function POST(
 			account.provider === "oauth_github" || account.provider === "github",
 	);
 	const githubUsername = githubAccount?.username ?? user?.username ?? null;
+
+	// the read above goes through the repository layer; this handler keeps its
+	// own Payload client for the write, which belongs in a route handler.
+	const payload = await getPayload({ config });
 
 	await payload.create({
 		collection: "comments",
