@@ -43,7 +43,6 @@ export function LanguageSwitcher({
 				className={clsx(css.trigger, className)}
 				aria-label={t("label")}
 				disabled={isPending}
-				data-testid="language-switcher"
 				{...props}
 			>
 				<GlobeIcon className={css.triggerIcon} />
