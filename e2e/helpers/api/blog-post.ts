@@ -367,7 +367,7 @@ function createMinimalBlogPostBody(): unknown {
 	return createParagraphBlogPostBody("本文のプレースホルダー。");
 }
 
-// Builds a Lexical body holding one paragraph of `text`, so a test that needs a
+// builds a Lexical body holding one paragraph of `text`, so a test that needs a
 // distinguishable body can write one and then assert it rendered.
 export function createParagraphBlogPostBody(text: string): unknown {
 	return {

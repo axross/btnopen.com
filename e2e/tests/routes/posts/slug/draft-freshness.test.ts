@@ -8,7 +8,7 @@ import {
 import { deleteBlogPost } from "@/e2e/helpers/api/mcp";
 import { uniqueSlug } from "@/e2e/helpers/unique-slug";
 
-// Regression coverage for #204: the draft read used to be served from a
+// regression coverage for #204: the draft read used to be served from a
 // `"use cache"` entry tagged `blog-post:<slug>`, which no draft or autosave
 // write ever invalidates — so an author's edit stayed invisible until the entry
 // aged out. Every test here loads the preview surface BEFORE the edit on
