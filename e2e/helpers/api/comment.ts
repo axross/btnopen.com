@@ -1,4 +1,6 @@
 import type { Page, TestInfo } from "@playwright/test";
+import z from "zod";
+import { PayloadComment } from "@/shared/payload-types";
 import { getCreatedDocId } from "./mcp";
 
 type CommentStatus = "pending" | "approved" | "rejected";
@@ -63,18 +65,24 @@ export async function createComment({
 	return id;
 }
 
-interface CommentDoc {
-	id: number;
-	body: string;
-	status: CommentStatus;
-	authorProviderId?: string | null;
-	authorName?: string | null;
-}
+// The admin list endpoint returns the moderation-only `authorProviderId` that
+// the app-facing `PayloadComment` schema (a public-read shape) omits, so extend
+// it for this admin-side read.
+const AdminComment = PayloadComment.extend({
+	authorProviderId: z
+		.string()
+		.nullish()
+		.transform((value) => value ?? null),
+});
+
+const AdminCommentList = z.object({ docs: z.array(AdminComment) });
 
 // Reads every comment on a post through the authenticated admin API, which sees
 // the pending rows the public read hides. Lets a test assert what a reader's UI
-// submission actually persisted. The admin session comes from the shared
-// authenticated storage state.
+// submission actually persisted. The response shape is schema-parsed (like the
+// sibling blog-post/website helpers) so a drifted API surfaces as a clear helper
+// failure rather than a confusing assertion mismatch. The admin session comes
+// from the shared authenticated storage state.
 export async function findCommentsByPost({
 	blogPostId,
 	page,
@@ -83,7 +91,7 @@ export async function findCommentsByPost({
 	blogPostId: number;
 	page: Page;
 	testInfo: TestInfo;
-}): Promise<CommentDoc[]> {
+}): Promise<z.infer<typeof AdminComment>[]> {
 	const url = new URL("/api/comments", testInfo.project.use.baseURL);
 	url.searchParams.set("where[blogPost][equals]", String(blogPostId));
 	url.searchParams.set("depth", "0");
@@ -97,9 +105,7 @@ export async function findCommentsByPost({
 		);
 	}
 
-	const json = (await response.json()) as { docs?: CommentDoc[] };
-
-	return json.docs ?? [];
+	return AdminCommentList.parse(await response.json()).docs;
 }
 
 export async function deleteComment({
