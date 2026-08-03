@@ -22,6 +22,8 @@
     "test:unit": "jest --config jest.config.cjs",
     "build": "bash -o pipefail -c 'next build | pino-pretty'",
     "start": "next start | pino-pretty",
+    "generate:importmap": "payload generate:importmap",
+    "generate:types": "payload generate:types",
     "migrate:status": "bash -o pipefail -c 'payload migrate:status | pino-pretty'",
     "migrate:create": "bash -o pipefail -c 'payload migrate:create | pino-pretty'",
     "migrate:up": "bash -o pipefail -c 'payload migrate | pino-pretty'",
