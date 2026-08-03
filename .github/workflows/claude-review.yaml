@@ -131,7 +131,7 @@ jobs:
       # on the runner. The checkout only supplies CLAUDE.md, REVIEW.md, and
       # the project skills as trusted review context.
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # The resource attributes that mark this session as CI. They cannot ride
       # in the `env` block above: a settings file's `env` outranks the process
