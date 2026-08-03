@@ -23,7 +23,7 @@ function text(value: string): LexicalNode {
 	};
 }
 
-// A bold text node (`format: 1`) — what the Lexical editor stores for `**bold**`
+// a bold text node (`format: 1`) — what the Lexical editor stores for `**bold**`
 // and what `convertLexicalToMarkdown` serializes back to bare `**…**`.
 function bold(value: string): LexicalNode {
 	return { ...text(value), format: 1 };

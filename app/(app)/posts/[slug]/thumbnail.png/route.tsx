@@ -171,6 +171,14 @@ async function loadFonts(): Promise<FontOptions[]> {
 	];
 }
 
+/**
+ * Reads a stored cover image out of Vercel Blob, resolving the filename under
+ * the deployment's blob namespace.
+ *
+ * @throws if no Blob token is configured (the caller must pick the API path
+ * instead), if no blob exists at the resolved pathname, or if the blob is found
+ * but carries no readable stream.
+ */
 async function retrieveImageFromVercelBlob(
 	filename: string,
 ): Promise<ArrayBuffer> {
@@ -230,6 +238,13 @@ async function retrieveImageFromVercelBlob(
 	return imageBuffer;
 }
 
+/**
+ * Reads a stored cover image back through this deployment's own media API.
+ *
+ * @throws if the stored pathname resolves to an origin other than this
+ * deployment's, which would turn the render into an outbound fetch of a foreign
+ * host.
+ */
 async function retrieveImageViaAPI(pathname: string): Promise<ArrayBuffer> {
 	logger.info({ pathname }, "Started fetching image via API.");
 

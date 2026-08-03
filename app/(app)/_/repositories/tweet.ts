@@ -23,7 +23,7 @@ export interface Tweet {
 
 const entityIndices = z.tuple([z.number(), z.number()]);
 
-// Only the fields the text-only card needs; media, verified, and counts are
+// only the fields the text-only card needs; media, verified, and counts are
 // intentionally ignored. A tombstone response lacks `text`/`user` and so fails
 // this parse, which `getTweet` maps to `null`.
 export const SyndicationTweet = z.object({
@@ -105,7 +105,7 @@ export function extractTweetId(url: string): string | null {
 
 const statusPathPattern = /^\/[^/]+\/status\/(\d+)(?:\/|$)/;
 
-// The scheme X's own embed uses to derive the token from a tweet id: scale the
+// the scheme X's own embed uses to derive the token from a tweet id: scale the
 // id, multiply by π, base-36 encode, and drop the "0" and "." characters.
 const tweetIdScale = 1e15;
 const base36Radix = 36;

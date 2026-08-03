@@ -1,7 +1,7 @@
 import { clerk } from "@clerk/testing/playwright";
 import type { Page } from "@playwright/test";
 
-// The +clerk_test reader account the Clerk-authenticated comment tests sign in
+// the +clerk_test reader account the Clerk-authenticated comment tests sign in
 // as; it must exist in the Clerk development instance (the `+clerk_test`
 // subaddress makes Clerk suppress real email delivery). There is no default —
 // the reader tests are defined only when TEST_CLERK_READER_EMAIL is set (see

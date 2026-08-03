@@ -130,7 +130,7 @@ async function findBlogPostAgentic({
 
 	const blogPost = BlogPostAgentic.parse(result.docs[0]);
 
-	// The authoring fields are often edited on the published document, so a
+	// the authoring fields are often edited on the published document, so a
 	// post's draft version can lack them even when the published document has
 	// them. When previewing a draft (`draft: true`), fall back to the published
 	// values for whichever fields the draft leaves empty so the preview still

@@ -4,7 +4,11 @@ Apply this reference when writing comments or imports in TypeScript and JavaScri
 
 ## Comment Voice
 
-This project distinguishes **doc-comments** (JSDoc, documenting an API) from **line comments** (explaining a specific spot). The line-comment voice is lowercase-first: `//`, `/* */`, JSDoc, and each visually-line-starting sentence inside a multi-line comment begin with a lowercase letter. Existing source files are the authority — read the neighbourhood before writing.
+This project distinguishes **doc-comments** (JSDoc, documenting an API) from **line comments** (explaining a specific spot), and the house voice governs **line comments only**: `//` and `/* */` comments, and each visually-line-starting sentence inside a multi-line one, begin with a lowercase letter. Existing source files are the authority — read the neighbourhood before writing.
+
+JSDoc is deliberately **out of scope**. The software development capability owns doc-comments, and what it prescribes for them is a *standard* (JSDoc/TSDoc) and its coverage, never a voice — so casing there follows its "read the surrounding source files and match their voice" instruction rather than a rule stated here. What that capability requires *inside* a doc-comment — coverage, the throws tag, no restating the signature — is its rule to state, and this reference does not restate it.
+
+No lint rule enforces the voice: Biome ships no comment-casing rule, so it is checked in review rather than by the gate.
 
 **Example:**
 
@@ -15,10 +19,10 @@ await del(blobs.map((blob) => blob.url));
 
 **Guidelines:**
 
-- MUST start `//`, `/* */`, and JSDoc comments lowercase in `.ts` / `.tsx` / `.js` source, including each visually-line-starting sentence of a multi-line comment.
+- MUST start `//` and `/* */` comments lowercase in `.ts` / `.tsx` / `.js` source, including each visually-line-starting sentence of a multi-line comment.
 - MUST keep natural casing for proper nouns (`Chromium`, `React`, `Next.js`), code identifiers (`Promise.all`, `<Table>`), acronyms (`API`, `JSON`, `GFM`), and deliberate all-caps emphasis.
 - MUST keep a `biome-ignore` directive in the tool's required casing, with its trailing human-readable reason starting lowercase — `// biome-ignore lint/suspicious/noExplicitAny: external library type is untyped`.
-- MUST document the conditions under which a function throws, using the `@throws` tag.
+- MUST NOT lowercase a JSDoc block to satisfy this voice; the rule does not reach it.
 - MUST NOT apply this voice outside TS/JS source comments: CSS `/* */` comments, Markdown prose, and commit messages follow their own conventions.
 
 ## Imports

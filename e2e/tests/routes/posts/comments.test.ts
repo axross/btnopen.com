@@ -17,7 +17,7 @@ const forbiddenStatus = 403;
 const avatarFallbackMinSizePx = 32;
 const avatarFallbackSquareTolerancePx = 1;
 
-// The Clerk-authenticated reader tests need Clerk mounted (the publishable key)
+// the Clerk-authenticated reader tests need Clerk mounted (the publishable key)
 // and the +clerk_test reader (TEST_CLERK_READER_EMAIL, no default) to sign in, so
 // they are defined only when both are set; without them these scenarios stay
 // uncovered rather than failing on missing configuration. The Clerk secret key is
@@ -378,7 +378,7 @@ test(
 		tag: ["@scenario:post.comments.csrf", "@area:posts", "@priority:should"],
 	},
 	async ({ page }, testInfo) => {
-		// The double-submit CSRF check runs before auth and post lookup, so a
+		// the double-submit CSRF check runs before auth and post lookup, so a
 		// tokenless write is rejected regardless of slug or Clerk configuration.
 		const url = new URL(
 			"/posts/any-slug/comments",
@@ -443,9 +443,9 @@ test(
 	},
 );
 
-// The composer is server-gated on `isClerkAvailable`, so its presence (and thus
+// the composer is server-gated on `isClerkAvailable`, so its presence (and thus
 // its absence on a draft view) is only observable when Clerk is configured.
-// Define this scenario only in that case, mirroring the suite's env-gated
+// define this scenario only in that case, mirroring the suite's env-gated
 // helpers rather than skipping at runtime.
 // biome-ignore lint/style/noProcessEnv: env-driven gate mirroring runtime `isClerkAvailable`
 if (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
@@ -503,7 +503,7 @@ if (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
 	);
 }
 
-// The reader sign-in and submit journeys additionally need the test reader and
+// the reader sign-in and submit journeys additionally need the test reader and
 // the Clerk secret key (for the sign-in ticket), so they are gated on the full
 // configuration rather than on the publishable key alone.
 if (canRunClerkReaderTests) {
@@ -626,7 +626,7 @@ if (canRunClerkReaderTests) {
 				if (postId !== null) {
 					const id = postId;
 
-					// Deleting the post cascades to its comments (the blog-post
+					// deleting the post cascades to its comments (the blog-post
 					// beforeDelete hook), removing the pending reader comment with it.
 					await test.step("Clean up the post and its comments", async () => {
 						await deleteBlogPost({ id, page, testInfo });
@@ -637,7 +637,7 @@ if (canRunClerkReaderTests) {
 	);
 }
 
-// This scenario only holds when Clerk is genuinely unconfigured (local, CI, or
+// this scenario only holds when Clerk is genuinely unconfigured (local, CI, or
 // a preview without Clerk keys); with Clerk on, the same post renders the
 // section with a composer and an empty state. Define it only in that case
 // rather than skipping at runtime, matching the suite's env-gated helpers.

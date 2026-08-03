@@ -4,7 +4,7 @@ import {
 	publishedBlogPostSlug,
 } from "@/e2e/helpers/api/blog-post";
 
-// No `storageState` here on purpose: this runs signed out and asks for the draft
+// no `storageState` here on purpose: this runs signed out and asks for the draft
 // list explicitly, which is the case the gate exists for. `index.published-post`
 // covers the same expectation for the plain public list (no `draft` param).
 

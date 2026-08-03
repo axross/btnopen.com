@@ -13,7 +13,7 @@ import { urlOrigin } from "../helpers/runtime";
 export const commentCollection: CollectionConfig = {
 	slug: "comments",
 	access: {
-		// Public REST reads see approved comments only; the site's own render path
+		// public REST reads see approved comments only; the site's own render path
 		// uses the local API (which bypasses this) and re-filters per post.
 		read: ({ req }) => {
 			if (req.user) {
@@ -22,7 +22,7 @@ export const commentCollection: CollectionConfig = {
 
 			return { status: { equals: "approved" } };
 		},
-		// Public REST writes are locked to authenticated admins. The site's create
+		// public REST writes are locked to authenticated admins. The site's create
 		// endpoint writes through the local API, so it is unaffected; this keeps
 		// the public `/api/comments` endpoint from accepting unauthenticated rows.
 		create: ({ req }) => Boolean(req.user),
@@ -51,7 +51,7 @@ export const commentCollection: CollectionConfig = {
 					return true;
 				}
 
-				// A relationship value arrives as the raw id (string or number) or,
+				// a relationship value arrives as the raw id (string or number) or,
 				// for polymorphic relations, as a `{ relationTo, value }` pair. Comment
 				// ids are numbers here, so `number` must be handled too — otherwise the
 				// check silently no-ops and a reply-to-a-reply slips through.
@@ -134,14 +134,14 @@ export const commentCollection: CollectionConfig = {
 		{ name: "authorGithubUsername", type: "text" },
 		{ name: "authorAvatarUrl", type: "text" },
 	],
-	// No soft-delete: moderation is expressed through `status` (a rejected
+	// no soft-delete: moderation is expressed through `status` (a rejected
 	// comment is hidden but kept), and deleting a post hard-deletes its comments
 	// via the blog-post `beforeDelete` hook, so a lingering trashed row can never
 	// block that deletion against the required (NOT NULL) blogPost foreign key.
 	hooks: {
 		afterChange: [
 			async ({ doc, previousDoc, req }) => {
-				// Only writes that change publicly visible output need a cache bust:
+				// only writes that change publicly visible output need a cache bust:
 				// a comment becoming (or leaving) `approved`. A fresh pending comment
 				// changes nothing public, so it skips the round-trip.
 				if (doc.status !== "approved" && previousDoc?.status !== "approved") {
@@ -172,7 +172,7 @@ async function bustCommentCache(
 	doc: { blogPost?: unknown },
 	req: PayloadRequest,
 ): Promise<void> {
-	// Skip when a cascading post delete already owns the invalidation, so a post
+	// skip when a cascading post delete already owns the invalidation, so a post
 	// with N comments does not fan out N identical cache-bust round-trips.
 	if (req.context?.skipCommentCacheBust) {
 		return;

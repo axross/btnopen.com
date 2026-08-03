@@ -5,7 +5,7 @@ import { getSharedMediaAlt, sharedMediaId } from "@/e2e/helpers/api/media";
 
 test.use({ storageState: authenticatedStorageState });
 
-// The body image the seed embeds. `next/image` rewrites the src into
+// the body image the seed embeds. `next/image` rewrites the src into
 // `/_next/image?url=…`, which percent-encodes the slashes but leaves the media
 // id intact, so matching on the id locates the image under both the optimized
 // and the unoptimized src.

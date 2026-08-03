@@ -35,7 +35,7 @@ function paragraph(children: LexicalNode[]): LexicalNode {
 	};
 }
 
-// A single paragraph whose lines are joined by hard line breaks round-trips to
+// a single paragraph whose lines are joined by hard line breaks round-trips to
 // Markdown as `line1\nline2\n…`. Wrapping the lines in `:::name` / `:::` fences
 // therefore produces a real `containerDirective` — the case that, before the
 // fix, hit the unknown-node handler and vanished.

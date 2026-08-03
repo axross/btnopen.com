@@ -17,7 +17,7 @@ import { isLocalhost } from "@/runtime";
  * endpoint co-located with the comment routes it protects.
  */
 export async function GET(request: NextRequest): Promise<Response> {
-	// Do not hand a token to a cross-site caller; pairs with the same check on
+	// do not hand a token to a cross-site caller; pairs with the same check on
 	// the POST handler.
 	if (!isSameSiteRequest(request)) {
 		return Response.json({ error: "Cross-site request." }, { status: 403 });

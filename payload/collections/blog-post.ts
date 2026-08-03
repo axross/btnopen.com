@@ -153,13 +153,13 @@ export const blogPostCollection: CollectionConfig = {
 	hooks: {
 		beforeDelete: [
 			async ({ req, id }) => {
-				// Comments hold a required (NOT NULL) foreign key to their post, so
+				// comments hold a required (NOT NULL) foreign key to their post, so
 				// permanently deleting a post must remove its comments first —
 				// otherwise the FK's ON DELETE set null would violate that NOT NULL
 				// column and block the deletion. Comments have no trash, so this is a
 				// hard delete. Fires only on permanent delete, not on trashing.
 				//
-				// The post (and its cached comment threads) is going away entirely, so
+				// the post (and its cached comment threads) is going away entirely, so
 				// each cascaded comment's own cache-bust is redundant — signal the
 				// comment hook to skip it rather than fan out one round-trip per row.
 				req.context.skipCommentCacheBust = true;
@@ -173,7 +173,7 @@ export const blogPostCollection: CollectionConfig = {
 		],
 		afterOperation: [
 			async ({ operation, args, req, result }) => {
-				// The seed creates posts during `onInit`, when no HTTP server is
+				// the seed creates posts during `onInit`, when no HTTP server is
 				// reachable; it sets this context flag so the published create does not
 				// fire a doomed cache-bust fetch (mirrors the comment collection's
 				// `skipCommentCacheBust`). Kept content-agnostic — no slug special-case.
@@ -183,7 +183,7 @@ export const blogPostCollection: CollectionConfig = {
 
 				const draft = "draft" in args ? args.draft : undefined;
 
-				// Draft and autosave writes never change publicly cached output, so
+				// draft and autosave writes never change publicly cached output, so
 				// skip the cache-busting round-trips entirely; only publish, unpublish,
 				// and delete affect the published pages.
 				if (!shouldInvalidatePostCaches({ operation, draft })) {
@@ -198,7 +198,7 @@ export const blogPostCollection: CollectionConfig = {
 					docs = [result];
 				}
 
-				// A cache-invalidation miss must never fail the content write, so the
+				// a cache-invalidation miss must never fail the content write, so the
 				// fetches are guarded and reported to Sentry instead of thrown.
 				try {
 					logger.info(

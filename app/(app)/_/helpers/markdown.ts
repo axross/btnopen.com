@@ -168,7 +168,7 @@ function remarkEmbeds() {
 // `:::name` fence as a `containerDirective`. The pipeline only treats
 // `leafDirective` as a feature, so — without this plugin — those two kinds fall
 // to `remarkRehype`'s `unknownHandler`, which drops them and reports to Sentry.
-// That silently erases authorial prose whenever a post happens to contain a
+// that silently erases authorial prose whenever a post happens to contain a
 // colon-word (`TypeScript:strict`) or a `:::` fence. To preserve content over
 // strictness, replace each such node with its verbatim source characters
 // (sliced from the original markdown via the node's position) so the text

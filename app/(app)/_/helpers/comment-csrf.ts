@@ -66,7 +66,7 @@ function timingSafeEqual(a: string, b: string): boolean {
 
 	let mismatch = 0;
 
-	// Bitwise accumulation compares every character regardless of an early
+	// bitwise accumulation compares every character regardless of an early
 	// mismatch, so the loop's timing does not reveal the cookie value.
 	// biome-ignore-start lint/suspicious/noBitwiseOperators: constant-time token comparison
 	for (let i = 0; i < a.length; i += 1) {

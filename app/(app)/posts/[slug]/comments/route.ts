@@ -27,13 +27,13 @@ export async function POST(
 ): Promise<Response> {
 	const { slug } = await params;
 
-	// Reject cross-site writes: this authenticated mutation could otherwise be
+	// reject cross-site writes: this authenticated mutation could otherwise be
 	// driven from another origin against a signed-in reader's browser (CSRF).
 	if (!isSameSiteRequest(request)) {
 		return Response.json({ error: "Cross-site request." }, { status: 403 });
 	}
 
-	// Defense in depth on top of the same-site check: require a double-submit
+	// defense in depth on top of the same-site check: require a double-submit
 	// token issued by `GET .../comments/token`. A cross-site page can read
 	// neither the token nor (under SameSite=Strict) the cookie, so it cannot
 	// present a matching pair.

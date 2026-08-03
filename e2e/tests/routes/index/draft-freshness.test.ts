@@ -7,7 +7,7 @@ import {
 import { deleteBlogPost } from "@/e2e/helpers/api/mcp";
 import { uniqueSlug } from "@/e2e/helpers/unique-slug";
 
-// The index's draft list had the same defect as the post routes (#204), under
+// the index's draft list had the same defect as the post routes (#204), under
 // the `blog-posts` tag. As in the post-route counterpart, the load before the
 // edit is what populates the cache entry the assertion afterwards depends on.
 
