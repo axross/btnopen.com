@@ -1,0 +1,58 @@
+# Dependabot version updates. This exists to carry the standing cost of the
+# SHA-pinned third-party actions in .github/workflows/: a pin stops receiving
+# upstream fixes until someone bumps it, and a stale pin is its own hazard.
+# Dependabot updates a pinned SHA and its trailing `# vX.Y.Z` comment together,
+# so the readable version never drifts from what actually runs.
+#
+# NOT covered here, deliberately:
+#   - Dependabot SECURITY updates, which fix advisories from the dependency
+#     graph. Those are a repository setting (Settings -> Advanced Security),
+#     entirely independent of this file, and they bypass the cooldown below.
+#     The outstanding `npm audit` advisories are their own piece of work.
+#   - Auto-merge. Every update lands through the normal review path.
+#
+# Since 2026-07-14 version updates carry a default three-day cooldown — a
+# release must have been published that long before Dependabot will open a pull
+# request for it — which is what keeps a freshly poisoned release from being
+# adopted the hour it ships. It is the default, so no `cooldown` key is set.
+
+version: 2
+updates:
+  # Keeps the two SHA-pinned third-party actions current. Everything is grouped
+  # into a single pull request: the set is six entries, four of which are
+  # GitHub's own, so splitting them would produce noise rather than isolation.
+  # `ci` is this project's Conventional Commits type for CI/CD configuration,
+  # and `include: scope` makes the header read `ci(deps): bump ...`, which is a
+  # valid header for a squash-merge subject.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ci
+      include: scope
+    groups:
+      actions:
+        patterns:
+          - "*"
+
+  # Minor and patch updates arrive as one grouped pull request per month.
+  # Majors are deliberately left OUT of the group so each arrives on its own:
+  # a payload, next, or react major needs its own reading and its own revert,
+  # and burying one in a grouped bump makes both harder. `build` is this
+  # project's Conventional Commits type for external dependencies; the scope
+  # resolves to `deps` or `deps-dev` depending on where the package sits.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: build
+      include: scope
+    groups:
+      npm-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
