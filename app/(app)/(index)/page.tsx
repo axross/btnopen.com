@@ -14,7 +14,6 @@ import { getWebsite, type Website } from "@/repositories/get-website";
 import { urlOrigin } from "@/runtime";
 import { BlogJsonLd } from "./_components/blog-json-ld";
 import { BlogPostList } from "./_components/blog-post-list";
-import { BrushGrunge } from "./_components/brush-grunge";
 import { SocialLinkList } from "./_components/social-link-list";
 import css from "./page.module.css";
 import type { PageProps } from "./page-props";
@@ -81,17 +80,15 @@ async function IndexPageMain({
 						className={css.portraitForeground}
 					/>
 
-					<BrushGrunge className={css.portraitGrunge} />
+					{/* the brush-mark backdrop behind the portrait: a base layer plus
+					    two offset glitch copies. the artwork is a CSS mask over
+					    /images/brush-grunge.svg rather than markup, so these carry no
+					    content of their own — see page.module.css. */}
+					<div className={css.portraitGrunge} />
 
-					<BrushGrunge
-						shadowOffsetX={-2}
-						className={css.portraitGrungeGlitchFirst}
-					/>
+					<div className={css.portraitGrungeGlitchFirst} />
 
-					<BrushGrunge
-						shadowOffsetX={2}
-						className={css.portraitGrungeGlitchSecond}
-					/>
+					<div className={css.portraitGrungeGlitchSecond} />
 				</div>
 
 				<div className={css.bio}>
