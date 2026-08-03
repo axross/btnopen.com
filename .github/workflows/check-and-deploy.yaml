@@ -3,8 +3,16 @@ on:
   push:
     branches:
       - main
+  # Run the checks (lint + e2e) on demand against any branch — e.g. to exercise
+  # the Clerk-authenticated comment e2e tests once the dev-instance secrets are
+  # set. The production deployment job is gated to push events below, so a manual
+  # run only lints and tests and never deploys.
+  workflow_dispatch:
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  # Include the event name so a manual workflow_dispatch run never cancels an
+  # in-flight push-triggered deploy on the same ref (and vice versa); same-event
+  # runs on a ref still supersede each other.
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
   cancel-in-progress: true
 jobs:
   lint:
@@ -35,9 +43,20 @@ jobs:
       statuses: write
       contents: write
       pull-requests: write
+    # The Clerk dev-instance test config lives in the `Test` GitHub environment;
+    # declaring it here is what grants this job access to its variables and secret.
+    environment: Test
     env:
       PAYLOAD_TEST_USER_EMAIL: ${{ secrets.PAYLOAD_TEST_USER_EMAIL }}
       PAYLOAD_TEST_USER_PASSWORD: ${{ secrets.PAYLOAD_TEST_USER_PASSWORD }}
+      # Clerk dev-instance test config from the `Test` environment above. An unset
+      # value resolves to empty, so `isClerkAvailable` stays false and the
+      # Clerk-authenticated comment tests stay skipped until it is provided. The
+      # publishable key is public (NEXT_PUBLIC_*) and stored as a variable; the
+      # secret key stays a secret, read only by clerkSetup/@clerk/nextjs.
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+      CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+      TEST_CLERK_READER_EMAIL: ${{ vars.TEST_CLERK_READER_EMAIL }}
     needs:
       - lint
     steps:
@@ -115,6 +134,9 @@ jobs:
     name: Production Deployment
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # Deploy only on a push to main. A manual workflow_dispatch runs lint + e2e
+    # (e.g. to validate the Clerk-authenticated tests) and never deploys.
+    if: github.event_name == 'push'
     needs:
       - e2e-tests
     # grants access to the `Production` github environment's
