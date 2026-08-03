@@ -141,6 +141,50 @@ export async function createDraftBlogPost({
 	return { id, slug };
 }
 
+// Writes a DRAFT version of an existing post through the authenticated REST
+// API (`?draft=true`) — the same write path the admin's autosave takes. Only
+// the fields passed are written, so a caller can change one field and leave the
+// rest alone.
+export async function updateDraftBlogPost({
+	authoringNotes,
+	body,
+	id,
+	outline,
+	page,
+	testInfo,
+	title,
+}: {
+	authoringNotes?: string;
+	body?: unknown;
+	id: number;
+	outline?: string;
+	page: Page;
+	testInfo: TestInfo;
+	title?: string;
+}): Promise<void> {
+	const url = new URL(`/api/blog-posts/${id}`, testInfo.project.use.baseURL);
+	url.searchParams.set("draft", "true");
+	url.searchParams.set("locale", "ja-JP");
+
+	const response = await page.request.patch(`${url}`, {
+		headers: {
+			"content-type": "application/json",
+		},
+		data: {
+			...(title === undefined ? {} : { title }),
+			...(body === undefined ? {} : { body }),
+			...(outline === undefined ? {} : { outline }),
+			...(authoringNotes === undefined ? {} : { authoringNotes }),
+		},
+	});
+
+	if (!response.ok()) {
+		throw new Error(
+			`Failed to write the draft blog post: ${response.status()} ${await response.text()}`,
+		);
+	}
+}
+
 // Creates a PUBLISHED post carrying the agentic authoring fields, then writes a
 // draft version that clears them — reproducing the state where the published
 // document has the fields but the post's draft version does not. Used to verify
@@ -320,6 +364,12 @@ async function getExampleCoverImageId({
 }
 
 function createMinimalBlogPostBody(): unknown {
+	return createParagraphBlogPostBody("本文のプレースホルダー。");
+}
+
+// Builds a Lexical body holding one paragraph of `text`, so a test that needs a
+// distinguishable body can write one and then assert it rendered.
+export function createParagraphBlogPostBody(text: string): unknown {
 	return {
 		root: {
 			type: "root",
@@ -333,7 +383,7 @@ function createMinimalBlogPostBody(): unknown {
 							format: 0,
 							mode: "normal",
 							style: "",
-							text: "本文のプレースホルダー。",
+							text,
 							version: 1,
 						},
 					],
