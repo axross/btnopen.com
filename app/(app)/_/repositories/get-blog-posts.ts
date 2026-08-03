@@ -4,6 +4,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { getPayload } from "payload";
 import z from "zod";
 import { canReadDrafts } from "@/helpers/draft-access";
+import { resolvePostReadMode } from "@/helpers/post-read-mode";
 import { config } from "@/payload/config";
 import { rootLogger } from "@/shared/logger";
 import {
@@ -27,7 +28,9 @@ export type BlogPostSummary = z.infer<typeof BlogPostSummary>;
 
 /**
  * Loads the post list. `draft: true` is honoured only for a request carrying a
- * Payload session; an unauthenticated caller is served the published posts.
+ * Payload session; an unauthenticated caller is served the published posts. The
+ * published read is cached and tagged; the draft read is not — see
+ * {@link resolvePostReadMode}.
  */
 export async function getBlogPosts({
 	locale,
@@ -36,12 +39,31 @@ export async function getBlogPosts({
 	locale: PayloadLocale;
 	draft?: boolean;
 }): Promise<BlogPostSummary[]> {
-	// short-circuits so the published path never reads `headers()` and stays
-	// statically renderable.
-	return await findBlogPosts({
-		locale,
-		draft: draft && (await canReadDrafts()),
+	const mode = resolvePostReadMode({
+		requested: draft,
+		// short-circuits so the published path never reads `headers()` and stays
+		// statically renderable.
+		permitted: draft ? await canReadDrafts() : false,
 	});
+
+	return mode === "draft"
+		? await findBlogPosts({ locale, draft: true })
+		: await findPublishedBlogPosts({ locale });
+}
+
+async function findPublishedBlogPosts({
+	locale,
+}: {
+	locale: PayloadLocale;
+}): Promise<BlogPostSummary[]> {
+	"use cache";
+
+	cacheLife("hours");
+	// locale-independent tag so a single revalidateTag busts every locale's
+	// cached list entry (both locales render at the same URL).
+	cacheTag("blog-posts");
+
+	return await findBlogPosts({ locale, draft: false });
 }
 
 async function findBlogPosts({
@@ -51,13 +73,6 @@ async function findBlogPosts({
 	locale: PayloadLocale;
 	draft: boolean;
 }): Promise<BlogPostSummary[]> {
-	"use cache";
-
-	cacheLife("hours");
-	// locale-independent tag so a single revalidateTag busts every locale's
-	// cached list entry (both locales render at the same URL).
-	cacheTag("blog-posts");
-
 	logger.info("Started fetching blog posts.");
 
 	const payload = await getPayload({ config });
