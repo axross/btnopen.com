@@ -17,6 +17,18 @@ const forbiddenStatus = 403;
 const avatarFallbackMinSizePx = 32;
 const avatarFallbackSquareTolerancePx = 1;
 
+// The Clerk-authenticated reader tests need the full test configuration — both
+// Clerk dev-instance keys and the +clerk_test reader — so they are defined only
+// when all three are provided (there is no default reader email). Without them
+// these scenarios stay uncovered rather than failing on missing configuration.
+// biome-ignore-start lint/style/noProcessEnv: env-driven gate mirroring the CI test config
+const canRunClerkReaderTests = Boolean(
+	process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
+		process.env.CLERK_SECRET_KEY &&
+		process.env.TEST_CLERK_READER_EMAIL,
+);
+// biome-ignore-end lint/style/noProcessEnv: env-driven gate mirroring the CI test config
+
 // no locator-native matcher exists for a computed `filter`, so read it via
 // getComputedStyle (the sanctioned exception, as with pseudo-element state),
 // re-sampled through expect.poll at the call sites so it settles.
@@ -488,7 +500,12 @@ if (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
 			}
 		},
 	);
+}
 
+// The reader sign-in and submit journeys additionally need the test reader and
+// the Clerk secret key (for the sign-in ticket), so they are gated on the full
+// configuration rather than on the publishable key alone.
+if (canRunClerkReaderTests) {
 	test(
 		"A signed-out reader sees the Sign in with GitHub affordance",
 		{

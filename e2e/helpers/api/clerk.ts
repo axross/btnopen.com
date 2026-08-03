@@ -2,13 +2,13 @@ import { clerk } from "@clerk/testing/playwright";
 import type { Page } from "@playwright/test";
 
 // The +clerk_test reader account the Clerk-authenticated comment tests sign in
-// as. Must exist in the Clerk development instance; the `+clerk_test` subaddress
-// makes Clerk suppress real email delivery. Overridable so a differently-named
-// provisioned reader works without a code change.
-// biome-ignore-start lint/style/noProcessEnv: using the Clerk test reader identity
-const testReaderEmail =
-	process.env.CLERK_TEST_READER_EMAIL || "e2e+clerk_test@btnopen.test";
-// biome-ignore-end lint/style/noProcessEnv: using the Clerk test reader identity
+// as; it must exist in the Clerk development instance (the `+clerk_test`
+// subaddress makes Clerk suppress real email delivery). There is no default —
+// the reader tests are defined only when TEST_CLERK_READER_EMAIL is set (see
+// comments.test.ts), so an unset value skips them rather than signing in as a
+// stand-in account.
+// biome-ignore lint/style/noProcessEnv: using the Clerk test reader identity
+const testReaderEmail = process.env.TEST_CLERK_READER_EMAIL;
 
 /**
  * Establishes a Clerk reader session on `page` for the `+clerk_test` test
@@ -23,6 +23,12 @@ const testReaderEmail =
  * exercising, which picks up the established session.
  */
 export async function signInAsReader({ page }: { page: Page }): Promise<void> {
+	if (!testReaderEmail) {
+		throw new Error(
+			"TEST_CLERK_READER_EMAIL must be set to sign in the Clerk test reader.",
+		);
+	}
+
 	await page.goto("/");
 	await clerk.signIn({ page, emailAddress: testReaderEmail });
 }

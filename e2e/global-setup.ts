@@ -13,12 +13,18 @@ export default async function globalSetup(): Promise<void> {
 	// available here regardless of module import order.
 	nextEnv.loadEnvConfig(process.cwd());
 
-	// Only prepare Clerk testing tokens when the dev-instance keys are present.
+	// Only prepare Clerk testing tokens when both dev-instance keys are present.
 	// Unconfigured runs (local without setup, PR CI, forked previews) skip Clerk
 	// entirely, mirroring the app's `isClerkAvailable` gate and the env-gated
 	// comment-auth tests — so the suite stays green without Clerk credentials.
-	// biome-ignore lint/style/noProcessEnv: env-driven gate mirroring runtime `isClerkAvailable`
-	if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+	// Both keys are required because clerkSetup() needs the secret key too.
+	// biome-ignore-start lint/style/noProcessEnv: env-driven gate mirroring runtime `isClerkAvailable`
+	const clerkConfigured =
+		process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
+		process.env.CLERK_SECRET_KEY;
+	// biome-ignore-end lint/style/noProcessEnv: env-driven gate mirroring runtime `isClerkAvailable`
+
+	if (!clerkConfigured) {
 		return;
 	}
 
