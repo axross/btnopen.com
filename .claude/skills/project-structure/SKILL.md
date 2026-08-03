@@ -94,8 +94,8 @@ See [security-conventions.md](./references/security-conventions.md) for:
 
 See [code-style.md](./references/code-style.md) for:
 
-- the lowercase-first comment voice for `.ts` / `.tsx` / `.js` source, and what keeps natural casing
-- `biome-ignore` directive casing and the `@throws` requirement
+- the lowercase-first voice for `//` and `/* */` line comments in `.ts` / `.tsx` / `.js` source, what keeps natural casing, and why JSDoc is out of its scope
+- `biome-ignore` directive casing, and why no lint rule enforces the voice
 - the prohibition on barrel re-export files as import sources
 
 ## Routing Conventions
