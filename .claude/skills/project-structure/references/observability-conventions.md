@@ -27,7 +27,7 @@ The `module` emoji identifies a **category of work**, not an individual file. Th
 
 | Emoji | Category | Modules today |
 | --- | --- | --- |
-| `📥` | Payload reads through the repository layer | the eight `app/(app)/_/repositories/get-*.ts` and `posts/[slug]/comments/_/repositories/get-commentable-blog-post.ts` |
+| `📥` | Payload reads through the repository layer | seven of the nine `app/(app)/_/repositories/get-*.ts` — all but `get-tweet.ts` and `get-webembed-metadata.ts`, which have their own rows below — plus `posts/[slug]/comments/_/repositories/get-commentable-blog-post.ts`, for eight in total |
 | `🌏` | outbound web requests to a third party | `app/(app)/_/repositories/get-webembed-metadata.ts` |
 | `𝕏` | tweet retrieval | `app/(app)/_/repositories/get-tweet.ts` |
 | `🧹` | cache invalidation | the three `caches/route.ts` handlers under `posts/` |
