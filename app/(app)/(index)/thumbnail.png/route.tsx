@@ -5,6 +5,7 @@ import {
 	indexThumbnailBackgroundColor,
 	thumbnailForegroundColor,
 } from "@/helpers/brand-colors";
+import { thumbnailHeight, thumbnailWidth } from "@/helpers/thumbnail";
 
 export const maxDuration = 30;
 
@@ -34,8 +35,8 @@ export async function GET(_: NextRequest): Promise<Response> {
 			/>
 		</div>,
 		{
-			width: 1200,
-			height: 630,
+			width: thumbnailWidth,
+			height: thumbnailHeight,
 		},
 	);
 }

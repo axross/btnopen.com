@@ -9,6 +9,7 @@ import {
 	getActiveLocale,
 	openGraphLocaleByLocale,
 } from "@/helpers/i18n";
+import { thumbnailHeight, thumbnailWidth } from "@/helpers/thumbnail";
 import { getWebsite, type Website } from "@/repositories/get-website";
 import { urlOrigin } from "@/runtime";
 import { BlogJsonLd } from "./_components/blog-json-ld";
@@ -144,8 +145,9 @@ export async function generateMetadata(): Promise<Metadata> {
 			images: [
 				{
 					url: `${urlOrigin}/thumbnail.png`,
-					width: 1200,
-					height: 630,
+					width: thumbnailWidth,
+					height: thumbnailHeight,
+					alt: website.name,
 				},
 			],
 			siteName: website.name,

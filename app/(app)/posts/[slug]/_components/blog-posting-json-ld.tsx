@@ -2,6 +2,8 @@ import { formatDate } from "date-fns";
 import type { JSX } from "react";
 import type { BlogPosting, WithContext } from "schema-dts";
 import { getActiveLocale } from "@/helpers/i18n";
+import { serializeJsonLd } from "@/helpers/json-ld";
+import { thumbnailHeight, thumbnailWidth } from "@/helpers/thumbnail";
 import type { BlogPostDetail } from "@/repositories/get-blog-post";
 import { getWebsite } from "@/repositories/get-website";
 import { urlOrigin } from "@/runtime";
@@ -23,9 +25,9 @@ export async function BlogPostingJsonLd({
 	return (
 		<script
 			type="application/ld+json"
-			// biome-ignore lint/security/noDangerouslySetInnerHtml: this dangerouslySetInnerHTML is one of the common patterns to render JSON-LD
+			// biome-ignore lint/security/noDangerouslySetInnerHtml: inline JSON-LD is the convention, and serializeJsonLd() escapes <, >, and & as JSON unicode escapes so no CMS-authored value can terminate this script element
 			dangerouslySetInnerHTML={{
-				__html: JSON.stringify({
+				__html: serializeJsonLd({
 					"@context": "https://schema.org",
 					"@type": "BlogPosting",
 					"@id": `${urlOrigin}/posts/${blogPost.slug}`,
@@ -43,8 +45,10 @@ export async function BlogPostingJsonLd({
 						"@type": "ImageObject",
 						"@id": `${urlOrigin}/posts/${blogPost.slug}/thumbnail.png`,
 						url: `${urlOrigin}/posts/${blogPost.slug}/thumbnail.png`,
-						height: "1200",
-						width: "630",
+						// schema-dts types both as strings, so the shared numbers are
+						// stringified here rather than repeated as literals.
+						width: `${thumbnailWidth}`,
+						height: `${thumbnailHeight}`,
 					},
 					url: `${urlOrigin}/posts/${blogPost.slug}`,
 					isPartOf: {

@@ -16,6 +16,7 @@ import {
 	thumbnailForegroundColor,
 } from "@/helpers/brand-colors";
 import { defaultLocale } from "@/helpers/i18n";
+import { thumbnailHeight, thumbnailWidth } from "@/helpers/thumbnail";
 import { getBlogPost } from "@/repositories/get-blog-post";
 import { urlOrigin, vercelBlobPrefix, vercelBlobToken } from "@/runtime";
 import { rootLogger } from "@/shared/logger";
@@ -140,8 +141,8 @@ export async function GET(
 			</div>
 		</div>,
 		{
-			width: 1200,
-			height: 630,
+			width: thumbnailWidth,
+			height: thumbnailHeight,
 			fonts,
 		},
 	);

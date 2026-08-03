@@ -79,6 +79,7 @@ carries its `@scenario:<id>` tag. The reporter
 | index.json-ld | The index page emits Blog JSON-LD structured data | metadata | should |
 | index.open-graph | The index page emits Open Graph metadata | metadata | should |
 | post.json-ld | A blog post page emits BlogPosting JSON-LD structured data | metadata | should |
+| post.json-ld.escaping | A post title carrying a closing script tag cannot break out of the JSON-LD block | metadata | must |
 | post.open-graph | A blog post page emits Open Graph metadata | metadata | should |
 | post.agentic.noindex | The agentic view opts out of search indexing | metadata | should |
 | index.thumbnail | The index Open Graph thumbnail image endpoint renders | metadata | should |
