@@ -4,7 +4,7 @@ Apply this reference when touching environment access, an outbound fetch, a rout
 
 ## Environment Access
 
-Values reach the browser or the server through exactly one barrel, so a review only has to look in one place to know what is exposed. The table below is the principal set; a handful of test and build helpers read `process.env` too, under the same directive rule.
+Values reach the browser or the server through exactly one barrel, so a review only has to look in one place to know what is exposed. The table below is the complete set of files that read `process.env` outside a Biome override — every one of them carries a directive naming its reason.
 
 | File | Why it may read `process.env` |
 | --- | --- |
@@ -13,10 +13,14 @@ Values reach the browser or the server through exactly one barrel, so a review o
 | `payload/config.ts` | The Payload realm needs database and storage credentials at build time |
 | `next.config.ts` | Config-time access to `CI`, `SENTRY_ORG`, `SENTRY_PROJECT` |
 | `playwright.config.ts` | Test config-time access to `CI`, `PLAYWRIGHT_BASE_URL`, `VERCEL_AUTOMATION_BYPASS_SECRET` |
+| `app/(app)/_/components/markdown.tsx` | The one sanctioned `NODE_ENV` check in application code — see below |
+| `e2e/helpers/api/auth.ts`, `e2e/helpers/api/mcp.ts`, `e2e/tests/routes/posts/comments.test.ts` | Test credentials and env-driven gates, reaching the real environment on purpose |
+
+**`markdown.tsx` is the one component in that table, and it is deliberate.** It compares `process.env.NODE_ENV` to `"development"` to decide whether to `await import("react/jsx-dev-runtime")`. Routing that through `runtime.ts` would defeat the branch: bundlers prune the dev-only import by substituting the literal and eliminating dead code, which requires the comparison to be statically visible at the call site. An imported boolean is opaque to that pass, so the dev runtime would ship to production. This is why the rule below is scoped to *runtime configuration* rather than to `process.env` as a token.
 
 **Guidelines:**
 
-- MUST read environment values through `app/(app)/_/runtime.ts` from any component, repository, helper, or route handler, and through `payload/helpers/runtime.ts` from anything inside `payload/`.
+- MUST read runtime configuration through `app/(app)/_/runtime.ts` from any component, repository, helper, or route handler, and through `payload/helpers/runtime.ts` from anything inside `payload/`. An inline `process.env.NODE_ENV` comparison that a bundler must see literally to eliminate a branch, as `app/(app)/_/components/markdown.tsx` has, is the single exemption — it is build-time substitution rather than deployment configuration, and it extends to no other variable.
 - MUST carry a `// biome-ignore lint/style/noProcessEnv:` directive with a reason on any sanctioned direct `process.env` access. That comment — not a config whitelist — is what exempts every file in the table above, and it is the marker a review looks for.
 - MUST NOT rely on lint to catch a stray `process.env`. `biome.jsonc` sets `noProcessEnv` to `warn`, and its `off` overrides cover only `*.config.js`, `*.config.cjs`, `e2e/reporters/*.ts`, `e2e/check-scenario-coverage.mjs`, and `scripts/*.mjs` — none of the files above. An unsanctioned access therefore surfaces as a warning while `npm run lint` still exits successfully.
 - MUST NOT add a `biome.jsonc` override to exempt application code from `noProcessEnv`; the directive-per-site rule is what keeps the sanctioned set enumerable.

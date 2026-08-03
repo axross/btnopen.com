@@ -128,7 +128,7 @@ See [comments-subsystem.md](./references/comments-subsystem.md) for:
 
 See [observability-conventions.md](./references/observability-conventions.md) for:
 
-- the Pino `rootLogger` and the per-module child logger with its emoji `module` field
+- the Pino `rootLogger` in `shared/logger.ts`, and the child logger whose emoji `module` field names a category of work rather than a file
 - the level policy, including the prohibition on `logger.error()`
 - `@sentry/nextjs` as the only Sentry entry point, the config files that own initialization, and `global-error.tsx`
 
@@ -144,7 +144,7 @@ See [testing-conventions.md](./references/testing-conventions.md) for:
 
 See [known-deviations.md](./references/known-deviations.md) for:
 
-- the deviations this repository has accepted against an installed capability's rule, currently one: `app/(app)/_/` grouping feature-agnostic modules by kind rather than by domain
+- the deviations this repository has accepted against an installed capability's rule, currently two: `app/(app)/_/` grouping feature-agnostic modules by kind rather than by domain, and Sentry's debug statements shipping in the production bundle because Turbopack exposes no way to strip them
 - telling a deviation (a collision this repository chose) from a gap (an installed capability that is wrong, outdated, or silent)
 - recording a new one, and why editing the installed copy is never the resolution
 - routing a gap upstream to [`axross/skills`](https://github.com/axross/skills) with the human's go-ahead, and what to do meanwhile

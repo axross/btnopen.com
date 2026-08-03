@@ -4,14 +4,15 @@ Apply these rules when writing any user-facing string — navigation labels, but
 
 ## Language
 
-Language captures the project-specific context for the checklist below: The root document's language attribute is currently English. MUST NOT flip it without a deliberate site-wide i18n rollout; inline Japanese content inside English-root documents is accepted today without per-region language wrappers.
+Language captures the project-specific context for the checklist below: The site serves two locales, negotiated per request — `ja-JP` and `en-US`, with `ja-JP` as the default. UI copy is not written inline; it comes from the per-locale catalogs under `app/(app)/_/translations/`, read through `next-intl`.
 
-- Primary UI copy language is **Japanese**. English is the fallback for readers outside Japanese-reading locales, as the project overview in the repository's working agreement states.
+- Primary UI copy language is **Japanese**. English is the fallback for readers outside Japanese-reading locales, as the project overview in the repository's working agreement states — and the negotiation encodes exactly that: `defaultLocale` is `ja-JP`, and English is reached only by an explicit choice or a matching `Accept-Language`.
 
 **Guidelines:**
 
-- MUST NOT flip the root document's language attribute without a deliberate site-wide i18n rollout; inline Japanese content inside English-root documents is accepted today without per-region language wrappers.
-- SHOULD write Open Graph / Twitter / metadata strings in the language that best serves discovery for the primary audience — the homepage is currently authored in Japanese for its social-preview copy.
+- MUST add a new UI string to every locale catalog under `app/(app)/_/translations/`, not to one — a key present in only one catalog leaves the other locale rendering a missing-message fallback.
+- MUST NOT hardcode user-facing copy in a component when an equivalent catalog key would serve; the language attribute and the copy have to agree, and only the catalog keeps them in step.
+- SHOULD write Open Graph / Twitter / metadata strings in the language that best serves discovery for the primary audience — the homepage is currently authored in Japanese for its social-preview copy, and `alternateOpenGraphLocales` advertises the other locale.
 
 ## Voice and Tone
 
