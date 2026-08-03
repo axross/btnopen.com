@@ -2,11 +2,12 @@ import "server-only";
 
 import clsx from "clsx";
 import { cacheLife } from "next/cache";
-import { createElement, type ElementType, Fragment, memo } from "react";
+import { createElement, type ElementType, Fragment } from "react";
 import jsxRuntime from "react/jsx-runtime";
 import type { Options as RehypeReactOptions } from "rehype-react";
 import { Banner } from "@/components/banner";
 import { Embed } from "@/components/embed";
+import { Link } from "@/components/link";
 import { Media } from "@/components/media";
 import { Snippet } from "@/components/snippet";
 import { Table, TableHeaderCell } from "@/components/table";
@@ -14,7 +15,7 @@ import { renderMarkdown } from "@/helpers/markdown";
 import type { PayloadLocale } from "@/shared/payload-types";
 
 const defaultComponents = {
-	a: "a",
+	a: Link,
 	h1: "h1",
 	h2: "h2",
 	h3: "h3",
@@ -79,13 +80,42 @@ export async function Markdown({
 
 	cacheLife("hours");
 
+	const markdownElement = await renderMarkdown({
+		markdown,
+		rehypeReactOptions: await getRehypeReactOptions({
+			components: createComponents({ classNames, locale }),
+		}),
+	});
+
+	return <>{markdownElement}</>;
+}
+
+/**
+ * Builds the tag-to-component map `rehypeReact` renders through, wrapping each
+ * mapped component so the caller's `classNames` entry reaches it.
+ *
+ * The wrappers close over `classNames` and `locale`, so the map is built once
+ * per `<Markdown>` call rather than once per module. None of them is wrapped in
+ * `memo`, and adding it back would do nothing: `<Markdown>` is a Server
+ * Component rendering inside a cache scope, its output is an RSC payload, and
+ * these wrapper types never reach client reconciliation. The `memo` that used
+ * to sit here compared props across component types re-created on every call,
+ * which no memoization can ever match.
+ */
+function createComponents({
+	classNames,
+	locale,
+}: {
+	classNames: Partial<Record<keyof typeof defaultComponents, string>>;
+	locale: PayloadLocale;
+}): Record<string, ElementType> {
 	const components: Record<string, ElementType> = {};
 
 	for (const [key, value] of Object.entries(defaultComponents)) {
 		const name = key as keyof typeof defaultComponents;
 		const component = value as ElementType;
 
-		components[key] = memo(({ className, ...props }) => {
+		components[key] = ({ className, ...props }) => {
 			const mergedClassName = classNames[name]
 				? clsx(classNames[name], className)
 				: className;
@@ -117,15 +147,10 @@ export async function Markdown({
 				// localized `alt` — and gets it the same way.
 				...(name === "embed" || name === "img" ? { locale } : {}),
 			});
-		});
+		};
 	}
 
-	const markdownElement = await renderMarkdown({
-		markdown,
-		rehypeReactOptions: await getRehypeReactOptions({ components }),
-	});
-
-	return <>{markdownElement}</>;
+	return components;
 }
 
 async function getRehypeReactOptions({

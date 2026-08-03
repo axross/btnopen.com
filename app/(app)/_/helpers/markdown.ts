@@ -16,15 +16,9 @@ import type {
 } from "mdast-util-directive";
 import { gfmStrikethroughFromMarkdown } from "mdast-util-gfm-strikethrough";
 import { gfmTableFromMarkdown } from "mdast-util-gfm-table";
-import {
-	gfmStrikethrough,
-	gfmStrikethroughHtml,
-} from "micromark-extension-gfm-strikethrough";
-import { gfmTable, gfmTableHtml } from "micromark-extension-gfm-table";
-import {
-	combineExtensions,
-	combineHtmlExtensions,
-} from "micromark-util-combine-extensions";
+import { gfmStrikethrough } from "micromark-extension-gfm-strikethrough";
+import { gfmTable } from "micromark-extension-gfm-table";
+import { combineExtensions } from "micromark-util-combine-extensions";
 import type { JSX } from "react";
 import rehypeReact, { type Options as RehypeReactOptions } from "rehype-react";
 // the `parseOnly` entry point adds only the micromark parse-side extension; this
@@ -36,6 +30,7 @@ import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { type Processor, unified } from "unified";
 import { SKIP, visit } from "unist-util-visit";
+import { classifyLinkHref } from "@/helpers/link-href";
 import { getSingletonHighlighter } from "@/helpers/shiki";
 
 async function renderMarkdown({
@@ -47,7 +42,7 @@ async function renderMarkdown({
 }): Promise<JSX.Element> {
 	const highlighter = await getSingletonHighlighter();
 	const file = await unified()
-		.use(remarkParse, { allowDangerousProtocol: true })
+		.use(remarkParse)
 		// amends CommonMark emphasis flanking rules so `**bold**` still closes when
 		// the delimiter neighbours CJK punctuation (e.g. `**…。**続き`), which the
 		// Lexical→markdown serializer emits verbatim for Japanese prose. must run
@@ -99,6 +94,7 @@ async function renderMarkdown({
 			tabindex: false,
 		})
 		.use(rehypeUnnestPre)
+		.use(rehypeAllowedLinkProtocols)
 		.use(rehypeReact, rehypeReactOptions)
 		.process(markdown);
 
@@ -111,7 +107,6 @@ function remarkPartialGfm(this: Processor<MdastRoot>) {
 
 	data.micromarkExtensions ??= [];
 	data.fromMarkdownExtensions ??= [];
-	data.toMarkdownExtensions ??= [];
 
 	data.micromarkExtensions.push(
 		combineExtensions([gfmStrikethrough(), gfmTable()]),
@@ -120,9 +115,13 @@ function remarkPartialGfm(this: Processor<MdastRoot>) {
 		gfmStrikethroughFromMarkdown(),
 		gfmTableFromMarkdown(),
 	]);
-	data.toMarkdownExtensions.push(
-		combineHtmlExtensions([gfmStrikethroughHtml(), gfmTableHtml()]),
-	);
+	// only the parse and MDAST levels are registered. the packages' third level
+	// (`gfmStrikethroughHtml()` / `gfmTableHtml()`) is a micromark HTML-compiler
+	// extension, and there is no HTML compiler here: this pipeline hands MDAST to
+	// `remarkRehype` and compiles the HAST to React through `rehypeReact`. it is
+	// also not the shape `toMarkdownExtensions` takes — that reads
+	// `mdast-util-to-markdown` extensions, and nothing serializes back to
+	// markdown either. same reasoning as `remark-cjk-friendly/parseOnly` above.
 }
 
 function remarkEmbeds() {
@@ -238,6 +237,42 @@ function sliceDirectiveSource(
 	}
 
 	return source.slice(start, end);
+}
+
+// nothing upstream restricts a link's protocol: `mdast-util-to-hast`'s link
+// handler percent-encodes the destination through `normalizeUri` and never
+// reads its scheme, so `javascript:` and `data:` survive the entire remark half
+// intact — and the CMS stores them, because Payload's Lexical link field
+// rejects only empty values and values containing a space. React happens to
+// refuse a `javascript:` href, but that covers one scheme and is an internal of
+// somebody else's library, so the allowlist lives here instead.
+//
+// this runs on HAST rather than MDAST deliberately: by now character references
+// are decoded and `normalizeUri` has run, so the value inspected is the exact
+// string that would become the DOM attribute. only the `href` is dropped, never
+// the element, so the author's link text still renders — the same
+// preserve-content-over-strictness posture as
+// `remarkLiteralizeUnhandledDirectives`.
+function rehypeAllowedLinkProtocols() {
+	return (tree: HastRoot) => {
+		visit(tree, "element", (node) => {
+			if (node.tagName !== "a") {
+				return;
+			}
+
+			const href = node.properties.href;
+
+			if (typeof href !== "string") {
+				return;
+			}
+
+			if (classifyLinkHref(href) === "blocked") {
+				// `hast-util-to-jsx-runtime` skips a property whose value is
+				// `undefined`, so this emits an anchor with no `href` at all.
+				node.properties.href = undefined;
+			}
+		});
+	};
 }
 
 function rehypeUnnestPre() {

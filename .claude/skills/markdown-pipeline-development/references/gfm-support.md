@@ -8,20 +8,22 @@ GFM Support is a project prohibition: do not replace `remarkPartialGfm` with the
 
 - MUST NOT replace `remarkPartialGfm` with the full `remark-gfm` plugin unless all GFM features (autolinks, footnotes, task lists, etc.) are explicitly needed and tested.
 
-## Three-Level Registration
+## Two-Level Registration
 
-GFM features are only safe when parsing, MDAST conversion, and serialization are wired together in `remarkPartialGfm`:
+A GFM feature works only when parsing and MDAST conversion are wired together in `remarkPartialGfm`:
 
 1. **Micromark extension** (`data.micromarkExtensions`) — tokenizer that recognizes the syntax during parsing. Example: `gfmTable()` from `micromark-extension-gfm-table`.
 2. **MDAST fromMarkdown extension** (`data.fromMarkdownExtensions`) — converts micromark tokens into MDAST nodes. Example: `gfmTableFromMarkdown()` from `mdast-util-gfm-table`.
-3. **HTML extension** (`data.toMarkdownExtensions`) — serializes back to HTML (used for markdown-to-HTML output). Example: `gfmTableHtml()` from `micromark-extension-gfm-table`.
 
-Missing any level causes parsing failures or silent data loss.
+Missing either level causes parsing failures or silent data loss.
+
+There is no third level in this pipeline. The GFM packages also ship `gfmTableHtml()` / `gfmStrikethroughHtml()`, but those are micromark **HTML-compiler** extensions and there is no HTML compiler here: `remarkPartialGfm` hands MDAST to `remarkRehype`, and the resulting HAST is compiled to React by `rehypeReact`. They are not the shape `data.toMarkdownExtensions` reads either — that takes `mdast-util-to-markdown` extensions, and nothing serializes back to markdown. A `toMarkdownExtensions` push carrying `combineHtmlExtensions([…])` was therefore inert on two counts and has been removed; the reasoning matches the `remark-cjk-friendly/parseOnly` import in the same file.
 
 **Guidelines:**
 
-- MUST register new GFM features at all three levels in `remarkPartialGfm`: micromark extension, MDAST fromMarkdown extension, and HTML extension.
-- MUST register the three levels together via `combineExtensions` / `combineHtmlExtensions`.
+- MUST register a new GFM feature at both levels in `remarkPartialGfm`: the micromark extension and the MDAST fromMarkdown extension.
+- MUST combine the micromark extensions through `combineExtensions`.
+- MUST NOT push an HTML-compiler extension (`…Html()`, `combineHtmlExtensions`) or an `mdast-util-to-markdown` extension into this pipeline; neither compiler exists here.
 
 ## Standard MDAST Nodes vs Custom Nodes
 

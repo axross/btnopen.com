@@ -18,6 +18,8 @@ Markdown string
   → remarkRehype         (MDAST → HAST, with custom directive handler)
   → rehypeShiki           (syntax highlighting on code blocks)
   → rehypeUnnestPre      (flatten pre>code nesting)
+  → rehypeAllowedLinkProtocols
+                         (drop a link href outside the protocol allowlist)
   → rehypeReact          (HAST → React JSX elements)
 ```
 

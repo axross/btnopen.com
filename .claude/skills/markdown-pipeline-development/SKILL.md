@@ -1,6 +1,6 @@
 ---
 name: markdown-pipeline-development
-description: The ability to build and review this project's markdown rendering pipeline — `app/(app)/_/helpers/markdown.ts`, `app/(app)/_/components/markdown.tsx`, Shiki setup, and the `Markdown`/`renderMarkdown` server components. Covers the unified pipeline (remarkParse → remarkCjkFriendly → remarkDirective → remarkPartialGfm → remarkEmbeds → remarkLiteralizeUnhandledDirectives → remarkRehype → rehypeShiki → rehypeUnnestPre → rehypeReact), plugin-ordering rules, custom-plugin conventions, adding custom MDAST directive nodes (passThrough + handler + React component, all three levels), the `embed` directive and its Payload rich-text block with directive-form `jsx` markdown converters, partial-GFM three-level registration, HAST→React component mapping, Shiki singleton usage, server-only execution with `"use cache"`, Payload-Lexical content source, Sentry-based unknown-node handling, and the content-safety rules that keep CMS-authored markdown from breaking out of React's output encoding.
+description: The ability to build and review this project's markdown rendering pipeline — `app/(app)/_/helpers/markdown.ts`, `app/(app)/_/components/markdown.tsx`, Shiki setup, and the `Markdown`/`renderMarkdown` server components. Covers the unified pipeline (remarkParse → remarkCjkFriendly → remarkDirective → remarkPartialGfm → remarkEmbeds → remarkLiteralizeUnhandledDirectives → remarkRehype → rehypeShiki → rehypeUnnestPre → rehypeAllowedLinkProtocols → rehypeReact), plugin-ordering rules, custom-plugin conventions, adding custom MDAST directive nodes (passThrough + handler + React component, all three levels), the `embed` directive and its Payload rich-text block with directive-form `jsx` markdown converters, partial-GFM two-level registration, HAST→React component mapping, Shiki singleton usage, server-only execution with `"use cache"`, Payload-Lexical content source, Sentry-based unknown-node handling, and the content-safety rules — the link-protocol allowlist and the body-link isolation rules included — that keep CMS-authored markdown from breaking out of React's output encoding.
 when_to_use: Use when writing, reviewing, or modifying any markdown-pipeline code, even when the user only mentions "remark", "rehype", "mdast", "syntax highlighting", "blog post rendering", "embed", "webembed", "rich-text block", or a markdown bug. Also use when judging whether authored content can inject markup through this pipeline — it owns that surface's XSS rules.
 user-invocable: false
 ---
@@ -69,7 +69,7 @@ Partial GitHub Flavored Markdown support (strikethrough and tables only).
 See [gfm-support.md](./references/gfm-support.md) for:
 
 - Why full `remark-gfm` is not used
-- Three-level registration explained (micromark, mdast-util, HTML)
+- Two-level registration explained (micromark, mdast-util), and why this pipeline has no third level
 - Standard MDAST nodes vs custom nodes in the remarkRehype bridge
 - Table rendering wiring (component mapping pointer) and GFM alignment `align` → inline `text-align` propagation
 - Lexical admin caveats: `EXPERIMENTAL_TableFeature` opt-in, no alignment authoring, dropped `colspan` / `rowspan`, upstream API instability
@@ -91,7 +91,7 @@ Mapping HTML tags and custom directives to React components.
 See [react-component-mapping.md](./references/react-component-mapping.md) for:
 
 - `defaultComponents` mapping and `classNames` override mechanism
-- Required component mappings (`img` → Media, `pre` → Snippet, `embed` → Embed, `table` → Table, `th` → TableHeaderCell)
+- Required component mappings (`a` → Link, `img` → Media, `pre` → Snippet, `embed` → Embed, `table` → Table, `th` → TableHeaderCell), and why `a` may never go back to the native tag
 - Fallback behavior for unmapped tags (native HTML, no class names)
 - Type-only sentinel key pattern (N-channel; `tableWrapper` and `tableScrollArea` are both sentinels on the `Table` component) for multi-element components that need independent class channels per nested element
 - `className` prop requirement for new components
@@ -120,7 +120,8 @@ The pipeline renders CMS-authored content, making it this project's principal un
 
 See [content-safety.md](./references/content-safety.md) for:
 
-- the defenses currently in force — `allowDangerousProtocol: true`, the permissive `unknownHandler`, and React's encoding through `rehypeReact` — and which compensating control each depends on
+- the defenses currently in force — the `rehypeAllowedLinkProtocols` allowlist, the same check inside the `Link` component, `Embed`'s http(s) gate, the permissive `unknownHandler`, and React's encoding through `rehypeReact` — plus the two things that only look like defenses (`remark-rehype` does not sanitize URLs, and the CMS does not filter them)
+- body-link rules: external-link isolation, the internal-link primitive, protocol-relative destinations, and why body links carry no `nofollow`
 - raw-HTML sinks that bypass React's output encoding, and the attribute-allowlist rule for CMS-controlled values
 - directive-specific rules for HAST handler properties, unescaped attribute values, and external-link isolation
 - the `images.remotePatterns` gate and what `unoptimized` skips
