@@ -2,7 +2,7 @@ import { type ComponentProps, type JSX, Suspense } from "react";
 import { BlogPostListLoaded } from "./blog-post-list/loaded";
 import { BlogPostListLoading } from "./blog-post-list/loading";
 
-export async function BlogPostList({
+export function BlogPostList({
 	draft,
 	className,
 	"data-testid": dataTestId,
@@ -11,7 +11,7 @@ export async function BlogPostList({
 }: ComponentProps<"ul"> & {
 	draft?: Promise<boolean>;
 	"data-testid"?: string;
-}): Promise<JSX.Element> {
+}): JSX.Element {
 	return (
 		<Suspense
 			fallback={

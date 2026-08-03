@@ -6,11 +6,11 @@ import {
 } from "@/components/loading-placeholder";
 import css from "./loading.module.css";
 
-export async function BlogPostListLoading({
+export function BlogPostListLoading({
 	className,
 	children,
 	...props
-}: ComponentProps<"ul">): Promise<JSX.Element> {
+}: ComponentProps<"ul">): JSX.Element {
 	return (
 		<ul className={clsx(css.blogPostListLoading, className)} {...props}>
 			<BlogPostListLoadingItem data-testid="blog-post" />
