@@ -71,7 +71,7 @@ export function CommentComposer({
 		);
 	}
 
-	// Fetches a fresh double-submit CSRF token for each submit. The same request
+	// fetches a fresh double-submit CSRF token for each submit. The same request
 	// re-pins the matching cookie in the browser, so the token and cookie always
 	// originate together and neither goes stale between attempts (the cookie has
 	// a one-hour lifetime, so a cached token would eventually outlive it).

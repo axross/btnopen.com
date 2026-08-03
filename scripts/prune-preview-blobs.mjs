@@ -40,7 +40,7 @@ try {
 	let deleted = 0;
 
 	do {
-		// Cursor pagination is inherently sequential — each page needs the
+		// cursor pagination is inherently sequential — each page needs the
 		// previous page's cursor — so these awaits cannot be parallelized.
 		// biome-ignore lint/performance/noAwaitInLoops: sequential cursor paging
 		const { blobs, cursor: nextCursor } = await list({

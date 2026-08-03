@@ -3,7 +3,7 @@ import { getCreatedDocId } from "./mcp";
 
 type CommentStatus = "pending" | "approved" | "rejected";
 
-// Creates a comment directly through the authenticated Payload REST API (which
+// creates a comment directly through the authenticated Payload REST API (which
 // the seeded test user can do as an admin), letting a test seed any moderation
 // state, author reply, or parent it needs. Pair every call with `deleteComment`
 // in teardown.

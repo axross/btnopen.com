@@ -6,7 +6,7 @@ import { getCreatedDocId, getCurrentUserId, isRecord } from "./mcp";
 
 export const exampleBlogPostSlug = "markdown-example";
 
-// The seed's PUBLISHED post (the example post above stays a draft), so this one
+// the seed's PUBLISHED post (the example post above stays a draft), so this one
 // is what a public, unauthenticated view renders.
 export const publishedBlogPostSlug = "declarative-ui";
 
@@ -42,7 +42,7 @@ export async function getExampleBlogPost({
 	);
 }
 
-// Fetches the PUBLISHED seed blog post through the public REST read (no `draft`
+// fetches the PUBLISHED seed blog post through the public REST read (no `draft`
 // param), so it reflects what a public/unauthenticated view renders. Mirrors
 // `getExampleBlogPost`, which targets the DRAFT seed post via `draft=true`.
 export async function getPublishedBlogPost({
@@ -76,7 +76,7 @@ export async function getPublishedBlogPost({
 	);
 }
 
-// Creates a draft blog post through the authenticated REST API, reusing the
+// creates a draft blog post through the authenticated REST API, reusing the
 // seeded cover image and current test user so the caller only supplies the
 // slug/title and the optional agentic authoring fields. Pair every call with
 // `deleteBlogPost` (from the mcp helper) in teardown.
@@ -141,7 +141,7 @@ export async function createDraftBlogPost({
 	return { id, slug };
 }
 
-// Creates a PUBLISHED post carrying the agentic authoring fields, then writes a
+// creates a PUBLISHED post carrying the agentic authoring fields, then writes a
 // draft version that clears them — reproducing the state where the published
 // document has the fields but the post's draft version does not. Used to verify
 // the draft agentic view falls back to the published values. Pair with
@@ -226,7 +226,7 @@ export async function createPublishedPostWithEmptyDraftAgentic({
 	return { id, slug };
 }
 
-// Creates a PUBLISHED post (so it is publicly visible), reusing the seeded
+// creates a PUBLISHED post (so it is publicly visible), reusing the seeded
 // cover image and current test user. `isCommentsEnabled` toggles the per-post
 // comments section. Pair every call with `deleteBlogPost` in teardown.
 export async function createPublishedBlogPost({

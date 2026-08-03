@@ -58,7 +58,7 @@ export function getMcpApiKey(): string {
 	);
 }
 
-// Provisions an MCP API key scoped to exactly the surface the MCP e2e test
+// provisions an MCP API key scoped to exactly the surface the MCP e2e test
 // asserts (read-only find access plus the two custom body-mutation tools). When
 // PAYLOAD_MCP_E2E_API_KEY is set it is treated as a pre-issued override and no
 // key is created. Pair every call with cleanupMcpApiKey in teardown.
@@ -122,7 +122,7 @@ export async function provisionMcpApiKey({
 	);
 }
 
-// Deletes the key provisioned by provisionMcpApiKey. Does nothing when the
+// deletes the key provisioned by provisionMcpApiKey. Does nothing when the
 // key came from PAYLOAD_MCP_E2E_API_KEY or when no key was provisioned.
 export async function cleanupMcpApiKey({
 	page,

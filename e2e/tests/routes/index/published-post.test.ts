@@ -5,7 +5,7 @@ import {
 	getPublishedBlogPost,
 } from "@/e2e/helpers/api/blog-post";
 
-// This exercises the public index view: it navigates without `draft=true`, so
+// this exercises the public index view: it navigates without `draft=true`, so
 // the list renders published-only regardless of the session. The storage state
 // is reused only so the `/api/blog-posts` read (which is access-controlled) can
 // fetch the expected record — it does not enable drafts, which need the param.

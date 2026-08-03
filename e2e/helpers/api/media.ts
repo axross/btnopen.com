@@ -2,12 +2,12 @@ import type { Page, TestInfo } from "@playwright/test";
 import type { PayloadLocale } from "@/shared/payload-types";
 import { isRecord } from "./mcp";
 
-// The shared placeholder media both seed posts embed in their bodies via the
+// the shared placeholder media both seed posts embed in their bodies via the
 // `![media:<id>]()` upload directive (`sharedMediaId` in
 // `payload/helpers/seed.ts`). Its `alt` is seeded in both locales.
 export const sharedMediaId = "019d1223-94d4-754c-8f57-47337be15c9e";
 
-// Reads the shared media's localized `alt` through the public REST API, so a
+// reads the shared media's localized `alt` through the public REST API, so a
 // test asserts the rendered alt against what the CMS holds for that locale
 // rather than against its own copy of the seeded string.
 export async function getSharedMediaAlt({

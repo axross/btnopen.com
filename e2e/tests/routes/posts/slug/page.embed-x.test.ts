@@ -62,7 +62,7 @@ function createBody(children: LexicalNode[]): unknown {
 	};
 }
 
-// A stable, public tweet ("just setting up my twttr"). The card's timestamp
+// a stable, public tweet ("just setting up my twttr"). The card's timestamp
 // link and the degraded fallback link both point at this /status/20 URL, so the
 // assertion holds whether or not the live syndication endpoint is reachable.
 const tweetUrl = "https://x.com/jack/status/20";

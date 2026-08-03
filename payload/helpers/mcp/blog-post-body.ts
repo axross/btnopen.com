@@ -99,6 +99,14 @@ export async function prepareBlogPostBodyForWrite(
 	return bodyForWrite as BlogPost["body"];
 }
 
+/**
+ * Walks a body location path and returns the children array it addresses.
+ *
+ * @throws if any index in `location` is negative (only a trailing -1 is
+ * meaningful, and it belongs to the append caller rather than this walk), if no
+ * Lexical node exists at the location, or if the node it reaches has no
+ * `children` array to descend into.
+ */
 export function getChildrenAtLocation(
 	body: BlogPost["body"],
 	location: number[],
@@ -130,6 +138,13 @@ export function getChildrenAtLocation(
 	return children;
 }
 
+/**
+ * Deep-clones a post body so a mutation works on a copy rather than on the
+ * document the caller read.
+ *
+ * @throws if `body` is absent — a post with no body has nothing to mutate, and
+ * cloning `null` would defer that failure to the mutation itself.
+ */
 export function cloneBlogPostBody(
 	body: BlogPost["body"] | null | undefined,
 ): BlogPost["body"] {
@@ -173,6 +188,14 @@ export async function validateRichTextReferences(
 	);
 }
 
+/**
+ * Collects every upload node's media ID from a body subtree, recursing through
+ * each node's children.
+ *
+ * @throws if an upload node points at a collection other than `media`, or
+ * carries a `value` that is not a string ID — either shape would pass an
+ * unresolvable reference on to the existence check.
+ */
 function collectUploadIds(nodes: unknown[], uploadIds: Set<string>): void {
 	for (const node of nodes) {
 		if (!isRecord(node)) {

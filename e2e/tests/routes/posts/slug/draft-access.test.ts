@@ -3,7 +3,7 @@ import { exampleBlogPostSlug } from "@/e2e/helpers/api/blog-post";
 
 const notFoundStatus = 404;
 
-// No `storageState` here on purpose: these run signed out, which is the whole
+// no `storageState` here on purpose: these run signed out, which is the whole
 // point. The seed's example post is never published, so a visitor who asks for
 // its draft view must get the not-found surface rather than the unpublished
 // content. The authenticated counterparts live in page.agentic.test.ts and

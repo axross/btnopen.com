@@ -22,19 +22,19 @@ import { logger } from "./logger";
 
 const selfDirname = dirname(new URL(import.meta.url).pathname);
 
-// The shared placeholder media referenced by both seed posts' bodies via the
+// the shared placeholder media referenced by both seed posts' bodies via the
 // `![media:<id>]()` upload directive. Seeded once and reused so the two posts do
 // not each carry their own copy of the same fixture image.
 const sharedMediaId = "019d1223-94d4-754c-8f57-47337be15c9e";
 
-// The seed's lookups match on non-localized fields (id, slug, email, filename),
+// the seed's lookups match on non-localized fields (id, slug, email, filename),
 // so passing this only makes explicit the locale Payload would default to
 // (`localization.defaultLocale` in `payload/config.ts`). It is stated so that a
 // localized field added to one of those selections cannot silently start
 // resolving under an unstated locale.
 const seedLocale = "ja-JP";
 
-// The locale the shared media's English `alt` is written to, so a body image in
+// the locale the shared media's English `alt` is written to, so a body image in
 // a seeded post renders localized alt text and local development and preview
 // deployments exercise the site's ja-primary / en-fallback model.
 const fallbackSeedLocale = "en-US";
@@ -74,7 +74,7 @@ interface SeedCommentDescriptor {
 	replies?: { body: string }[];
 }
 
-// The existing example post stays a draft so the draft/preview flows keep a
+// the existing example post stays a draft so the draft/preview flows keep a
 // fixture; the second post is published so the public site, sitemap, and the
 // reader-comments UI render real content (most importantly in per-PR previews).
 const draftBlogPost: SeedBlogPostDescriptor = {
@@ -101,7 +101,7 @@ const publishedBlogPost: SeedBlogPostDescriptor = {
 	authoringNotesFile: "./seed/declarative-ui.authoring-notes.md",
 };
 
-// The draft post keeps the moderation-state example thread (two approved, one
+// the draft post keeps the moderation-state example thread (two approved, one
 // author reply, and one pending comment that stays invisible until approved).
 const draftBlogPostComments: SeedCommentDescriptor[] = [
 	{
@@ -132,7 +132,7 @@ const draftBlogPostComments: SeedCommentDescriptor[] = [
 	},
 ];
 
-// The published post carries a small approved thread so the public/preview post
+// the published post carries a small approved thread so the public/preview post
 // page renders a real reader-comment section (with a one-level author reply).
 const publishedBlogPostComments: SeedCommentDescriptor[] = [
 	{
@@ -181,7 +181,7 @@ export async function seed({
 
 	const tag = await seedExampleTag({ payload });
 
-	// The inline media is shared by both posts' bodies, so seed it once up front.
+	// the inline media is shared by both posts' bodies, so seed it once up front.
 	await seedSharedMedia({ payload });
 
 	const draftPost = await seedBlogPost({
@@ -369,7 +369,7 @@ async function seedSharedMedia({
 }: {
 	payload: Payload;
 }): Promise<Media> {
-	// Match on the stable id, not the filename: an upload appends a numeric
+	// match on the stable id, not the filename: an upload appends a numeric
 	// suffix (`…-1.webp`) when a same-named file already exists, so a
 	// filename lookup would miss the row and re-create it — a UNIQUE id clash.
 	const medias = await payload.find({
@@ -397,7 +397,7 @@ async function seedSharedMedia({
 		});
 
 		// `alt` is localized, and the create above wrote only the default locale.
-		// A second write fills the English one, so an English reader sees English
+		// a second write fills the English one, so an English reader sees English
 		// alt text on a body image instead of the Japanese fallback.
 		await payload.update({
 			collection: "media",
@@ -523,7 +523,7 @@ async function seedBlogPost({
 				authoringNotes,
 				author,
 				publishedAt: descriptor.publishedAt,
-				// Publish through the status field: the create `draft` option alone
+				// publish through the status field: the create `draft` option alone
 				// leaves `_status` at its 'draft' default, so a published post must set
 				// it explicitly (as the e2e `createPublishedBlogPost` helper does). The
 				// draft post keeps the default and passes `draft: true` below.
@@ -576,7 +576,7 @@ async function seedComments({
 		"The blog post has no comments. Started seeding comments.",
 	);
 
-	// No HTTP server is reachable during `onInit`, so every seed-time comment
+	// no HTTP server is reachable during `onInit`, so every seed-time comment
 	// write skips the doomed cache-bust fetch (mirrors the blog-post skip above).
 	const seedContext = { skipCommentCacheBust: true };
 
@@ -599,7 +599,7 @@ async function seedComments({
 		});
 
 		for (const reply of comment.replies ?? []) {
-			// A one-level author reply — renders with the site author's identity and
+			// a one-level author reply — renders with the site author's identity and
 			// the Author badge.
 			// biome-ignore lint/performance/noAwaitInLoops: replies seed sequentially after their parent comment is created
 			await payload.create({

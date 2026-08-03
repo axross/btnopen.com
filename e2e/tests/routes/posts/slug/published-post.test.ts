@@ -5,7 +5,7 @@ import {
 	publishedBlogPostSlug,
 } from "@/e2e/helpers/api/blog-post";
 
-// The public (non-draft) view of the seed's published post: it must be reachable
+// the public (non-draft) view of the seed's published post: it must be reachable
 // at its route and render both its body and the seeded reader-comment thread —
 // which the draft example post never exercises publicly. Navigation omits
 // `draft=true`, so this is the published view; the storage state is reused only

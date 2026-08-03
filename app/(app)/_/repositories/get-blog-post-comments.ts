@@ -89,7 +89,7 @@ export async function getBlogPostComments({
 		return EMPTY;
 	}
 
-	// Author replies render the site author's identity; parse it through the
+	// author replies render the site author's identity; parse it through the
 	// shared schema (as the other repositories do) rather than casting.
 	let siteAuthorName: string | null = null;
 	let siteAuthorAvatarUrl: string | null = null;
@@ -126,7 +126,7 @@ export async function getBlogPostComments({
 		limit: 1000,
 	});
 
-	// Parse each row defensively: a single malformed comment is skipped and
+	// parse each row defensively: a single malformed comment is skipped and
 	// reported rather than failing the whole section (matching the other
 	// list-returning repositories).
 	const rows: CommentRow[] = commentsResult.docs.flatMap((doc) => {
