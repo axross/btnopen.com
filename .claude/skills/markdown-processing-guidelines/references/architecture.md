@@ -9,6 +9,7 @@ The pipeline is defined in `app/(app)/_/helpers/markdown.ts` and follows this or
 ```
 Markdown string
   → remarkParse          (markdown → MDAST)
+  → remarkCjkFriendly    (CJK-aware emphasis flanking rules)
   → remarkDirective      (enables directive syntax)
   → remarkPartialGfm     (GFM: strikethrough, tables)
   → remarkEmbeds         (link paragraphs → embed directives)
@@ -17,6 +18,8 @@ Markdown string
   → remarkRehype         (MDAST → HAST, with custom directive handler)
   → rehypeShiki           (syntax highlighting on code blocks)
   → rehypeUnnestPre      (flatten pre>code nesting)
+  → rehypeAllowedLinkProtocols
+                         (drop a link href outside the protocol allowlist)
   → rehypeReact          (HAST → React JSX elements)
 ```
 

@@ -4,20 +4,24 @@
 
 `app/(app)/_/components/markdown.tsx` maps HTML tag names (and custom directive names) to React components via `defaultComponents`. This map is passed to `rehypeReact` as the `components` option.
 
-Each component in the map is wrapped with `memo` to inject a `className` prop from the optional `classNames` override. Consumers (e.g., `BlogPostContent`) pass a `classNames` record that maps tag names to CSS module class names, allowing per-context styling.
+`createComponents()` wraps each entry in a small component that injects a `className` prop from the optional `classNames` override. Consumers (e.g., `BlogPostContent`) pass a `classNames` record that maps tag names to CSS module class names, allowing per-context styling.
+
+The wrappers close over `classNames` and `locale`, so the map is built once per `<Markdown>` call rather than once per module. None of them is memoized, and adding `memo` back would achieve nothing: `<Markdown>` is a Server Component rendering inside a `"use cache"` scope, its output is an RSC payload, and these wrapper types never reach client reconciliation. A `memo` that previously sat here compared props across component types re-created on every call — a comparison no memoization can ever match.
 
 **Guidelines:**
 
 - MUST keep `defaultComponents` as the source of truth for markdown tag and directive component mapping.
 - MUST preserve the `classNames` override path when adding mapped markdown components.
+- MUST NOT wrap a mapped component in `memo`; the wrapper types are created per call and never reconcile on the client.
 
 ## Required Mappings
 
-Required Mappings sets the required project default: map `img` to the `Media` component, `pre` to the `Snippet` component, `embed` to the `Embed` component, and `banner` to the `Banner` component.
+Required Mappings sets the required project default: map `a` to the `Link` component, `img` to the `Media` component, `pre` to the `Snippet` component, `embed` to the `Embed` component, and `banner` to the `Banner` component.
 
 **Guidelines:**
 
-- MUST map `img` to the `Media` component, `pre` to the `Snippet` component, `embed` to the `Embed` component, and `banner` to the `Banner` component.
+- MUST map `a` to the `Link` component, `img` to the `Media` component, `pre` to the `Snippet` component, `embed` to the `Embed` component, and `banner` to the `Banner` component.
+- MUST NOT map `a` back to the native `"a"` tag. `Link` is what applies external-link isolation and the URL-protocol allowlist to authored destinations; see [content-safety.md › Body Links](./content-safety.md#body-links).
 - MUST add a new tag or directive component to `defaultComponents`.
 - MUST make each mapped component accept `className` as a prop so the `classNames` override mechanism works.
 - MUST NOT use `dangerouslySetInnerHTML` in any markdown-rendered component.
@@ -41,7 +45,7 @@ The GFM table family is fully mapped: `table` renders through the `Table` compon
 When a mapped component renders more than one nested element and each nested element needs its own independent class name, use the **type-only sentinel key** pattern. This pattern is N-channel by design — add one sentinel per nested element that needs its own class channel (e.g., `Table` declares both `tableWrapper` for the outer wrapper and `tableScrollArea` for the inner scroll area):
 
 - Add an extra key to `defaultComponents` per channel, whose value is the native tag string (e.g., `tableWrapper: "div"`, `tableScrollArea: "div"`). These keys are never emitted as elements — they exist only so `keyof typeof defaultComponents` includes the sentinel names, which makes `classNames.<sentinel>` type-check on the consumer side.
-- In the memoization loop that forwards class names, add a narrow special case for the parent tag so every sentinel's class is passed to the component as an extra prop (e.g., when `name === "table"`, forward both `wrapperClassName: classNames.tableWrapper` and `scrollAreaClassName: classNames.tableScrollArea`).
+- In the `createComponents()` loop that forwards class names, add a narrow special case for the parent tag so every sentinel's class is passed to the component as an extra prop (e.g., when `name === "table"`, forward both `wrapperClassName: classNames.tableWrapper` and `scrollAreaClassName: classNames.tableScrollArea`).
 - The receiving component accepts each extra prop and applies it to the relevant nested element.
 
 Sentinel keys look like real tag mappings, so their entries need inline comments that explain the synthetic class-name channel.
