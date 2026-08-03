@@ -79,6 +79,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.4",
+    "@clerk/testing": "^2.2.11",
     "@jest/globals": "^30.4.1",
     "@next/env": "^16.2.1",
     "@playwright/test": "^1.61.1",
