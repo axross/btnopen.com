@@ -17,7 +17,7 @@ const forbiddenStatus = 403;
 const avatarFallbackMinSizePx = 32;
 const avatarFallbackSquareTolerancePx = 1;
 
-// The Clerk-authenticated reader tests need Clerk mounted (the publishable key)
+// the Clerk-authenticated reader tests need Clerk mounted (the publishable key)
 // and the +clerk_test reader (TEST_CLERK_READER_EMAIL, no default) to sign in, so
 // they are defined only when both are set; without them these scenarios stay
 // uncovered rather than failing on missing configuration. The Clerk secret key is
@@ -626,7 +626,7 @@ if (canRunClerkReaderTests) {
 				if (postId !== null) {
 					const id = postId;
 
-					// Deleting the post cascades to its comments (the blog-post
+					// deleting the post cascades to its comments (the blog-post
 					// beforeDelete hook), removing the pending reader comment with it.
 					await test.step("Clean up the post and its comments", async () => {
 						await deleteBlogPost({ id, page, testInfo });
