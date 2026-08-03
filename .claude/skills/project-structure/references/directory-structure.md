@@ -10,6 +10,8 @@ Use this tree to decide where repository-level files and app features belong bef
 │   │   │   ├── components/    # generic UI components
 │   │   │   ├── helpers/       # generic or core helper functions
 │   │   │   ├── repositories/  # generic data access functions
+│   │   │   ├── translations/  # per-locale UI message catalogs
+│   │   │   ├── runtime.ts     # the app realm's environment barrel
 │   │   │   └── ...
 │   │   ├── _components/       # root layout sub-components
 │   │   ├── layout.tsx         # root layout
@@ -29,7 +31,8 @@ Use this tree to decide where repository-level files and app features belong bef
 │   │   ├── globals.css        # global styles
 │   │   ├── layers.css         # css layers definitions
 │   │   └── ...
-│   └── (payload)/             # Payload CMS routes (do not change)
+│   ├── (payload)/             # Payload CMS routes (do not change)
+│   └── global-not-found.tsx   # not-found page outside the (app) root layout
 ├── e2e/                       # end-to-end tests
 │   └── ...
 ├── public/                    # public assets
@@ -38,6 +41,9 @@ Use this tree to decide where repository-level files and app features belong bef
 │   └── ...
 ├── shared/                    # realm-neutral modules both app/ and payload/ import
 │   └── ...
+├── docs/                      # deployment pipeline documentation
+├── scripts/                   # repository maintenance scripts (*.mjs)
+├── proxy.ts                   # Next.js proxy, on the Node.js runtime
 └── ...
 ```
 

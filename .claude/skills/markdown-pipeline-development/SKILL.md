@@ -1,15 +1,15 @@
 ---
-name: markdown-processing-guidelines
-description: The conventions for this project's markdown rendering pipeline — `app/(app)/_/helpers/markdown.ts`, `app/(app)/_/components/markdown.tsx`, Shiki setup, and the `Markdown`/`renderMarkdown` server components. Covers the unified pipeline (remarkParse → remarkDirective → remarkPartialGfm → remarkEmbeds → remarkRehype → rehypeShiki → rehypeUnnestPre → rehypeAllowedLinkProtocols → rehypeReact), plugin-ordering rules, custom-plugin conventions, adding custom MDAST directive nodes (passThrough + handler + React component, all three levels), the `embed` directive and its Payload rich-text block with directive-form `jsx` markdown converters, partial-GFM two-level registration, HAST→React component mapping, Shiki singleton usage, server-only execution with `"use cache"`, Payload-Lexical content source, Sentry-based unknown-node handling, and the content-safety rules — the link-protocol allowlist and the body-link isolation rules included — that keep CMS-authored markdown from breaking out of React's output encoding.
+name: markdown-pipeline-development
+description: The ability to build and review this project's markdown rendering pipeline — `app/(app)/_/helpers/markdown.ts`, `app/(app)/_/components/markdown.tsx`, Shiki setup, and the `Markdown`/`renderMarkdown` server components. Covers the unified pipeline (remarkParse → remarkCjkFriendly → remarkDirective → remarkPartialGfm → remarkEmbeds → remarkLiteralizeUnhandledDirectives → remarkRehype → rehypeShiki → rehypeUnnestPre → rehypeAllowedLinkProtocols → rehypeReact), plugin-ordering rules, custom-plugin conventions, adding custom MDAST directive nodes (passThrough + handler + React component, all three levels), the `embed` directive and its Payload rich-text block with directive-form `jsx` markdown converters, partial-GFM two-level registration, HAST→React component mapping, Shiki singleton usage, server-only execution with `"use cache"`, Payload-Lexical content source, Sentry-based unknown-node handling, and the content-safety rules — the link-protocol allowlist and the body-link isolation rules included — that keep CMS-authored markdown from breaking out of React's output encoding.
 when_to_use: Use when writing, reviewing, or modifying any markdown-pipeline code, even when the user only mentions "remark", "rehype", "mdast", "syntax highlighting", "blog post rendering", "embed", "webembed", "rich-text block", or a markdown bug. Also use when judging whether authored content can inject markup through this pipeline — it owns that surface's XSS rules.
 user-invocable: false
 ---
 
-# Markdown Processing Guidelines
+# Markdown Pipeline Development
+
+Use this capability whenever you write, review, or modify the code that parses, transforms, or renders markdown here — the unified pipeline, its remark and rehype plugins, the Shiki highlighter, and the server components that drive them. It also owns whether CMS-authored content can inject markup through that pipeline.
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html).
-
-Apply these rules when writing, reviewing, or modifying code related to markdown parsing, transformation, or rendering.
 
 ## Architecture Overview
 
@@ -91,7 +91,7 @@ Mapping HTML tags and custom directives to React components.
 See [react-component-mapping.md](./references/react-component-mapping.md) for:
 
 - `defaultComponents` mapping and `classNames` override mechanism
-- Required component mappings (`img` → Media, `pre` → Snippet, `embed` → Embed, `table` → Table, `th` → TableHeaderCell)
+- Required component mappings (`a` → Link, `img` → Media, `pre` → Snippet, `embed` → Embed, `table` → Table, `th` → TableHeaderCell), and why `a` may never go back to the native tag
 - Fallback behavior for unmapped tags (native HTML, no class names)
 - Type-only sentinel key pattern (N-channel; `tableWrapper` and `tableScrollArea` are both sentinels on the `Table` component) for multi-element components that need independent class channels per nested element
 - `className` prop requirement for new components
@@ -102,7 +102,7 @@ The markdown pipeline runs entirely server-side with caching.
 
 See [server-components-and-caching.md](./references/server-components-and-caching.md) for:
 
-- `"use server"` and `"use cache"` directives
+- the `import "server-only"` fence, why `"use server"` is its opposite and forbidden here, and the `"use cache"` directive
 - Prohibition on client-side markdown rendering
 
 ## Content Source

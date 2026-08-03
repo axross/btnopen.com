@@ -34,7 +34,7 @@ Nothing else in that capability is affected. Its source-root rule already blesse
 
 ### Sentry's debug and logging statements ship in the production bundle
 
-The Sentry instrumentation capability's [delivery-and-footprint reference](../../sentry-instrumentation/references/delivery-and-footprint.md) makes stripping them a MUST — "MUST strip debug and logging statements from production builds; they exist for development and ship otherwise" — and presents it as a build-plugin option that costs nothing at runtime to enable.
+The Sentry instrumentation capability's `delivery-and-footprint` reference makes stripping them a MUST — "MUST strip debug and logging statements from production builds; they exist for development and ship otherwise" — and presents it as a build-plugin option that costs nothing at runtime to enable.
 
 This repository does not strip them, because on its bundler there is no option to enable. `@sentry/nextjs` exposes the control only as `webpack.treeshake.removeDebugLogging`, which the SDK reads solely in its webpack path and turns into `DefinePlugin` defines; `next build` on Next.js 16 runs Turbopack, so the option produced nothing during the whole time it was set. `bundleSizeOptimizations` reads like the bundler-agnostic equivalent but is not one: the SDK hands it only to the post-compile hook, which never applies the resulting replacement values and runs after compilation regardless. Sentry's own build-options documentation records no Turbopack equivalent. Verified against `@sentry/nextjs` 10.69.0.
 
@@ -50,7 +50,7 @@ Both routes in the section below apply here, because this is a deviation and a g
 
 ## Recording a New Deviation or Gap
 
-Editing the installed copy is never how either is resolved. Every skill under `.claude/skills/` except `project-structure`, `visual-identity`, and `markdown-processing-guidelines` is installed from [`axross/skills`](https://github.com/axross/skills) and tracked in `skills-lock.json`; the next reinstall overwrites a hand-edit without reporting it. So the change is lost, and until it is lost it poses as a rule the library agrees with.
+Editing the installed copy is never how either is resolved. Every skill under `.claude/skills/` except `project-structure`, `visual-identity`, and `markdown-pipeline-development` is installed from [`axross/skills`](https://github.com/axross/skills) and tracked in `skills-lock.json`; the next reinstall overwrites a hand-edit without reporting it. So the change is lost, and until it is lost it poses as a rule the library agrees with.
 
 The two available routes are an issue on the upstream library, and a note here. They are not alternatives to pick between — an upstream issue is slow, and the local note is what keeps work moving until it lands.
 

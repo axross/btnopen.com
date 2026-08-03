@@ -74,9 +74,20 @@ jobs:
         # the whole suite a second time *without* --update-snapshots and fail on
         # the snapshot drift the step above just absorbed.
         run: node e2e/check-scenario-coverage.mjs
+      # Third-party action, so it is pinned to a commit SHA rather than the
+      # moving @v8 tag, which its owner can repoint at any commit. This job's
+      # GITHUB_TOKEN carries contents: write, and actions/checkout persists it
+      # into .git/config where any later step can read it — so a repointed tag
+      # here reaches a token that can push to main and start the production
+      # deploy. Dependabot bumps the SHA and its trailing comment together
+      # (.github/dependabot.yml); that comment must name a RELEASE tag and never
+      # the v8 alias, or dependabot-core#14716 bumps the pin to the branch HEAD
+      # and leaves the comment stale. GitHub's own actions/* entries stay on
+      # major tags — the full convention is in the CI workflow supply chain
+      # section of project-structure's security-conventions.md.
       - name: Create Pull Request for Snapshot Updates
         if: ${{ !cancelled() }}
-        uses: peter-evans/create-pull-request@v8
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           branch: snapshot-updates/${{ github.ref_name }}
           add-paths: e2e/**/__snapshots__/**

@@ -109,21 +109,27 @@ Tappable Target Size captures the project-specific context for the checklist bel
 
 ## Language Attribute
 
-Language Attribute captures the project-specific context for the checklist below: The root document's language attribute is currently English on every page. MUST keep every root document in sync when the site's primary language eventually changes.
+Language Attribute captures the project-specific context for the checklist below: The root document's language attribute is negotiated per request, not fixed. `negotiateLocale` in `app/(app)/_/helpers/i18n.ts` takes an explicit `NEXT_LOCALE` cookie choice first, then the highest-quality `Accept-Language` entry that maps to a supported locale, then falls back to `defaultLocale` (`ja-JP`, keeping the site Japanese-primary). `htmlLangByLocale` narrows the result to the `ja` / `en` tag that reaches the attribute.
+
+Three root documents render it: `app/(app)/layout.tsx` and `app/global-not-found.tsx` both resolve the live negotiated locale, while `app/(app)/global-error.tsx` uses `defaultLocale` because a last-resort error boundary cannot do request-time async work.
 
 **Guidelines:**
 
-- MUST keep the root document's language attribute English on every page until a deliberate site-wide language change updates every root document together.
-- SHOULD allow inline Japanese content inside English-root documents today without per-region language wrappers. When the site grows a multi-page Japanese surface, introduce language wrappers on the Japanese regions — but do not retrofit this change piecemeal; treat it as a site-wide decision.
+- MUST render a new root document's language attribute from the negotiated locale via `htmlLangByLocale`, never as a hardcoded tag. Fall back to `defaultLocale` only where the document genuinely cannot await the negotiation, as `global-error.tsx` does.
+- MUST mark a run of content whose language differs from the negotiated root with its own `lang` attribute, so a screen reader switches voice. The language switcher's per-locale options are the worked example: each carries `lang={locale}` because it names its own language rather than the document's.
+- MUST NOT assume the root is English when authoring copy or choosing a font stack — the same page serves `ja` and `en` depending on the request.
 
 ## Motion Preferences
 
-Motion Preferences captures the project-specific context for the checklist below: The project does not yet honor the reduced-motion preference. When introducing any new animation, SHOULD disable or shorten it for users who have requested reduced motion — this is the forward-looking rule for new work, even though existing animations (sepia fade, glitch layers) do not yet comply.
+Motion Preferences captures the project-specific context for the checklist below: The project honors the reduced-motion preference on its looping and attention-grabbing motion, and not yet on its hover fades. Four stylesheets carry a `@media (prefers-reduced-motion: reduce)` guard — the loading placeholder's pulse, the not-found heading's glitch pseudo-elements, the index portrait's glitch layers, and the markdown table scrollbar's fade. The pattern to copy is a nested guard beside the declaration it cancels, setting `animation: none`, `transition: none`, or `display: none`.
+
+Three filter and colour transitions remain unguarded: the blog post header's 3s sepia fade, the blog post list's hover fade, and the language switcher's transition. They are single-shot, user-initiated, and low-amplitude, which is why they were not the first to be covered — but they are the remaining gap, not the accepted state.
 
 **Guidelines:**
 
-- SHOULD disable or shorten any new animation for users who have requested reduced motion. This is the forward-looking rule for new work, even though existing animations (sepia fade, glitch layers) do not yet comply.
-- MUST NOT introduce infinite or full-screen flashing motion without a reduced-motion fallback.
+- MUST pair any new looping, autoplaying, or full-screen motion with a `@media (prefers-reduced-motion: reduce)` guard that cancels it. Infinite or flashing motion without one is never acceptable.
+- SHOULD guard a new single-shot transition too, and SHOULD add a guard to one of the three listed above when otherwise editing its stylesheet — that is how the remaining gap closes without a dedicated pass.
+- SHOULD place the guard as a nested `@media` block beside the declaration it cancels rather than in a separate global block, so the two stay together when the rule moves.
 
 ## Analytics, Overlays, Modals
 
