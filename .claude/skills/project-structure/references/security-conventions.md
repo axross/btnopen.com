@@ -20,8 +20,7 @@ Values reach the browser or the server through exactly one barrel, so a review o
 
 **Guidelines:**
 
-- MUST read runtime configuration through `app/(app)/_/runtime.ts` from any component, repository, helper, or route handler, and through `payload/helpers/runtime.ts` from anything inside `payload/`.
-- MAY compare `process.env.NODE_ENV` inline where a bundler must see the literal to eliminate a branch, as `app/(app)/_/components/markdown.tsx` does. This is the only exemption to the rule above; it does not extend to any other variable, since `NODE_ENV` alone is build-time-substituted rather than deployment configuration.
+- MUST read runtime configuration through `app/(app)/_/runtime.ts` from any component, repository, helper, or route handler, and through `payload/helpers/runtime.ts` from anything inside `payload/`. An inline `process.env.NODE_ENV` comparison that a bundler must see literally to eliminate a branch, as `app/(app)/_/components/markdown.tsx` has, is the single exemption — it is build-time substitution rather than deployment configuration, and it extends to no other variable.
 - MUST carry a `// biome-ignore lint/style/noProcessEnv:` directive with a reason on any sanctioned direct `process.env` access. That comment — not a config whitelist — is what exempts every file in the table above, and it is the marker a review looks for.
 - MUST NOT rely on lint to catch a stray `process.env`. `biome.jsonc` sets `noProcessEnv` to `warn`, and its `off` overrides cover only `*.config.js`, `*.config.cjs`, `e2e/reporters/*.ts`, `e2e/check-scenario-coverage.mjs`, and `scripts/*.mjs` — none of the files above. An unsanctioned access therefore surfaces as a warning while `npm run lint` still exits successfully.
 - MUST NOT add a `biome.jsonc` override to exempt application code from `noProcessEnv`; the directive-per-site rule is what keeps the sanctioned set enumerable.
