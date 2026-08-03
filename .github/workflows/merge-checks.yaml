@@ -100,13 +100,13 @@ jobs:
         # importMap.js ships to production and blanks the admin document edit
         # view. Generation needs no env file, no database, and no blob token.
         run: |
-          npm run generate:importmap
-          npm run generate:types
+          npx payload generate:importmap
+          npx payload generate:types
       - name: Check For Drift
         # Scoped to the two artifact paths so the failure names what drifted
         # and unrelated working-tree noise cannot fail the job.
         run: |
           git diff --exit-code -- 'app/(payload)/admin/importMap.js' payload/types.ts || {
-            echo '::error::Committed Payload artifacts are stale. Run `npm run generate:importmap` and `npm run generate:types`, then commit the result.'
+            echo '::error::Committed Payload artifacts are stale. Run `npx payload generate:importmap` and `npx payload generate:types`, then commit the result.'
             exit 1
           }

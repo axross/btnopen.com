@@ -383,8 +383,8 @@ contributors and agents alike. `package.json` pins Node.js `>=24.0.0` and npm
 | `npm run test:e2e` | Runs the Playwright end-to-end suite. | When a change affects a UI output surface or e2e coverage. |
 | `npm run test:e2e -- --update-snapshots` | Regenerates Playwright snapshots for the local platform. | Only when a visual change is intentional — pair it with the reason. |
 | `npm run coverage:scenarios` | Runs the e2e suite, then enforces the scenario-coverage gate. | When a change adds or alters a user journey in `e2e/scenarios.md`. |
-| `npm run generate:importmap` | Regenerates `app/(payload)/admin/importMap.js` from the resolved Payload config. | After adding or upgrading a Payload plugin, storage adapter, or custom admin component. |
-| `npm run generate:types` | Regenerates `payload/types.ts` from the resolved Payload config. | After changing a Payload collection, global, or field. |
+| `npx payload generate:importmap` | Regenerates `app/(payload)/admin/importMap.js` from the resolved Payload config. Invoked directly rather than through an npm script. | After adding or upgrading a Payload plugin, storage adapter, or custom admin component. |
+| `npx payload generate:types` | Regenerates `payload/types.ts` from the resolved Payload config. Invoked directly rather than through an npm script. | After changing a Payload collection, global, or field. |
 | `npm run migrate:status` | Shows the Payload migration status. | When investigating migration drift. |
 | `npm run migrate:create` | Creates a migration after a schema change. | Immediately after changing a Payload collection schema. |
 | `npm run migrate:up` | Applies pending migrations to the selected database. | Locally, before testing a schema change. |
@@ -406,8 +406,8 @@ Both generated Payload artifacts — `app/(payload)/admin/importMap.js` and
 The import map is regenerated at runtime only by the development server's hot
 reload, so a stale one survives a restart and ships to production, where it
 blanks the admin document edit view. The Payload Artifacts job therefore
-regenerates both and fails on any diff; run the two `generate:` commands above
-and commit the result to clear it.
+regenerates both and fails on any diff; run the two `payload generate:`
+commands above and commit the result to clear it.
 
 ## Deployment
 
