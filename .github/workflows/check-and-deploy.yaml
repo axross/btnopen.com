@@ -3,8 +3,16 @@ on:
   push:
     branches:
       - main
+  # Run the checks (lint + e2e) on demand against any branch — e.g. to exercise
+  # the Clerk-authenticated comment e2e tests once the dev-instance secrets are
+  # set. The production deployment job is gated to push events below, so a manual
+  # run only lints and tests and never deploys.
+  workflow_dispatch:
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  # Include the event name so a manual workflow_dispatch run never cancels an
+  # in-flight push-triggered deploy on the same ref (and vice versa); same-event
+  # runs on a ref still supersede each other.
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
   cancel-in-progress: true
 jobs:
   lint:
@@ -95,6 +103,9 @@ jobs:
     name: Production Deployment
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # Deploy only on a push to main. A manual workflow_dispatch runs lint + e2e
+    # (e.g. to validate the Clerk-authenticated tests) and never deploys.
+    if: github.event_name == 'push'
     needs:
       - e2e-tests
     # grants access to the `Production` github environment's
