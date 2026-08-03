@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { isSameSiteRequest } from "@/helpers/request-origin";
 import { rootLogger } from "@/shared/logger";
 
-const logger = rootLogger.child({ module: "🌏" });
+const logger = rootLogger.child({ module: "🧹" });
 
 /**
  * Busts the cached blog post list and website records. Called by the blog post
