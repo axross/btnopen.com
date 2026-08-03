@@ -4,39 +4,15 @@ import "./variables.css";
 
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata, Viewport } from "next";
-import {
-	IBM_Plex_Sans,
-	IBM_Plex_Sans_JP,
-	JetBrains_Mono,
-} from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { type ReactNode, Suspense } from "react";
+import { fontVariablesClassName } from "@/fonts";
 import { themeColorDark, themeColorLight } from "@/helpers/brand-colors";
 import { getActiveLocale, htmlLangByLocale } from "@/helpers/i18n";
 import { getWebsite } from "@/repositories/get-website";
 import { isClerkAvailable, sha, urlOrigin, vercelEnvironment } from "@/runtime";
 import { Header } from "./_components/header";
 import { PageViewTracking } from "./_components/page-view-tracking";
-
-const ibmPlexSans = IBM_Plex_Sans({
-	variable: "--font-ibm-plex-sans",
-	subsets: ["latin", "latin-ext"],
-	weight: "variable",
-	display: "block",
-});
-
-const ibmPlexSansJp = IBM_Plex_Sans_JP({
-	variable: "--font-ibm-plex-sans-jp",
-	weight: ["400", "700"],
-	display: "block",
-});
-
-const jetBrainsMono = JetBrains_Mono({
-	variable: "--font-jetbrains-mono",
-	subsets: ["latin", "latin-ext"],
-	weight: "variable",
-	display: "block",
-});
 
 export async function generateMetadata(): Promise<Metadata> {
 	const website = await getWebsite({ locale: await getActiveLocale() });
@@ -92,9 +68,7 @@ async function Document({
 
 	return (
 		<html lang={htmlLangByLocale[locale]}>
-			<body
-				className={`${ibmPlexSans.variable} ${ibmPlexSansJp.variable} ${jetBrainsMono.variable}`}
-			>
+			<body className={fontVariablesClassName}>
 				<AuthProvider>
 					<NextIntlClientProvider>
 						<Header />
