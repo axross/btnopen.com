@@ -45,9 +45,11 @@ requirement is **Important**, a gap that does not is a **Nit**. Cite the owning
 skill in the finding.
 
 - **Skill conformance** — verify the change conforms to **every** skill under
-  `.claude/skills/` whose `when_to_use` matches the changed files, and flag any
-  deviation from a skill's stated rule, citing the skill and the rule. A
-  violated skill **MUST** rule is Important.
+  `.claude/skills/` whose `description` trigger matches the changed files, and
+  flag any deviation from a skill's stated rule, citing the skill and the rule.
+  A violated skill **MUST** rule is Important. If no skill's trigger matches,
+  say so explicitly in the summary — a check that matched nothing is a result
+  to report, not a silent pass.
 - **Acceptance criteria** — verify the diff against **every** acceptance
   criterion in the linked issue (the pull request body's `Closes #<n>`), when
   the pull request links one. Each criterion that is unmet, or that cannot be
