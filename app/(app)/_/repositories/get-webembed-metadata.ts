@@ -7,7 +7,8 @@ import metascraperTitle from "metascraper-title";
 import metascraperUrl from "metascraper-url";
 import { cacheLife } from "next/cache";
 import { rootLogger } from "@/shared/logger";
-import { fetchTimeoutMs, readBoundedArrayBuffer } from "./webembed-fetch";
+import { fetchPermittedUrl, readBoundedArrayBuffer } from "./webembed-fetch";
+import { BlockedHostError } from "./webembed-host";
 import { decodeHtml } from "./webembed-html";
 
 const logger = rootLogger.child({ module: "🌏" });
@@ -34,10 +35,20 @@ export async function getWebEmbedMetadata({
 	try {
 		return await scrapeWebEmbedMetadata(url);
 	} catch (error) {
-		// the embedded host is third-party and may be slow, oversized, or gone;
-		// degrade to the bare URL so the card still renders from the authored
-		// link text instead of failing the whole post.
-		logger.warn({ url, error }, "Failed to fetch web embed metadata.");
+		// the embedded host is third-party and may be slow, oversized, gone, or
+		// somewhere this server refuses to reach; degrade to the bare URL so the
+		// card still renders from the authored link text instead of failing the
+		// whole post. a refusal is called out separately because it is an
+		// authoring mistake far more often than an attack, and reads nothing like
+		// an unreachable host to whoever has to fix it.
+		if (error instanceof BlockedHostError) {
+			logger.warn(
+				{ url, error },
+				"Refused to fetch a web embed from a host this server must not reach.",
+			);
+		} else {
+			logger.warn({ url, error }, "Failed to fetch web embed metadata.");
+		}
 
 		return {
 			url,
@@ -52,15 +63,16 @@ export async function getWebEmbedMetadata({
 async function scrapeWebEmbedMetadata(url: string): Promise<WebEmbedMetadata> {
 	logger.info({ url }, "Started fetching HTML.");
 
-	const response = await fetch(url, {
-		// redirects are followed deliberately: an embedded link is often a
-		// shortener or a canonical redirect, and the metadata wanted is the
-		// destination's. `urlSource` therefore reports where the metadata was
-		// actually read from, which can differ from the authored `url`.
-		redirect: "follow",
-		// a third-party host must not be able to stall the render that awaits it.
-		signal: AbortSignal.timeout(fetchTimeoutMs),
-	});
+	// every hop is resolved and checked before its request leaves, and the whole
+	// chain shares one timeout so a third-party host cannot stall the render that
+	// awaits it. `fetchedUrl` reports where the metadata was actually read from,
+	// which a shortener or a canonical redirect makes differ from the authored
+	// `url`.
+	const {
+		response,
+		url: fetchedUrl,
+		isRedirected,
+	} = await fetchPermittedUrl(url);
 
 	// decode from raw bytes with the page's declared charset; response.text()
 	// would decode everything as UTF-8 and garble e.g. Shift_JIS pages
@@ -72,8 +84,9 @@ async function scrapeWebEmbedMetadata(url: string): Promise<WebEmbedMetadata> {
 	logger.info(
 		{
 			url,
+			fetchedUrl,
 			statusCode: response.status,
-			isRedirected: response.redirected,
+			isRedirected,
 			encoding,
 		},
 		"Completed fetching HTML.",
@@ -86,7 +99,7 @@ async function scrapeWebEmbedMetadata(url: string): Promise<WebEmbedMetadata> {
 		metascraperImage(),
 	]);
 
-	const metadata = await metascraper({ url: response.url, html });
+	const metadata = await metascraper({ url: fetchedUrl, html });
 	const formattedMetadata = {
 		url,
 		urlSource: metadata.url ?? null,
