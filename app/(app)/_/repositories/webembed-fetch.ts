@@ -5,8 +5,11 @@
 
 import { assertFetchableUrl, type FetchableUrlOptions } from "./webembed-host";
 
-/** How long the outbound HTML fetch may take before it is abandoned. */
-export const fetchTimeoutMs = 5000;
+/**
+ * How long the outbound HTML fetch may take before it is abandoned — one
+ * budget for a whole redirect chain, applied by {@link fetchPermittedUrl}.
+ */
+const fetchTimeoutMs = 5000;
 
 /** How many redirects one embed fetch may follow before it is abandoned. */
 export const maxRedirectHops = 5;
