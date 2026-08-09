@@ -2,7 +2,7 @@
 
 Apply this reference when enabling session replay, adjusting what it masks, choosing its sample rates, or deciding whether an application should record sessions at all.
 
-Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0 (web) and `@sentry/react-native` 8.20.0 (native).
+Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0 (web) and `@sentry/react-native` 8.20.0 (native), checked against [Sentry's Session Replay documentation](https://docs.sentry.io/platforms/javascript/guides/react/session-replay/) on **2026-08-02**.
 
 ## Two Integrations, Two Option Sets
 

@@ -2,7 +2,7 @@
 
 Apply this reference when instrumenting a scheduled job so Sentry notices it failing, stalling, or not running at all.
 
-Verified against `@sentry/nextjs` 10.69.0. `withMonitor` requires SDK 7.76.0+; the failure and recovery thresholds require 8.7.0+.
+Verified against `@sentry/nextjs` 10.69.0, checked against [Sentry's crons documentation](https://docs.sentry.io/platforms/javascript/guides/nextjs/crons/) on **2026-08-02**. `withMonitor` requires SDK 7.76.0+; the failure and recovery thresholds require 8.7.0+.
 
 ## Reporting a Job's Outcome
 

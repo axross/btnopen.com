@@ -1,7 +1,6 @@
 ---
 name: react-component-styling
-description: The ability to style a React component — the implementation mechanics of a styled surface, on web (CSS Modules) and mobile native (Unistyles). Covers style composition (self-contained vs consumer-owned properties, override contracts, one module per component); semantic design tokens (a 13-step colour ramp behind Radix-worded role names, composite text roles, px-keyed spacing, radius/border-width/duration scales, token snapping); wide-gamut colour with an sRGB fallback; fluid `clamp()` sizing and container-driven responsiveness; adaptive styling (`prefers-reduced-motion`, pointer- and hover-conditional rules, pointer-sized touch targets, print, RTL); style property order; global styles and cascade layers; and the two platform adapters (`@layer`/`@scope`/container queries, and Unistyles variants/mini runtime/safe areas). Ships a validator.
-when_to_use: Use whenever writing, reviewing, or refactoring the styles of a React component on web or mobile native — a CSS Module, a Unistyles `StyleSheet.create`, a theme or token file, or global styles. Triggers include "styling", "CSS", "theme", "design token", "dark mode", "container query", "media query", "breakpoint", "responsive", "touch target", "hover on mobile", "safe area", "style prop", "className", "property order", "colour gamut", "P3", "reduced motion", or a surface that looks wrong at some width, pointer type, or colour scheme. For design rationale — hierarchy, contrast targets, motion taste — use a high-fidelity UI design capability instead.
+description: Writing, reviewing, or refactoring the styles of a React component on web or mobile native — a CSS Module, a Unistyles `StyleSheet.create`, a theme or token file, or global styles. Triggers on "styling", "CSS", "theme", "design token", "dark mode", "container query", "breakpoint", "responsive", "touch target", "hover on mobile", "safe area", "style prop", "className", "colour gamut", "P3", "reduced motion", or a surface wrong at some width, pointer type, or colour scheme. For design rationale — hierarchy, contrast targets, motion taste — use a high-fidelity UI design capability instead.
 user-invocable: false
 ---
 
@@ -115,7 +114,7 @@ See [unistyles.md](./references/unistyles.md) for:
 
 ## Verifying a Styling Change
 
-A styling change is verified by looking at the surface under every condition the rules above make conditional — not by the type-checker, which sees none of them. Reviewing one rendering proves one branch.
+A styling change is verified by looking at the surface under every condition the rules above make conditional — not by the type-checker, which sees none of them. Reviewing one rendering proves one branch. This section names the checks a styling change earns; how the result is then reported — which of them ran, which were skipped, and what risk a skip leaves — belongs to a **software development capability** under its verification topic, which owns it for every kind of change.
 
 **Guidelines:**
 
@@ -125,24 +124,3 @@ A styling change is verified by looking at the surface under every condition the
 - MUST check the width range a fluid or container-tiered surface spans, at minimum the two ends and one point either side of each breakpoint.
 - SHOULD check a wide-gamut display and an sRGB display when a colour is authored outside the sRGB gamut.
 - SHOULD check a right-to-left rendering when a change adds directional properties.
-- MUST report which of these checks were run and which were skipped, rather than presenting the change as fully verified.
-
-## Validator
-
-[scripts/check-component-styles.mjs](./scripts/check-component-styles.mjs) is a dependency-light Node validator (standard library only) for the subset of rules that are decidable from a file. Run it over a project's component styles:
-
-```bash
-node scripts/check-component-styles.mjs src
-node scripts/check-component-styles.mjs app --token-source=design-system/
-```
-
-It takes files or directories (walking a directory for `*.module.css`, `*.ts`, and `*.tsx`), skips the project's token sources, reports each violation as `file:line`, and exits `0` when everything passes, `1` on any violation or unreadable path, and `2` on a bad invocation.
-
-**What it checks:** raw colour, spacing, and duration literals where a token belongs; a CSS Module missing its cascade layer, its scope, or the zero-specificity scope root; and a component importing another component's style module.
-
-**What it does not check:** every judgment the skill actually turns on — whether the chosen role is the right one, whether a hover gate uses the correct pointer feature, whether a target meets its size on both axes, whether a per-scheme override was warranted. A passing run is a floor, not a conformance claim, and never substitutes for the review.
-
-**Guidelines:**
-
-- MUST fix every reported violation rather than suppressing it; the checks cover only unambiguous rules.
-- MUST NOT treat a passing run as evidence the change is correct — run the checks in [Verifying a Styling Change](#verifying-a-styling-change) as well.

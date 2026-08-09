@@ -55,8 +55,6 @@ export default async function Page(props: PageProps<"/articles/[slug]">) {
 
 Two directories sit outside the domains. `common/` holds reusable primitives that know nothing about this application — a button, a date formatter. `core/` holds the app-wide infrastructure it is wired from — environment access, the query client, the error tracker. The test is portability: a `common/` module lifts into another application unchanged, a `core/` module does not, because it encodes this one's configuration.
 
-**The tier pair and the bar a module clears to enter `common/` belong to an Expo app development capability** — that skill owns them in full, for web and native alike; defer to its treatment where it is present. What follows is what a Next application needs to apply them.
-
 **Guidelines:**
 
 - MUST keep `common/` to primitives carrying no domain vocabulary and no application configuration, and `core/` to app-wide infrastructure rather than to shared UI.

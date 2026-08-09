@@ -1,35 +1,35 @@
 #!/usr/bin/env node
 // check-wireframe.mjs — output validator for low-fidelity wireframe pages.
 //
-// A wireframe produced from wireframe-kit.html must satisfy two of the skill's
+// a wireframe produced from wireframe-kit.html must satisfy two of the skill's
 // MUST rules that are mechanically checkable: it must stay self-contained (no
 // external resource fetch, so it renders offline and can never leak a request),
 // and it must carry no leftover template placeholders (`FILL:` markers or
-// `lorem ipsum` filler). This script checks a filled page for both, so an
+// `lorem ipsum` filler). this script checks a filled page for both, so an
 // author can gate a wireframe before presenting it.
 //
-// It is dependency-light (Node standard library only). It intentionally does
-// NOT judge hierarchy, grouping, or grayscale discipline — those need a human
+// it is dependency-light (Node standard library only). it intentionally does
+// not judge hierarchy, grouping, or grayscale discipline — those need a human
 // eye and the research-grounded rules in the skill; this is a floor, not a
 // substitute for the review.
 //
-// Usage:
+// usage:
 //   node check-wireframe.mjs <file.html> [<file.html> ...]
 //
-// Exit codes:
+// exit codes:
 //   0  every checked file passed
 //   1  one or more files failed (each failure is listed per file), or a file
 //      could not be read
 //   2  bad invocation (no file arguments)
 //
-// Note: the un-filled kit (wireframe-kit.html) deliberately contains `FILL:`
-// markers, so it is EXPECTED to fail here. Run this on your filled copy.
+// note: the un-filled kit (wireframe-kit.html) deliberately contains `FILL:`
+// markers, so it is meant to fail here. run this on your filled copy.
 
 import { readFile } from "node:fs/promises";
 
 /**
- * True when a resource URL points off the page — an absolute http(s) URL or a
- * protocol-relative `//host` reference. In-page anchors (`#…`), inline `data:`
+ * true when a resource URL points off the page — an absolute http(s) URL or a
+ * protocol-relative `//host` reference. in-page anchors (`#…`), inline `data:`
  * payloads, and relative paths are self-contained and pass.
  * @param {string} url
  * @returns {boolean}
@@ -39,7 +39,7 @@ function isExternalUrl(url) {
   return /^https?:\/\//i.test(trimmed) || /^\/\//.test(trimmed);
 }
 
-/** Turn a byte offset into a 1-indexed line number for reporting. */
+/** turn a byte offset into a 1-indexed line number for reporting. */
 function lineOf(text, index) {
   let line = 1;
   for (let i = 0; i < index && i < text.length; i += 1) {
@@ -49,9 +49,9 @@ function lineOf(text, index) {
 }
 
 /**
- * Collect every external-fetch failure in the page. Covers the four ways a
+ * collect every external-fetch failure in the page. covers the four ways a
  * self-contained page can be broken: `src`/`srcset` attributes, `<link href>`,
- * CSS `@import`, and CSS `url(...)`. Plain `<a href>` is a navigation link, not
+ * CSS `@import`, and CSS `url(...)`. plain `<a href>` is a navigation link, not
  * a fetch, so it is deliberately not scanned.
  * @param {string} text
  * @returns {string[]} human-readable failure lines
@@ -94,7 +94,7 @@ function externalFetchFailures(text) {
 }
 
 /**
- * Collect leftover-placeholder failures: unfilled `FILL:` markers and any
+ * collect leftover-placeholder failures: unfilled `FILL:` markers and any
  * `lorem ipsum` filler text (which the skill forbids in favor of real content).
  * @param {string} text
  * @returns {string[]} human-readable failure lines
@@ -110,7 +110,7 @@ function placeholderFailures(text) {
   return failures;
 }
 
-/** Run every check for one file; returns failure strings (empty when clean). */
+/** run every check for one file; returns failure strings (empty when clean). */
 async function checkFile(path) {
   let text;
   try {
@@ -132,7 +132,7 @@ fail here. Run this on your filled copy.
 
 Exit codes: 0 every file passed, 1 one or more failed, 2 bad invocation.`;
 
-/** Entry point: validate every file argument, print a per-file report, and set the exit code. */
+/** entry point: validate every file argument, print a per-file report, and set the exit code. */
 async function main() {
   const paths = process.argv.slice(2);
   if (paths.includes("--help") || paths.includes("-h")) {

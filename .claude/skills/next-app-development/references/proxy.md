@@ -38,7 +38,7 @@ The config object is exported as `config`. Separately, the _next.config_ flags t
 
 The proxy runs on the **Node.js runtime**. This is not configurable — setting the `runtime` segment config in a proxy file throws. The Edge runtime is not supported in `proxy`; a project that requires Edge has to stay on the deprecated `middleware` convention.
 
-**Gotcha:** the self-hosting documentation page still describes middleware as running on Edge. That page is stale on this point; the v16 upgrade guide and the `proxy` API reference are authoritative, and both state Node.js.
+**Gotcha:** the self-hosting documentation page still describes middleware as running on Edge. That page is stale on this point; the [v16 upgrade guide](https://nextjs.org/docs/app/guides/upgrading/version-16) and the [`proxy` API reference](https://nextjs.org/docs/app/api-reference/file-conventions/proxy) are authoritative, and both state Node.js.
 
 **Guidelines:**
 

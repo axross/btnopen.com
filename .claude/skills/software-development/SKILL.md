@@ -1,7 +1,6 @@
 ---
 name: software-development
-description: The ability to make a well-formed, verified change in a project — the baseline discipline every project-touching task runs on. Covers the format/lint loop, scoped and incremental change management, mapping a change to the surfaces it puts at risk, consulting the project's own contributor documentation for how to operate it and closing gaps in that documentation, refreshing vendor docs for fast-moving dependencies, source-comment and doc-comment conventions, and pull request descriptions.
-when_to_use: Apply at the start of EVERY task that touches a project — implementing, refactoring, running a project command, or writing a pull request body — even when the request never mentions formatting, linting, comments, doc-comments, dependencies, docs, commands, or pull request descriptions. Also apply when you need to know how to run one of the project's operations (tests, dev server, build, lint, deploy) and must find it documented or ask. Not for a session that touches nothing — a quick question, an explanation, or a review-only pass, where the conduct baseline applies instead.
+description: Every task that touches a project — implementing, refactoring, running a project command, or writing a pull request body — even when the request never mentions formatting, linting, comments, dependencies, docs, or descriptions. Also when you need to know how to run one of the project's operations (tests, dev server, build, lint, deploy) and must find it documented or ask. Not for a session that touches nothing, where the conduct baseline applies instead. The baseline discipline — the format/lint loop, scoped change management, risk-surface mapping, and contributor docs.
 user-invocable: false
 ---
 
@@ -19,6 +18,7 @@ See [code-quality.md](./references/code-quality.md) for:
 
 - running the format → lint → fix → re-lint loop after any change
 - language compliance and import hygiene
+- the comment voice — lowercase prose, no all-caps emphasis, and what keeps its real casing
 - doc-comment and line-comment conventions in source files
 
 ## Change Management
@@ -37,6 +37,22 @@ See [project-docs.md](./references/project-docs.md) for:
 - consulting the project's own contributor documentation before running a project-specific operation
 - asking the human rather than inferring a command when that documentation is silent
 - recording the answer, with approval, so the next task finds it documented
+
+## Product Specification
+
+A project may also keep a specification of the product **itself** — what it is,
+the language its domain speaks, how it currently behaves, and the decisions that
+constrain it. That is a different body of documentation from the contributor
+docs above, with a different audience and its own owner: where a project ships a
+product-specification capability, that capability states when the specification
+is read, what a change obliges you to correct in it, and how. This section
+routes there and deliberately does not restate those rules. Where a project
+ships none, it requires nothing.
+
+**Guidelines:**
+
+- MUST consult the project's product-specification capability, where it ships one, whenever a change touches behavior that specification describes, and follow the obligations it states rather than any summary of them here.
+- MUST route by tense where both apply: a specification of what is about to be built belongs to the project's product-requirement practices, and the capability above covers only the description of what already exists. This one distinction is stated here rather than left to either owner, because the cost of getting it wrong is loading neither of them.
 
 ## Verification
 

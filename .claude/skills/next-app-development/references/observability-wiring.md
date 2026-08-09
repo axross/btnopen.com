@@ -59,6 +59,7 @@ export async function onRequestError(error, request, context) {
 
 - MUST initialize the browser SDK in `instrumentation-client.ts` rather than in a root layout effect, so errors before hydration are captured.
 - SHOULD export `onRouterTransitionStart` to start a navigation span and close the previous route's scope.
+- MUST NOT let `onRouterTransitionStart` throw; instrumentation that fails must not break the navigation it was only there to observe.
 - MUST NOT put a secret in client instrumentation; everything there ships to the browser. A public DSN or write-only key is fine, an API secret is not.
 - SHOULD keep the client SDK's payload small; it loads on every page.
 

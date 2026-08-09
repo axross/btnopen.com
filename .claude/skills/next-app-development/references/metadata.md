@@ -24,7 +24,7 @@ export async function generateMetadata(
 **Guidelines:**
 
 - SHOULD export a static `metadata` object whenever the values do not depend on route data.
-- MUST await `params` inside `generateMetadata`, as everywhere else in v16.
+- MUST await `params` inside [`generateMetadata`](https://nextjs.org/docs/app/api-reference/functions/generate-metadata), as everywhere else in v16.
 - MUST wrap a read shared by `generateMetadata` and the page component in React's `cache()`, or the record is fetched twice per request.
 - MUST NOT throw from `generateMetadata` when the record is missing; return fallback metadata and let the page call `notFound()`.
 - MUST NOT read `cookies()` or `headers()` in `generateMetadata` unless the route is already dynamic; it opts the route out of static rendering.

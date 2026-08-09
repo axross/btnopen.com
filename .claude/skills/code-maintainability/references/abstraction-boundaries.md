@@ -1,6 +1,37 @@
 # Abstraction Boundaries
 
-Apply this reference to keep a change on the right side of the project's separation of concerns — while writing new code, and while reviewing where a change put it.
+Apply this reference to decide what belongs inside one unit, and to keep a change on the right side of the project's separation of concerns — while writing new code, and while reviewing where a change put it.
+
+## Cohesion
+
+Cohesion is what the parts of a unit are grouped by, and it decides whether an abstraction was worth making at all. A unit built on a weak grouping cannot be named, tested, or changed as one thing, so every later reader pays for a grouping that was convenient once.
+
+| Level (strongest first) | Its parts are grouped because                     | Where it stands                              |
+| ----------------------- | ------------------------------------------------- | -------------------------------------------- |
+| Functional              | every one is essential to a single job            | the target at every granularity              |
+| Sequential              | each one's output is the next one's input         | the floor for a module bundling several jobs |
+| Communicational         | they all read from or write to the same data      | the same floor                               |
+| Procedural              | they run in a fixed order, for different jobs     | below the floor — split it                   |
+| Temporal                | they happen at the same moment                    | not a basis for an abstraction               |
+| Logical                 | they are the same kind of thing, picked by a flag | not a basis for an abstraction               |
+| Coincidental            | they happened to be sitting together              | not a basis for an abstraction               |
+
+A unit's own name is the cheapest test of where it sits, and it reads straight off the diff without reconstructing the design:
+
+| The name                                                        | What it says about the unit                                             |
+| --------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| one verb plus one object (`deserializeTemplate`, `sendRequest`) | one job — functionally cohesive                                         |
+| two verbs, or an `and` (`parseAndSendRequest`)                  | two concerns wearing one name                                           |
+| a vague object (`parseData`)                                    | the data model is under-schematised, or the unit covers several targets |
+
+**Guidelines:**
+
+- MUST build a function or class on functional cohesion — one job every part is essential to — and treat one whose parts are grouped by shared timing, by a kind selected through a flag, or by nothing at all as the finding.
+- MUST hold a module that bundles several jobs to sequential or communicational cohesion at worst, and split one whose parts merely run in a fixed order for unrelated jobs.
+- SHOULD read a name carrying two verbs or an `and` as two concerns in one unit and split it rather than renaming around it; a name of that shape denoting one settled operation is the exception to argue for, not to assume.
+- MUST treat a vague object in a name as evidence that the data model needs schematising or that the unit spans several targets, and fix whichever it is rather than accepting the name.
+- MUST justify a new abstraction by what its cases have in common — their kind, or the purpose they serve — and state that commonality; whether two similar-looking blocks qualify at all is decided by the duplication rules in [scope-discipline.md](./scope-discipline.md).
+- SHOULD treat a name that needs a descriptive clause to stay accurate as evidence the unit should be split.
 
 ## Server / Client Boundary
 

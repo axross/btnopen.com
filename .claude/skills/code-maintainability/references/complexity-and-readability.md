@@ -33,6 +33,18 @@ Commented-out code cannot be tested or type-checked and only rots, and version c
 - MUST either remove an exported symbol that has zero callers in the diff and the existing codebase, or add its caller in the same change — a dangling export is the finding.
 - SHOULD treat an empty `try`/`catch` (e.g., `catch { /* swallow */ }`) as a dead-code smell; the rule that a caught error must be rethrown or reported rather than swallowed belongs to the project's error-handling and instrumentation rules where it defines them, so cite that lens rather than restating it here.
 
+## Self-Explanatory Implementation
+
+A comment is the fallback, not the plan. What a reader needs first is an implementation whose names, steps, and types already say what is happening, so the only thing left for a comment is what the code structurally cannot state — the reason, the constraint, the alternative that was rejected. Where the code cannot say something it should have been able to say, that is a defect in the code before it is a missing comment.
+
+**Guidelines:**
+
+- MUST write the implementation so it carries its own explanation, and reserve a comment for what the code cannot state; what such a comment then says, and in what voice, belongs to the project's development conventions, which the Comments and Doc-Comments section below routes to.
+- SHOULD name the intermediate steps of a procedure so the flow reads as an account of what happens rather than as a sequence to be decoded; the KISS rules in [scope-discipline.md](./scope-discipline.md) own the single unreadable line, while this rule owns the flow it sits in.
+- MUST let the types carry the shape of what a unit takes and returns, in a statically-typed language, rather than leaving a reader to infer it from the body or from a comment restating it.
+- MUST hold a doc-comment on a module or domain boundary to one criterion — a caller can use the function, class, or constant without reading its implementation — and treat a boundary unit that fails it as the finding. This deliberately extends the project's development conventions, which require a doc-comment on an exported type and on a function past a length threshold, to every symbol sitting on a boundary, a constant included; how much detail that takes, and in what format, stays with those conventions rather than being decided here.
+- SHOULD treat a comment that exists to compensate for an unclear name or an unclear flow as a finding against that name or flow, not as a comment worth keeping.
+
 ## Comments and Doc-Comments
 
 A project's comment and doc-comment rules belong to its own code-quality conventions; this lens raises violations of them and cites that owner rather than restating the rules.

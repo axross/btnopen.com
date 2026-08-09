@@ -4,7 +4,7 @@ Apply this reference whenever a skill cites another skill, a reference file is a
 
 ## Skill-to-Skill References Resolve by Topic
 
-A skill must stay individually portable — liftable to a user-, organization-, or global-level skill root without dragging its siblings along. A relative-path link into another skill (`../other-skill/SKILL.md`, or worse a deep `../other-skill/references/topic.md`) breaks the moment that sibling is not co-located, so it defeats per-skill portability. Instead, a cross-skill reference names the neighbor's **topic** — the rule or practice it owns — and lets the agent resolve it through native skill discovery, where each skill advertises itself with its own `description`/`when_to_use`. The reader loads the owning skill when the task matches that skill's trigger, so the reference need not hard-code a skill name or a path. Links **inside** the same skill stay relative — a skill carries its own `references/` folder wherever it moves.
+A skill must stay individually portable — liftable to a user-, organization-, or global-level skill root without dragging its siblings along. A relative-path link into another skill (`../other-skill/SKILL.md`, or worse a deep `../other-skill/references/topic.md`) breaks the moment that sibling is not co-located, so it defeats per-skill portability. Instead, a cross-skill reference names the neighbor's **topic** — the rule or practice it owns — and lets the agent resolve it through native skill discovery, where each skill advertises itself with its own `description`. The reader loads the owning skill when the task matches that skill's trigger, so the reference need not hard-code a skill name or a path. Links **inside** the same skill stay relative — a skill carries its own `references/` folder wherever it moves.
 
 **Example:**
 
@@ -45,11 +45,11 @@ A cross-skill reference should tell the agent when to consult the neighbor. This
 
 ## Skill Discovery and Optional Index Sync
 
-Native discovery is the routing authority: each skill advertises when it applies through its own `description`/`when_to_use`, and the agent loads a skill when the task matches that trigger. If a skill's discovery metadata is stale or missing, discovery fails before skill content can help. Some hosts additionally maintain a written index (e.g. an `AGENTS.md` table); where one exists, keep it in sync, but a skill must stay discoverable without it.
+Native discovery is the routing authority: each skill advertises when it applies through its own `description`, and the agent loads a skill when the task matches that trigger. If a skill's discovery metadata is stale or missing, discovery fails before skill content can help. Some hosts additionally maintain a written index (e.g. an `AGENTS.md` table); where one exists, keep it in sync, but a skill must stay discoverable without it.
 
 **Guidelines:**
 
-- MUST keep each skill's `description`/`when_to_use` accurate when a skill is added, renamed, moved, or removed, so native discovery routes to it.
+- MUST keep each skill's `description` accurate when a skill is added, renamed, moved, or removed, so native discovery routes to it.
 - MUST ensure every topic named by a cross-skill reference is owned by a skill whose discovery metadata will surface it, since discovery is what resolves those references.
 - SHOULD keep discovery metadata concise and trigger-focused.
 - MUST, when the host also maintains a written index, add a new skill to it, remove a deleted skill from it, and never leave it pointing at deleted or renamed skills.
@@ -73,7 +73,7 @@ Link checks catch quiet skill failures — a renamed reference file or moved lin
 
 ```sh
 # From the repository root; pass paths to narrow the scan.
-.claude/skills/agent-skill-authoring/scripts/check-links.mjs
+skills/agent-skill-authoring/scripts/check-links.mjs
 ```
 
 **Example Verification Flow:**

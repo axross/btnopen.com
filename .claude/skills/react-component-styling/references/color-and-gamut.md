@@ -110,7 +110,7 @@ Prefer the widest colour format the platform can express, and fall back to sRGB.
 - **`@supports`** answers _does this browser understand this colour syntax?_ It is how a fallback is written.
 - **`@media (color-gamut: p3)`** answers _can this display show a wider gamut than sRGB?_ It is how a deliberate enhancement is written — not a fallback.
 
-See [Wide gamut color in CSS with Display-P3](https://webkit.org/blog/10042/wide-gamut-color-in-css-with-display-p3/) for the authoring patterns and [`color-gamut`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/color-gamut) for what the media feature asserts.
+See [Wide gamut color in CSS with Display-P3](https://webkit.org/blog/10042/wide-gamut-color-in-css-with-display-p3/) for the authoring patterns and [`color-gamut`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/color-gamut) for what the media feature asserts.
 
 A third fact removes most of the work: `oklch()` and `color(display-p3 …)` are wide-gamut formats that browsers **gamut-map** to the display automatically. A colour authored in `oklch()` already renders as richly as the screen allows, and clamps gracefully on an sRGB screen. You need `@media (color-gamut:)` only when you want a _different_ colour on a wide-gamut display, not merely a better rendering of the same one.
 

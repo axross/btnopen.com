@@ -64,7 +64,7 @@ The same suite exercises three different things, and only the second and third c
 | Local production     | `next build && next start` | Prerendering, caching, bundling, environment inlining        |
 | Deployed environment | Against a preview URL      | Platform behaviour, real caching, real headers, real latency |
 
-Static rendering, cache lifetimes, `NEXT_PUBLIC_` inlining, and bundle composition simply do not behave the same in development. A suite that only ever ran against `next dev` has not tested them.
+Static rendering, cache lifetimes, `NEXT_PUBLIC_` inlining, and bundle composition simply do not behave the same in development. A suite that only ever ran against `next dev` has not tested them. This section names which targets a change earns; how the result is then reported — which of them were exercised, which were skipped, and what risk a skip leaves — belongs to a **software development capability** under its verification topic, which owns it for every kind of change.
 
 **Guidelines:**
 
@@ -72,7 +72,6 @@ Static rendering, cache lifetimes, `NEXT_PUBLIC_` inlining, and bundle compositi
 - SHOULD run against a deployed preview for changes touching the proxy, cache invalidation, or platform configuration, since local runs cannot reproduce them.
 - MUST wait on a readiness signal rather than a fixed sleep when starting a server for a test run.
 - MUST NOT let the suite reach live external services; stub at the network boundary so runs are deterministic.
-- MUST report which targets were exercised and which were skipped, rather than presenting a change as fully verified.
 
 **Review checks:**
 

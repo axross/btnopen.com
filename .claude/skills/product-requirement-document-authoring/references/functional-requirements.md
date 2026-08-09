@@ -1,6 +1,6 @@
 # Functional Requirements Craft
 
-Apply this reference when drafting or reviewing the **Functional requirements** section of a spec — the comprehensive, user-perspective requirement list that follows Background. Sourced from RFC and product-spec practice: the [Rust RFC template](https://github.com/rust-lang/rfcs/blob/master/0000-template.md) (guide-level before reference-level explanation), [SVPG's "Revisiting the Product Spec"](https://www.svpg.com/revisiting-the-product-spec/), [Intercom's job stories](https://www.intercom.com/blog/using-job-stories-design-features-ui-ux/), the [EARS requirement notation](https://alistairmavin.com/ears/), and [ISO/IEC/IEEE 29148](https://www.iso.org/standard/72089.html).
+Apply this reference when drafting or reviewing the **Functional requirements** section of a spec — the comprehensive, user-perspective requirement list that follows Goals and Non-goals. Sourced from RFC and product-spec practice: the [Rust RFC template](https://github.com/rust-lang/rfcs/blob/master/0000-template.md) (guide-level before reference-level explanation), [SVPG's "Revisiting the Product Spec"](https://www.svpg.com/revisiting-the-product-spec/), [Intercom's job stories](https://www.intercom.com/blog/using-job-stories-design-features-ui-ux/), the [EARS requirement notation](https://alistairmavin.com/ears/), and [ISO/IEC/IEEE 29148](https://www.iso.org/standard/72089.html).
 
 ## When to Include the Section
 

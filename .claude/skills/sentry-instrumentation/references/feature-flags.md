@@ -2,7 +2,7 @@
 
 Apply this reference when connecting a feature-flag provider to Sentry, recording flag evaluations without a provider integration, or investigating whether a flag change caused a failure.
 
-Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0 and `@sentry/react-native` 8.20.0.
+Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0 and `@sentry/react-native` 8.20.0, checked against [Sentry's feature-flags documentation](https://docs.sentry.io/platforms/javascript/guides/react/feature-flags/) on **2026-08-02**.
 
 ## Why Flags Belong on an Event
 

@@ -76,10 +76,20 @@ See [input-validation.md](./references/input-validation.md) for:
 
 A reference link should say when the reader needs it. Without a trigger, the agent must either load everything or guess.
 
+A bullet that gestures at a fact — announcing that one exists without saying what it is — forces the load it was meant to make optional. The reader cannot tell whether the reference answers the question in front of them, so they open it to find out, and the routing layer has bought nothing. Naming the flag, the limit, or the rule costs the same handful of words and lets the reference stay shut.
+
+**Bad Example:**
+
+> what makes a route static or dynamic, and the flag that changes the model
+
+**Good Example:**
+
+> what makes a route static or dynamic, and how `cacheComponents` redraws that boundary
+
 **Guidelines:**
 
 - MUST state the condition that makes each reference relevant.
-- SHOULD describe covered topics concretely, such as "the description length limit" or "source URL protocol filtering".
+- MUST state the fact a routing bullet points at, not that a fact exists — name the flag, limit, file, or rule, rather than writing "the flag", "the limit", or "the rules that apply".
 - MUST NOT use empty labels such as "details" or "more information" as the only routing clue.
 - SHOULD make triggers narrow enough that the agent can skip irrelevant references.
 

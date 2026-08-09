@@ -2,7 +2,7 @@
 
 Apply this reference when deciding whether log lines should reach Sentry, wiring a project logger to it, emitting a counter or a measurement, or reviewing the cost of either signal.
 
-Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0 and `@sentry/react-native` 8.20.0. Logs require SDK 9.41.0+, the console bridge 10.13.0+, metrics 10.25.0+, and shared attributes 10.61.0+.
+Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0 and `@sentry/react-native` 8.20.0, checked against [Sentry's logs documentation](https://docs.sentry.io/platforms/javascript/guides/react/logs/) on **2026-08-02**. Logs require SDK 9.41.0+, the console bridge 10.13.0+, metrics 10.25.0+, and shared attributes 10.61.0+.
 
 ## Breadcrumbs First, Logs by Decision
 

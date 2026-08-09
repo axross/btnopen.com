@@ -1,41 +1,43 @@
 #!/usr/bin/env node
 // check-links.mjs — relative-link integrity check for a skill tree's Markdown links.
 //
-// Walks every Markdown file under the given roots — including dot-directories
+// walks every Markdown file under the given roots — including dot-directories
 // such as `.claude/`, which a `glob('**/*.md')` sweep silently skips unless it
 // is asked for them — and reports relative links whose target file does not
 // exist.
 //
-// Ships with the agent-skill-authoring skill (see
+// ships with the agent-skill-authoring skill (see
 // ../references/cross-referencing.md) so link verification survives template
-// adaptation and stays runnable in any project that keeps the skill. It is
-// dependency-light (Node standard library only), and shares the CommonMark
-// fenced-block rule with check-skill.mjs through commonmark.mjs beside it —
-// one implementation, so the two can never disagree about what is example text.
+// adaptation and stays runnable in any project that keeps the skill. it is
+// dependency-light (Node standard library only), and reads what counts as prose
+// from commonmark.mjs beside it — the same module check-skill-body.mjs reads, so the
+// two can never disagree about what is example text.
 //
-// Usage:
+// usage:
 //   node check-links.mjs           # check the whole tree
 //   node check-links.mjs PATH ...  # check specific roots
 //   node check-links.mjs --help
 //
-// Only links to `.md` targets are checked; `http(s)://`, `mailto:`, and pure
-// `#anchor` links are ignored. Illustrative example links inside fenced code
+// only links to `.md` targets are checked; `http(s)://`, `mailto:`, and pure
+// `#anchor` links are ignored. illustrative example links inside fenced code
 // blocks, inline code spans, and HTML comments are skipped so the
 // skill-authoring docs can show `[file.md](./references/file.md)` without
-// tripping the check.
+// tripping the check. which text that leaves — and the order the three are
+// removed in, which decides whether a merely quoted comment opener gets
+// believed — is commonmark.mjs's `extractProse`, not this file's own.
 //
-// A path argument that does not exist is skipped rather than reported: the
+// a path argument that does not exist is skipped rather than reported: the
 // check answers "do the links under these roots resolve", and a root that is
 // not there contributes no links.
 //
-// Exit codes:
+// exit codes:
 //   0  all relative links resolve
 //   1  one or more broken links
 //   2  bad invocation
 
-import { readFile, readdir, stat } from "node:fs/promises";
+import { readFile, readdir, realpath, stat } from "node:fs/promises";
 
-import { scanLines, unterminatedFenceLine } from "./commonmark.mjs";
+import { extractProse } from "./commonmark.mjs";
 
 const USAGE = `Usage: check-links.mjs [<path> ...]
 
@@ -45,8 +47,8 @@ With no <path>, the whole tree below the working directory is checked.
 Exit codes: 0 all links resolve, 1 broken links found, 2 bad invocation.`;
 
 /**
- * Directory names never worth walking: version control, dependency trees, and
- * build output. A generated `.md` under one of these is not authored content,
+ * directory names never worth walking: version control, dependency trees, and
+ * build output. a generated `.md` under one of these is not authored content,
  * and node_modules alone would dominate the run.
  */
 const PRUNED_DIRS = new Set([
@@ -60,11 +62,11 @@ const PRUNED_DIRS = new Set([
   ".venv",
 ]);
 
-/** An absolute URI (http:, https:, mailto:, …), which resolves to no file. */
+/** an absolute URI (http:, https:, mailto:, …), which resolves to no file. */
 const EXTERNAL_TARGET_RE = /^(https?:\/\/|mailto:)/;
 
 /**
- * A Markdown inline link whose target names a `.md` file, optionally with an
+ * a Markdown inline link whose target names a `.md` file, optionally with an
  * `#anchor`. `[^)]*` cannot cross the closing paren, so the match ends at the
  * first `)` following the `.md`.
  */
@@ -75,42 +77,10 @@ function fail2(message) {
   process.exit(2);
 }
 
-/** A string of just the newlines in `text`, so a removed span keeps the line numbers after it intact. */
-function newlinesOf(text) {
-  return "\n".repeat((text.match(/\n/g) ?? []).length);
-}
-
 /**
- * Drop every HTML comment, replacing each span with its own newlines so later
- * lines keep their original numbers — which the unterminated-fence warning
- * reports. A dangling unclosed `<!--` is kept: it comments out the rest of the
- * document in a renderer, but treating it as a comment here would silently stop
- * checking at that point.
- *
- * @param {string} content
- * @returns {string}
- */
-function stripHtmlComments(content) {
-  let stripped = "";
-  let rest = content;
-
-  for (;;) {
-    const openAt = rest.indexOf("<!--");
-    if (openAt === -1) break;
-    const closeOffset = rest.slice(openAt + 4).indexOf("-->");
-    if (closeOffset === -1) break;
-
-    const spanLength = closeOffset + 7; // "<!--" + body + "-->"
-    stripped += rest.slice(0, openAt) + newlinesOf(rest.slice(openAt, openAt + spanLength));
-    rest = rest.slice(openAt + spanLength);
-  }
-  return stripped + rest;
-}
-
-/**
- * Split `target#fragment` at the fragment: the target is the prefix up to the
- * first `.md` that is followed by `#` or ends the parenthesised text. Scanning
- * for the FIRST qualifying `.md` rather than the last is what keeps a path like
+ * split `target#fragment` at the fragment: the target is the prefix up to the
+ * first `.md` that is followed by `#` or ends the parenthesised text. scanning
+ * for the first qualifying `.md` rather than the last is what keeps a path like
  * `./a.md.backup.md` resolving against the name it actually links.
  *
  * @param {string} inside the text between `](` and `)`
@@ -130,24 +100,24 @@ function linkTarget(inside) {
 }
 
 /**
- * Every candidate `.md` link target in a document, plus whether a fence was
+ * every candidate `.md` link target in a document, plus whether a fence was
  * left open at end of file.
  *
- * HTML comments, fenced code blocks, and inline code spans are removed first —
+ * fenced code blocks, inline code spans, and HTML comments are blanked first —
  * all three carry illustrative links a reader is meant to see and a checker is
- * not meant to resolve.
+ * not meant to resolve. `extractProse` owns that pass and its ordering, and
+ * returns the fence state from the same walk, so the warning below always
+ * describes the scan the targets actually came from.
  *
  * @param {string} source raw file content
  * @returns {{ targets: string[], unterminatedFenceAt: number | null }}
  */
 function extractLinkTargets(source) {
-  const content = stripHtmlComments(source.replace(/\r/g, ""));
+  const { lines, unterminatedFenceAt } = extractProse(source);
   const targets = [];
 
-  for (const { text, fence } of scanLines(content)) {
-    if (fence) continue;
-
-    let line = text.replace(/`+[^`]+`+/g, "");
+  for (const { text } of lines) {
+    let line = text;
     for (;;) {
       const match = line.match(MD_LINK_RE);
       if (!match) break;
@@ -157,12 +127,12 @@ function extractLinkTargets(source) {
       if (!EXTERNAL_TARGET_RE.test(target)) targets.push(target);
     }
   }
-  return { targets, unterminatedFenceAt: unterminatedFenceLine(content) };
+  return { targets, unterminatedFenceAt };
 }
 
 /**
  * Markdown files under one root: a file argument is taken as-is when it is
- * Markdown, a directory argument is walked. Dot-directories are included —
+ * Markdown, a directory argument is walked. dot-directories are included —
  * `.claude/` is exactly where a skill tree lives — while PRUNED_DIRS are not.
  *
  * @param {string} root
@@ -180,9 +150,23 @@ async function listMarkdownFiles(root) {
 
   const found = [];
   const pending = [root.length > 1 ? root.replace(/\/+$/, "") : root];
+  // real paths already descended into. `withFileTypes` reports a symlinked
+  // directory as neither a file nor a directory, so a tree that installs one
+  // skill source into a second agent's root by symlinking it would be walked
+  // as if those skills held no Markdown at all. following the link fixes that
+  // and introduces the risk it always carries — a link pointing at an ancestor
+  // walks forever — so every descent is recorded by its resolved path.
+  const descended = new Set();
 
   while (pending.length > 0) {
     const dir = pending.pop();
+    try {
+      const real = await realpath(dir);
+      if (descended.has(real)) continue;
+      descended.add(real);
+    } catch {
+      continue; // a broken link resolves to nothing: nothing to walk
+    }
     let entries;
     try {
       entries = await readdir(dir, { withFileTypes: true });
@@ -191,9 +175,20 @@ async function listMarkdownFiles(root) {
     }
     for (const entry of entries) {
       const path = `${dir}/${entry.name}`;
-      if (entry.isDirectory()) {
+      let isDirectory = entry.isDirectory();
+      let isFile = entry.isFile();
+      if (entry.isSymbolicLink()) {
+        try {
+          const target = await stat(path);
+          isDirectory = target.isDirectory();
+          isFile = target.isFile();
+        } catch {
+          continue; // a broken link points at nothing to check
+        }
+      }
+      if (isDirectory) {
         if (!PRUNED_DIRS.has(entry.name)) pending.push(path);
-      } else if (entry.isFile() && entry.name.endsWith(".md")) {
+      } else if (isFile && entry.name.endsWith(".md")) {
         found.push(path);
       }
     }
@@ -201,7 +196,7 @@ async function listMarkdownFiles(root) {
   return found;
 }
 
-/** Byte-wise sorted, deduplicated Markdown files under every root. */
+/** byte-wise sorted, deduplicated Markdown files under every root. */
 async function collectMarkdownFiles(roots) {
   const files = new Set();
   for (const root of roots) {
@@ -210,7 +205,7 @@ async function collectMarkdownFiles(roots) {
   return [...files].sort((a, b) => Buffer.compare(Buffer.from(a), Buffer.from(b)));
 }
 
-/** File content, or null when it cannot be read. */
+/** file content, or null when it cannot be read. */
 async function readFileText(path) {
   try {
     return await readFile(path, "utf8");
@@ -219,7 +214,7 @@ async function readFileText(path) {
   }
 }
 
-/** True when `path` names something that exists (a dangling symlink does not). */
+/** true when `path` names something that exists (a dangling symlink does not). */
 async function exists(path) {
   try {
     await stat(path);

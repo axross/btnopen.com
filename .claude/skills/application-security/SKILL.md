@@ -1,7 +1,6 @@
 ---
 name: application-security
-description: The ability to build and review code with application security and privacy in mind — the OWASP Top 10:2025 lens applied in two modes — writing code that is secure by default, and reviewing a change for the risk it introduces. Covers secrets and environment variables, input validation, output-encoding and injection in rendered untrusted content, SSRF and outbound fetch of user-controlled URLs, access control and data exposure, and software-supply-chain risk in dependencies.
-when_to_use: Use whenever writing or reviewing code that handles untrusted input, secrets, outbound requests, rendered content, or third-party dependencies — "is this safe", "secure by default", "harden", "security", "secret", "privacy", "PII", "XSS", "injection", "SSRF", "safe fetch", "access control", or a dependency/supply-chain review.
+description: Writing or reviewing code that handles untrusted input, secrets, outbound requests, rendered content, or third-party dependencies — "is this safe", "secure by default", "harden", "security", "secret", "privacy", "PII", "XSS", "injection", "SSRF", "safe fetch", "access control", or a dependency review. The OWASP Top 10:2025 lens in two modes, writing secure-by-default code and judging the risk a change introduces. Covers secrets and environment variables, input validation, output encoding, SSRF, access control and data exposure, and supply-chain risk.
 user-invocable: false
 ---
 

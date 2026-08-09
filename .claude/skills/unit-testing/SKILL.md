@@ -1,7 +1,6 @@
 ---
 name: unit-testing
-description: The ability to author, refactor, review, and run unit tests — fast, isolated checks that exercise one small exported contract from a caller's point of view — across runners such as Jest, Vitest, or Node's built-in test runner. Covers explicit test-API imports and colocated spec files, describe/case naming and grouping, behavior-focused design that survives refactors, fixture quality and AHA abstraction, boundary fakes/mocks/spies, async and side-effect assertions, distinguishing-output assertions over mere reachability, snapshot discipline, schema/codec and type-only-module tests, a decision path for whether a behavior belongs in unit versus integration or e2e coverage, an optional coverage gate, and a review checklist.
-when_to_use: Use whenever writing, refactoring, reviewing, or running unit tests — including mocks/fakes, fixtures, schema/codec tests, snapshot choices, coverage questions, or behavior-focused assertion design, and when deciding whether a behavior should be a unit test at all. Not for end-to-end or browser tests, and not for judging overall verification-evidence adequacy.
+description: Writing, refactoring, reviewing, or running unit tests — including mocks and fakes, fixtures, schema and codec tests, snapshot choices, coverage questions, assertion design, or deciding whether a behavior belongs in a unit test at all. Not for end-to-end or browser tests, and not for judging overall verification-evidence adequacy. Fast, isolated checks that exercise one small exported contract from the caller's point of view, across runners such as Jest, Vitest, or Node's built-in runner. Covers naming and grouping, refactor-surviving design, boundary fakes, async assertions, and a review checklist.
 user-invocable: false
 ---
 
@@ -10,6 +9,8 @@ user-invocable: false
 This skill equips you to author, refactor, review, and run unit tests: fast, isolated checks that exercise one small exported contract from a caller's point of view, independently of framework wiring, the data layer, or the browser. Reach for it to write a new spec, tighten an existing one, decide what to assert, or judge someone else's unit-test change.
 
 The conventions are framework-agnostic — they hold whether the project runs Jest, Vitest, Node's built-in test runner, or a similar runner. Examples are written in TypeScript with `describe`/`it`/`expect`, the vocabulary most runners share; read `it`/`test`, the assertion entrypoint, and the mocking calls as stand-ins for whatever the project's runner provides.
+
+Where a project ships a capability for its specific runner, that capability owns the **mechanism** — the config file, pools and isolation, coverage providers, reporters, and the runner's own mocking and fake-timer API — and this skill owns what to assert, how a spec is shaped, and whether the behavior belongs in a unit test at all. Reach for the runner's capability when the question is which option or which call; reach for this one when the question is what the test should verify.
 
 A unit test earns its place when it exercises a small exported contract quickly, independently, and from the outside. It becomes a liability when it overfits implementation details or stands in for higher-confidence integration or e2e coverage — so part of this capability is knowing when _not_ to write one, and routing that behavior to a broader test instead.
 

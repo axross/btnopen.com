@@ -2,7 +2,7 @@
 
 Apply this reference when adding a feedback surface, collecting feedback from an interface you built, or linking a person's report to the event behind it.
 
-Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0 and `@sentry/react-native` 8.20.0.
+Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0 and `@sentry/react-native` 8.20.0, checked against [Sentry's User Feedback documentation](https://docs.sentry.io/platforms/javascript/guides/react/user-feedback/) on **2026-08-02**.
 
 ## Three Surfaces
 

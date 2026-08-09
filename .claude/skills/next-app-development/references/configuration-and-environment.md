@@ -28,7 +28,7 @@ export default nextConfig;
 
 ## Turbopack Is the Default
 
-Turbopack is stable and used by both `next dev` and `next build` as of v16. Consequently, **a project with a custom `webpack` config fails the build** — deliberately, to prevent a silently ignored configuration.
+[Turbopack](https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack) is stable and used by both `next dev` and `next build` as of v16. Consequently, **a project with a custom `webpack` config fails the build** — deliberately, to prevent a silently ignored configuration.
 
 Three ways out, in order of preference: migrate the webpack config to Turbopack options; run `next build --turbopack` to ignore the webpack config; or run `next build --webpack` to keep using webpack.
 

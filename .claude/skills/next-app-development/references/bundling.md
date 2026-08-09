@@ -55,7 +55,7 @@ That second flag has a consequence people discover late: **the component's conte
 
 ## The React Compiler
 
-`reactCompiler` is stable in v16, promoted out of `experimental`, and off by default. When enabled it auto-memoizes components, which changes the calculus on hand-written memoization.
+[`reactCompiler`](https://nextjs.org/docs/app/api-reference/config/next-config-js/reactCompiler) is stable in v16, promoted out of `experimental`, and off by default. When enabled it auto-memoizes components, which changes the calculus on hand-written memoization.
 
 **Guidelines:**
 

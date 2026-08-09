@@ -17,6 +17,19 @@ A resume is signalled by the human telling you to continue, or by the loop re-en
 - MUST NOT re-ingest a handoff package this session already consumed; once anchored, it is part of the in-session run.
 - MUST keep each resumed step idempotent — a second resume re-reads state and continues rather than duplicating a comment, branch, or pull request.
 
+## Resuming a Delegated Run
+
+A worker is ephemeral in a way the issue and the pull request are not. A resumed session can find a status block saying a worker was running and no worker to match it — because the harness lost it, the session was reclaimed, or the handle never survived. The checkout, meanwhile, may hold that worker's partial work.
+
+Spawning a replacement before establishing what the last one left is how two writers end up in one checkout.
+
+**Guidelines:**
+
+- MUST reconstruct the current branch, the commits, uncommitted changes, any still-active worker, write-capable background processes, and whatever partial receipt exists — all of it — before spawning another worker.
+- MUST treat a worker the status block names but the harness cannot produce as neither running nor cleanly finished: establish which from repository state, not from the block's claim.
+- MUST NOT destructively reset a checkout to recover from a lost worker; continue from the state that exists, correcting through append-only commits.
+- MUST, on a resume landing mid-pre-flight-review, recover the status block's durable ledger entries where the run had parked and they are there, or re-run that review from scratch where they are not — because the run had not yet parked or because the block cannot be read back — and MUST NOT open the pull request believing findings were resolved when nothing durable shows that they were (see [pre-flight-review.md](./pre-flight-review.md), whose Ledger Durability owns when the entries are and are not written). A review worker leaves no repository trace to reconstruct from, unlike an implementation worker's commits.
+
 ## Take Over a Handoff
 
 A session-handoff skill (where the project ships one) suspends another session's in-progress work into a self-contained `handoff-<unix epoch>.md` document plus an optional same-epoch `.zip` of supporting files. Taking it over rebuilds that state in a fresh-context session and hands the work to the normal phase flow — the document replaces the session context an in-session resume would have had.

@@ -2,7 +2,7 @@
 
 Apply this reference when wiring source-map upload, uploading native debug symbols, handling the build-time auth token, or investigating a stack trace that arrives minified.
 
-Verified against `@sentry/nextjs` 10.69.0, `@sentry/react-native` 8.20.0, and `@sentry/cli` 3.6.2.
+Verified against `@sentry/nextjs` 10.69.0, `@sentry/react-native` 8.20.0, and `@sentry/cli` 3.6.2, checked against [Sentry's source-maps guide](https://docs.sentry.io/platforms/javascript/guides/nextjs/sourcemaps/) on **2026-08-02**.
 
 ## How a Frame Gets Resolved
 
@@ -65,10 +65,11 @@ Where it lives depends on the pipeline, but the rules do not vary:
 
 The failure to avoid is giving it a public environment prefix. That prefix means "inline this value into the bundle at build time" — so the token is not merely exposed, it is compiled into the artifact and shipped.
 
+Whether the token may enter the repository at all, and what an example environment file may carry in its place, is **owned by an application-security capability** under its secret-handling topic. It states that for every secret a project holds; what follows is only what Sentry's own token adds.
+
 **Guidelines:**
 
 - MUST supply the auth token from build-time secret storage, and never through a variable carrying the bundler's public prefix.
-- MUST NOT commit an auth token, including a real value in an example environment file.
 - MUST scope the token to what upload actually needs rather than reusing a broad organization token.
 - SHOULD document in the project's own environment example that the token is build-time only, and why, since the distinction is invisible from the variable name.
 - SHOULD keep organization and project slugs as plain configuration rather than secrets; masking them only makes build logs harder to read.

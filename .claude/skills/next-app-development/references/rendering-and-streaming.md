@@ -17,7 +17,7 @@ The cost of an accidental bailout is invisible in development and total in produ
 
 ## Cache Components
 
-`cacheComponents` changes the model rather than tuning it. With it enabled, the boundary between prerendered and per-request content is drawn by `"use cache"` scopes and Suspense boundaries: what is cached goes into the static shell, what is not streams in per request. It replaced the experimental partial-prerendering flag and the route-level `experimental_ppr` segment config, both removed in v16, and supersedes the earlier `experimental.dynamicIO` and `experimental.useCache` flags.
+[`cacheComponents`](https://nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents) changes the model rather than tuning it. With it enabled, the boundary between prerendered and per-request content is drawn by `"use cache"` scopes and Suspense boundaries: what is cached goes into the static shell, what is not streams in per request. It replaced the experimental partial-prerendering flag and the route-level `experimental_ppr` segment config, both removed in v16, and supersedes the earlier `experimental.dynamicIO` and `experimental.useCache` flags.
 
 ```ts
 // next.config.ts

@@ -15,6 +15,17 @@ For self-review, the same agent that wrote the change must deliberately switch r
 - MUST judge only the diff and its observable behavior, not the author's stated intent.
 - MUST perform a second-pass re-review after fixing any Critical or Major finding, because the fix is itself new, unreviewed code.
 
+## Search Method
+
+The reset above corrects the reviewer's stance; it does not correct their method, and the two fail independently. A search that tests named suspicions — the phrases, symbols, or shapes the reviewer already has in mind — returns only members of the set they already imagined. An instance nobody thought to suspect stays invisible, however honest the reset was. Passing the reset is therefore not evidence that coverage was adequate.
+
+The gap opens when a finding class is defined by a property that could hold anywhere in the changed surface — duplication, dead code, a convention applied inconsistently — rather than by a location. A property has no address to search, so its instances sit wherever nobody looked. For a defect at a known location, or a criterion checked against one named place, a targeted search is exactly the right instrument.
+
+**Guidelines:**
+
+- MUST treat a targeted search as evidence only about the hypotheses it tested, never as evidence that a finding class is covered.
+- MUST, where a finding class is defined by a property that could hold anywhere in the changed surface, compare that surface exhaustively rather than by named suspicion — a comparison whose result does not depend on having guessed the instance in advance.
+
 ## Default Scope
 
 A review that wanders into pre-existing code loses track of what the current change is accountable for and dilutes attention across problems the author did not introduce.
