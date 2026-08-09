@@ -119,7 +119,7 @@ A component library that manages its own DOM usually exposes state as `data-*` a
 
 A scroll-driven animation degrades to its resting state where it is unsupported, which is only acceptable if the resting state is the correct fallback — so the guard is required, and the resting state has to be authored deliberately.
 
-The subtle failure is the timeline resolving to the wrong scroller: [`animation-timeline: scroll()`](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timeline/scroll) resolves to the nearest _scrollable_ ancestor, so an animation on a non-scrolling wrapper silently falls through to the viewport. Naming the timeline on the real scroll container and exposing it with `timeline-scope` fixes it.
+The subtle failure is the timeline resolving to the wrong scroller: [`animation-timeline: scroll()`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/animation-timeline/scroll) resolves to the nearest _scrollable_ ancestor, so an animation on a non-scrolling wrapper silently falls through to the viewport. Naming the timeline on the real scroll container and exposing it with `timeline-scope` fixes it.
 
 **Example:**
 

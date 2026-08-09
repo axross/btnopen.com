@@ -18,7 +18,7 @@ Three pieces, joined by a stable scenario id:
 
 - **Catalog** — a human-authored journey list (for example `e2e/scenarios.md`) with one row per journey: a stable dotted id (e.g. `checkout.payment.success`), a title, an area, and a priority of `must` | `should` | `may`. This list is the coverage _denominator_. [assets/scenarios.example.md](../assets/scenarios.example.md) is a ready-to-copy starting point.
 - **Tags** — each test declares which journeys it asserts through whatever tag mechanism the runner offers: a `@scenario:<id>` join tag (a test may carry several), plus optional `@area:<area>` / `@priority:<priority>` facet tags for filtered runs and grouped reporting, and an `@smoke` selection tag marking the fast pre-gate subset. Adapt the syntax to the runner.
-- **Reporter/gate** — a small tool tallies, for every catalog row, whether at least one **passing** test carries its scenario tag, prints `covered/total` overall and per priority plus the uncovered list, and fails on the gate conditions below. This skill ships a runnable, dependency-light reference implementation — [scripts/scenario-coverage-gate.mjs](../scripts/scenario-coverage-gate.mjs) — that does exactly this; adapt it to the runner instead of reinventing the join and gate logic.
+- **Reporter/gate** — a small tool the project writes tallies, for every catalog row, whether at least one **passing** test carries its scenario tag, prints `covered/total` overall and per priority plus the uncovered list, and fails on the gate conditions below. Keep its input a normalized `{ title, tags, status }` array so the join and the gate stay runner-agnostic, and let a thin per-runner adapter map the runner's report into that shape. Read `@`-tokens from both `tags` and `title`, since Playwright carries them in a field and Vitest/Jest in the title.
 
 **How tags attach across runners** (the join is the same; only the syntax differs):
 
@@ -77,6 +77,6 @@ The reporter can be an out-of-band script that reads the runner's machine-readab
 
 **Guidelines:**
 
-- SHOULD start from the shipped reference gate ([scripts/scenario-coverage-gate.mjs](../scripts/scenario-coverage-gate.mjs)) — a dependency-light script that parses the catalog and a normalized `{ title, tags, status }` results array — and add a thin per-runner adapter that maps the runner's report into that array, rather than writing the join and gate logic from scratch.
+- SHOULD split the gate into a runner-agnostic core that parses the catalog and a normalized `{ title, tags, status }` results array, plus a thin per-runner adapter that maps the runner's own report into that array — so switching runners replaces the adapter and leaves the join and gate logic untouched.
 - MAY instead implement the gate as an in-suite meta-test that reads the catalog and scrapes `@scenario:` tags from the sibling test files, when that is simpler for the runner.
 - SHOULD keep the gate fast and free of the system under test (pure file/report bookkeeping) so it can run anywhere, including where the app cannot be launched.

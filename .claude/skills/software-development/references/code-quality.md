@@ -53,7 +53,21 @@ The linter catches correctness and quality problems the formatter cannot see (an
 
 ## Comments
 
-There are two kinds of comment, each with its own style: **doc-comments** that document an API, and **line comments** that explain a specific spot in the code. Existing source files are the authority for both — read them before writing comments and match their voice. These rules apply to source-code comments only, not to commit messages — which the project's Conventional Commits practices own — or to prose documentation.
+There are two kinds of comment, each with its own style: **doc-comments** that document an API, and **line comments** that explain a specific spot in the code. Both are written in the comment voice below. These rules apply to source-code comments only, not to commit messages — which the project's Conventional Commits practices own — or to prose documentation.
+
+### Comment Voice
+
+The voice is stated here rather than inferred from the surrounding files, because inferring it fails exactly when it matters. A codebase drifts the moment one large change is written in a different style, and from then on the surrounding files answer two ways — so a rule that points at them hands the next author whichever answer they happened to open, and no linter can see the disagreement. A stated voice answers once.
+
+Comment prose is lowercase, and emphasis comes from what a sentence says rather than from capitalising a word. All-caps shouts at a reader who has no way to tell an emphasised word from an identifier, and it decays fastest in the comments that carry the most weight, where several emphasised phrases in one paragraph leave none of them emphatic.
+
+**Guidelines:**
+
+- MUST write comment prose in lowercase, first word of a sentence included, unless the word keeps its own casing under the rule below.
+- MUST NOT use all-caps for emphasis. Rewrite the sentence so its structure carries the emphasis, or drop the emphasis.
+- MUST keep the real casing of anything whose casing is part of its identity — proper nouns, code identifiers, file and directory paths, environment variable names, format and protocol names, and acronyms. Lowercasing `GITHUB_TOKEN` or `sha256` names something else.
+- MUST keep a linter suppression directive in the tool's required casing; only the trailing human-readable reason follows the comment voice.
+- MUST follow the project's own comment convention instead of this default where the project documents one. A project documents a convention by stating it — in its contributor documentation or its agent instructions — not by having source files that exhibit it.
 
 ### Doc-Comments
 
@@ -71,10 +85,8 @@ Line comments earn their place: a comment that merely restates the next line add
 
 **Guidelines:**
 
-- MUST write line comments in the project's chosen comment voice; read the surrounding source files before adding comments and match what is already there. Proper nouns, code identifiers, and acronyms keep their natural casing regardless of the voice.
 - MUST keep line comments minimal — write one only when control flow, a business rule, or a non-obvious reason is not conveyed by the code alone — and remove a comment that only restates the code it precedes.
 - MUST NOT delete a comment that explains a "why", an edge case, or non-obvious behavior.
-- MUST keep a linter suppression directive in the tool's required casing; only the trailing human-readable reason follows the project's comment voice.
 - MUST let the linter/formatter enforce comment conventions where it can, and fix any comment-style violations it reports.
 
 ## Import Hygiene

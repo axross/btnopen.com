@@ -10,7 +10,7 @@ This governs **presentation**, not content. Normative RFC-2119 guideline bullets
 
 **Good Examples:**
 
-> `code-review` — "The ability to review a code change and report findings that hold up."
+> `code-review` — an H1 and opening paragraph reading "The ability to review a code change and report findings that hold up." (This models the `name` and body surfaces. `description` takes the trigger first instead — see [Frontmatter Voice](#frontmatter-voice).)
 
 > `software-instrumentation` — "Use this capability whenever you instrument software to make its behavior observable."
 
@@ -22,7 +22,7 @@ This governs **presentation**, not content. Normative RFC-2119 guideline bullets
 
 **Guidelines:**
 
-- SHOULD frame every skill as a capability the agent gains, across all four surfaces below: name, `description`/`when_to_use`, H1 and opening paragraph, and body voice.
+- SHOULD frame every skill as a capability the agent gains, across all four surfaces below: name, `description`, H1 and opening paragraph, and body voice.
 - MUST NOT read the capability rule as discouraging guideline content; rules stay in `**Guidelines:**` blocks and lose nothing by being framed as a capability.
 - SHOULD apply the one-sentence test — could the agent say "I can do this" from the name and first line alone? — before considering framing settled.
 - SHOULD treat a skill that fails the test as a recast candidate rather than a defect, and follow [Recasting an Existing Skill](#recasting-an-existing-skill).
@@ -49,21 +49,20 @@ The name is the first and most-read surface, and it survives every later rewrite
 
 ## Frontmatter Voice
 
-`description` and `when_to_use` are the only text the runtime sees before loading the body, so the capability has to be legible there first. `description` names the ability and its coverage; `when_to_use` stays imperative routing text. The what/when split, trigger keywords, and length caps belong to [description-writing.md](./description-writing.md) — this section adds only the voice the opening clause carries.
+`description` is the only text the runtime sees before loading the body — so the capability has to be legible there, but it does not get the opening. A host truncates the listing to a budget, and the opening bytes are the ones a router actually reads, so they belong to the trigger. The capability shows in the clause that follows it. Ordering, trigger keywords, and the length target belong to [description-writing.md](./description-writing.md) — this section adds only the voice.
 
 **Example:**
 
 ```yaml
-description: The ability to instrument software so its behavior is observable in production — the three telemetry signals (logs, metrics, traces) plus the error handling that makes them actionable. Covers structured logging, log-level choice, ...
-when_to_use: Use whenever writing, reviewing, or modifying code that logs, throws, catches, reports an error, or configures a logger ...
+description: Instrumenting software so its behavior is observable in production — writing or reviewing code that logs, throws, catches, reports an error, or configures a logger. The three telemetry signals plus the error handling that makes them actionable. Covers structured logging, ...
 ```
 
 **Guidelines:**
 
-- SHOULD open `description` by naming the ability, preferring the explicit form "The ability to …" where it reads naturally.
-- MAY open `description` with an activity noun phrase that names what the agent can do ("The design vocabulary and rules for …", "A complete methodology for reviewing …") when that reads better than the explicit form; both satisfy the rule.
-- MUST NOT open either field with document voice — "This skill …", "This document …", "These guidelines …", "A collection of …", "Guidelines for …", "Instructions for …" — which `description-writing.md` also forbids as third-person passive prose.
-- SHOULD keep `when_to_use` in imperative routing voice ("Apply when …", "Use whenever …"); it says when to reach for the capability, and does not need to restate it.
+- MUST NOT open `description` with a framing formula such as "The ability to …". It reads as capability voice while spending the field's scarcest bytes on words that carry no routing decision.
+- SHOULD name the capability in `description` in the clause after the trigger, as an activity noun phrase ("the design vocabulary and rules for …", "a complete methodology for reviewing …") rather than a sentence about the skill.
+- MUST NOT open with document voice — "This skill …", "This document …", "These guidelines …", "A collection of …", "Guidelines for …", "Instructions for …" — which `description-writing.md` also forbids as third-person passive prose.
+- MUST keep the explicit capability framing in the `name`, the H1, and the opening paragraph, where nothing is truncated and the reader is deciding what kind of thing they loaded.
 
 ## Body Voice — H1 and Opening Paragraph
 
@@ -122,8 +121,8 @@ flowchart TD
 **Guidelines:**
 
 - MUST preserve every existing requirement through a recast; changing what a guideline demands is a separate change from changing how the skill presents itself.
-- MUST keep `description` and `when_to_use` within their length caps after rewriting an opening clause, trimming duplicated synonyms rather than coverage.
+- MUST keep `description` within its byte cap after rewriting an opening clause, trimming duplicated synonyms rather than trigger text.
 - MUST update every reference to a renamed skill — cross-references, the host project's skill index if it keeps one, and any workflow that invokes it — in the same change.
 - MUST edit a distributable skill at its source and reinstall rather than hand-editing the installed copy, per your project's skill-management conventions.
-- SHOULD run the bundled `scripts/check-skill.mjs` after a recast; it reports document-voice names and descriptions as advisory warnings (see [audit-checklist.md](./audit-checklist.md)).
+- SHOULD run the bundled `scripts/check-skill-frontmatter.mjs` after a recast; it reports document-voice names and descriptions as advisory warnings (see [audit-checklist.md](./audit-checklist.md)).
 - SHOULD recast a skill when work already touches it, rather than opening a sweep across every skill at once.

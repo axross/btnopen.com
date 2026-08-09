@@ -2,7 +2,7 @@
 
 Apply this reference when wiring Sentry into a React application that is not built on a meta-framework — a single-page application served from a bundler.
 
-Verified against `@sentry/react` 10.69.0.
+Verified against `@sentry/react` 10.69.0, checked against [Sentry's React guide](https://docs.sentry.io/platforms/javascript/guides/react/) on **2026-08-02**.
 
 Where the application is built on Next.js, that framework's own reference owns initialization, and this file's error-boundary and component-tracking rules still apply.
 

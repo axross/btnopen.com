@@ -4,25 +4,9 @@ Apply this reference when adding a route, naming a segment, introducing a route 
 
 ## The Special Files
 
-Inside `app/`, filenames are API. A file named `page.tsx` creates a publicly reachable URL; the same content named `view.tsx` creates nothing. These are the files the router recognizes:
+Inside `app/`, filenames are API. A file named `page.tsx` creates a publicly reachable URL; the same content named `view.tsx` creates nothing. Every file the router recognizes has its own page under [File-system conventions](https://nextjs.org/docs/app/api-reference/file-conventions).
 
-| File                   | What it creates                                                     |
-| ---------------------- | ------------------------------------------------------------------- |
-| `layout.tsx`           | Shared UI wrapping a segment and its children; preserves state      |
-| `template.tsx`         | Like a layout, but remounted on every navigation                    |
-| `page.tsx`             | The publicly routable UI for a segment                              |
-| `loading.tsx`          | A Suspense fallback for the segment and everything below it         |
-| `error.tsx`            | An error boundary for the segment (a Client Component)              |
-| `global-error.tsx`     | An error boundary replacing the root layout, including its `<html>` |
-| `not-found.tsx`        | UI for a `notFound()` interrupt or an unmatched URL                 |
-| `route.ts`             | A request handler for the segment; no UI                            |
-| `default.tsx`          | The fallback a parallel slot renders when it has no match           |
-| `forbidden.tsx`        | UI for a `forbidden()` interrupt — **canary**, see below            |
-| `unauthorized.tsx`     | UI for an `unauthorized()` interrupt — **canary**, see below        |
-| `global-not-found.tsx` | A whole-document not-found page — **experimental**, see below       |
-| `instrumentation.ts`   | Server startup registration and the request-error hook              |
-
-Two of these are not stable on the 16.2.x line and must be marked wherever they are used:
+What that index does not tell you is which of them are **not stable on the 16.2.x line** — it documents each on its own terms, so the stability question has to be asked file by file. Three are unstable, and each must be marked wherever it is used:
 
 - `forbidden.tsx` and `unauthorized.tsx` — with their `forbidden()` and `unauthorized()` functions — require `experimental.authInterrupts: true` and are documented as "currently available in the canary channel and subject to change."
 - `global-not-found.tsx` requires `experimental.globalNotFound: true`.
@@ -56,19 +40,9 @@ A layout sits **outside** its own segment's `error.tsx`, so an error thrown in a
 
 ## Segment Syntax
 
-Directory names carry meaning beyond their spelling:
+Directory names carry meaning beyond their spelling, across four separately documented conventions: [dynamic segments](https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes) (`[slug]`, `[...slug]`, `[[...slug]]`), [route groups](https://nextjs.org/docs/app/api-reference/file-conventions/route-groups) (`(group)`, and the `_private` folder beside it), [parallel routes](https://nextjs.org/docs/app/api-reference/file-conventions/parallel-routes) (`@slot`), and [intercepting routes](https://nextjs.org/docs/app/api-reference/file-conventions/intercepting-routes) (`(.)`, `(..)`, `(...)`).
 
-| Syntax         | Meaning                                                     |
-| -------------- | ----------------------------------------------------------- |
-| `[slug]`       | A single dynamic segment                                    |
-| `[...slug]`    | A catch-all matching one or more segments                   |
-| `[[...slug]]`  | An optional catch-all, also matching the parent path itself |
-| `(group)`      | A route group: organizes files without appearing in the URL |
-| `_private`     | A private folder: opted out of routing entirely             |
-| `@slot`        | A parallel route slot, passed to the layout as a prop       |
-| `(.)segment`   | Intercepts a route at the same level                        |
-| `(..)segment`  | Intercepts one level above                                  |
-| `(...)segment` | Intercepts from the root                                    |
+The hazard is that none of these is validated. A directory whose name almost matches one of these forms is a literal path segment, so the URL it produces is wrong rather than absent — which is why a name is checked against the reference rather than against memory.
 
 **Guidelines:**
 

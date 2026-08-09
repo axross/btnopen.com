@@ -65,7 +65,7 @@ Every global rule should carry **zero specificity**, so a component's single cla
 
 ## Cascade Layers
 
-[Cascade layers](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) order whole groups of rules independently of specificity and source order, which makes the intended precedence explicit at the top of the project rather than implied by import order.
+[Cascade layers](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@layer) order whole groups of rules independently of specificity and source order, which makes the intended precedence explicit at the top of the project rather than implied by import order.
 
 **Example:**
 

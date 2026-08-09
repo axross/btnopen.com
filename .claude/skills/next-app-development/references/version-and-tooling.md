@@ -19,7 +19,7 @@ This framework changes fast enough that recalled knowledge goes stale between re
 npx @next/codemod@canary upgrade latest
 ```
 
-The v16 codemod migrates the Turbopack config location, replaces `next lint` with the ESLint CLI, renames `middleware` to `proxy`, strips `unstable_` prefixes from stabilized APIs, and removes the `experimental_ppr` segment config. A targeted codemod exists for the proxy rename alone (`middleware-to-proxy`).
+The v16 codemod, catalogued in the [upgrade guide](https://nextjs.org/docs/app/guides/upgrading/version-16), migrates the Turbopack config location, replaces `next lint` with the ESLint CLI, renames `middleware` to `proxy`, strips `unstable_` prefixes from stabilized APIs, and removes the `experimental_ppr` segment config. A targeted codemod exists for the proxy rename alone (`middleware-to-proxy`).
 
 **Guidelines:**
 

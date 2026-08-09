@@ -31,6 +31,24 @@ Most defects live outside the primary flow, so a criteria set that only covers t
 - MUST cover the relevant edge, disabled, empty, and error states.
 - MUST include an explicit "X is unaffected" criterion when the change sits next to a surface that must stay untouched.
 
+## Unaffected Criteria: Property, Not Proxy
+
+An "X is unaffected" criterion is easiest to reach for as a mechanical proxy — matching this file's own push toward concrete, checkable phrasing, "these paragraphs stay byte-identical" reads as strictly verifiable. But a proxy is satisfied or violated on its own terms, not the reason the surface must stay untouched: it cannot separate a change that breaks that reason from a repair the change under review made unavoidable, and it forbids both alike. Name the property the surface must keep instead, so the criterion can still tell the two apart when they diverge.
+
+**Example:**
+
+- **As a proxy** — "The three paragraphs following the list are byte-identical to their prior state."
+- **What it was protecting** — that those paragraphs still make the claims they made, and every reference inside them still resolves to something that exists.
+- **As a property** — "The three paragraphs following the list still make the same claims, and every reference in them still resolves to something that exists; any edit to them is confined to what removing the list made unavoidable."
+
+Both forms are judged from the diff — the property form asks a reviewer to check something more specific there, not to stop checking the diff at all.
+
+**Guidelines:**
+
+- MUST name, in an unaffected criterion, the property that must survive rather than a mechanical equivalence standing in for it.
+- MUST keep that named property judgable from the diff, so stating intent does not cost the diff-checkability every criterion in this file already requires.
+- MUST reconcile the criterion, not the work, when the two diverge, and record the reconciliation rather than applying it silently.
+
 ## Right-Sized Checklists
 
 A checklist that needs far more than a handful of criteria is usually a sign the underlying story should split; too few leaves testable gaps that surface as bugs later. Practitioner guidance converges on roughly three to seven or eight criteria as a starting rubric, not a hard ceiling. Verification gates — your project's format/lint/test/build commands — are part of "done" but not part of this checklist: they live in the Verification strategy section, keeping the criteria purely about the change's observable outcomes.

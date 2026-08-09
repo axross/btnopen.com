@@ -50,6 +50,8 @@ A closing keyword ties the pull request to the work it delivers: merging auto-cl
 
 A reviewer weighs claims they can check; "tests pass" is an assertion, not evidence. Evidence states what was run and what was observed, so the reviewer can audit it instead of re-deriving it.
 
+The skipped-check rule below reads much like one a code-review capability states for a review's own evidence section. That overlap is deliberate rather than a duplication to resolve: the two govern **different artifacts** — the pull request body an author writes, and the report a reviewer posts — and a code-review capability is authored to reference no other skill, so neither can defer to the other.
+
 **Guidelines:**
 
 - MUST report the verification commands run and their observed results, per [verification.md](./verification.md).
@@ -67,6 +69,27 @@ Reviewers allocate scrutiny by risk. A description that flags the dangerous part
 - SHOULD flag risky or contentious areas of the diff explicitly rather than letting the reviewer discover them.
 - SHOULD note rollback considerations when the change is hard to reverse (migrations, config, persisted formats).
 
+## Settled Decisions
+
+A plan often tells the author to explain a choice in the description precisely because the diff makes that choice look like a mistake. The instruction is defensive: it exists so a reviewer does not report a deliberate choice as an oversight. Written with its polarity inverted it does the opposite — it hands a question the author already settled with a stakeholder to a reviewer who was never in that conversation, in a venue that stakeholder is not necessarily watching. The two phrasings read almost alike and behave very differently.
+
+**Bad Example:**
+
+> This sits outside our usual standard. If the reasoning does not hold up, it should go.
+
+**Good Example:**
+
+> This sits outside our usual standard, and it was settled with the maintainer while planning rather than left there by oversight. Overturning it wants a new argument, not a restatement of the standard it is already known to sit outside.
+
+Recording a decision as settled does not place it beyond review. It states what objecting is up against, so an objection arrives as new information rather than as a re-run of a conversation that already happened.
+
+**Guidelines:**
+
+- MUST record a decision already settled with a stakeholder as settled when the description explains it, naming that it was settled and with whom.
+- MUST NOT offer a settled decision back to the reviewer as an open question, or invite the reviewer to overturn it; take new information that changes such a decision to the person who settled it instead.
+- SHOULD flag such a decision rather than passing over it in silence — keeping a reviewer from reporting a deliberate choice as a defect is why it is mentioned at all.
+- SHOULD state what revisiting the decision would take, so the reviewer can weigh the cost of objecting rather than guess at it.
+
 ## Reviewer Guidance
 
 The description is the author's one chance to shape the review before it starts. Telling reviewers where to begin and what feedback is wanted measurably improves engagement — and costs two sentences.
@@ -75,7 +98,7 @@ The description is the author's one chance to shape the review before it starts.
 
 - SHOULD name the file or change to start reading from when the diff spans more than a few files.
 - SHOULD state the kind of feedback wanted (quick sanity check, deep design critique, copy review) when it is not the default full review.
-- SHOULD surface open questions as explicit questions, not buried caveats.
+- SHOULD surface genuinely open questions as explicit questions, not buried caveats — a decision already settled with a stakeholder is not one of them.
 
 ## Description Freshness
 

@@ -2,7 +2,7 @@
 
 Apply this reference when enabling profiling, diagnosing why profiles never appear, or choosing between profiling on demand and profiling alongside traces.
 
-Verified against `@sentry/react` 10.69.0 (browser profiling requires 10.27.0+) and `@sentry/react-native` 8.20.0.
+Verified against `@sentry/react` 10.69.0 (browser profiling requires 10.27.0+) and `@sentry/react-native` 8.20.0, checked against [Sentry's profiling documentation](https://docs.sentry.io/platforms/javascript/guides/react/profiling/) on **2026-08-02**.
 
 ## Browser Profiling Needs the Server's Permission
 

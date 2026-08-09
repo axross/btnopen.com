@@ -31,7 +31,7 @@ import Link from "next/link";
 
 ## Prefetching
 
-Links prefetch by default when they enter the viewport. In v16 the prefetch model became incremental — a shared layout is fetched once across sibling links, and only the parts not already cached are requested. The result is more requests carrying less total data, which is the right trade for nearly every application.
+[Links](https://nextjs.org/docs/app/api-reference/components/link) prefetch by default when they enter the viewport. In v16 the prefetch model became incremental — a shared layout is fetched once across sibling links, and only the parts not already cached are requested. The result is more requests carrying less total data, which is the right trade for nearly every application.
 
 The default stops being right when a route is expensive to produce and rarely followed: a viewport full of links to heavy dynamic pages will prefetch all of them.
 

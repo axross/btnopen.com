@@ -2,7 +2,7 @@
 
 Apply this reference when wiring Sentry into an Expo-managed application, instrumenting its router, uploading source maps for an over-the-air update, or reading the update context attached to its events.
 
-Verified against `@sentry/react-native` 8.20.0. Everything in the React Native reference applies here as well; this file covers what a managed Expo application adds.
+Verified against `@sentry/react-native` 8.20.0, checked against [Sentry's Expo setup guide](https://docs.sentry.io/platforms/react-native/guides/expo/) on **2026-08-02**. Everything in the React Native reference applies here as well; this file covers what a managed Expo application adds.
 
 ## Two Wirings, Neither Optional
 

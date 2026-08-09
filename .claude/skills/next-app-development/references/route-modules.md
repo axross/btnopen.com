@@ -14,7 +14,7 @@ The router imports a route module by path and instantiates its default export. T
 
 ## Async `params` and `searchParams`
 
-Both route inputs are promises. Synchronous access was removed in v16 — there is no compatibility shim to fall back on.
+Both route inputs are promises, as the [`page.js` reference](https://nextjs.org/docs/app/api-reference/file-conventions/page) states. Synchronous access was removed in v16 — there is no compatibility shim to fall back on.
 
 ```tsx
 export default async function Page(props: PageProps<"/articles/[slug]">) {

@@ -2,7 +2,7 @@
 
 Apply this reference when configuring what Sentry is allowed to collect, adding context to an event, reviewing a change that touches captured data, or answering whether a telemetry payload carries user content.
 
-Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0 and `@sentry/react-native` 8.20.0.
+Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0 and `@sentry/react-native` 8.20.0, checked against [Sentry's sensitive-data documentation](https://docs.sentry.io/platforms/javascript/guides/react/data-management/sensitive-data/) on **2026-08-02**.
 
 ## Two Data Classes
 
@@ -61,15 +61,7 @@ Each is defensible as diagnostics and each can carry content — a query string 
 
 ## Scrubbing on the Way Out
 
-Each signal has a hook that runs before it is sent, and each can modify the payload or drop it entirely by returning nothing. They are the last line inside the application:
-
-| Signal              | Hook                    |
-| ------------------- | ----------------------- |
-| Errors and messages | `beforeSend`            |
-| Transactions        | `beforeSendTransaction` |
-| Spans               | `beforeSendSpan`        |
-| Logs                | `beforeSendLog`         |
-| Metrics             | `beforeSendMetric`      |
+Each signal has a `beforeSend`-family hook that runs before it is sent, and each can modify the payload or drop it entirely by returning nothing. They are the last line inside the application, and [Sentry's filtering documentation](https://docs.sentry.io/platforms/javascript/guides/react/configuration/filtering/) names the one belonging to each signal.
 
 A hook is the right tool for a project-specific field that no option covers. It is the wrong tool for a whole category the options already express, because a hook is code that can be refactored away while an option is configuration that stays visible.
 

@@ -53,7 +53,7 @@ export async function getArticle(slug: string) {
 - MUST call `cacheLife()` explicitly in every `"use cache"` scope this project adds, rather than inheriting the default profile. This is a house rule on top of the framework's default, and it exists so the lifetime is a visible decision in the diff.
 - SHOULD use a named built-in profile where one fits, and define a named custom profile in `next.config.ts` rather than repeating an inline object.
 - SHOULD match the profile to how stale the data may acceptably be, not to how expensive it is to produce.
-- MUST import `cacheLife` and `cacheTag` from `next/cache` without the `unstable_` prefix; both are stable as of v16.
+- MUST import [`cacheLife`](https://nextjs.org/docs/app/api-reference/functions/cacheLife) and [`cacheTag`](https://nextjs.org/docs/app/api-reference/functions/cacheTag) from `next/cache` without the `unstable_` prefix; both are stable as of v16.
 
 ## No Runtime Data Inside a Cached Scope
 

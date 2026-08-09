@@ -1,7 +1,6 @@
 ---
 name: sentry-instrumentation
-description: The ability to wire Sentry into an application and keep it honest — the vendor layer beneath a tool-agnostic instrumentation capability. Covers choosing the SDK package and the one project wrapper; DSN, environment, release, and dist identity; source maps, native debug symbols, and build-time auth tokens; the data-collection posture that separates diagnostic context from user content; capture, scopes, and breadcrumbs; trace sampling and propagation; session-replay masking; logs and metrics; profiling; user feedback; cron monitors; feature flags; AI instrumentation; tunnelling and bundle footprint; per-platform initialization for React, Next.js, React Native, and Expo; verifying the integration; and the Sentry MCP server and CLI an agent uses itself. Names the SDK line each rule was verified against, and prescribes a lookup wherever the option surface moves.
-when_to_use: Use whenever a change touches Sentry — `Sentry.init`, `@sentry/react`, `@sentry/nextjs`, `@sentry/react-native`, `withSentryConfig`, `getSentryExpoConfig`, a DSN, an auth token, source maps, `dataCollection` or `sendDefaultPii`, `tracesSampleRate`, `replaysOnErrorSampleRate`, `enableLogs`, `beforeSend`, `captureException`, `onRequestError`, a tunnel route, a Sentry release, or an unsymbolicated stack trace. For log levels, catch placement, and which failures are worth capturing at all, use a software instrumentation capability instead.
+description: A change touching Sentry — `Sentry.init`, `@sentry/react`, `@sentry/nextjs`, `@sentry/react-native`, `withSentryConfig`, `getSentryExpoConfig`, a DSN, an auth token, source maps, `sendDefaultPii`, `tracesSampleRate`, `replaysOnErrorSampleRate`, `enableLogs`, `beforeSend`, `captureException`, `onRequestError`, a tunnel route, a release, or an unsymbolicated stack trace. For log levels, catch placement, and which failures are worth capturing at all, use a software instrumentation capability instead. The vendor layer — SDK choice, identity, source maps, data-collection posture, sampling, and per-platform init. Lookup-first on versions.
 user-invocable: false
 ---
 
@@ -15,7 +14,7 @@ It also does not own the **framework hook** an integration occupies. That there 
 
 **Version discipline.** Sentry ships two independent release lines — the JavaScript SDK (`@sentry/react`, `@sentry/nextjs`) and the React Native SDK — and the React Native line trails the JavaScript one, so an option documented for one may not exist in the other yet. Options also move within a major: `sendDefaultPii` is deprecated in favour of `dataCollection`, and `profilesSampleRate` in favour of `profileSessionSampleRate`. Every version-sensitive statement here names what it was verified against, and where a surface is known to move the rule is a **lookup** — consult the installed SDK's own options page — rather than a frozen option name. Treat an unversioned claim about a Sentry option, in this skill or anywhere else, as suspect.
 
-**Verified against** `@sentry/react` and `@sentry/nextjs` 10.69.0, `@sentry/react-native` 8.20.0, `@sentry/wizard` 6.13.0, and `@sentry/cli` 3.6.2, as published on 2026-07-29.
+**Verified against** `@sentry/react` and `@sentry/nextjs` 10.69.0, `@sentry/react-native` 8.20.0, `@sentry/wizard` 6.13.0, and `@sentry/cli` 3.6.2, checked against [Sentry's JavaScript](https://docs.sentry.io/platforms/javascript/) and [React Native](https://docs.sentry.io/platforms/react-native/) SDK documentation on **2026-08-02**.
 
 **Out of scope.** Sentry's product and organization configuration — alert rules, notification routing, ownership rules, inbound filters, spike protection, retention, and dashboards — is configured in Sentry's own interface, not in a repository, and no rule here was derived for it. When a task reaches one of those, say so rather than extrapolating from the rules below.
 
@@ -87,7 +86,7 @@ See [tracing.md](./references/tracing.md) for:
 
 See [session-replay.md](./references/session-replay.md) for:
 
-- the two integrations and the option sets that differ between them
+- the web integration recording the DOM and the mobile one recording the view hierarchy, whose option names never transfer
 - what masking hides by default, and what turning it off exposes
 - recording every session versus recording only the ones that failed
 - capturing network detail without capturing bodies
@@ -110,7 +109,7 @@ See [profiling.md](./references/profiling.md) for:
 - what browser profiling requires from the server before it works at all
 - profiling a native app, and the engine that has to be running
 - choosing between profiling on demand and profiling alongside traces
-- the option that superseded the older sampling rate
+- the session sample rate and lifecycle mode that superseded the single rate Sentry's quickstart still shows
 
 ## User Feedback
 
@@ -170,7 +169,7 @@ See [nextjs.md](./references/nextjs.md) for:
 
 - the initialization files, and which runtime each one serves
 - the hook that sees every server error, and the one that follows client navigation
-- the build wrapper's options, and which of them the default bundler ignores
+- the build wrapper's options, which of them the default bundler ignores, and the one framework-level replacement that exists for any of them
 - instrumenting server functions and route handlers
 - the tunnel route's interaction with request-matching configuration
 

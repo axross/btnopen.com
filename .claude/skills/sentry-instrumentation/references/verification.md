@@ -2,7 +2,7 @@
 
 Apply this reference after wiring or changing anything in the Sentry integration, and when deciding what a test suite should assert about reporting.
 
-Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0 and `@sentry/react-native` 8.20.0.
+Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0 and `@sentry/react-native` 8.20.0, checked against [Sentry's JavaScript SDK documentation](https://docs.sentry.io/platforms/javascript/) on **2026-08-02**.
 
 ## Configuration Is Not Evidence
 

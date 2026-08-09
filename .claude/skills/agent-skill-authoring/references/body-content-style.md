@@ -89,6 +89,26 @@ Skills are most valuable when they encode facts the model would not infer reliab
 - SHOULD keep a rule only when the agent is likely to get that behavior wrong without the skill.
 - SHOULD recommend deleting a skill when it no longer adds knowledge beyond ordinary model behavior.
 
+## Upstream Citation
+
+A section that pins a version or mirrors a vendor's option surface is making a claim about someone else's documentation, and that claim goes stale silently — the vendor ships a release, the skill keeps asserting the old behavior, and nothing in the repository can tell. The URL is what makes the claim checkable later. It also bounds how much needs copying: a link plus the caveat a reader would not guess carries what a reproduced reference table carries, at a fraction of the size, and stays true longer.
+
+**Bad Example:**
+
+> A twelve-row table reproducing every option of a vendor's `init` call, with no link to the page it was copied from.
+
+**Good Example:**
+
+> `init` takes the vendor's full option set (see the linked reference). Two are load-bearing here: `serverZone` must match the organization's residency, since a mismatch sends data to an endpoint the project does not exist in; and raising `flushQueueSize` past its default of 30 widens the loss window when the app closes.
+
+**Guidelines:**
+
+- MUST cite the upstream documentation URL in any section that pins a version or mirrors a vendor's option surface, API signature, or configuration key.
+- MUST NOT reproduce a vendor reference table wholesale where a link plus the non-obvious caveat carries the same information.
+- MUST state the rule in the skill itself rather than delegating it to the link; a citation is evidence for a rule, never a substitute for stating one.
+- SHOULD attach the verifying URL to a `Verified against <product> <version>` line, so a reader can tell what was checked rather than inferring it.
+- SHOULD link the version-specific page when the rule depends on the version, and the stable page when it does not.
+
 ## Gotchas, Defaults, and Calibration
 
 Good skills name a default path instead of presenting a menu, then explain exceptions only when those exceptions matter. Fragile tasks need tighter instructions than judgment-heavy tasks.

@@ -76,7 +76,7 @@ who goes to change one — it decides whether an edit survives, and where a fix
 belongs.
 
 Most of that guidance is **installed**, not written in this
-repository. Twenty-two skills come from the shared
+repository. Twenty-three skills come from the shared
 [axross/skills](https://github.com/axross/skills) library and are copied into
 [`.claude/skills/`](.claude/skills/) with the
 [vercel-labs/skills](https://github.com/vercel-labs/skills) CLI, pinned by
@@ -90,9 +90,9 @@ npx skills add axross/skills --agent claude-code --yes --copy \
 
 **Do not use `--skill '*'` here.** Against an external source it installs the
 library's *entire* catalogue, not the subset in `skills-lock.json` — today that
-would silently adopt the Expo, TanStack Query, and Amplitude layers, none of
-which this project uses. The command above derives the list from the lockfile
-instead, so it stays correct as the set changes.
+would silently adopt the Expo, TanStack Query, Amplitude, Vitest, Jest, and Zod
+layers this project has not chosen. The command above derives the list from the
+lockfile instead, so it stays correct as the set changes.
 
 Adopting a new skill means naming it explicitly, and `--skill` takes exactly
 one skill per flag: repeat the flag (`--skill a --skill b`) rather than passing

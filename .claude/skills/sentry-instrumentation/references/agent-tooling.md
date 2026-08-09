@@ -2,7 +2,7 @@
 
 Apply this reference when an agent needs to read Sentry directly — investigating an issue, checking whether a fix landed — or when driving releases and uploads from a pipeline.
 
-Verified against `@sentry/cli` 3.6.2 and Sentry's hosted server as documented on 2026-07-29.
+Verified against `@sentry/cli` 3.6.2 and Sentry's hosted server, checked against the [`sentry-cli` documentation](https://docs.sentry.io/cli/) and the [Sentry MCP documentation](https://mcp.sentry.dev/) on **2026-08-02**.
 
 ## Reading Sentry Directly
 

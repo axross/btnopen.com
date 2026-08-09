@@ -20,26 +20,34 @@ Everything in `<…>` is a slot to fill, and everything in italics is an annotat
 stops here still understands what is being done and why.>
 _(See problem-and-scope.md → Summary.)_
 
+## Todo
+
+- <An actionable deliverable or change surface, written as an ordinary bullet.>
+- <Another thing to change or create, without file, function, algorithm, completed
+  behavior, or verification detail.>
+  _(Static after plan approval; not a progress checklist. See problem-and-scope.md →
+  Todo.)_
+
 ## Background
 
 <Concise circumstances as bullets; add a diagram when it clarifies the situation
 better than prose.>
 _(See problem-and-scope.md → Background.)_
 
-### Goals
-
-- <A concise, achievable goal that explains the work's purpose.>
-
-### Non-goals
-
-- <A thing that could plausibly have been in scope, deliberately excluded, and why.>
-  _(See problem-and-scope.md → Non-Goals and Out-of-Scope.)_
-
 ### Assumptions
 
 - <A belief the plan relies on that the reader might dispute. An unresolved blocking
   decision is asked, never silently assumed.>
   _(See problem-and-scope.md → Assumptions vs. Open Questions.)_
+
+## Goals and Non-goals
+
+- Ensure <an achievable outcome that explains the work's purpose>.
+- Avoid <a plausible expansion that is deliberately excluded, without merely
+  negating a goal>.
+  _(One flat list without `Goal:` / `Non-goal:` labels or nested sections. A
+  two-column table is allowed only for directly corresponding items. See
+  problem-and-scope.md → Goals and Non-goals.)_
 
 ## Functional requirements
 
@@ -93,8 +101,8 @@ matter beyond functional behavior; otherwise omit with a stated reason.)_
 - <One observable happy-path behavior a reviewer can verify from the diff or the
   running product without reading implementation code.>
 - <One relevant edge/disabled/empty/error-state behavior.>
-- <An explicit "X is unaffected" criterion, when this change sits next to something
-  that must stay untouched.>
+- <An explicit "X is unaffected" criterion stating the property that must survive,
+  when this change sits next to something that must stay untouched.>
   _(Plain bullets, not `- [ ]` checkboxes. Every criterion traces to the sections
   above. See acceptance-criteria.md.)_
 

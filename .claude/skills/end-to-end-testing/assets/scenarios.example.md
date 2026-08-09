@@ -5,10 +5,10 @@ the project's e2e directory (for example `e2e/scenarios.md`) and edit it to list
 project's real journeys. It is the coverage **denominator**: one row per user or client
 journey, joined to tests by the stable dotted `Id`.
 
-`scripts/scenario-coverage-gate.mjs` reads the table below — the columns `Id`, `Title`,
-`Area`, and `Priority` (case-insensitive header, any order) are the only ones it parses;
-add other columns freely. Priority is `must` | `should` | `may`. Keep genuinely-untested
-journeys here with an honest priority so the report shows real gaps.
+The project's coverage gate reads the table below. Parse the columns `Id`, `Title`,
+`Area`, and `Priority` (case-insensitive header, any order) and ignore the rest, so
+other columns can be added freely. Priority is `must` | `should` | `may`. Keep
+genuinely-untested journeys here with an honest priority so the report shows real gaps.
 
 | Id                       | Title                                      | Area     | Priority |
 | ------------------------ | ------------------------------------------ | -------- | -------- |

@@ -2,7 +2,7 @@
 
 Apply this reference when configuring a DSN, deciding what `environment`, `release`, or `dist` should be, wiring release creation into a pipeline, or investigating why an event cannot be traced to the build that produced it.
 
-Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0, `@sentry/react-native` 8.20.0, and `@sentry/cli` 3.6.2.
+Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0, `@sentry/react-native` 8.20.0, and `@sentry/cli` 3.6.2, checked against [Sentry's releases documentation](https://docs.sentry.io/platforms/javascript/guides/react/configuration/releases/) on **2026-08-02**.
 
 ## The DSN Is Public, the Token Is Not
 

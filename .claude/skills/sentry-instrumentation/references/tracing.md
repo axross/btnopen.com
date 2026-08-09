@@ -2,7 +2,7 @@
 
 Apply this reference when enabling tracing, choosing a sample rate, connecting a trace across a service boundary, instrumenting an operation the SDK does not cover, or reducing span volume.
 
-Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0 and `@sentry/react-native` 8.20.0.
+Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0 and `@sentry/react-native` 8.20.0, checked against [Sentry's tracing documentation](https://docs.sentry.io/platforms/javascript/guides/react/tracing/) on **2026-08-02**.
 
 ## Sampling Is a Cost Decision
 

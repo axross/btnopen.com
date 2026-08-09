@@ -2,7 +2,7 @@
 
 Apply this reference when wiring Sentry into a React Native application, uploading its symbols, instrumenting navigation, or diagnosing a documented platform failure.
 
-Verified against `@sentry/react-native` 8.20.0. An Expo-managed application has additional required wiring covered in [expo.md](./expo.md); everything here applies there too.
+Verified against `@sentry/react-native` 8.20.0, checked against [Sentry's React Native documentation](https://docs.sentry.io/platforms/react-native/) on **2026-08-02**. An Expo-managed application has additional required wiring covered in [expo.md](./expo.md); everything here applies there too.
 
 ## One Package, Three Crash Classes
 

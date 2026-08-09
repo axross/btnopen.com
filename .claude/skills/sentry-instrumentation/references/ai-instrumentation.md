@@ -2,7 +2,7 @@
 
 Apply this reference when instrumenting a model client or an agent, reading AI spans, or deciding what a model call may send to Sentry.
 
-Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0 and `@sentry/react-native` 8.20.0.
+Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0 and `@sentry/react-native` 8.20.0, checked against [Sentry's AI Agents instrumentation documentation](https://docs.sentry.io/platforms/javascript/guides/nextjs/agent-tracing/) on **2026-08-02**.
 
 ## Instrumenting a Model Client
 

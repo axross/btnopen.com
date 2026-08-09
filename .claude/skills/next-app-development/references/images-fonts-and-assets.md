@@ -46,7 +46,7 @@ images: {
 - MUST scope `remotePatterns` to specific hostnames, and narrow `pathname` where the host serves more than the application needs.
 - MUST NOT use a wildcard hostname; it is an open proxy and an SSRF surface.
 - MUST NOT use `images.domains`; it is deprecated in favour of `remotePatterns`.
-- MUST enumerate `localPatterns` exhaustively when local images are served with query strings, since v16 requires a matching `search` entry.
+- MUST enumerate `localPatterns` exhaustively when local images are served with query strings, since v16 requires a matching `search` entry — see the [`next/image` reference](https://nextjs.org/docs/app/api-reference/components/image).
 - SHOULD leave `dangerouslyAllowLocalIP` off; enable it only on a private network, and record why.
 
 ## What Changed in v16

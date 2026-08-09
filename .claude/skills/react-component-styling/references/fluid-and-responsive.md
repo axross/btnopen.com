@@ -34,7 +34,7 @@ Type and spacing steps interpolate against the viewport with `clamp()`, holding 
 
 ## Viewport Units versus Container Units
 
-The rule is: **scalar tokens track the viewport; layout tracks the container.** This is not a preference — it is forced. Root-level tokens are declared on `:root`, which is not a query container, so [container-query units](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries#container_query_length_units) cannot resolve there. Global scalar sizing therefore has to use a viewport unit, and that is correct anyway: type size should follow the device, not the width of whichever pane a component landed in.
+The rule is: **scalar tokens track the viewport; layout tracks the container.** This is not a preference — it is forced. Root-level tokens are declared on `:root`, which is not a query container, so [container-query units](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Containment/Container_queries#container_query_length_units) cannot resolve there. Global scalar sizing therefore has to use a viewport unit, and that is correct anyway: type size should follow the device, not the width of whichever pane a component landed in.
 
 **Guidelines:**
 

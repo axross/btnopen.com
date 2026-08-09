@@ -1,7 +1,6 @@
 ---
 name: next-app-development
-description: The ability to build and review a Next.js App Router application on the version 16 baseline — project layout, route files and route modules, navigation, the universal/server/client boundary, the three directives, rendering and streaming, data fetching, mutations, route handlers, caching, error handling, metadata, images and fonts, the proxy, configuration and environment, authentication, internationalization, observability wiring, bundling, testing, deployment, and version discipline. Covers `src/` domain directories under thin `app/` entrypoints, `server-only` fencing versus `"use server"` exposure, `"use cache"` with `cacheLife`/`cacheTag` under `cacheComponents`, `proxy.ts` on the Node.js runtime, server functions that authenticate and authorize inside every call, and the review finding each surface earns when it goes wrong. The Pages Router is out of scope.
-when_to_use: Use when writing or reviewing any Next.js App Router change — "app router", "server component", "use client", "use cache", "server action", "server function", "route handler", "proxy", "middleware", "generateMetadata", "revalidateTag", "next/image", "next.config", "instrumentation", "cacheComponents", a hydration or serialization error, or a route that renders dynamically when it should be static. For a component's own composition, props, and state use a React component development capability; for CSS, tokens, and themes use a React component styling capability.
+description: Writing or reviewing a Next.js App Router change — "app router", "server component", "use client", "use cache", "server action", "route handler", "proxy", "middleware", "generateMetadata", "revalidateTag", "next/image", "next.config", "instrumentation", "cacheComponents", a hydration or serialization error, or a route rendering dynamically when it should be static. For a component's own composition, props, and state use a React component development capability; for CSS and themes a React component styling one. The version 16 framework layer; Pages Router out of scope.
 user-invocable: false
 ---
 
@@ -15,7 +14,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 ## Baseline and Scope
 
-**Next.js 16 is the baseline.** Every rule here is written against v16 semantics and verified against the 16.2.x documentation. No rule is qualified as holding only on 14 or 15 — where a v16 rule inverts an older one, the older behaviour appears solely in the arrival checklist in [version-and-tooling.md](./references/version-and-tooling.md).
+**Next.js 16 is the baseline.** Every rule here is written against v16 semantics, verified against the [16.2.x App Router documentation](https://nextjs.org/docs/app) on **2026-08-02**. No rule is qualified as holding only on 14 or 15 — where a v16 rule inverts an older one, the older behaviour appears solely in the arrival checklist in [version-and-tooling.md](./references/version-and-tooling.md).
 
 **The App Router is the only router in scope.** The Pages Router — `pages/`, `getServerSideProps`, `getStaticProps`, API Routes — is out of scope entirely: no rule, no migration path, no comparison.
 
@@ -104,7 +103,7 @@ See [directives.md](./references/directives.md) for:
 
 See [rendering-and-streaming.md](./references/rendering-and-streaming.md) for:
 
-- what makes a route static or dynamic, and the flag that changes the model
+- what makes a route static or dynamic, and how `cacheComponents` redraws that boundary
 - the loading file, and what it costs to declare one
 - choosing Suspense granularity, and when a boundary wants no fallback
 - pregenerating dynamic segments
@@ -114,7 +113,7 @@ See [rendering-and-streaming.md](./references/rendering-and-streaming.md) for:
 
 See [data-fetching.md](./references/data-fetching.md) for:
 
-- the approaches available, and why a codebase should not mix them
+- Server Components, route handlers with client fetching, or a server-state library — and why a codebase should not mix them
 - a fenced data-access layer that returns transfer objects rather than rows
 - removing waterfalls with parallel awaits, promise props, and preloading
 - deduplicating a query that a page and its metadata both need
@@ -192,7 +191,7 @@ See [images-fonts-and-assets.md](./references/images-fonts-and-assets.md) for:
 
 See [proxy.md](./references/proxy.md) for:
 
-- the file, the exported function, and the config object beside it
+- `proxy.ts` beside `app/`, its `proxy` or default export, and the `config` object next to it
 - the runtime it pins, and the documentation page that still disagrees
 - writing a matcher, and what runs when you omit one
 - what belongs in the proxy and what does not
@@ -223,7 +222,7 @@ See [internationalization.md](./references/internationalization.md) for:
 
 See [configuration-and-environment.md](./references/configuration-and-environment.md) for:
 
-- a typed config file, and the options that change behaviour rather than tune it
+- `next.config.ts` typed with `NextConfig`, and why `cacheComponents`, `reactCompiler`, and `output` change behaviour rather than tune it
 - the default bundler and the config that makes a build fail
 - environment file precedence, and the prefix that inlines a value into client bundles
 - why an inlined variable must be read by its full literal name
@@ -246,7 +245,7 @@ See [bundling.md](./references/bundling.md) for:
 
 - why the client boundary is transitive, and how a server-only package reaches a client bundle
 - externalizing a server package, and transpiling one that ships untranspiled
-- barrels and namespace imports that defeat tree-shaking, and the option that mitigates them
+- barrels and namespace imports that defeat tree-shaking, and how `optimizePackageImports` rewrites them
 - dynamic imports, disabling server rendering on one, and the SEO trap that follows
 - what the compiler changes about hand-written memoization
 - the build-output metrics that no longer exist, and what to measure instead

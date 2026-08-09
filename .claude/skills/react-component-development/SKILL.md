@@ -1,7 +1,6 @@
 ---
 name: react-component-development
-description: The ability to build a React component — its composition, props contract, extracted logic, state, memoization, loading and error surfaces, testability, and list virtualization — on web and mobile native alike. Covers kebab-case files and cohesion-grouped directories, named exports and flat name-prefixed compound parts wired through a private variant context, the `ComponentProps` base type, one-level props destructuring and the mandatory `...props` spread, whole-model props, closed-union variants, `data-*` attributes, the styling-prop merge contract on both platforms, helpers-versus-hooks extraction, platform-forked files, `useState`/Context/store-library state, the auto-memoizing-compiler check, scope-relative test hooks, and when a list earns virtualization.
-when_to_use: Use when building or reviewing a React component — "props", "spread props", "compound component", "variant prop", "empty/error state", "skeleton", "data-testid", "testID", "extract a hook", "useEffect", "where state lives", "memo", "virtualize", "FlatList", or a surface that re-renders or scrolls badly. For styling — CSS Modules, Unistyles, tokens — use a React component styling capability instead.
+description: Building or reviewing a React component — "props", "spread props", "compound component", "variant prop", "empty state", "error state", "skeleton", "data-testid", "testID", "extract a hook", "useEffect", "where state lives", "memo", "virtualize", "FlatList", or a surface that re-renders or scrolls badly. For styling — CSS Modules, Unistyles, tokens — use a React component styling capability instead. Composition, props contracts, extracted logic, state, memoization, loading and error surfaces, testability, and list virtualization, on web and mobile native alike.
 user-invocable: false
 ---
 
@@ -118,7 +117,7 @@ See [virtualization.md](./references/virtualization.md) for:
 
 ## Verifying a Component Change
 
-A component change is verified by rendering it, not by the type-checker — which sees none of the branches, platforms, or pass-throughs these rules turn on.
+A component change is verified by rendering it, not by the type-checker — which sees none of the branches, platforms, or pass-throughs these rules turn on. This section names the checks a component change earns; how the result is then reported — which of them ran, which were skipped, and what risk a skip leaves — belongs to a **software development capability** under its verification topic, which owns it for every kind of change.
 
 **Guidelines:**
 
@@ -126,4 +125,3 @@ A component change is verified by rendering it, not by the type-checker — whic
 - MUST exercise both platforms when the change touches a platform-forked file; a fork that compiles proves nothing about the sibling.
 - MUST confirm a caller-supplied test hook and styling prop actually reach the rendered root, since a dropped rest object type-checks and fails silently.
 - SHOULD render a list at a realistic item count when the change touches list rendering, not with three fixture rows.
-- MUST report which of these were run and which were skipped, rather than presenting the change as fully verified.

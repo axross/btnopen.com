@@ -70,9 +70,10 @@ export function useAuthStatus(): AuthStatus {
 
 A value the server owns is a **cache**, not component state. Holding it in `useState` re-implements staleness, refetching, deduplication, and invalidation by hand, and each component that does so implements them slightly differently.
 
+Where that boundary runs — including what copying a server-owned result into local state costs, and what to do instead — is owned by a **server-state capability** under its server-state-boundary topic. What follows is only where a component meets it.
+
 **Guidelines:**
 
 - MUST route server-owned data through the host project's server-state layer rather than fetching it into `useState` inside a component.
-- MUST NOT copy a server-state result into local state to modify it; derive what the view needs during render, or send a mutation.
 - MAY hold a draft of a server value in local state while a form is being edited, sending it through a mutation on submit.
 - MUST NOT organize that layer's factories, cache keys, invalidation, or error strategy here; this skill stops at the component boundary, and the host project's own server-state conventions — or a TanStack Query development capability where the project uses that library — govern beyond it.

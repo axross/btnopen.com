@@ -48,6 +48,29 @@ The exception covers two shapes. The familiar one is a portable skill restating 
 - MUST keep the restated copy visibly a deferring summary — shorter than the owner's treatment, and naming the owner's topic — rather than a divergent second source of truth.
 - SHOULD verify, when adding a restatement, that the restating skill is still executable with the owner absent; a restatement that leaves a term undefined has not bought the portability it claims.
 
+## Mechanism Beneath a Tool-Agnostic Owner
+
+A vendor- or runner-specific skill added beneath a tool-agnostic one inherits a boundary that is easy to state and easy to breach: the specific skill owns **mechanism** — the package, the option, the call signature, the command — while the tool-agnostic skill keeps **judgment**, meaning what is worth doing, when, and why. The breach is rarely deliberate. Explaining why a rule matters reads as helpful in any one section, and a skill that does it in nine becomes a second source of truth for rules it does not own, free to drift from the first.
+
+Noticing the duplication while writing does not work, because each instance looks reasonable on its own. Enumerate instead:
+
+1. List every section the new skill will carry.
+2. Classify each as **mechanism** — true only of this vendor or runner — or **judgment** — true of any tool in the category.
+3. For each judgment section, name the tool-agnostic owner and cut the section down to a deferral pointing at it.
+4. For each mechanism section, swap the vendor out in your head; a rule that still holds is judgment wearing a vendor's name.
+
+**Example:**
+
+> "Mock only what is slow or non-deterministic" survives swapping the runner, so it is judgment and a unit-testing skill owns it. "`vi.mock` is hoisted above the imports, so its factory cannot close over a `const` declared later" does not survive the swap, so it is mechanism.
+
+**Guidelines:**
+
+- MUST enumerate and classify every section as mechanism or judgment when adding a vendor- or runner-specific skill beneath a tool-agnostic one, rather than relying on spotting duplication while writing.
+- MUST name the tool-agnostic owner in each judgment section and reduce that section to a deferral, per the cross-reference rule in [body-content-style.md](./body-content-style.md).
+- MUST hold a judgment section retained under the [Portable Source Exception](#portable-source-exception) to that exception's bounds — shorter than the owner's treatment and naming the owner's topic — rather than treating portability as a licence to restate the rationale.
+- MUST NOT let a citation of the owner sit beside a full restatement of the owner's rule; the deferral replaces the rule, it does not annotate it.
+- SHOULD record the classification in the change's plan or pull request when the skill is large enough that a reviewer cannot cheaply redo it.
+
 ## Collective Exhaustiveness
 
 Within its declared scope, a skill should cover the practical cases an agent will encounter. Gaps are acceptable only when the skill narrows its scope or points to a different owner.
@@ -76,7 +99,7 @@ flowchart TD
 
 - SHOULD split a skill when `SKILL.md` crosses the size thresholds in [progressive-disclosure.md](./progressive-disclosure.md).
 - SHOULD split when one section exceeds the section-length ceiling (below).
-- SHOULD split when the `description` and `when_to_use` together cannot cover what and when within the discovery length caps (see [frontmatter-and-naming.md](./frontmatter-and-naming.md)).
+- SHOULD split when one `description` cannot carry both the trigger and the coverage within the discovery length target (see [description-writing.md](./description-writing.md)).
 - SHOULD NOT split a small, cohesive skill only to match neighboring file layouts.
 
 ## When to Consolidate

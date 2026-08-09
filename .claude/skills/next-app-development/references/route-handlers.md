@@ -24,7 +24,7 @@ export async function GET(
 **Guidelines:**
 
 - MUST export handlers under the exact method names; a lowercase or misspelled export serves nothing and reports nothing.
-- MUST await `ctx.params`; it is a promise, as everywhere else in v16.
+- MUST await `ctx.params`; it is a promise, as everywhere else in v16 — see the [`route.js` reference](https://nextjs.org/docs/app/api-reference/file-conventions/route).
 - SHOULD type the context with `RouteContext<'/literal/[param]'>` so a renamed segment becomes a type error.
 - MUST NOT place `route.ts` in a directory that already has `page.tsx`.
 

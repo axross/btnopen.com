@@ -2,7 +2,7 @@
 
 Apply this reference when events are not arriving, when the SDK's contribution to a bundle matters, or when deciding how much build-time work to spend on legible stack traces.
 
-Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0 and `@sentry/react-native` 8.20.0.
+Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0, `@sentry/react-native` 8.20.0, and the Sentry bundler plugins on `@sentry/bundler-plugin-core` 5.3.0, checked against [Sentry's configuration options](https://docs.sentry.io/platforms/javascript/guides/react/configuration/options/) on **2026-08-02**.
 
 ## Getting Past a Content Blocker
 
@@ -32,11 +32,14 @@ Client reports are the least obvious and the most useful during an investigation
 
 ## Bundle Footprint
 
-The SDK is not small, and several options trade capability for bytes: excluding debug and logging statements from the build, excluding tracing code where the application does not use it, and stripping the SDK's own build-time logger. These are build-plugin options rather than runtime ones, so they cost nothing at runtime to enable.
+The SDK is not small, and several options trade capability for bytes: excluding debug and logging statements from the build, excluding tracing code where the application does not use it, and stripping the SDK's own build-time logger. Each works by replacing a flag the SDK guards that code with, so the whole saving is made during compilation and nothing is paid at runtime for turning one on ([tree shaking](https://docs.sentry.io/platforms/javascript/configuration/tree-shaking/)).
+
+Costing nothing at runtime is not the same as being available, and these are build-plugin options: they reach the bundlers the SDK ships a plugin for and no others. Elsewhere the setting is accepted and silently does nothing — the same failure the annotation option below has, without annotation's consolation that the other bundler has an equivalent. The case that catches people is a meta-framework whose build wrapper accepts the option outside its bundler-scoped group, which reads as bundler-agnostic and is not: on Next.js it reaches a webpack build and not a Turbopack one, with nothing to migrate to. A build no plugin covers is a lookup for a framework-level replacement mechanism, not a rule that cannot be met — [nextjs.md](./nextjs.md) carries that route for the framework where this currently bites.
 
 **Guidelines:**
 
-- MUST strip debug and logging statements from production builds; they exist for development and ship otherwise.
+- MUST strip debug and logging statements from production builds wherever the bundler actually building the application provides the option; they exist for development and ship otherwise.
+- MUST confirm the SDK ships a plugin covering the build before counting one of these options as applied, and look up a framework-level route where it ships none — for Next.js, per the rules in [nextjs.md](./nextjs.md).
 - SHOULD exclude tracing code from the bundle only where the application genuinely does not trace, since re-enabling it later is easy to forget.
 - SHOULD measure the SDK's contribution before optimizing it, rather than assuming which option matters.
 

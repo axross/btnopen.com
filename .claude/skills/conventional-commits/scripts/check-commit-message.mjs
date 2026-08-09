@@ -1,33 +1,33 @@
 #!/usr/bin/env node
 // check-commit-message.mjs — Conventional Commits header validator.
 //
-// Unless a project installs a commit hook or a CI check that rejects a
+// unless a project installs a commit hook or a CI check that rejects a
 // malformed commit message, the format is self-enforced (see
-// ../SKILL.md). This validator makes
+// ../SKILL.md). this validator makes
 // that catch mechanical: it checks a message's header against the project's
-// Conventional Commits rules and reports every violation. The same header
+// Conventional Commits rules and reports every violation. the same header
 // format governs pull request titles, so it validates those too — pass the
 // title as a one-line message.
 //
-// It is dependency-light (Node standard library only) so it runs anywhere the
-// skill is installed. It validates the parts a header check can decide
+// it is dependency-light (Node standard library only) so it runs anywhere the
+// skill is installed. it validates the parts a header check can decide
 // mechanically — type, scope, breaking marker, separator, description — and the
 // header/body blank-line separation; it does not judge whether the description
 // accurately summarizes the diff.
 //
-// Usage:
+// usage:
 //   node check-commit-message.mjs <file>   # read the message from a file
 //   node check-commit-message.mjs -        # read the message from stdin
 //   <producer> | node check-commit-message.mjs   # read stdin when no arg
 //
-// Exit codes:
+// exit codes:
 //   0  the header conforms (warnings may still be printed)
 //   1  one or more MUST violations (each is listed)
 //   2  bad invocation — no message could be read
 
 import { readFile } from "node:fs/promises";
 
-// The required type and the additional types allowed for non-release changes,
+// the required type and the additional types allowed for non-release changes,
 // per SKILL.md › Type.
 const ALLOWED_TYPES = new Set([
   "feat",
@@ -44,7 +44,7 @@ const ALLOWED_TYPES = new Set([
 ]);
 
 // `<type>[optional scope][!]: <description>` — a required `: ` separator with a
-// single space. Scope, when present, must be non-empty parentheses.
+// single space. scope, when present, must be non-empty parentheses.
 const HEADER_RE = /^([A-Za-z]+)(\(([^)]*)\))?(!)?: (.*)$/;
 const HEADER_SOFT_MAX = 72; // SHOULD stay under this; a warning, not a failure.
 
@@ -62,8 +62,8 @@ the message is read from stdin.
 Exit codes: 0 the header conforms, 1 MUST violations found, 2 bad invocation.`;
 
 /**
- * Read the commit message from the first CLI argument (a file path, or `-` for
- * stdin) or, when no argument is given, from stdin. Exits 2 when nothing can be
+ * read the commit message from the first CLI argument (a file path, or `-` for
+ * stdin) or, when no argument is given, from stdin. exits 2 when nothing can be
  * read, so an empty invocation is a bad invocation rather than a silent pass.
  */
 async function readMessage() {
@@ -90,8 +90,8 @@ async function readMessage() {
 }
 
 /**
- * Strip the parts git itself discards before committing: a leading byte-order
- * mark and every line starting with the default comment char `#`. What remains
+ * strip the parts git itself discards before committing: a leading byte-order
+ * mark and every line starting with the default comment char `#`. what remains
  * is the author's real message.
  */
 function stripGitNoise(text) {
@@ -104,7 +104,7 @@ function stripGitNoise(text) {
 }
 
 /**
- * Validate one commit message. Returns { failures, warnings } — failures are
+ * validate one commit message. returns { failures, warnings } — failures are
  * MUST violations that fail the run; warnings are SHOULD deviations that print
  * but do not change the exit code.
  */
@@ -139,7 +139,7 @@ function checkMessage(text) {
     warnings.push(`type "${type}" should be lowercase ("${lowerType}").`);
   }
 
-  // A scope was written but is empty: `type(): ...`.
+  // a scope was written but is empty: `type(): ...`.
   if (scope !== undefined && scope.trim() === "") {
     failures.push("scope parentheses are empty — omit them or name a scope.");
   }
@@ -156,7 +156,7 @@ function checkMessage(text) {
     );
   }
 
-  // The line after the header must be blank when a body or footer follows.
+  // the line after the header must be blank when a body or footer follows.
   if (lines.length > 1 && lines[1].trim() !== "") {
     failures.push("the line after the header must be blank (header/body separation).");
   }

@@ -1,7 +1,6 @@
 ---
 name: conventional-commits
-description: The ability to follow and drive Conventional Commits v1.0.0 — the structured header contract (a type, an optional scope, an optional breaking-change marker, then a short imperative description) that governs Git commit messages and, identically, pull request titles. Covers the overall message format, the allowed types and what each signals, scope and description conventions, body and footer structure, the two ways to mark a breaking change, the SemVer correlation each shape implies, worked examples for the common cases, and a bundled dependency-light validator for mechanically self-checking a header before committing.
-when_to_use: Apply whenever you author or revise a Git commit message, title a pull request, or judge whether a header conforms — "write a commit message", "what type should this be", "is this header valid", "does this need a scope", "mark this as a breaking change", or preparing the squash-merge title that becomes a permanent commit subject. Not for the pull request body, which a pull-request-description capability owns, and not for issue titles, which are plain prose.
+description: Authoring or revising a Git commit message, titling a pull request, or judging whether a header conforms — "write a commit message", "what type should this be", "is this header valid", "does this need a scope", "mark this as a breaking change", or preparing a squash-merge title that becomes a permanent commit subject. Not the pull request body, which a pull-request-description capability owns, and not issue titles. Conventional Commits v1.0.0 — the header contract, types, scopes, footers, breaking-change markers, SemVer correlation, and a bundled validator.
 user-invocable: false
 ---
 

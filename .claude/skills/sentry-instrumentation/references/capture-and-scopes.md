@@ -2,7 +2,7 @@
 
 Apply this reference when reporting an error to Sentry, attaching context to an event, filtering what reaches the project, changing how events group into issues, or making sure a final event is sent before something exits.
 
-Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0 and `@sentry/react-native` 8.20.0.
+Verified against `@sentry/react` and `@sentry/nextjs` 10.69.0 and `@sentry/react-native` 8.20.0, checked against [Sentry's scopes documentation](https://docs.sentry.io/platforms/javascript/guides/react/enriching-events/scopes/) on **2026-08-02**.
 
 This reference covers the **Sentry mechanism**. _Which_ failures deserve capture, where a `try`/`catch` belongs, and whether to report-and-rethrow or report-and-recover belong to a software instrumentation capability, which owns them vendor-neutrally.
 
@@ -61,7 +61,7 @@ Modern SDKs take event processors as plain functions, and integrations as functi
 
 Data attached to a scope applies to every event captured while that scope is active. There are three: a **global** scope for process-wide facts, an **isolation** scope for one request or one task, and a **current** scope for a narrow block. A server that writes request data to the global scope leaks it across concurrent requests; that is what the isolation scope exists to prevent.
 
-What to attach where depends on how it will be used:
+What to attach where depends on how it will be used — an axis [Sentry's tags documentation](https://docs.sentry.io/platforms/javascript/guides/react/enriching-events/tags/) does not draw, because it documents each mechanism on its own page:
 
 | Kind          | Indexed and searchable           | Use for                                                       |
 | ------------- | -------------------------------- | ------------------------------------------------------------- |
@@ -88,8 +88,8 @@ A project's own structured logger is the highest-value source, because logging w
 
 - MUST keep breadcrumb messages and data inside the data-class rules in [data-collection.md](./data-collection.md), which owns them; breadcrumbs ship with the event.
 - SHOULD populate the trail through ordinary logging rather than scattered manual breadcrumb calls.
-- SHOULD reserve a manual breadcrumb for a non-log event worth placing on the timeline — a state transition, a deliberate user action.
-- SHOULD attach a public identifier as breadcrumb data so the trail is filterable.
+
+Which occurrences earn a manual breadcrumb, and what belongs in its data, survive swapping Sentry for any other tracker — so they are judgment a **software instrumentation capability** owns under its error-tracking topic, not Sentry configuration. This reference stops at the SDK call that records one; consult that capability for what to record.
 
 ## Grouping and Fingerprints
 
