@@ -11,18 +11,22 @@ and what already guards it.
 Application code reaches runtime configuration through exactly one barrel per
 realm — `app/(app)/_/runtime.ts` for the app, `payload/helpers/runtime.ts` for
 Payload — so a review only has to look in one place to know what a deployment
-exposes. `payload/config.ts` is the sanctioned exception: the Payload CLI
-resolves it outside Next's bundler, so it reads its own build-time values.
-Config and test files have no barrel to read through, so they appear in the
-table too. The table below is the complete set of files that read
-`process.env` outside a Biome override — every one of them carries a directive
-naming its reason.
+exposes. `payload/config.ts` is the sanctioned exception: the secret, the
+database credentials, the storage prefix, and the seed user are read only where
+the config object is built, so routing them through the barrel would add an
+export with a single caller. A value a second module in the realm also needs
+goes through the barrel instead, as `vercelBlobToken` does — `payload/config.ts`
+and `payload/helpers/image.ts` both import it. Config and test files have no
+barrel to read through, so they appear in the table too, as does the one
+component that keeps a literal `NODE_ENV` comparison for the reason below. The
+table is the complete set of source files Biome lints that read `process.env`
+outside an override — every one of them carries a directive naming its reason.
 
 | File | Why it may read `process.env` |
 | --- | --- |
 | `app/(app)/_/runtime.ts` | The app realm's sanctioned barrel, exporting `urlOrigin`, `vercelEnvironment`, `sentryDsn`, `mixpanelToken`, and friends |
-| `payload/helpers/runtime.ts` | The Payload realm's counterpart, exporting `urlOrigin` and `vercelBlobToken` — the latter imported by `payload/config.ts`, so the blob credential has one absent-value contract across the realm. It exists so the realm never imports `app/`, and resolves the origin through the same `shared/url-origin.ts` the app barrel uses |
-| `payload/config.ts` | Build-time values the Payload CLI needs to resolve this config: the secret, the database credentials, the storage prefix, and the seed user |
+| `payload/helpers/runtime.ts` | The Payload realm's counterpart, exporting `urlOrigin` and `vercelBlobToken` — each read by more than one module in the realm, which is what earns a value its place here. It exists so the realm never imports `app/`, and resolves the origin through the same `shared/url-origin.ts` the app barrel uses |
+| `payload/config.ts` | The secret, the database credentials, the storage prefix, and the seed user, each consumed only here where the config object is built. The module is evaluated by the Payload CLI and by every server process that imports it, so these are not build-time values |
 | `next.config.ts` | Config-time access to `CI`, `SENTRY_ORG`, `SENTRY_PROJECT` |
 | `playwright.config.ts` | Test config-time access to `CI`, `PLAYWRIGHT_BASE_URL`, `VERCEL_AUTOMATION_BYPASS_SECRET` |
 | `app/(app)/_/components/markdown.tsx` | The one sanctioned `NODE_ENV` check in application code — see below |
@@ -53,9 +57,10 @@ configuration* rather than to `process.env` as a token.
   single-line `// biome-ignore lint/style/noProcessEnv:` above the access, a
   file-wide `// biome-ignore-all lint/style/noProcessEnv:` as both barrels use,
   or a `// biome-ignore-start` / `// biome-ignore-end` pair around a block, as
-  `payload/config.ts`, `next.config.ts`, and `playwright.config.ts` do. That
-  comment — not a config whitelist — is what exempts every file in the table
-  above, and it is the marker a review looks for.
+  `payload/config.ts`, `next.config.ts`, `playwright.config.ts`,
+  `e2e/helpers/api/auth.ts`, and `e2e/tests/routes/posts/comments.test.ts` do.
+  That comment — not a config whitelist — is what exempts every file in the
+  table above, and it is the marker a review looks for.
 - MUST keep `noProcessEnv` at `"error"` in `biome.jsonc`, so an unsanctioned
   access fails `npm run lint` instead of scrolling past as a warning. That
   severity is what makes the rule above literal rather than aspirational: every
