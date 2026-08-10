@@ -35,16 +35,27 @@
 		.link {
 			display: flex;
 			align-items: center;
-			/* the coarse-pointer target floor, kept off the `--size-*` scale on
-			   purpose — it is an input-device minimum rather than a spacing step. */
-			min-block-size: 44px;
+			/* the hit area grows without the link moving: the padding and its
+			   negation match exactly, per the hit-area template in styling.md. */
+			padding-block: var(--size-8);
 			padding-inline: var(--size-8);
+			margin-block: calc(var(--size-8) * -1);
 			margin-inline-end: calc(var(--size-8) * -1);
 			border-radius: var(--radius-sm);
 			color: var(--color-text-accent-low);
 			outline: none;
 
-			@media (hover: hover) {
+			/* the touch target floor, written as the literal length the
+			   specification states rather than a `--size-*` step: it is an
+			   accessibility constant, and routing it through the design scale would
+			   let a spacing retune move it. gated on `any-pointer` so a hybrid
+			   laptop still gets it, and so a mouse-only visitor keeps the row height
+			   the design gives. */
+			@media (any-pointer: coarse) {
+				min-block-size: 44px;
+			}
+
+			@media (hover: hover) and (pointer: fine) {
 				&:hover {
 					background-color: var(--color-background-accent-subtle);
 				}

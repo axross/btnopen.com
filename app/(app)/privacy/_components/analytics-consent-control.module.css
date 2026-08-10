@@ -16,10 +16,9 @@
 			justify-content: space-between;
 			gap: var(--size-16);
 			inline-size: stretch;
-			/* the coarse-pointer target floor, kept off the `--size-*` scale on
-			   purpose — it is an input-device minimum rather than a spacing step. */
-			min-block-size: 44px;
-			padding: 0;
+			/* the whole row is the target; the switch is only what it looks like. */
+			padding-block: var(--size-8);
+			padding-inline: 0;
 			border: none;
 			border-radius: var(--radius-sm);
 			background: none;
@@ -28,6 +27,16 @@
 			text-align: start;
 			cursor: pointer;
 			outline: none;
+
+			/* the touch target floor, written as the literal length the
+			   specification states rather than a `--size-*` step: it is an
+			   accessibility constant, and routing it through the design scale would
+			   let a spacing retune move it. gated on `any-pointer` so a hybrid
+			   laptop still gets it, and so a mouse-only visitor keeps the row height
+			   the padding above gives. */
+			@media (any-pointer: coarse) {
+				min-block-size: 44px;
+			}
 
 			&:focus-visible {
 				outline: var(--color-component-accent-selected) solid var(--size-3);
@@ -51,7 +60,7 @@
 			background-color: var(--color-component-neutral-selected);
 			transition: background-color var(--duration-md) ease-in-out;
 
-			@media (hover: hover) {
+			@media (hover: hover) and (pointer: fine) {
 				.field:hover & {
 					background-color: var(--color-component-neutral-hovered);
 				}
@@ -61,7 +70,7 @@
 		.field[data-checked] .track {
 			background-color: var(--color-solid-accent-rest);
 
-			@media (hover: hover) {
+			@media (hover: hover) and (pointer: fine) {
 				.field:hover & {
 					background-color: var(--color-solid-accent-hovered);
 				}

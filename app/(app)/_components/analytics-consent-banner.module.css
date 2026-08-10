@@ -44,7 +44,7 @@
 			border-radius: var(--radius-xs);
 			outline: none;
 
-			@media (hover: hover) {
+			@media (hover: hover) and (pointer: fine) {
 				&:hover {
 					color: var(--color-text-accent-high);
 				}
@@ -67,9 +67,7 @@
 		.deny,
 		.grant {
 			flex: 1;
-			/* the coarse-pointer target floor, kept off the `--size-*` scale on
-			   purpose — it is an input-device minimum rather than a spacing step. */
-			min-block-size: 44px;
+			padding-block: var(--size-8);
 			padding-inline: var(--size-16);
 			border: var(--size-1) solid transparent;
 			border-radius: var(--radius-sm);
@@ -78,6 +76,16 @@
 			cursor: pointer;
 			outline: none;
 			transition: background-color var(--duration-md) ease-in-out;
+
+			/* the touch target floor, written as the literal length the
+			   specification states rather than a `--size-*` step: it is an
+			   accessibility constant, and routing it through the design scale would
+			   let a spacing retune move it. gated on `any-pointer` so a hybrid
+			   laptop still gets it, and so a mouse-only visitor keeps the height the
+			   padding above gives. */
+			@media (any-pointer: coarse) {
+				min-block-size: 44px;
+			}
 
 			&:focus-visible {
 				outline: var(--color-component-accent-selected) solid var(--size-3);
@@ -94,7 +102,7 @@
 			background-color: var(--color-component-neutral-rest);
 			color: var(--color-text-neutral-high);
 
-			@media (hover: hover) {
+			@media (hover: hover) and (pointer: fine) {
 				&:hover {
 					background-color: var(--color-component-neutral-hovered);
 				}
@@ -106,7 +114,7 @@
 			background-color: var(--color-component-accent-rest);
 			color: var(--color-text-accent-high);
 
-			@media (hover: hover) {
+			@media (hover: hover) and (pointer: fine) {
 				&:hover {
 					background-color: var(--color-component-accent-hovered);
 				}
