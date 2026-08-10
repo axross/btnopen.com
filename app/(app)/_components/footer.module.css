@@ -11,6 +11,11 @@
 			margin-block-start: auto;
 			padding-block-start: var(--size-160);
 			padding-inline: var(--size-16);
+			/* the consent banner floats over the end of the document, which is
+			   exactly where this row sits, so the footer reserves the height the
+			   banner publishes. the property is absent once the visitor has
+			   answered and the banner has unmounted. */
+			padding-block-end: var(--analytics-consent-banner-clearance, 0px);
 		}
 
 		.row {
