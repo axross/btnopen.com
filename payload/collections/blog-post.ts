@@ -7,6 +7,7 @@ import { logger } from "../helpers/logger";
 import { shouldInvalidatePostCaches } from "../helpers/post-cache-invalidation";
 import { urlOrigin } from "../helpers/runtime";
 import { assignShareToken } from "../helpers/share-token";
+import { rotateShareTokenEndpoint } from "../helpers/share-token-endpoint";
 
 export const blogPostCollection: CollectionConfig = {
 	slug: "blog-posts",
@@ -174,6 +175,7 @@ export const blogPostCollection: CollectionConfig = {
 		},
 	},
 	trash: true,
+	endpoints: [rotateShareTokenEndpoint],
 	hooks: {
 		beforeChange: [assignShareToken],
 		beforeDelete: [
