@@ -138,8 +138,10 @@
 			text-decoration: none;
 			outline: none;
 
-			&:hover {
-				text-decoration: underline;
+			@media (hover: hover) and (pointer: fine) {
+				&:hover {
+					text-decoration: underline;
+				}
 			}
 
 			&:focus-visible {

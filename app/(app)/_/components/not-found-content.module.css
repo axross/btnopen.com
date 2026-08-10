@@ -84,8 +84,10 @@
 			outline: none;
 			transition: background-color var(--duration-md) var(--ease-in-out);
 
-			&:hover {
-				background-color: var(--color-background-accent-subtle);
+			@media (hover: hover) and (pointer: fine) {
+				&:hover {
+					background-color: var(--color-background-accent-subtle);
+				}
 			}
 
 			&:focus-visible {

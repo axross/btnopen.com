@@ -13,8 +13,10 @@
 
 			--variant: "mobile";
 
-			&:hover {
-				background-color: var(--color-component-accent-hovered);
+			@media (hover: hover) and (pointer: fine) {
+				&:hover {
+					background-color: var(--color-component-accent-hovered);
+				}
 			}
 
 			@container (width > 30rem) {
@@ -63,11 +65,13 @@
 				--brightness: 0.9;
 			}
 
-			:where(:scope):hover & {
-				--brightness: 1.1;
+			@media (hover: hover) and (pointer: fine) {
+				:where(:scope):hover & {
+					--brightness: 1.1;
 
-				@container style(--theme: dark) {
-					--brightness: 1;
+					@container style(--theme: dark) {
+						--brightness: 1;
+					}
 				}
 			}
 		}
@@ -79,8 +83,10 @@
 			align-items: center;
 			background-color: var(--color-solid-accent-rest-alpha);
 
-			:where(:scope):hover & {
-				background-color: var(--color-solid-accent-hovered-alpha);
+			@media (hover: hover) and (pointer: fine) {
+				:where(:scope):hover & {
+					background-color: var(--color-solid-accent-hovered-alpha);
+				}
 			}
 		}
 

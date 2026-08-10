@@ -14,7 +14,16 @@
 			cursor: pointer;
 			outline: none;
 
-			&:hover:not(:disabled),
+			/* `[data-popup-open]` stays outside the gate — it marks the menu as
+			   open on every pointer class, so gating it would drop the cue on
+			   touch. the shared declarations are duplicated on purpose. */
+			@media (hover: hover) and (pointer: fine) {
+				&:hover:not(:disabled) {
+					background-color: var(--color-background-accent-subtle);
+					color: var(--color-text-accent-high);
+				}
+			}
+
 			&[data-popup-open] {
 				background-color: var(--color-background-accent-subtle);
 				color: var(--color-text-accent-high);
@@ -78,8 +87,17 @@
 			user-select: none;
 			outline: none;
 
-			&[data-highlighted],
-			&:hover {
+			/* `[data-highlighted]` stays outside the gate — it is Base UI's own
+			   active-item state, not a hover echo, so gating it would drop the
+			   cue on touch. the shared declarations are duplicated on purpose. */
+			@media (hover: hover) and (pointer: fine) {
+				&:hover {
+					background-color: var(--color-background-accent-subtle);
+					color: var(--color-text-accent-high);
+				}
+			}
+
+			&[data-highlighted] {
 				background-color: var(--color-background-accent-subtle);
 				color: var(--color-text-accent-high);
 			}

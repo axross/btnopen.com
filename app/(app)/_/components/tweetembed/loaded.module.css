@@ -61,8 +61,10 @@
 			white-space: nowrap;
 			text-decoration: none;
 
-			&:hover {
-				text-decoration: underline;
+			@media (hover: hover) and (pointer: fine) {
+				&:hover {
+					text-decoration: underline;
+				}
 			}
 		}
 	}
