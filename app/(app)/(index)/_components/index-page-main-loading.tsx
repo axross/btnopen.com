@@ -30,6 +30,18 @@ export function IndexPageMainLoading({
 				<LoadingPlaceholderRect className={css.portrait} />
 
 				<div className={css.bio}>
+					{/* the two blocks below are sized to the bio the live site actually
+					    serves — two Japanese paragraphs that wrap to three rows and two
+					    rows alike at 412px and 1280px — so `maxLines` is what sets their
+					    height and each sample only has to run long enough to reach its
+					    own clamp.
+
+					    the deliberate trade-off: the seeded fixture in
+					    `payload/helpers/seed/bio.md` is two Lorem-ipsum paragraphs
+					    several times longer than the live copy, so a preview deployment
+					    or an e2e run shows this skeleton noticeably shorter than the bio
+					    it resolves into. parity was sized for what a reader of the live
+					    site sees. */}
 					<div className={css.bioContent} data-testid="bio-loading">
 						<LoadingPlaceholderText
 							sampleText="Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat in id."
