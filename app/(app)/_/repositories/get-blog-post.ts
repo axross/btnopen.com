@@ -3,7 +3,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { getPayload } from "payload";
 import type z from "zod";
-import { canReadDrafts } from "@/helpers/draft-access";
+import { canReadPostDraft } from "@/helpers/post-draft-access";
 import { resolvePostReadMode } from "@/helpers/post-read-mode";
 import { config } from "@/payload/config";
 import { rootLogger } from "@/shared/logger";
@@ -31,24 +31,28 @@ export type BlogPostDetail = z.infer<typeof BlogPostDetail>;
 
 /**
  * Loads a post for the detail view. `draft: true` is honoured only for a
- * request carrying a Payload session; an unauthenticated caller is served the
- * published version (or nothing) instead. The published read is cached and
- * tagged; the draft read is not — see {@link resolvePostReadMode}.
+ * request carrying a Payload session, or one carrying this post's share token;
+ * every other caller is served the published version (or nothing) instead. The
+ * published read is cached and tagged; the draft read is not — see
+ * {@link resolvePostReadMode}.
  */
 export async function getBlogPost({
 	slug,
 	locale,
 	draft = false,
+	shareToken,
 }: {
 	slug: string;
 	locale: PayloadLocale;
 	draft?: boolean;
+	shareToken?: string;
 }): Promise<BlogPostDetail | null> {
 	const mode = resolvePostReadMode({
 		requested: draft,
-		// short-circuits so the published path never reads `headers()` and stays
-		// statically renderable.
-		permitted: draft ? await canReadDrafts() : false,
+		// short-circuits so the published path performs neither the session lookup
+		// nor the token read, reads no dynamic API, and stays statically
+		// renderable.
+		permitted: draft ? await canReadPostDraft(slug, shareToken) : false,
 	});
 
 	return mode === "draft"
