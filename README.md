@@ -16,7 +16,7 @@ fallback for other locales.
 | App framework / runtime | Next.js (App Router) |
 | Package manager | npm |
 | Linting & formatting | Biome |
-| Unit tests | Jest |
+| Unit tests | Vitest |
 | E2E tests | Playwright |
 | Content layer | Payload CMS |
 | Comment authentication | Clerk |
@@ -67,7 +67,7 @@ contributors and agents alike. `package.json` pins Node.js `>=24.0.0` and npm
 | `npm run format` | Formats code and documentation with Biome. | After every set of edits, before committing. |
 | `npm run lint` | Runs `biome check` — formatting and lint rules together. | After formatting; fix every reported error before finishing. |
 | `npm run typecheck` | Runs `tsc --noEmit`. Needs no prior build. | After any change to TypeScript signatures, types, or imports. |
-| `npm run test:unit` | Runs the Jest unit suite. | When a change affects code the unit suite covers. |
+| `npm run test:unit` | Runs the Vitest unit suite once, without entering watch mode. | When a change affects code the unit suite covers. |
 | `npm run test:e2e` | Runs the Playwright end-to-end suite. | When a change affects a UI output surface or e2e coverage. |
 | `npm run test:e2e -- --update-snapshots` | Regenerates Playwright snapshots for the local platform. | Only when a visual change is intentional — pair it with the reason. |
 | `npm run coverage:scenarios` | Runs the e2e suite, then enforces the scenario-coverage gate. | When a change adds or alters a user journey in `e2e/scenarios.md`. |

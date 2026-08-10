@@ -1,7 +1,7 @@
 // biome-ignore-all lint/style/noMagicNumbers: byte counts and HTTP status codes are intrinsic to what these tests bound
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
-import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
 	fetchPermittedUrl,
 	maxHtmlByteLength,

@@ -71,6 +71,30 @@ while the rationale behind it has been replaced.
 - MUST repoint such a link when its target is superseded, as part of the change
   that supersedes it.
 
+## Co-located Bodies
+
+A documentation root that also holds `conventions/` or `operations/` —
+[the shape documentation-root.md names](./documentation-root.md) — extends
+where a link can point without changing the rule that decides whether one
+belongs. The no-outbound-links rule in
+[Out of a Decision](#out-of-a-decision) is unaffected: a decision record still
+links nothing, whichever body would have received it.
+
+| Reference                                           | Does structure already encode it?                                                                 | Verdict                                                                                                          |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| A corpus document → `conventions/` or `operations/` | —                                                                                                 | Governed by [The Rule](#the-rule) alone; this capability adds no dependency condition for a body it does not own |
+| `conventions/` or `operations/` → `decisions/`      | No — a decision exists only when its rationale is unrecoverable from the code, same as for a spec | **Link**, under the same condition as [From a Spec to a Decision](#from-a-spec-to-a-decision)                    |
+
+**Guidelines:**
+
+- MUST apply the condition in
+  [From a Spec to a Decision](#from-a-spec-to-a-decision) to a document under
+  `conventions/` or `operations/` exactly as to a spec, when it cites the
+  decision that constrains it.
+- MUST NOT state a dependency condition for a link from a corpus document into
+  `conventions/` or `operations/`; [The Rule](#the-rule) alone decides it, and
+  this capability owns no further condition for a body it does not own.
+
 ## Out of a Decision
 
 A decision record carries no outbound links at all.

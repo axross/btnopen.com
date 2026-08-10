@@ -1,5 +1,5 @@
 // biome-ignore-all lint/style/noMagicNumbers: byte fixtures are intrinsic to encoding tests
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it } from "vitest";
 import { decodeHtml } from "./webembed-html";
 
 // "こんにちは" in Shift_JIS — Node's TextEncoder only emits UTF-8, so

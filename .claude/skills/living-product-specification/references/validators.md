@@ -56,6 +56,10 @@ absent: no `specs/`, no `decisions/`.
   exists the checks are inert by design, not misconfigured.
 - MUST NOT make a command fail on an absent subject. A project with no decision
   log has not failed a check; it has not adopted one.
+- MUST treat a document under `conventions/` or `operations/` as in scope for
+  `check-index.mjs` once a project has adopted
+  [one documentation root](./documentation-root.md); the check does not
+  exempt a co-located body just because it sits outside the corpus.
 
 ## Why No Defect Is Reported Twice
 
