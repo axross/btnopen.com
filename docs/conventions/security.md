@@ -54,8 +54,9 @@ compares `process.env.NODE_ENV` to `"development"` to decide whether to
 defeat the branch: bundlers prune the dev-only import by substituting the literal
 and eliminating dead code, which requires the comparison to be statically visible
 at the call site. An imported boolean is opaque to that pass, so the dev runtime
-would ship to production. This is why the rule below is scoped to *runtime
-configuration* rather than to `process.env` as a token.
+would ship to production. That static-visibility requirement is why the rule
+below is scoped to *runtime configuration* rather than to `process.env` as a
+token.
 
 **Rules:**
 
