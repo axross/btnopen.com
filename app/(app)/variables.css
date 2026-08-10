@@ -105,6 +105,52 @@
 		--lightness-11: 45%;
 		--lightness-12: 25%;
 
+		/* Alpha companions to the lightness axis, one scale per ramp because a
+		   saturated step needs more alpha than a grey one at the same
+		   lightness. Steps 1 through 12 are the published Radix UI Colors
+		   alpha scales verbatim — `purple` for the accent ramp and `mauve`,
+		   its purple-tinted grey, for the neutral one — so the grading is
+		   inherited rather than invented. Step 0 is the one value Radix does
+		   not supply, its scales starting at 1, and takes half of step 1.
+
+		   Radix also solves each alpha step's *colour*, so that compositing it
+		   over the scheme ground reproduces the opaque step exactly. That half
+		   has no solution here: from step 4 up this ramp's sRGB blue channel is
+		   saturated (`oklch(60% 0.3 307)` clamps to #b016ff) and compositing
+		   over any ground only moves away from the gamut boundary. Radix meets
+		   the same wall and ships an opaque token where it does — its dark
+		   `--purple-a11` carries no alpha at all — so the three degenerate
+		   entries below (accent dark 11 opaque, neutral dark 0 and 1 fully
+		   transparent) stay as the source has them rather than being nudged,
+		   and the alpha ramp keeps the ramp's own colours. */
+		--accent-alpha-0: 0.006;
+		--accent-alpha-1: 0.012;
+		--accent-alpha-2: 0.031;
+		--accent-alpha-3: 0.071;
+		--accent-alpha-4: 0.114;
+		--accent-alpha-5: 0.165;
+		--accent-alpha-6: 0.231;
+		--accent-alpha-7: 0.314;
+		--accent-alpha-8: 0.424;
+		--accent-alpha-9: 0.694;
+		--accent-alpha-10: 0.722;
+		--accent-alpha-11: 0.729;
+		--accent-alpha-12: 0.875;
+
+		--neutral-alpha-0: 0.006;
+		--neutral-alpha-1: 0.012;
+		--neutral-alpha-2: 0.024;
+		--neutral-alpha-3: 0.063;
+		--neutral-alpha-4: 0.094;
+		--neutral-alpha-5: 0.125;
+		--neutral-alpha-6: 0.153;
+		--neutral-alpha-7: 0.196;
+		--neutral-alpha-8: 0.271;
+		--neutral-alpha-9: 0.451;
+		--neutral-alpha-10: 0.49;
+		--neutral-alpha-11: 0.612;
+		--neutral-alpha-12: 0.878;
+
 		@media (prefers-color-scheme: dark) {
 			--lightness-0: 12.5%;
 			--lightness-1: 15%;
@@ -119,6 +165,34 @@
 			--lightness-10: 65%;
 			--lightness-11: 75%;
 			--lightness-12: 90%;
+
+			--accent-alpha-0: 0.022;
+			--accent-alpha-1: 0.043;
+			--accent-alpha-2: 0.078;
+			--accent-alpha-3: 0.176;
+			--accent-alpha-4: 0.259;
+			--accent-alpha-5: 0.318;
+			--accent-alpha-6: 0.38;
+			--accent-alpha-7: 0.478;
+			--accent-alpha-8: 0.643;
+			--accent-alpha-9: 0.761;
+			--accent-alpha-10: 0.804;
+			--accent-alpha-11: 1;
+			--accent-alpha-12: 0.98;
+
+			--neutral-alpha-0: 0;
+			--neutral-alpha-1: 0;
+			--neutral-alpha-2: 0.035;
+			--neutral-alpha-3: 0.078;
+			--neutral-alpha-4: 0.114;
+			--neutral-alpha-5: 0.145;
+			--neutral-alpha-6: 0.188;
+			--neutral-alpha-7: 0.251;
+			--neutral-alpha-8: 0.365;
+			--neutral-alpha-9: 0.431;
+			--neutral-alpha-10: 0.486;
+			--neutral-alpha-11: 0.718;
+			--neutral-alpha-12: 0.937;
 		}
 
 		--neutral-0: oklch(
@@ -161,6 +235,11 @@
 			var(--lightness-12) var(--neutral-chroma) var(--neutral-hue)
 		);
 
+		/* Step 0 is the ramp's extreme, paired with `--neutral-0`. Its chroma
+		   continues the taper the ramp already runs below step 1. */
+		--accent-0: oklch(
+			var(--lightness-0) calc(var(--accent-chroma) * 0.05) var(--accent-hue)
+		);
 		--accent-1: oklch(
 			var(--lightness-1) calc(var(--accent-chroma) * 0.1) var(--accent-hue)
 		);
@@ -197,6 +276,186 @@
 		--accent-12: oklch(
 			var(--lightness-12) var(--accent-chroma) var(--accent-hue)
 		);
+
+		/* The translucent twin of every step above, for a colour that
+		   composites over content this file does not control. */
+		--neutral-0-alpha: oklch(
+			var(--lightness-0) var(--neutral-chroma) var(--neutral-hue) /
+			var(--neutral-alpha-0)
+		);
+		--neutral-1-alpha: oklch(
+			var(--lightness-1) var(--neutral-chroma) var(--neutral-hue) /
+			var(--neutral-alpha-1)
+		);
+		--neutral-2-alpha: oklch(
+			var(--lightness-2) var(--neutral-chroma) var(--neutral-hue) /
+			var(--neutral-alpha-2)
+		);
+		--neutral-3-alpha: oklch(
+			var(--lightness-3) var(--neutral-chroma) var(--neutral-hue) /
+			var(--neutral-alpha-3)
+		);
+		--neutral-4-alpha: oklch(
+			var(--lightness-4) var(--neutral-chroma) var(--neutral-hue) /
+			var(--neutral-alpha-4)
+		);
+		--neutral-5-alpha: oklch(
+			var(--lightness-5) var(--neutral-chroma) var(--neutral-hue) /
+			var(--neutral-alpha-5)
+		);
+		--neutral-6-alpha: oklch(
+			var(--lightness-6) var(--neutral-chroma) var(--neutral-hue) /
+			var(--neutral-alpha-6)
+		);
+		--neutral-7-alpha: oklch(
+			var(--lightness-7) var(--neutral-chroma) var(--neutral-hue) /
+			var(--neutral-alpha-7)
+		);
+		--neutral-8-alpha: oklch(
+			var(--lightness-8) var(--neutral-chroma) var(--neutral-hue) /
+			var(--neutral-alpha-8)
+		);
+		--neutral-9-alpha: oklch(
+			var(--lightness-9) var(--neutral-chroma) var(--neutral-hue) /
+			var(--neutral-alpha-9)
+		);
+		--neutral-10-alpha: oklch(
+			var(--lightness-10) var(--neutral-chroma) var(--neutral-hue) /
+			var(--neutral-alpha-10)
+		);
+		--neutral-11-alpha: oklch(
+			var(--lightness-11) var(--neutral-chroma) var(--neutral-hue) /
+			var(--neutral-alpha-11)
+		);
+		--neutral-12-alpha: oklch(
+			var(--lightness-12) var(--neutral-chroma) var(--neutral-hue) /
+			var(--neutral-alpha-12)
+		);
+
+		--accent-0-alpha: oklch(
+			var(--lightness-0) calc(var(--accent-chroma) * 0.05) var(--accent-hue) /
+			var(--accent-alpha-0)
+		);
+		--accent-1-alpha: oklch(
+			var(--lightness-1) calc(var(--accent-chroma) * 0.1) var(--accent-hue) /
+			var(--accent-alpha-1)
+		);
+		--accent-2-alpha: oklch(
+			var(--lightness-2) calc(var(--accent-chroma) * 0.15) var(--accent-hue) /
+			var(--accent-alpha-2)
+		);
+		--accent-3-alpha: oklch(
+			var(--lightness-3) calc(var(--accent-chroma) * 0.15) var(--accent-hue) /
+			var(--accent-alpha-3)
+		);
+		--accent-4-alpha: oklch(
+			var(--lightness-4) calc(var(--accent-chroma) * 0.4) var(--accent-hue) /
+			var(--accent-alpha-4)
+		);
+		--accent-5-alpha: oklch(
+			var(--lightness-5) calc(var(--accent-chroma) * 0.4) var(--accent-hue) /
+			var(--accent-alpha-5)
+		);
+		--accent-6-alpha: oklch(
+			var(--lightness-6) calc(var(--accent-chroma) * 0.5) var(--accent-hue) /
+			var(--accent-alpha-6)
+		);
+		--accent-7-alpha: oklch(
+			var(--lightness-7) calc(var(--accent-chroma) * 0.5) var(--accent-hue) /
+			var(--accent-alpha-7)
+		);
+		--accent-8-alpha: oklch(
+			var(--lightness-8) calc(var(--accent-chroma) * 0.666) var(--accent-hue) /
+			var(--accent-alpha-8)
+		);
+		--accent-9-alpha: oklch(
+			var(--lightness-9) var(--accent-chroma) var(--accent-hue) /
+			var(--accent-alpha-9)
+		);
+		--accent-10-alpha: oklch(
+			var(--lightness-10) var(--accent-chroma) var(--accent-hue) /
+			var(--accent-alpha-10)
+		);
+		--accent-11-alpha: oklch(
+			var(--lightness-11) var(--accent-chroma) var(--accent-hue) /
+			var(--accent-alpha-11)
+		);
+		--accent-12-alpha: oklch(
+			var(--lightness-12) var(--accent-chroma) var(--accent-hue) /
+			var(--accent-alpha-12)
+		);
+
+		/* Everything above this line is the theme's private primitive tier and
+		   is referenced nowhere else in the repository. Components read only
+		   the roles below, named `--color-<tier>-<scheme>-<slot>`: a step index
+		   records how a value looked when it was picked, a role records what
+		   the surface is. Each role is a fixed map onto one step, so both
+		   colour schemes come free — the step already inverts. */
+		--color-background-neutral-plain: var(--neutral-0);
+		--color-background-neutral-app: var(--neutral-1);
+		--color-background-neutral-subtle: var(--neutral-2);
+		--color-component-neutral-rest: var(--neutral-3);
+		--color-component-neutral-hovered: var(--neutral-4);
+		--color-component-neutral-selected: var(--neutral-5);
+		--color-border-neutral-subtle: var(--neutral-6);
+		--color-border-neutral-interactive: var(--neutral-7);
+		--color-border-neutral-hovered: var(--neutral-8);
+		--color-solid-neutral-rest: var(--neutral-9);
+		--color-solid-neutral-hovered: var(--neutral-10);
+		--color-text-neutral-low: var(--neutral-11);
+		--color-text-neutral-high: var(--neutral-12);
+
+		--color-background-neutral-plain-alpha: var(--neutral-0-alpha);
+		--color-background-neutral-app-alpha: var(--neutral-1-alpha);
+		--color-background-neutral-subtle-alpha: var(--neutral-2-alpha);
+		--color-component-neutral-rest-alpha: var(--neutral-3-alpha);
+		--color-component-neutral-hovered-alpha: var(--neutral-4-alpha);
+		--color-component-neutral-selected-alpha: var(--neutral-5-alpha);
+		--color-border-neutral-subtle-alpha: var(--neutral-6-alpha);
+		--color-border-neutral-interactive-alpha: var(--neutral-7-alpha);
+		--color-border-neutral-hovered-alpha: var(--neutral-8-alpha);
+		--color-solid-neutral-rest-alpha: var(--neutral-9-alpha);
+		--color-solid-neutral-hovered-alpha: var(--neutral-10-alpha);
+		--color-text-neutral-low-alpha: var(--neutral-11-alpha);
+		--color-text-neutral-high-alpha: var(--neutral-12-alpha);
+
+		--color-background-accent-plain: var(--accent-0);
+		--color-background-accent-app: var(--accent-1);
+		--color-background-accent-subtle: var(--accent-2);
+		--color-component-accent-rest: var(--accent-3);
+		--color-component-accent-hovered: var(--accent-4);
+		--color-component-accent-selected: var(--accent-5);
+		--color-border-accent-subtle: var(--accent-6);
+		--color-border-accent-interactive: var(--accent-7);
+		--color-border-accent-hovered: var(--accent-8);
+		--color-solid-accent-rest: var(--accent-9);
+		--color-solid-accent-hovered: var(--accent-10);
+		--color-text-accent-low: var(--accent-11);
+		--color-text-accent-high: var(--accent-12);
+
+		--color-background-accent-plain-alpha: var(--accent-0-alpha);
+		--color-background-accent-app-alpha: var(--accent-1-alpha);
+		--color-background-accent-subtle-alpha: var(--accent-2-alpha);
+		--color-component-accent-rest-alpha: var(--accent-3-alpha);
+		--color-component-accent-hovered-alpha: var(--accent-4-alpha);
+		--color-component-accent-selected-alpha: var(--accent-5-alpha);
+		--color-border-accent-subtle-alpha: var(--accent-6-alpha);
+		--color-border-accent-interactive-alpha: var(--accent-7-alpha);
+		--color-border-accent-hovered-alpha: var(--accent-8-alpha);
+		--color-solid-accent-rest-alpha: var(--accent-9-alpha);
+		--color-solid-accent-hovered-alpha: var(--accent-10-alpha);
+		--color-text-accent-low-alpha: var(--accent-11-alpha);
+		--color-text-accent-high-alpha: var(--accent-12-alpha);
+
+		/* Text drawn on a solid fill has no step on the scale — steps 11 and 12
+		   are for text on a *background* step — so this role carries its own
+		   value rather than mapping onto one. The accent value is the literal
+		   the comment avatar's initial used before a role existed to hold it;
+		   the neutral one mirrors it on the neutral hue. Both stay off the
+		   lightness axis deliberately: a solid step holds its lightness across
+		   schemes, so the text on it does too. */
+		--color-text-accent-on-solid: oklch(0.98 0.02 var(--accent-hue));
+		--color-text-neutral-on-solid: oklch(0.98 0.02 var(--neutral-hue));
 	}
 
 	:where(body) {
