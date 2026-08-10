@@ -57,6 +57,10 @@ export async function getTweet({
 
 	let payload: unknown;
 
+	// every failure below returns `null` rather than throwing, and that
+	// degradation is the decision: `TweetEmbedLoaded` renders the plain link to
+	// the tweet in its place, so one unresolvable embed costs a card rather than
+	// the whole post. the loss is reported from there, not swallowed.
 	try {
 		const response = await fetch(endpoint, {
 			signal: AbortSignal.timeout(requestTimeoutMs),

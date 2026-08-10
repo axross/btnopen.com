@@ -75,6 +75,9 @@ async function Document({
 
 						{children}
 
+						{/* no fallback: the page-view tracker is a side-effect-only
+						    client component that returns null, so it has no visible
+						    output a skeleton could stand in for. */}
 						<Suspense>
 							<PageViewTracking />
 						</Suspense>
