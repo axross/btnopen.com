@@ -24,9 +24,9 @@ npx skills add axross/skills --agent claude-code --yes --copy \
 
 **Do not use `--skill '*'` here.** Against an external source it installs the
 library's *entire* catalogue, not the subset in `skills-lock.json` — today that
-would silently adopt the Expo, TanStack Query, Amplitude, Vitest, Jest, and Zod
-layers this project has not chosen. The command above derives the list from the
-lockfile instead, so it stays correct as the set changes.
+would silently adopt the Expo, TanStack Query, Amplitude, and Jest layers this
+project has not chosen. The command above derives the list from the lockfile
+instead, so it stays correct as the set changes.
 
 Adopting a new skill means naming it explicitly, and `--skill` takes exactly one
 skill per flag: repeat the flag (`--skill a --skill b`) rather than passing a
@@ -197,38 +197,6 @@ until that lands, and nothing here waits on it.
   review finding against the installed capability while this entry stands.
 - SHOULD delete this entry rather than leave it standing once `@sentry/nextjs`
   gains a Turbopack tree-shaking option, and strip the statements then.
-
-### Gap — `agent-skill-management` routes project conventions to a repository-local skill
-
-`agent-skill-management`'s Choosing a Tier section decides between distributable
-and repository-local with one question — "would the skill work, unchanged,
-installed into another project?" — and names "a repository-layout skill, a
-project-specific development baseline" as examples of the repository-local tier.
-This repository has no repository-local skill at all: its layout, conventions,
-and operating procedures are the documents under `docs/`.
-
-The capability is wrong rather than merely inconvenient here, because the same
-library now ships `living-product-specification`, which claims `docs/` for what
-the product does, and a `software-development` section that names contributor
-documentation as the home for how a project is operated. Between them, the
-material that section routes into a skill already has documented homes that are
-not skills. Its portability question is a necessary test, not a sufficient one: it
-separates distributable from not-distributable, but cannot separate *skill* from
-*document*, because the answer is "no" for both.
-
-Filed upstream as
-[axross/skills#315](https://github.com/axross/skills/issues/315), together with a
-feature request that `living-product-specification` sanction the shape this
-repository adopted — `conventions/` and `operations/` beside `specs/` under one
-documentation root. This entry stands until that lands.
-
-**Rules:**
-
-- MUST NOT create a repository-local skill to satisfy that capability's tier
-  guidance; a convention belongs in `docs/conventions/`, an operating procedure in
-  `docs/operations/`, and product behaviour in `docs/specs/`.
-- MUST NOT report the absence of a repository-local structure skill as a review
-  finding against that capability while this entry stands.
 
 ### Deviation and gap — colour tokens are authored in `oklch()` with no sRGB `@supports` fallback
 

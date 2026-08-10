@@ -3,12 +3,14 @@
 Read this when adding or changing a test, or a component's test hooks. How to
 design a unit test, how to locate and wait in an end-to-end test, and how a
 scenario-coverage catalog works belong to the installed unit-testing and
-end-to-end-testing capabilities. This document records the runners, paths, and
-naming this repository uses.
+end-to-end-testing capabilities, both of which are runner-agnostic; the runner
+layer beneath them — the config file, the `vi` API, pools, reporters, and
+coverage providers — belongs to the installed vitest-testing capability. This
+document records the runners, paths, and naming this repository uses.
 
 | Surface | This project |
 | --- | --- |
-| Unit tests | Jest, colocated `*.spec.ts`, run with `npm run test:unit` |
+| Unit tests | Vitest, colocated `*.spec.ts`, run with `npm run test:unit` |
 | End-to-end tests | Playwright under `e2e/`, run with `npm run test:e2e` |
 | Scenario-coverage gate | `npm run coverage:scenarios` |
 | Type check | `tsc --noEmit`, run with `npm run typecheck` |
@@ -20,7 +22,7 @@ regression fails on `main` rather than on the pull request that introduced it.
 
 ## Unit Tests
 
-Jest output reads like a behaviour report, so the full name — `describe(...)`
+Vitest output reads like a behaviour report, so the full name — `describe(...)`
 concatenated with `it(...)` — carries the subject, the condition, and the
 expected outcome. The suffix conventions below are what make the subject's kind
 legible at a glance.
@@ -29,9 +31,11 @@ legible at a glance.
 
 - MUST colocate unit tests as `*.spec.ts` beside their subject unless an existing
   local pattern requires otherwise.
-- MUST import Jest APIs from `@jest/globals` — `describe`, `it`, `expect`, `jest`,
+- MUST import the test API from `vitest` — `describe`, `it`, `expect`, `vi`,
   `beforeEach`, `afterEach`, and any other API used in the file — rather than
-  relying on global-scope symbols.
+  relying on global-scope symbols. `vitest.config.ts` leaves `globals` at its
+  default `false`, so an unimported symbol is a reference error rather than a
+  silent ambient lookup.
 - MUST use `it(...)` for scenarios and MUST NOT use `test(...)`.
 - MUST suffix callable subjects in `describe(...)` / `it(...)` titles with `()` —
   `describe("formatLocation()")`, `describe("deleteNodeInBlogPostBodyTool()")` —

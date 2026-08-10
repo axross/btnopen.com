@@ -11,7 +11,7 @@
       "source": "axross/skills",
       "sourceType": "github",
       "skillPath": "skills/agent-skill-management/SKILL.md",
-      "computedHash": "8c6c6e20be5d3694530822db21708c0861e9725a22ac28f535d42e3d65f663fd"
+      "computedHash": "b77fa9c7dc7b97fc133bf68646e9eff486309b0ae703259d461b593945b8fb4b"
     },
     "application-security": {
       "source": "axross/skills",
@@ -59,7 +59,7 @@
       "source": "axross/skills",
       "sourceType": "github",
       "skillPath": "skills/living-product-specification/SKILL.md",
-      "computedHash": "8785ecb4a54c128f4a839666df9064eaee51c136bc2b9748bced0a42bb19d7f6"
+      "computedHash": "10e1fd616d76e6025d723af4acf436e2c302ee16c54885a64e7f251eb462bbaa"
     },
     "loop-engineering": {
       "source": "axross/skills",
@@ -133,11 +133,23 @@
       "skillPath": "skills/unit-testing/SKILL.md",
       "computedHash": "5487a4823d89e323f51045f77546a134855b4de69d230f0673307f526c36d46f"
     },
+    "vitest-testing": {
+      "source": "axross/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vitest-testing/SKILL.md",
+      "computedHash": "6d3133b8bd756b28bd0f0b826b14e3828108b560bd0fc5d5bc1b979251054a2b"
+    },
     "wireframe-design": {
       "source": "axross/skills",
       "sourceType": "github",
       "skillPath": "skills/wireframe-design/SKILL.md",
       "computedHash": "3d49b63957a3bf62d342c8dc52a20dbafc91db3f9d547f2e66073e600a581cd6"
+    },
+    "zod-schema": {
+      "source": "axross/skills",
+      "sourceType": "github",
+      "skillPath": "skills/zod-schema/SKILL.md",
+      "computedHash": "4b84cdac79c5849706bf4c4c54b62ca3dc2b3619fb0ce0417b440911553b8113"
     }
   }
 }
