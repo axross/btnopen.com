@@ -199,7 +199,7 @@ Two non-obvious requirements:
 - Keep the pure converter functions and the block's start/end regexes in a module
   that does **not** import `lexicalEditor` as a value, so the colocated
   `*.spec.ts` can unit-test them without loading the ESM-only Lexical editor into
-  Jest. The `banner` block splits `banner-directive.ts` (pure, tested) from
+  the unit runner. The `banner` block splits `banner-directive.ts` (pure, tested) from
   `banner-block.ts` (the `Block` config, which imports `lexicalEditor`).
 
 **Rules:**
@@ -207,7 +207,7 @@ Two non-obvious requirements:
 - MUST pad a nested-body container directive's body with blank lines in `export`
   and in seed or authored markdown, or `convertMarkdownToLexical` drops the block.
 - MUST keep a block's pure markdown-converter logic free of
-  `@payloadcms/richtext-lexical` value imports so it stays Jest-testable; put the
+  `@payloadcms/richtext-lexical` value imports so it stays unit-testable; put the
   `lexicalEditor()`-bearing `Block` config in a separate module.
 
 ### Admin Components and the Import Map

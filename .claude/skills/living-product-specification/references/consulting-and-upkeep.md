@@ -51,6 +51,12 @@ first thing dropped under time pressure.
 | Adds a dependency between domains                         | The depending spec's cross-reference                     |
 | Renames or moves a document                               | Every inbound reference, and `index.md`                  |
 
+This table stops at the corpus. A change that alters a convention or a
+procedure invalidates its document under `conventions/` or `operations/` the
+same way, once a project has adopted
+[one documentation root](./documentation-root.md#upkeep-for-a-co-located-body),
+which states that obligation in full.
+
 **Guidelines:**
 
 - MUST correct what the change invalidated **in the same change**. A corpus

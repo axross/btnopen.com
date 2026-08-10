@@ -1,6 +1,7 @@
 // biome-ignore-start lint/correctness/noNodejsModules: this is running on nodejs runtime
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 // biome-ignore-end lint/correctness/noNodejsModules: this is running on nodejs runtime
 import { captureException } from "@sentry/nextjs";
 import { get as getBlob } from "@vercel/blob";
@@ -22,7 +23,12 @@ import { urlOrigin, vercelBlobPrefix, vercelBlobToken } from "@/runtime";
 import { rootLogger } from "@/shared/logger";
 
 const logger = rootLogger.child({ module: "👽" });
-const selfDirname = dirname(new URL(import.meta.url).pathname);
+// fileURLToPath, not `new URL(import.meta.url).pathname`: this route lives
+// under the `[slug]` dynamic segment, and a file URL percent-encodes those
+// brackets. Reading the raw pathname resolves the font below to a
+// `%5Bslug%5D` directory that does not exist on disk, which fails the render
+// with ENOENT and returns a blank image.
+const selfDirname = dirname(fileURLToPath(import.meta.url));
 
 export const maxDuration = 60;
 

@@ -15,16 +15,20 @@ docs/
   decisions/YYYY-MM-DD-<decision-in-kebab-case>.md
 ```
 
-| Document            | Owns                                                                | Does not own                       |
-| ------------------- | ------------------------------------------------------------------- | ---------------------------------- |
-| `index.md`          | One line per document, naming what it covers                        | Any fact of its own                |
-| `overview.md`       | The product's purpose, audience, and boundary; the cross-domain map | Any single domain's rules          |
-| `glossary.md`       | What each term means and how it relates to the others               | Cardinality, invariants, lifecycle |
-| `specs/<domain>.md` | Triggers, rules, state transitions, error and edge behaviour        | Vocabulary definitions; rationale  |
-| `decisions/…`       | Why a constraint exists, and what was traded away                   | What the product currently does    |
+| Document            | Owns                                                                                                                                               | Does not own                       |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `index.md`          | One line per document, naming what it covers, and — in a root that also holds `conventions/` or `operations/` — which body answers which question  | Any fact of its own                |
+| `overview.md`       | The product's purpose, audience, and boundary; the cross-domain map, extended to the whole root once it also holds `conventions/` or `operations/` | Any single domain's rules          |
+| `glossary.md`       | What each term means and how it relates to the others                                                                                              | Cardinality, invariants, lifecycle |
+| `specs/<domain>.md` | Triggers, rules, state transitions, error and edge behaviour                                                                                       | Vocabulary definitions; rationale  |
+| `decisions/…`       | Why a constraint exists, and what was traded away                                                                                                  | What the product currently does    |
 
 `docs/` is the conventional root; a project that already keeps this material
-somewhere else keeps it there.
+somewhere else keeps it there. A root may also hold `conventions/` and
+`operations/` beside this shape — sibling directories for material this
+capability does not own. See
+[documentation-root.md](./documentation-root.md) for what each holds, and how
+this capability's own rules stop at its boundary.
 
 **Guidelines:**
 
@@ -123,6 +127,17 @@ team's own usage, which the Seeding the Glossary section of
 closest-composing guideline below governs the rename that may follow the
 capture, not the capture itself.
 
+In a root that also holds `conventions/` or `operations/`, `glossary.md` may
+carry a second half for development vocabulary — the words a contributor
+needs rather than a reader of the product — under its own top-level
+`# Development vocabulary` heading, with `# Product vocabulary` naming the
+first. The split sits at the `#` level rather than `##`, because `##` is the
+level `check-glossary.mjs` pairs against `specs/`; a `##` heading in either
+half still pairs the same way, so `## Repository Structure` under the second
+half costs nothing at the level the checker reads. See
+[documentation-root.md](./documentation-root.md) for the shape that makes the
+second half relevant at all.
+
 **Guidelines:**
 
 - MUST group the glossary by domain, with each heading named for a spec — or,
@@ -142,6 +157,11 @@ capture, not the capture itself.
   anchor buys navigation nobody needed.
 - MUST NOT state cardinality, invariants, or lifecycle in the glossary; those
   are behaviour, and behaviour lives in the spec.
+- MUST split `glossary.md` at the `#` level, into `# Product vocabulary` and
+  `# Development vocabulary`, once it carries both; never split at `##`,
+  which is the level the spec pairing runs on.
+- SHOULD name each development-vocabulary heading for the document that owns
+  it, exactly as a product domain heading is named for its spec.
 - SHOULD add a term the moment a spec uses a word whose meaning a newcomer
   would have to infer.
 

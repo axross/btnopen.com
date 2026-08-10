@@ -168,6 +168,44 @@ Interactive hover transitions use the medium duration token with the
   shape, so the ring tracks the squircle silhouette rather than revealing a
   rectangular underlying box.
 
+## Pointer Adaptation
+
+Two media conditions decide how a surface answers the input hardware, and they
+gate on deliberately different families. Why each family is the correct one, and
+the mechanics behind both, belong to the installed React-component-styling
+capability. This repository's answers are:
+
+| What adapts | Gate | Never |
+| --- | --- | --- |
+| A hover style | `@media (hover: hover) and (pointer: fine)` | `any-hover` |
+| An interactive target's size | `@media (any-pointer: coarse)` | `pointer: coarse` |
+
+**Rules:**
+
+- MUST write the hover gate inside the module that owns the hover style, at the
+  point in that module where it applies. It cannot be declared once and opted
+  into: `@layer` carries no media condition, so a gate in `layers.css` would have
+  to wrap the whole `components` layer, which would take every rule in it — not
+  only the hover rules — off a touch device.
+- MUST split a selector list that pairs `:hover` with a state attribute, leaving
+  the attribute half ungated and duplicating its declarations into the gate. The
+  duplication is deliberate. `language-switcher.module.css` does it twice, for
+  `[data-popup-open]` on the trigger and `[data-highlighted]` on a menu item:
+  both have to keep applying on a touch device, which is the device that needs
+  them most.
+- MUST meet 44px on the long side and 24px on the short side under
+  `@media (any-pointer: coarse)`, and MUST write those two numbers — and any
+  padding derived from them — as literal lengths rather than `--size-*` tokens.
+  They are accessibility constants fixed by the specification and the input
+  hardware, so routing them through the spacing scale would let a retune of that
+  scale move an accessibility floor.
+- MUST measure a minimum as the hit area rather than as the drawn glyph. A 24px
+  social-link glyph centred in a 44×44 target passes; growing the glyph itself is
+  not what the minimum asks for.
+- MUST NOT change fine-pointer rendering in order to reach a coarse-pointer
+  minimum. Every control sized under the coarse gate renders on a mouse exactly
+  as it did before it was sized.
+
 ## Hit-Area Expansion
 
 ```css
@@ -176,12 +214,25 @@ Interactive hover transitions use the medium duration token with the
   padding: var(--size-8);
   margin: calc(var(--size-8) * -1);
   border-radius: var(--radius-md);
+
+  @media (any-pointer: coarse) {
+    padding: 10px;
+    margin: -10px;
+  }
 }
 ```
 
 Small interactive elements — inline icons, social-link glyphs — grow to roughly
-40×40 with this template, from `social-link-list.module.css`. The padding and its
-negation match exactly, so the visible position does not move.
+40×40 with this template, from `social-link-list.module.css`, and to exactly
+44×44 under a coarse pointer: the glyph is a 24px SVG, so 24 + 10 + 10 lands on
+the minimum. The padding and its negation match exactly at both sizes, so the
+visible position does not move.
+
+An inline box is the one case that takes padding alone. Vertical padding on it
+does not affect the line box, so there is nothing for a margin to offset, and an
+inert negative margin would read as though it were doing something.
+`markdown-content.module.css` `.a` and the tweet embed's `.link` are the two
+occurrences.
 
 ## Truncation
 
@@ -203,7 +254,8 @@ negation match exactly, so the visible position does not move.
   intrinsic pixel dimensions, skeleton placeholder rectangles, `100%` / `100dvh`
   full-surface claims, and the `width: auto` / `height: auto` image reset.
 - Pixel literals are acceptable inside hairline borders (`var(--size-1)`,
-  `0.5px`), SVG `width` / `height` attributes, and the root-level definitions in
+  `0.5px`), SVG `width` / `height` attributes, the coarse-pointer target
+  minimums and the padding derived from them, and the root-level definitions in
   `variables.css`.
 - Four surfaces name a role whose generic label does not match their local job,
   and they are deliberate rather than mistakes: the focus ring sits on

@@ -1,6 +1,6 @@
 ---
 name: living-product-specification
-description: Updating a project's product documentation when a change alters what it says, and reading it before planning one — a behaviour, a domain term, or a decision that constrains future work. Triggers on "docs/", "spec", "domain model", "glossary", "ubiquitous language", "ADR", "supersede", "the docs are stale", "is this documented anywhere". Not spec-driven development — a plan drives the change and this records what became true, so "spec-first" and "generate from the spec" route elsewhere. Covers the corpus, its invariants, decision records, and five single-purpose validators.
+description: Updating a project's product documentation when a change alters what it says, and reading it before planning one — a behaviour, a domain term, or a decision that constrains future work; also placing or updating a project's conventions or operational procedures when they share a documentation root with that corpus. Triggers on "docs/", "spec", "domain model", "glossary", "ubiquitous language", "ADR", "supersede", "the docs are stale", "is this documented anywhere", "one documentation root", "conventions/", "operations/". Not spec-driven development — a plan drives the change and this records what became true, so "spec-first" and "generate from the spec" route elsewhere. Covers the corpus, its invariants, decision records, the documentation-root shape, and five single-purpose validators.
 user-invocable: true
 ---
 
@@ -47,6 +47,11 @@ specification describes the steady state.** When a change merges, the part of
 the plan that became true is absorbed here; the plan itself stays where it is,
 as the record of a decision made at a point in time.
 
+Out of the corpus is not out of the directory: a project that keeps its
+contributor documentation and its own conventions beside the corpus, under one
+root, has a named shape for that too — see
+[The Documentation Root](#the-documentation-root).
+
 ## The Three Modes
 
 | Mode          | When                                     | What happens                                                                                                                                                                |
@@ -72,6 +77,16 @@ See [corpus-structure.md](./references/corpus-structure.md) for:
 - why `specs/` is flat, and why `index.md` is the only file a corpus must have
 - what a glossary entry holds, the domain grouping that makes it navigable, and two rules no validator can enforce — an entry that stands on its own, and a term whose own words cost the reader least to read correctly
 - where a Mermaid diagram goes, and why there is no `diagrams/` directory
+
+## The Documentation Root
+
+See [documentation-root.md](./references/documentation-root.md) for:
+
+- the shape a root takes once it also holds `conventions/` and `operations/` beside the corpus, and what each sibling owns
+- the recommendation that makes one root the bootstrap default for a project with no established documentation convention
+- the `index.md` obligation to name every body before listing a document
+- the same-change upkeep obligation for a convention or a procedure a change alters
+- which of the five validators see a co-located body and which do not
 
 ## Cross-References
 

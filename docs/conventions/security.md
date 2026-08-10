@@ -238,6 +238,12 @@ names no CI surface. What follows is this repository's own convention, decided i
 A package excluded from the bundler keeps running from `node_modules` at runtime,
 so the list is a standing exception rather than a preference.
 
+Advisories against those packages are tracked separately, in
+[../operations/dependency-advisories.md](../operations/dependency-advisories.md):
+it holds the current `npm audit` counts, the reachability judgement behind every
+finding still open, and the decision that no audit step gates CI. Read it before
+concluding that an open finding is an oversight.
+
 **Rules:**
 
 - MUST justify a new entry in `next.config.ts` `serverExternalPackages`. The

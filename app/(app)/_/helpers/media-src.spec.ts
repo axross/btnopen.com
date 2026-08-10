@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it } from "vitest";
 import { resolveMediaId } from "./media-src";
 
 const mediaId = "019d1223-94d4-754c-8f57-47337be15c9e";

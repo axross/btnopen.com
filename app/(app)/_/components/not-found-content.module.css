@@ -25,21 +25,21 @@
 			&::after {
 				content: "404";
 				position: absolute;
-				top: 0;
-				right: 0;
-				bottom: 0;
+				inset-block-start: 0;
+				inset-inline-end: 0;
+				inset-block-end: 0;
 				background-color: var(--color-background-neutral-plain);
 			}
 
 			&::before {
-				left: calc(var(--size-2) * -1);
+				inset-inline-start: calc(var(--size-2) * -1);
 				color: oklch(from var(--color-solid-accent-rest) l c calc(h - 16));
 				animation: noise-fast var(--duration-glitch-fast) infinite linear
 					alternate-reverse;
 			}
 
 			&::after {
-				left: var(--size-2);
+				inset-inline-start: var(--size-2);
 				color: oklch(from var(--color-solid-accent-rest) l c calc(h + 16));
 				animation: noise-slow var(--duration-glitch-slow) infinite linear
 					alternate-reverse;
@@ -84,8 +84,10 @@
 			outline: none;
 			transition: background-color var(--duration-md) var(--ease-in-out);
 
-			&:hover {
-				background-color: var(--color-background-accent-subtle);
+			@media (hover: hover) and (pointer: fine) {
+				&:hover {
+					background-color: var(--color-background-accent-subtle);
+				}
 			}
 
 			&:focus-visible {

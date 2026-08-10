@@ -1,5 +1,5 @@
-import { describe, expect, it } from "@jest/globals";
 import type { PayloadRequest } from "payload";
+import { describe, expect, it } from "vitest";
 import z from "zod";
 import type { BlogPost } from "../../types";
 import { appendNodeInBlogPostBodyTool } from "./append-node-in-blog-post-body";
@@ -252,10 +252,10 @@ describe("appendNodeInBlogPostBodyTool()", () => {
 		expect(mediaIds).toEqual(["media-1"]);
 		expect(
 			(
-				updatedBody?.root.children[0] as unknown as {
-					children: Array<{ children: unknown[] }>;
-				}
-			).children[0]?.children,
+				updatedBody?.root.children[0] as unknown as
+					| { children: Array<{ children: unknown[] }> }
+					| undefined
+			)?.children[0]?.children,
 		).toEqual([{ type: "upload", relationTo: "media", value: "media-1" }]);
 	});
 

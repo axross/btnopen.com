@@ -266,6 +266,16 @@
 			text-underline-offset: var(--size-2);
 			font-weight: 500;
 			outline: none;
+
+			/* an inline box, where vertical padding grows the hit area without
+			   touching the line box — so no offsetting margin is wanted here,
+			   and an inert one would read as if it were doing something. 2px
+			   is a literal rather than a spacing step because it exists only
+			   to clear the 24px minimum: the inline box is 21px, and a retune
+			   of the scale must not be able to drop it back under. */
+			@media (any-pointer: coarse) {
+				padding-block: 2px;
+			}
 		}
 
 		.a:focus-visible {
@@ -452,8 +462,8 @@
 	.tableWrapper::after {
 		content: "";
 		position: absolute;
-		top: 0;
-		bottom: 0;
+		inset-block-start: 0;
+		inset-block-end: 0;
 		width: var(--size-24);
 		pointer-events: none;
 		z-index: 1;
@@ -461,7 +471,7 @@
 	}
 
 	.tableWrapper::before {
-		left: 0;
+		inset-inline-start: 0;
 		background: linear-gradient(
 			to right,
 			var(--color-background-neutral-plain),
@@ -470,7 +480,7 @@
 	}
 
 	.tableWrapper::after {
-		right: 0;
+		inset-inline-end: 0;
 		background: linear-gradient(
 			to left,
 			var(--color-background-neutral-plain),

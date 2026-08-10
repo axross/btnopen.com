@@ -1,7 +1,7 @@
 // biome-ignore-all lint/style/useNamingConvention: fixtures mirror the snake_case syndication payload
 // biome-ignore-all lint/style/noMagicNumbers: entity code-point indices are intrinsic to the fixtures
 // biome-ignore-all lint/performance/useTopLevelRegex: assertion regexes are local to a single test
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it } from "vitest";
 import {
 	deriveSyndicationToken,
 	extractTweetId,

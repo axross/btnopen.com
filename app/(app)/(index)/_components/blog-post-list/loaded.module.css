@@ -69,8 +69,10 @@
 				/* biome-ignore lint/suspicious/noDuplicateCustomProperties: biome doesn't understand @scope */
 				--variant: "desktop";
 
-				&:hover {
-					background-color: var(--color-component-accent-hovered);
+				@media (hover: hover) and (pointer: fine) {
+					&:hover {
+						background-color: var(--color-component-accent-hovered);
+					}
 				}
 			}
 		}
@@ -103,11 +105,13 @@
 				border-bottom-right-radius: var(--radius-md);
 			}
 
-			:where(:scope):hover & {
-				--brightness: 1.1;
+			@media (hover: hover) and (pointer: fine) {
+				:where(:scope):hover & {
+					--brightness: 1.1;
 
-				@container style(--theme: dark) {
-					--brightness: 1;
+					@container style(--theme: dark) {
+						--brightness: 1;
+					}
 				}
 			}
 		}

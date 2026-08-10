@@ -79,6 +79,9 @@ SHOULD, SHOULD NOT, and MAY as described in
   per-pull-request preview pipeline, its one-time setup, and its isolation rules.
 - [operations/development-workflow.md](./operations/development-workflow.md) — how
   a unit of work gets delivered here.
+- [operations/dependency-advisories.md](./operations/dependency-advisories.md) —
+  the `npm audit` ledger: the current counts, the reachability judgement behind
+  anything still open, and why no audit step gates CI.
 - [operations/agent-skills.md](./operations/agent-skills.md) — installing and
   refreshing the agent skills, and the register of deviations and gaps.
 - [operations/claude-code.md](./operations/claude-code.md) — session hooks, local

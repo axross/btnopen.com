@@ -14,7 +14,25 @@
 			cursor: pointer;
 			outline: none;
 
-			&:hover:not(:disabled),
+			/* the trigger is a drawn control with its own background, so it is
+			   sized directly rather than grown by padding; its background grows
+			   with it. 44px is a literal because it is fixed by the input
+			   hardware rather than by the spacing scale. */
+			@media (any-pointer: coarse) {
+				inline-size: 44px;
+				block-size: 44px;
+			}
+
+			/* `[data-popup-open]` stays outside the gate — it marks the menu as
+			   open on every pointer class, so gating it would drop the cue on
+			   touch. the shared declarations are duplicated on purpose. */
+			@media (hover: hover) and (pointer: fine) {
+				&:hover:not(:disabled) {
+					background-color: var(--color-background-accent-subtle);
+					color: var(--color-text-accent-high);
+				}
+			}
+
 			&[data-popup-open] {
 				background-color: var(--color-background-accent-subtle);
 				color: var(--color-text-accent-high);
@@ -78,8 +96,17 @@
 			user-select: none;
 			outline: none;
 
-			&[data-highlighted],
-			&:hover {
+			/* `[data-highlighted]` stays outside the gate — it is Base UI's own
+			   active-item state, not a hover echo, so gating it would drop the
+			   cue on touch. the shared declarations are duplicated on purpose. */
+			@media (hover: hover) and (pointer: fine) {
+				&:hover {
+					background-color: var(--color-background-accent-subtle);
+					color: var(--color-text-accent-high);
+				}
+			}
+
+			&[data-highlighted] {
 				background-color: var(--color-background-accent-subtle);
 				color: var(--color-text-accent-high);
 			}

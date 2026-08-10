@@ -24,8 +24,10 @@
 			border-radius: var(--radius-md);
 			outline: none;
 
-			&:hover {
-				background-color: var(--color-background-accent-subtle);
+			@media (hover: hover) and (pointer: fine) {
+				&:hover {
+					background-color: var(--color-background-accent-subtle);
+				}
 			}
 
 			&:focus-visible {
