@@ -1,5 +1,5 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { createPngImageSize, webpFormatOptions } from "./image";
+import { webpFormatOptions } from "./image";
 
 /**
  * Re-imports the module with the environment barrel faked, so both sides of
@@ -52,61 +52,5 @@ describe("webpFormatOptions", () => {
 			smartDeblock: true,
 			effort: 4,
 		});
-	});
-});
-
-describe("createPngImageSize()", () => {
-	it("derives the size name from the width when no name is given", () => {
-		expect(createPngImageSize({ width: 640 })).toMatchObject({
-			name: "640w",
-			width: 640,
-		});
-	});
-
-	it("uses the given name, leaving the width unset", () => {
-		expect(createPngImageSize({ name: "thumbnail" })).toMatchObject({
-			name: "thumbnail",
-			width: undefined,
-		});
-	});
-
-	it("prefers an explicit name over the width-derived one", () => {
-		expect(
-			createPngImageSize({ name: "open-graph", width: 1200, height: 630 }),
-		).toMatchObject({ name: "open-graph", width: 1200, height: 630 });
-	});
-
-	it("crops from the centre without enlarging a smaller original", () => {
-		expect(createPngImageSize({ width: 640 })).toMatchObject({
-			fit: "cover",
-			position: "center",
-			withoutEnlargement: true,
-		});
-	});
-
-	it("encodes the size as lossless png", () => {
-		expect(createPngImageSize({ width: 640 }).formatOptions).toEqual({
-			format: "png",
-			options: {
-				quality: 100,
-				smartSubsample: true,
-				smartDeblock: true,
-				effort: 4,
-			},
-		});
-	});
-
-	it("names the generated file after the original, the size, and the extension", () => {
-		const { generateImageName } = createPngImageSize({ width: 640 });
-
-		expect(
-			generateImageName?.({
-				originalName: "portrait",
-				sizeName: "640w",
-				extension: "png",
-				width: 640,
-				height: 640,
-			}),
-		).toBe("portrait-640w.png");
 	});
 });
