@@ -14,8 +14,8 @@ configuration through one barrel: `app/(app)/_/runtime.ts` for the app,
 however few modules consume it, and `clerkPublishableKey` — which has no
 consumer outside `app/(app)/_/runtime.ts` at all — still lives there.
 
-Two files inside those realms read `process.env` directly anyway, and each is
-sanctioned for a named list of variables rather than as a whole file:
+Two files inside those realms read `process.env` directly anyway. Each is an
+exception bounded to a named list of variables rather than to the whole file:
 `app/(app)/_/components/markdown.tsx` for `NODE_ENV`, and `payload/config.ts`
 for the six the table names. The root `next.config.ts` and
 `playwright.config.ts` and the modules under `e2e/` read directly for a
@@ -76,7 +76,7 @@ token.
 - MUST read runtime configuration through `app/(app)/_/runtime.ts` from any
   component, repository, helper, or route handler, and through
   `payload/helpers/runtime.ts` from anything inside `payload/`. Two exceptions
-  stand, each closed at the variables the table names for it. The six
+  stand, each bounded to the variables the table names for it. The six
   `payload/config.ts` reads are one, so a seventh direct read there belongs in
   the barrel like any other. The inline `process.env.NODE_ENV` comparison a
   bundler must see literally to eliminate a branch, as
