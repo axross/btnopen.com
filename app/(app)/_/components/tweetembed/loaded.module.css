@@ -29,9 +29,12 @@
 
 			/* an inline box, where vertical padding grows the hit area without
 			   touching the line box — so no offsetting margin is wanted here,
-			   and an inert one would read as if it were doing something. */
+			   and an inert one would read as if it were doing something. 2px
+			   is a literal rather than a spacing step because it exists only
+			   to clear the 24px minimum: the inline box is 21px, and a retune
+			   of the scale must not be able to drop it back under. */
 			@media (any-pointer: coarse) {
-				padding-block: var(--size-2);
+				padding-block: 2px;
 			}
 		}
 
@@ -70,10 +73,13 @@
 
 			/* a baseline-aligned flex item, so the equal negative margin is what
 			   holds the baseline and the row height while the hit area clears
-			   the 24px coarse-pointer short-side minimum. */
+			   the 24px coarse-pointer short-side minimum. 4px is a literal
+			   rather than a spacing step because it exists only to clear that
+			   minimum: the row is 21.11px, and a retune of the scale must not
+			   be able to drop it back under. */
 			@media (any-pointer: coarse) {
-				padding-block: var(--size-4);
-				margin-block: calc(var(--size-4) * -1);
+				padding-block: 4px;
+				margin-block: -4px;
 				border-radius: var(--radius-sm);
 			}
 
