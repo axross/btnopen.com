@@ -1,0 +1,70 @@
+@layer components {
+	@scope (.footer) {
+		:where(:scope) {
+			/* the body centers its flex children, so stretch to the full width the
+			   header already spans. */
+			align-self: stretch;
+			/* on a page shorter than the viewport this pushes the footer to the
+			   bottom; the padding below keeps a minimum gap on a longer one. it also
+			   carries the trailing breathing room the body used to hold, now that
+			   the footer rather than the last section ends the page. */
+			margin-block-start: auto;
+			padding-block-start: var(--size-160);
+			padding-inline: var(--size-16);
+			/* the consent banner floats over the end of the document, which is
+			   exactly where this row sits, so the footer reserves the height the
+			   banner publishes. the property is absent once the visitor has
+			   answered and the banner has unmounted. */
+			padding-block-end: var(--analytics-consent-banner-clearance, 0px);
+		}
+
+		.row {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: var(--size-16);
+			padding-block: var(--size-16);
+			border-block-start: var(--size-1) solid var(--color-border-neutral-subtle);
+			font-size: var(--text-sm);
+		}
+
+		.copyright {
+			font-size: inherit;
+		}
+
+		.link {
+			display: flex;
+			align-items: center;
+			/* the hit area grows without the link moving: the padding and its
+			   negation match exactly, per the hit-area template in styling.md. */
+			padding-block: var(--size-8);
+			padding-inline: var(--size-8);
+			margin-block: calc(var(--size-8) * -1);
+			margin-inline-end: calc(var(--size-8) * -1);
+			border-radius: var(--radius-sm);
+			color: var(--color-text-accent-low);
+			outline: none;
+
+			/* the touch target floor, written as the literal length the
+			   specification states rather than a `--size-*` step: it is an
+			   accessibility constant, and routing it through the design scale would
+			   let a spacing retune move it. gated on `any-pointer` so a hybrid
+			   laptop still gets it, and so a mouse-only visitor keeps the row height
+			   the design gives. */
+			@media (any-pointer: coarse) {
+				min-block-size: 44px;
+			}
+
+			@media (hover: hover) and (pointer: fine) {
+				&:hover {
+					background-color: var(--color-background-accent-subtle);
+				}
+			}
+
+			&:focus-visible {
+				outline: var(--color-component-accent-selected) solid var(--size-3);
+				outline-offset: var(--size-3);
+			}
+		}
+	}
+}

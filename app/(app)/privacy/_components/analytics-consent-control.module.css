@@ -1,0 +1,102 @@
+@layer components {
+	@scope (.control) {
+		:where(:scope) {
+			display: flex;
+			flex-direction: column;
+			gap: var(--size-8);
+			padding: var(--size-16);
+			border: var(--size-1) solid var(--color-border-neutral-subtle);
+			border-radius: var(--radius-md);
+			background-color: var(--color-background-neutral-app);
+		}
+
+		.field {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: var(--size-16);
+			inline-size: stretch;
+			/* the whole row is the target; the switch is only what it looks like. */
+			padding-block: var(--size-8);
+			padding-inline: 0;
+			border: none;
+			border-radius: var(--radius-sm);
+			background: none;
+			color: inherit;
+			font: inherit;
+			text-align: start;
+			cursor: pointer;
+			outline: none;
+
+			/* the touch target floor, written as the literal length the
+			   specification states rather than a `--size-*` step: it is an
+			   accessibility constant, and routing it through the design scale would
+			   let a spacing retune move it. gated on `any-pointer` so a hybrid
+			   laptop still gets it, and so a mouse-only visitor keeps the row height
+			   the padding above gives. */
+			@media (any-pointer: coarse) {
+				min-block-size: 44px;
+			}
+
+			&:focus-visible {
+				outline: var(--color-component-accent-selected) solid var(--size-3);
+				outline-offset: var(--size-3);
+			}
+		}
+
+		.label {
+			color: var(--color-text-neutral-high);
+			font-weight: 600;
+		}
+
+		.track {
+			display: flex;
+			align-items: center;
+			flex: none;
+			inline-size: var(--size-48);
+			block-size: var(--size-24);
+			padding: var(--size-2);
+			border-radius: var(--radius-full);
+			background-color: var(--color-component-neutral-selected);
+			transition: background-color var(--duration-md) ease-in-out;
+
+			/* both hover states live here, where `&` is the bare `.track`. writing
+			   the checked one inside the `.field[data-checked] .track` rule below
+			   also works — `&` expands to that whole chain, and the single `.field`
+			   satisfies both the hovered and the checked ancestor — but it reads as
+			   though it needed two nested fields, so it is spelled out here
+			   instead. each state stays within its own colour scheme. */
+			@media (hover: hover) and (pointer: fine) {
+				.field:hover & {
+					background-color: var(--color-component-neutral-hovered);
+				}
+
+				.field[data-checked]:hover & {
+					background-color: var(--color-solid-accent-hovered);
+				}
+			}
+		}
+
+		.field[data-checked] .track {
+			background-color: var(--color-solid-accent-rest);
+		}
+
+		.thumb {
+			display: block;
+			inline-size: var(--size-20);
+			block-size: var(--size-20);
+			border-radius: var(--radius-full);
+			background-color: var(--color-background-neutral-plain);
+			transition: translate var(--duration-md) ease-in-out;
+
+			&[data-checked] {
+				translate: var(--size-24) 0;
+			}
+		}
+
+		.state {
+			color: var(--color-text-neutral-low);
+			font-size: var(--text-sm);
+		}
+	}
+}

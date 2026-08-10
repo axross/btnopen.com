@@ -13,6 +13,7 @@ how a post body is rendered is
 | `/` | The site's only landing surface: the author's portrait, bio, social links, and the blog-post list |
 | `/posts/[slug]` | One blog post — header, body, and, when enabled, its comments |
 | `/posts` | Nothing of its own; it redirects to `/` |
+| `/privacy` | What the site collects, on what basis, and the permanent control for changing the analytics decision |
 | `/posts/[slug]/thumbnail.png` | The post's generated Open Graph image |
 | `/sitemap.xml` | The index page plus every published post |
 | `/robots.txt` | Allows every agent, and points at the sitemap |
@@ -23,6 +24,38 @@ authorized to see, renders the not-found surface described below.
 
 The index page carries `BlogJsonLd`, and a post page carries `BlogPostingJsonLd`,
 so a post is machine-readable as structured data as well as HTML.
+
+## Chrome
+
+Two elements bracket every route. The **header** carries the wordmark, linking
+home, and the language switcher. The **footer** is a single row — the copyright
+on the left, the privacy link on the right — above a hairline rule, and it also
+holds the page's trailing breathing room, so the space that used to sit below the
+last section now sits above the footer instead. Both stretch the full width while
+the content between them stays in the reading column.
+
+The footer renders on every route, in every consent state, including the
+not-found surface: the privacy link has to outlive the consent banner, which
+disappears the moment a visitor answers it.
+
+## Consent
+
+A visitor who has not answered the analytics question sees a **consent banner**,
+and no analytics code is loaded until they answer. It is a compact card anchored
+to the bottom-right corner from tablet width up, and a full-width card inset from
+both edges on mobile. It states what is collected, that error reporting runs
+either way, and links to `/privacy`.
+
+It offers two answers and no third way out — closing without deciding would leave
+a visitor permanently unasked — and both sit at the same slot of their own colour
+scheme, so neither is easier to pick than the other. Once answered it never
+appears again; `/privacy` carries the permanent control, and is the only place a
+decision can be changed. That control reports **three** states, because a visitor
+who has not answered has not declined.
+
+Answering takes effect immediately and in both directions, with no page reload.
+Granting reports the page the visitor is already on; nothing from before the
+grant is sent.
 
 The sitemap lists each post **once**, under the default locale, because slugs are
 not localized. `robots.txt` renders at request time rather than build time: the

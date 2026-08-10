@@ -7,8 +7,23 @@ import { getWebsite } from "@/e2e/helpers/api/website";
 
 test.use({ storageState: authenticatedStorageState });
 
-test.beforeEach(async ({ page }, testInfo) => {
+test.beforeEach(async ({ page, baseURL }, testInfo) => {
 	let slug: string;
+
+	await test.step("Answer the analytics consent question", async () => {
+		// the consent banner is fixed to the viewport, and Playwright captures a
+		// tall element by scrolling and stitching, so an unanswered visitor smears
+		// the banner through the middle of the content snapshot below. answering
+		// unmounts it. same reason the DevTools indicator is dismissed further
+		// down: a fixed overlay is not what these assertions are about.
+		await page.context().addCookies([
+			{
+				name: "btn-analytics-consent",
+				value: "denied",
+				url: baseURL ?? "http://localhost:3000",
+			},
+		]);
+	});
 
 	await test.step("Retrieve the example blog post record", async () => {
 		({ slug } = await getExampleBlogPost({ page, testInfo }));
