@@ -30,11 +30,14 @@ export default async function BlogPostPage({
 	// stream its own matching loading skeleton (the agentic view and the post
 	// have different shapes, so a single shared fallback would mismatch one of
 	// them). This opts the route into dynamic rendering.
-	const { agentic, draft: draftParam } = await searchParams;
+	const { agentic, draft: draftParam, token: shareToken } = await searchParams;
 	const slug = params.then((p) => p.slug);
 	const draft = Promise.resolve(draftParam === "true");
 
 	if (agentic === "true") {
+		// the agentic view is session-only by decision, so the token is not
+		// forwarded into it — a share link unlocks the reader-facing post and
+		// nothing else.
 		return <BlogPostAgenticView slug={slug} draft={draft} data-testid="page" />;
 	}
 
@@ -43,7 +46,12 @@ export default async function BlogPostPage({
 	// evaluated argument) so the dynamic cookie read happens within the Suspense
 	// boundaries that await `blogPost`.
 	const blogPost = Promise.all([slug, draft]).then(async ([s, d]) =>
-		getBlogPost({ slug: s, draft: d, locale: await getActiveLocale() }),
+		getBlogPost({
+			slug: s,
+			draft: d,
+			locale: await getActiveLocale(),
+			shareToken,
+		}),
 	);
 
 	return (
@@ -57,7 +65,11 @@ export default async function BlogPostPage({
 
 				<main className={css.content} data-testid="content">
 					<Suspense>
-						<BlogPostContent slug={slug} draft={draft} />
+						<BlogPostContent
+							slug={slug}
+							draft={draft}
+							shareToken={shareToken}
+						/>
 					</Suspense>
 				</main>
 
@@ -124,7 +136,7 @@ export async function generateMetadata({
 	params,
 	searchParams,
 }: PageProps): Promise<Metadata> {
-	const [{ slug }, { draft, agentic }] = await Promise.all([
+	const [{ slug }, { draft, agentic, token: shareToken }] = await Promise.all([
 		params,
 		searchParams,
 	]);
@@ -156,12 +168,14 @@ export async function generateMetadata({
 
 	const [website, blogPost] = await Promise.all([
 		getWebsite({ locale }),
-		getBlogPost({ slug, draft: isDraft, locale }),
+		getBlogPost({ slug, draft: isDraft, locale, shareToken }),
 	]);
 
 	if (!website || !blogPost) {
 		notFound();
 	}
+
+	const thumbnailUrl = `${urlOrigin}/posts/${blogPost.slug}/thumbnail.png`;
 
 	return {
 		title: blogPost.title,
@@ -175,6 +189,13 @@ export async function generateMetadata({
 		],
 		creator: website.creator.name,
 		publisher: website.creator.name,
+		// a draft render is never indexable, whatever it resolved to. the site-wide
+		// `index: true` in the root layout would otherwise leave a leaked or
+		// forwarded share link free to put unpublished content into a search index;
+		// no `?draft=true` URL is in the sitemap, so this costs nothing. A published
+		// render leaves the key unset and keeps the layout's value, exactly as
+		// before.
+		robots: isDraft ? { index: false, follow: false } : undefined,
 		openGraph: {
 			title: blogPost.title,
 			description: blogPost.brief,
@@ -182,7 +203,16 @@ export async function generateMetadata({
 			url: `${urlOrigin}/posts/${blogPost.slug}`,
 			images: [
 				{
-					url: `${urlOrigin}/posts/${blogPost.slug}/thumbnail.png`,
+					// the thumbnail route gates the draft on the same token this request
+					// carried, so an unfurl of a shared link has to hand it back to
+					// render the draft's own card. The accepted consequence is that the
+					// token appears in the draft page's rendered HTML — only a holder can
+					// render that page. The published path builds the bare URL it always
+					// did, so a published render's metadata is unchanged.
+					url:
+						isDraft && shareToken
+							? `${thumbnailUrl}?token=${encodeURIComponent(shareToken)}`
+							: thumbnailUrl,
 					width: thumbnailWidth,
 					height: thumbnailHeight,
 					alt: blogPost.title,

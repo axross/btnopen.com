@@ -36,14 +36,20 @@ export const maxDuration = 60;
 // use opengraph-image.ts is that its url isn't consistent because of a hash
 // suffix automatically added on build.
 export async function GET(
-	_: NextRequest,
+	request: NextRequest,
 	{ params }: { params: Promise<{ slug: string }> },
 ): Promise<Response> {
 	const { slug } = await params;
+	// read at the route boundary and forwarded as an opaque string: the gate
+	// inside `getBlogPost` compares it, and nothing here interprets it. An absent
+	// parameter reads as `undefined`, which the gate rejects.
+	const shareToken = request.nextUrl.searchParams.get("token") ?? undefined;
 	// the Open Graph image lives at a single, locale-independent URL, so it is
 	// always rendered in the default locale.
 	const [blogPost, fonts] = await Promise.all([
-		getBlogPost({ slug, draft: true, locale: defaultLocale }),
+		// `draft: true` is the request, never the answer — an unauthorized caller
+		// is downgraded to the published post by the gate inside `getBlogPost`.
+		getBlogPost({ slug, draft: true, locale: defaultLocale, shareToken }),
 		loadFonts(),
 	]);
 
