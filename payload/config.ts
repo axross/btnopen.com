@@ -15,17 +15,17 @@ import { websiteGlobal } from "./globals/website";
 import { editor } from "./helpers/editor";
 import { logger } from "./helpers/logger";
 import { payloadMcpPlugin } from "./helpers/mcp";
+import { vercelBlobToken } from "./helpers/runtime";
 import { seed } from "./helpers/seed";
 
-// biome-ignore-start lint/style/noProcessEnv: only place accessing env vars in payload realm
+// biome-ignore-start lint/style/noProcessEnv: build-time values the Payload CLI reads to resolve this config
 const payloadSecret = process.env.PAYLOAD_SECRET ?? "local";
 const libsqlUrl = process.env.LIBSQL_PAYLOAD_TURSO_DATABASE_URL;
 const libsqlToken = process.env.LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN;
-const vercelBlobToken = process.env.BLOB_PAYLOAD_READ_WRITE_TOKEN;
 const blobPrefix = process.env.BLOB_PAYLOAD_PREFIX ?? "";
 const testUserEmail = process.env.PAYLOAD_TEST_USER_EMAIL;
 const testUserPassword = process.env.PAYLOAD_TEST_USER_PASSWORD;
-// biome-ignore-end lint/style/noProcessEnv: only place accessing env vars in payload realm
+// biome-ignore-end lint/style/noProcessEnv: build-time values the Payload CLI reads to resolve this config
 
 const selfDirname = dirname(new URL(import.meta.url).pathname);
 
