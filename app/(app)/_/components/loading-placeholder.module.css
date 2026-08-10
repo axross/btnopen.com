@@ -22,7 +22,11 @@
 			flex-direction: row;
 			flex-wrap: wrap;
 			/* width: stretch; */
-			max-block-size: calc(attr(data-max-lines number, 9999) * 1lh);
+			/* `attr()`'s typed form spells its type as `type(<syntax>)`; a bare
+			 * `number` is not an <attr-unit>, so the whole declaration used to be
+			 * dropped and every `maxLines` on the site computed to `none`. The
+			 * fallback stands in for "no clamp" when the attribute is absent. */
+			max-block-size: calc(attr(data-max-lines type(<number>), 9999) * 1lh);
 			padding-block: calc((1lh - 1em) / 2);
 			row-gap: calc((1lh - 1em));
 			column-gap: 0.75ch;
