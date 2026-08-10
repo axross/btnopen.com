@@ -39,7 +39,13 @@ export function classifyLinkHref(href: string): LinkHrefKind {
 	}
 
 	if (browsableProtocols.includes(protocol)) {
-		return "external";
+		// an `http(s)` scheme with no host resolves nowhere, so it is a refused
+		// destination rather than an external one. `https://` is the concrete
+		// case: `@payloadcms/richtext-lexical` substitutes exactly that string
+		// for any destination its own markdown export refuses, so a
+		// `javascript:` link authored in the CMS now arrives here as `https://`
+		// rather than intact.
+		return hasHost(href) ? "external" : "blocked";
 	}
 
 	if (contactProtocols.includes(protocol)) {
@@ -47,6 +53,14 @@ export function classifyLinkHref(href: string): LinkHrefKind {
 	}
 
 	return "blocked";
+}
+
+function hasHost(href: string): boolean {
+	try {
+		return new URL(href).host !== "";
+	} catch {
+		return false;
+	}
 }
 
 // mirrors the scheme detection in `micromark-util-sanitize-uri`: the first `:`

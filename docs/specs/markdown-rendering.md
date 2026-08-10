@@ -104,7 +104,11 @@ principal untrusted-content surface. Two facts shape everything else:
 
 - **The CMS is not a filter.** Payload's Lexical link field rejects only empty
   values and values containing a space, so a `javascript:` destination is storable
-  through the admin and through the MCP server alike.
+  through the admin and through the MCP server alike. Its markdown export does
+  substitute the bare string `https://` for a destination it refuses — a host-less
+  URL that resolves nowhere — but that is an upstream convenience, not a control
+  this site relies on, and it is the reason a host-less `http(s)` destination is
+  refused below.
 - **The markdown-to-HTML bridge does not sanitize URLs**, and has no sanitizing
   mode to switch on. A dangerous protocol reaches the rendering layer intact.
 
@@ -112,7 +116,7 @@ So the guarantees are made by explicit controls:
 
 | Guarantee | How it holds |
 | --- | --- |
-| A rendered link destination is `http`, `https`, `mailto`, or `tel` — nothing else | A protocol allowlist runs as the last step before rendering, and the same check runs again inside the link component. Either alone would suffice; both exist so removing one does not open the surface |
+| A rendered link destination is `http`, `https`, `mailto`, or `tel` — nothing else, and an `http(s)` one carries a host | A protocol allowlist runs as the last step before rendering, and the same check runs again inside the link component. Either alone would suffice; both exist so removing one does not open the surface. The host check refuses a scheme that resolves nowhere, so a refused destination never renders as a live external link |
 | A refused destination loses its `href`, never its text | The author's link text still renders, so refusing a URL never erases prose |
 | An embed renders only for `http(s)` | Embeds bypass the anchor path entirely, so they carry their own gate |
 | Text and attribute values are output-encoded | Rendering goes through React's JSX runtime. This is an encoding guarantee, **not** a URL defence — React refuses `javascript:` as an internal precaution and lets `data:` through |
