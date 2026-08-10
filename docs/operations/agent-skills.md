@@ -229,3 +229,69 @@ documentation root. This entry stands until that lands.
   `docs/operations/`, and product behaviour in `docs/specs/`.
 - MUST NOT report the absence of a repository-local structure skill as a review
   finding against that capability while this entry stands.
+
+### Deviation and gap — colour tokens are authored in `oklch()` with no sRGB `@supports` fallback
+
+The React-component-styling capability's `color-and-gamut` reference makes the
+fallback a MUST — "MUST author colour in a wide-gamut format (`oklch()`, or
+`color(display-p3 …)`) and MUST provide an sRGB fallback for browsers that do not
+parse it" — and names the mechanism for exactly this case: "MUST use the
+feature-query form (`@supports`) when the colour is assigned to a custom
+property".
+
+`app/(app)/variables.css` assigns 54 `oklch()` values to custom properties and
+guards none of them with a gamut feature query; the file's only `@supports`
+covers `corner-shape: squircle`. The departure is older than the colour-role
+layer that exposed it — before
+[#221](https://github.com/axross/btnopen.com/issues/221) the count was 25 and the
+fallback was already absent.
+
+Complying would break a rule that does stand here. The brand hue is a single
+global knob, per [../specs/visual-identity.md](../specs/visual-identity.md), and
+a static sRGB literal cannot follow a knob. The scale is derived rather than
+pasted — four knobs, a 13-value `--lightness-*` axis that inverts for dark, and
+26 alpha values, which is 39 numbers forking per scheme while the 54 `oklch()`
+declarations sit outside the fork and are written once. Resolving them to
+literals collapses the `var()` indirection into 108 values (54 × 2 schemes) and
+grows the per-scheme fork to 147, after which rotating the hue recolours only
+half the palette.
+
+Compliance is also all-or-nothing. An unparseable `oklch()` invalidates a custom
+property at computed-value time — the very reason the capability mandates the
+feature-query form over the cascade form — so a fallback covering some
+declarations leaves the rest resolving to `unset` and the page loses its colours
+anyway. A partial fallback is not a partial fix; it is an inert one.
+
+What settles it is that the capability's own `@scope` rule has already excluded
+the browsers this fallback would serve. Its `css-modules` reference makes
+`@scope` a MUST with no fallback and no support caveat, and every CSS Module here
+obeys it. [`@scope` reached Baseline in December
+2025](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@scope)
+on Firefox 146; [`oklch()` reached it in May
+2023](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/oklch).
+A browser that cannot parse `oklch()` predates `@scope` by some 31 months and
+cannot apply a single component rule on this site, so it never reaches a colour
+token to fall back on. The mandated fallback has no reachable audience.
+
+That inconsistency is the capability's rather than this repository's — one
+reference mandates an unguarded 2025 feature while a neighbouring one mandates a
+fallback for a 2023 feature, and nothing reconciles them — so it is also filed
+upstream as [axross/skills#316](https://github.com/axross/skills/issues/316),
+which asks that the fallback MUST be qualified by interoperability rather than by
+colour format. This entry stands until that lands, and nothing here waits on it.
+
+**Rules:**
+
+- MUST NOT report an `oklch()` custom property without a gamut `@supports` as a
+  review finding while this entry stands.
+- MUST NOT add an sRGB fallback covering part of the palette. Anything short of
+  all 108 values is inert, because the unguarded remainder invalidates at
+  computed-value time and takes the page's colours with it.
+- SHOULD treat adopting a whole-palette fallback as a standalone change with its
+  own issue, plan, and review — never as part of a change that happens to touch
+  `variables.css`.
+- SHOULD verify that a build-time transform actually reaches a Turbopack
+  `next build` before proposing one as the way to keep the single hue knob; the
+  Sentry entry above records what an option that reaches nothing costs.
+- SHOULD delete this entry rather than leave it standing if the capability gains
+  a browser-baseline qualifier that resolves the inconsistency.
