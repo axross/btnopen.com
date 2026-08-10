@@ -19,9 +19,8 @@ import css from "./index-page-main-loading.module.css";
  */
 export function IndexPageMainLoading({
 	className,
-	children,
 	...props
-}: ComponentProps<"main">): JSX.Element {
+}: Omit<ComponentProps<"main">, "children">): JSX.Element {
 	return (
 		<main className={clsx(css.indexPageMainLoading, className)} {...props}>
 			{/* the loaded region's <h1> is visually hidden and reserves no space, so

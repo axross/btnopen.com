@@ -18,9 +18,8 @@ import css from "./comments-loading.module.css";
  */
 export function CommentsLoading({
 	className,
-	children,
 	...props
-}: ComponentProps<"section">): JSX.Element {
+}: Omit<ComponentProps<"section">, "children">): JSX.Element {
 	return (
 		<section className={clsx(css.commentsLoading, className)} {...props}>
 			<div className={css.head}>
