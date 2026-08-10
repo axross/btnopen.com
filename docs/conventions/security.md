@@ -38,7 +38,7 @@ its reason.
 
 | File | Why it may read `process.env` |
 | --- | --- |
-| `app/(app)/_/runtime.ts` | The app realm's sanctioned barrel, exporting `urlOrigin`, `vercelEnvironment`, `sentryDsn`, `mixpanelToken`, and friends |
+| `app/(app)/_/runtime.ts` | The app realm's sanctioned barrel, and the authoritative list of its own exports — `urlOrigin`, `vercelEnvironment`, `sentryDsn`, and `mixpanelToken` are four examples, not the whole set |
 | `payload/helpers/runtime.ts` | The Payload realm's counterpart, exporting `urlOrigin` and `vercelBlobToken`. It exists so the realm never imports `app/`, and resolves the origin through the same `shared/url-origin.ts` the app barrel uses |
 | `payload/config.ts` | The secret, the database credentials, the storage prefix, and the seed user — build-time values `next build` needs to resolve this config, and read nowhere else in the Payload realm |
 | `next.config.ts` | Config-time access to `CI`, `SENTRY_ORG`, `SENTRY_PROJECT`, `DEPLOYMENT_ID`, and `NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA` |
