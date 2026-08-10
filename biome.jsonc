@@ -157,7 +157,7 @@
 				"noNestedTernary": "warn",
 				"noParameterAssign": "error",
 				"noParameterProperties": "error",
-				"noProcessEnv": "warn",
+				"noProcessEnv": "error",
 				"noRestrictedGlobals": "error",
 				"noRestrictedTypes": {
 					"level": "error",
