@@ -11,9 +11,12 @@ and what already guards it.
 Application code reaches runtime configuration through exactly one barrel per
 realm — `app/(app)/_/runtime.ts` for the app, `payload/helpers/runtime.ts` for
 Payload — so a review only has to look in one place to know what a deployment
-exposes. The app realm has no file-level exception: every value goes through its
-barrel however few modules consume it, and `clerkPublishableKey` — which has no
-consumer outside `app/(app)/_/runtime.ts` at all — still lives there.
+exposes. The app realm has no file-level exception: every runtime-configuration
+value goes through its barrel however few modules consume it, and
+`clerkPublishableKey` — which has no consumer outside `app/(app)/_/runtime.ts`
+at all — still lives there. The app realm's only direct reader of `process.env`
+outside that barrel, `app/(app)/_/components/markdown.tsx`, is exempt for a
+single variable rather than as a file, for the reason given below the table.
 
 `payload/config.ts` is the one sanctioned file-level exception. The secret, the
 database credentials, the storage prefix, and the seed user are build-time
@@ -24,13 +27,14 @@ evaluated in every server process that imports it. What keeps the exception
 narrow is that no other module in the Payload realm reads any of the six. Once a
 second one does, the value belongs in the barrel instead, as `vercelBlobToken`
 shows — `payload/config.ts` and `payload/helpers/image.ts` both import it from
-there. That is a property of this exception, not a rule about barrels.
+there. That reader-count test is a property of this exception, not a general
+rule about barrels.
 
-Config and test files have no barrel to read through, so they appear in the
-table too, as does the one component that keeps a literal `NODE_ENV` comparison
-for the reason below. The table is the complete set of source files Biome lints
-that read `process.env` outside an override — every one of them carries a
-directive naming its reason.
+The root `next.config.ts` and `playwright.config.ts`, and the modules under
+`e2e/`, have no barrel to read through, so they appear in the table too. The
+table below is the complete set of source files Biome lints that read
+`process.env` outside an override — every one of them carries a directive naming
+its reason.
 
 | File | Why it may read `process.env` |
 | --- | --- |
@@ -57,22 +61,23 @@ configuration* rather than to `process.env` as a token.
 
 - MUST read runtime configuration through `app/(app)/_/runtime.ts` from any
   component, repository, helper, or route handler, and through
-  `payload/helpers/runtime.ts` from anything inside `payload/` — except
-  `payload/config.ts`, whose six build-time values are the file-level exception
-  described above. An inline `process.env.NODE_ENV` comparison that a
-  bundler must see literally to eliminate a branch, as
-  `app/(app)/_/components/markdown.tsx` has, is the single variable-level
-  exemption — it is build-time substitution rather than deployment
-  configuration, and it extends to no other variable.
+  `payload/helpers/runtime.ts` from anything inside `payload/`. The six
+  build-time values `payload/config.ts` already reads directly are the one
+  file-level exception, described above; that exemption covers those six and no
+  others, so a seventh direct read there belongs in the barrel like any other.
+  An inline `process.env.NODE_ENV` comparison that a bundler must see literally
+  to eliminate a branch, as `app/(app)/_/components/markdown.tsx` has, is the
+  single variable-level exemption — it is build-time substitution rather than
+  deployment configuration, and it extends to no other variable.
 - MUST carry a `noProcessEnv` suppression with a reason on any sanctioned direct
   `process.env` access, in whichever of Biome's three forms fits the site: a
-  single-line `// biome-ignore lint/style/noProcessEnv:` above the access, a
-  file-wide `// biome-ignore-all lint/style/noProcessEnv:` as both barrels use,
-  or a `// biome-ignore-start` / `// biome-ignore-end` pair around a block, as
-  `payload/config.ts`, `next.config.ts`, `playwright.config.ts`,
-  `e2e/helpers/api/auth.ts`, and `e2e/tests/routes/posts/comments.test.ts` do.
-  That comment — not a config whitelist — is what exempts every file in the
-  table above, and it is the marker a review looks for.
+  single-line `// biome-ignore lint/style/noProcessEnv:` above one access, as
+  `app/(app)/_/components/markdown.tsx` has; a file-wide
+  `// biome-ignore-all lint/style/noProcessEnv:`, as both barrels have; or a
+  `// biome-ignore-start` / `// biome-ignore-end` pair around a block, as
+  `payload/config.ts` has. Whichever form is used — not a config whitelist — is
+  what exempts every file in the table above, and it is the marker a review
+  looks for.
 - MUST keep `noProcessEnv` at `"error"` in `biome.jsonc`, so an unsanctioned
   access fails `npm run lint` instead of scrolling past as a warning. That
   severity is what makes the rule above literal rather than aspirational: every
