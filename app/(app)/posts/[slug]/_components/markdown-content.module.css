@@ -60,7 +60,7 @@
 		.h1 {
 			margin-block-start: calc(var(--paragraph-block-margin) * 2.5);
 			margin-block-end: calc(var(--paragraph-block-margin) * 1.5);
-			color: var(--neutral-12);
+			color: var(--color-text-neutral-high);
 			font-size: var(--text-4xl);
 			font-weight: 700;
 		}
@@ -68,7 +68,7 @@
 		.h2 {
 			margin-block-start: calc(var(--paragraph-block-margin) * 2.25);
 			margin-block-end: calc(var(--paragraph-block-margin) * 1.25);
-			color: var(--neutral-12);
+			color: var(--color-text-neutral-high);
 			font-size: var(--text-3xl);
 			font-weight: 600;
 		}
@@ -76,7 +76,7 @@
 		.h3 {
 			margin-block-start: calc(var(--paragraph-block-margin) * 2);
 			margin-block-end: calc(var(--paragraph-block-margin) * 0.75);
-			color: var(--neutral-12);
+			color: var(--color-text-neutral-high);
 			font-size: var(--text-2xl);
 			font-weight: 600;
 		}
@@ -84,7 +84,7 @@
 		.h4 {
 			margin-block-start: calc(var(--paragraph-block-margin) * 1.5);
 			margin-block-end: calc(var(--paragraph-block-margin) * 0.75);
-			color: var(--neutral-12);
+			color: var(--color-text-neutral-high);
 			font-size: var(--text-xl);
 			font-weight: 600;
 		}
@@ -92,7 +92,7 @@
 		.h4 {
 			margin-block-start: calc(var(--paragraph-block-margin) * 1.5);
 			margin-block-end: calc(var(--paragraph-block-margin) * 0.75);
-			color: var(--neutral-12);
+			color: var(--color-text-neutral-high);
 			font-size: var(--text-xl);
 			font-weight: 600;
 		}
@@ -100,7 +100,7 @@
 		.h5 {
 			margin-block-start: calc(var(--paragraph-block-margin) * 1.25);
 			margin-block-end: calc(var(--paragraph-block-margin) * 0.5);
-			color: var(--neutral-12);
+			color: var(--color-text-neutral-high);
 			font-size: var(--text-lg);
 			font-weight: 600;
 		}
@@ -109,7 +109,8 @@
 			margin-block: calc(var(--paragraph-block-margin) * 1.5);
 			padding-block: calc(var(--paragraph-block-margin) * 0.5);
 			padding-inline: var(--size-16);
-			border-inline-start: var(--size-4) var(--accent-7) solid;
+			border-inline-start: var(--size-4) var(--color-border-accent-interactive)
+				solid;
 			font-weight: 500;
 			font-style: italic;
 		}
@@ -185,12 +186,12 @@
 		}
 
 		:where(.ol, .ul) > .li::marker {
-			color: var(--neutral-11);
+			color: var(--color-text-neutral-low);
 		}
 
 		.p {
 			margin-block: var(--paragraph-block-margin);
-			color: var(--neutral-11);
+			color: var(--color-text-neutral-low);
 			font-size: var(--text-md);
 			line-height: var(--leading-lg);
 			word-break: break-word;
@@ -209,7 +210,7 @@
 		}
 
 		.dt {
-			color: var(--neutral-11);
+			color: var(--color-text-neutral-low);
 			font-weight: 600;
 		}
 
@@ -230,7 +231,7 @@
 			);
 			background-size: 0.625rem 0.625rem;
 			border: none;
-			color: var(--accent-6);
+			color: var(--color-border-accent-subtle);
 		}
 
 		.picture {
@@ -240,8 +241,8 @@
 		.code {
 			padding-block: calc(var(--size-3) - 0.5px);
 			padding-inline: calc(var(--size-6) - 0.5px);
-			background-color: var(--neutral-2);
-			border: 0.5px var(--neutral-6) solid;
+			background-color: var(--color-background-neutral-subtle);
+			border: 0.5px var(--color-border-neutral-subtle) solid;
 			border-radius: var(--radius-sm);
 			font-family: var(--font-mono);
 			font-feature-settings: var(--font-mono-features);
@@ -260,7 +261,7 @@
 
 		.a {
 			border-radius: var(--radius-sm);
-			color: var(--accent-11);
+			color: var(--color-text-accent-low);
 			text-decoration: underline;
 			text-underline-offset: var(--size-2);
 			font-weight: 500;
@@ -268,12 +269,12 @@
 		}
 
 		.a:focus-visible {
-			outline: var(--accent-5) solid var(--size-3);
+			outline: var(--color-component-accent-selected) solid var(--size-3);
 			outline-offset: var(--size-3);
 		}
 
 		.strong {
-			color: var(--neutral-12);
+			color: var(--color-text-neutral-high);
 			font-weight: 600;
 		}
 
@@ -309,14 +310,14 @@
 		}
 
 		.thead {
-			background-color: var(--neutral-2);
+			background-color: var(--color-background-neutral-subtle);
 		}
 
 		.th,
 		.td {
 			padding-block: calc(var(--paragraph-block-margin) * 0.75);
 			padding-inline: var(--size-16);
-			color: var(--neutral-12);
+			color: var(--color-text-neutral-high);
 			/* Default alignment for the reading direction. `mdast-util-to-hast`
 			   + `hast-util-to-jsx-runtime` convert GFM `:---` / `:---:` / `---:`
 			   alignment into an inline `style="text-align: left|center|right"` on
@@ -332,11 +333,11 @@
 		}
 
 		.thead > .tr > .th {
-			border-block-end: var(--size-1) solid var(--neutral-6);
+			border-block-end: var(--size-1) solid var(--color-border-neutral-subtle);
 		}
 
 		.tbody > .tr {
-			border-block-end: var(--size-1) solid var(--neutral-6);
+			border-block-end: var(--size-1) solid var(--color-border-neutral-subtle);
 		}
 
 		.tbody > .tr:last-child {
@@ -427,13 +428,14 @@
 	.tableScrollbarThumb {
 		block-size: 100%;
 		border-radius: var(--radius-full);
-		background-color: var(--neutral-8);
+		background-color: var(--color-border-neutral-hovered);
 	}
 
 	/* Scroll-reactive edge-fade affordance. Two absolutely-positioned pseudo
 	   elements paint solid-to-transparent gradients against the page background
-	   (--neutral-0) over the leading and trailing edges. They sit above the
-	   opaque `.thead` surface (--neutral-2) via `z-index: 1`, so the fade reads
+	   (the plain neutral background) over the leading and trailing edges. They
+	   sit above the opaque `.thead` surface (the subtle neutral background) via
+	   `z-index: 1`, so the fade reads
 	   uniformly across header and body rows. `pointer-events: none` keeps them
 	   clear of keyboard focus and pointer hit-testing; the scroll-area's
 	   `:focus-visible` outline is unaffected because it paints outside the
@@ -460,12 +462,20 @@
 
 	.tableWrapper::before {
 		left: 0;
-		background: linear-gradient(to right, var(--neutral-0), transparent);
+		background: linear-gradient(
+			to right,
+			var(--color-background-neutral-plain),
+			transparent
+		);
 	}
 
 	.tableWrapper::after {
 		right: 0;
-		background: linear-gradient(to left, var(--neutral-0), transparent);
+		background: linear-gradient(
+			to left,
+			var(--color-background-neutral-plain),
+			transparent
+		);
 	}
 
 	/* Drive the fades from the inner scroll-area's inline scroll position. The
@@ -513,7 +523,7 @@
 	}
 
 	.tableScrollArea:focus-visible {
-		outline: var(--accent-5) solid var(--size-3);
+		outline: var(--color-component-accent-selected) solid var(--size-3);
 		outline-offset: var(--size-3);
 	}
 

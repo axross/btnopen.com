@@ -6,7 +6,7 @@
 			width: stretch;
 			flex-direction: column;
 			padding-block-end: var(--size-16);
-			background-color: var(--accent-3);
+			background-color: var(--color-component-accent-rest);
 			border-radius: var(--radius-md);
 			text-decoration: inherit;
 			color: inherit;
@@ -14,7 +14,7 @@
 			--variant: "mobile";
 
 			&:hover {
-				background-color: var(--accent-4);
+				background-color: var(--color-component-accent-hovered);
 			}
 
 			@container (width > 30rem) {
@@ -77,10 +77,10 @@
 			container: fallback-image / inline-size;
 			justify-content: center;
 			align-items: center;
-			background-color: oklch(from var(--accent-11) l c h / 0.5);
+			background-color: var(--color-solid-accent-rest-alpha);
 
 			:where(:scope):hover & {
-				background-color: oklch(from var(--accent-11) l c h / 0.6);
+				background-color: var(--color-solid-accent-hovered-alpha);
 			}
 		}
 
@@ -92,7 +92,7 @@
 		.title {
 			margin-block-start: var(--size-16);
 			padding-inline: var(--size-16);
-			color: var(--accent-11);
+			color: var(--color-text-accent-low);
 			font-size: var(--text-lg);
 			font-weight: bold;
 			text-decoration: underline;
@@ -152,27 +152,27 @@
 		}
 
 		.illustrationWindowSurface {
-			fill: var(--neutral-3);
+			fill: var(--color-component-neutral-rest);
 		}
 
 		.illustrationWindowShadow {
-			fill: var(--accent-1);
+			fill: var(--color-background-accent-app);
 		}
 
 		.illustrationForegroundRectangle {
-			fill: var(--neutral-7);
+			fill: var(--color-border-neutral-interactive);
 		}
 
 		.illustrationForegroundBorder {
-			fill: var(--neutral-7);
+			fill: var(--color-border-neutral-interactive);
 		}
 
 		.illustrationPseudoPressable {
-			fill: var(--neutral-7);
+			fill: var(--color-border-neutral-interactive);
 		}
 
 		.illustrationAccentPseudoPressable {
-			fill: var(--accent-7);
+			fill: var(--color-border-accent-interactive);
 		}
 	}
 }

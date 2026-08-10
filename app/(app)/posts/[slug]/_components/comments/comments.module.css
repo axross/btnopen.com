@@ -23,13 +23,13 @@
 		.heading {
 			font-size: var(--text-md);
 			font-weight: 600;
-			color: var(--neutral-11);
+			color: var(--color-text-neutral-low);
 		}
 
 		.count {
 			font-family: var(--font-mono);
 			font-size: var(--text-sm);
-			color: var(--neutral-11);
+			color: var(--color-text-neutral-low);
 		}
 
 		/* Empty state: a centered illustration over the site's code-syntax voice (a
@@ -64,14 +64,14 @@
 			font-feature-settings: var(--font-mono-features);
 			font-size: var(--text-sm);
 			font-weight: 600;
-			color: var(--neutral-11);
+			color: var(--color-text-neutral-low);
 		}
 
 		/* Slightly higher contrast than the expression so it reads as the next step
 		 * without masquerading as a link (which would need underline). */
 		.emptyInvite {
 			font-size: var(--text-sm);
-			color: var(--neutral-12);
+			color: var(--color-text-neutral-high);
 		}
 
 		.list {
@@ -86,7 +86,8 @@
 			margin-block-start: var(--size-20);
 			margin-inline-start: var(--size-20);
 			padding-inline-start: var(--size-20);
-			border-inline-start: var(--size-1) solid var(--neutral-6);
+			border-inline-start: var(--size-1) solid
+				var(--color-border-neutral-subtle);
 			display: flex;
 			flex-direction: column;
 			gap: var(--size-20);
@@ -127,13 +128,13 @@
 
 		.name {
 			font-weight: 600;
-			color: var(--neutral-12);
+			color: var(--color-text-neutral-high);
 		}
 
 		.handle {
 			font-family: var(--font-mono);
 			font-size: var(--text-xs);
-			color: var(--neutral-11);
+			color: var(--color-text-neutral-low);
 			text-decoration: none;
 			outline: none;
 
@@ -142,7 +143,7 @@
 			}
 
 			&:focus-visible {
-				outline: var(--accent-5) solid var(--size-3);
+				outline: var(--color-component-accent-selected) solid var(--size-3);
 				outline-offset: var(--size-3);
 			}
 		}
@@ -151,8 +152,8 @@
 			font-family: var(--font-mono);
 			font-size: var(--text-xs);
 			font-weight: 600;
-			color: var(--neutral-11);
-			border: var(--size-1) solid var(--neutral-7);
+			color: var(--color-text-neutral-low);
+			border: var(--size-1) solid var(--color-border-neutral-interactive);
 			border-radius: var(--radius-sm);
 			padding-block: 0;
 			padding-inline: var(--size-6);
@@ -161,18 +162,18 @@
 		.time {
 			font-family: var(--font-mono);
 			font-size: var(--text-xs);
-			color: var(--neutral-11);
+			color: var(--color-text-neutral-low);
 		}
 
 		.text {
 			margin-block-start: var(--size-4);
 			white-space: pre-wrap;
 			overflow-wrap: anywhere;
-			color: var(--neutral-12);
+			color: var(--color-text-neutral-high);
 		}
 
 		.tombstone {
-			color: var(--neutral-11);
+			color: var(--color-text-neutral-low);
 			font-style: italic;
 		}
 	}
