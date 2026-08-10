@@ -106,3 +106,27 @@
   margin-top: 0.5rem;
   max-width: 68ch;
 }
+
+/* Rotate is destructive — it revokes every outstanding link at once — so it
+   carries the danger treatment alongside its rotation glyph. Payload's Button
+   accepts `buttonStyle="error"` in its types but ships no rule for it, so the
+   colours are set here, through the same custom properties its own variants
+   use. Every value is a --theme-error-* token, which inverts under the dark
+   theme, so the treatment holds in both. */
+.share-link-field__rotate.btn {
+  --color: var(--theme-error-600);
+  --bg-color: transparent;
+  --btn-border: 1px solid var(--theme-error-500);
+  --hover-color: var(--theme-error-700);
+  --hover-bg: var(--theme-error-100);
+  --hover-btn-border: 1px solid var(--theme-error-600);
+}
+
+.share-link-field__rotate.btn--disabled {
+  --color: var(--theme-elevation-300);
+  --bg-color: transparent;
+  --btn-border: 1px solid var(--theme-elevation-200);
+  --hover-color: var(--color);
+  --hover-bg: transparent;
+  --hover-btn-border: var(--btn-border);
+}

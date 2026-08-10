@@ -139,8 +139,14 @@ export const ShareLinkField: TextFieldClientComponent = ({ field, path }) => {
 						{"Copy"}
 					</Button>
 
+					{/* `buttonStyle="error"` is in Payload's type union but has no rule in
+					    its stylesheet, so the danger treatment comes from
+					    `share-link-field__rotate` in `app/(payload)/custom.scss`. The
+					    glyph carries the same signal in shape, so the action does not
+					    rely on colour alone. */}
 					<Button
 						buttonStyle="error"
+						className={`${baseClass}__rotate`}
 						disabled={isRotating}
 						extraButtonProps={{ "data-testid": "share-link-rotate" }}
 						icon={<RotateGlyph />}
