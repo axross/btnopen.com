@@ -26,6 +26,13 @@
 			color: var(--color-text-accent-low);
 			text-decoration: underline;
 			text-underline-offset: 0.15em;
+
+			/* an inline box, where vertical padding grows the hit area without
+			   touching the line box — so no offsetting margin is wanted here,
+			   and an inert one would read as if it were doing something. */
+			@media (any-pointer: coarse) {
+				padding-block: var(--size-2);
+			}
 		}
 
 		.cite {
@@ -60,6 +67,15 @@
 			color: inherit;
 			white-space: nowrap;
 			text-decoration: none;
+
+			/* a baseline-aligned flex item, so the equal negative margin is what
+			   holds the baseline and the row height while the hit area clears
+			   the 24px coarse-pointer short-side minimum. */
+			@media (any-pointer: coarse) {
+				padding-block: var(--size-4);
+				margin-block: calc(var(--size-4) * -1);
+				border-radius: var(--radius-sm);
+			}
 
 			@media (hover: hover) and (pointer: fine) {
 				&:hover {

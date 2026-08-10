@@ -266,6 +266,13 @@
 			text-underline-offset: var(--size-2);
 			font-weight: 500;
 			outline: none;
+
+			/* an inline box, where vertical padding grows the hit area without
+			   touching the line box — so no offsetting margin is wanted here,
+			   and an inert one would read as if it were doing something. */
+			@media (any-pointer: coarse) {
+				padding-block: var(--size-2);
+			}
 		}
 
 		.a:focus-visible {
