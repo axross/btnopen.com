@@ -1,0 +1,107 @@
+@layer components {
+	/* Every rule here mirrors its counterpart in the index page's own
+	 * `page.module.css`, because a CSS Module may not import another component's.
+	 * The two move together: a spacing change on either side belongs on both, or
+	 * the skeleton stops collapsing into the loaded region without a shift.
+	 *
+	 * `--max-width` and `--page-variant` are not restated — they come from the
+	 * `.indexPage` container this skeleton renders inside, the same ancestor the
+	 * loaded region reads them from. */
+	@scope (.indexPageMainLoading) {
+		:where(:scope) {
+			display: flex;
+			width: stretch;
+			flex-direction: column;
+			align-items: center;
+		}
+
+		.intro {
+			display: flex;
+			width: stretch;
+			max-inline-size: var(--max-width);
+			align-items: center;
+			flex-direction: column;
+			margin-block-start: var(--size-64);
+			padding-inline: var(--size-16);
+
+			@container style(--page-variant: "desktop") {
+				flex-direction: row-reverse;
+				column-gap: var(--size-32);
+				padding-inline: unset;
+			}
+		}
+
+		/* The portrait is a square measured against the page container, exactly as
+		 * the loaded one is; the glitch backdrop behind it is decoration the
+		 * skeleton has nothing to stand in for. */
+		.portrait {
+			width: 75cqw;
+			height: auto;
+			aspect-ratio: 1;
+
+			@container style(--page-variant: "desktop") {
+				flex: 2;
+			}
+		}
+
+		.bio {
+			display: flex;
+			flex-direction: column;
+			align-items: stretch;
+			row-gap: var(--size-32);
+			margin-block-start: var(--size-32);
+
+			@container style(--page-variant: "desktop") {
+				flex: 3;
+			}
+		}
+
+		.bioContent {
+			display: flex;
+			flex-direction: column;
+			align-items: stretch;
+			row-gap: var(--size-16);
+			font-size: var(--text-md);
+			line-height: var(--leading-lg);
+		}
+
+		.socialLinks {
+			display: flex;
+			column-gap: var(--size-32);
+			list-style: none;
+		}
+
+		.socialLink {
+			display: flex;
+		}
+
+		/* The real icons are 24px SVGs; `--size-24` is the token for that size and
+		 * runs a few pixels larger at the widest viewports, which is the cost of
+		 * sizing from the scale rather than from a literal. */
+		.socialIcon {
+			width: var(--size-24);
+			height: var(--size-24);
+			aspect-ratio: 1;
+		}
+
+		.section {
+			width: stretch;
+			max-inline-size: var(--max-width);
+			margin-block-start: var(--size-48);
+			padding-inline: var(--size-16);
+
+			@container style(--page-variant: "desktop") {
+				padding-inline: unset;
+			}
+		}
+
+		.sectionHeading {
+			font-size: var(--text-xl);
+			font-weight: 700;
+		}
+
+		.blogPosts {
+			margin-block-start: var(--size-24);
+		}
+	}
+}

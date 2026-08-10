@@ -14,6 +14,7 @@ import { getWebsite, type Website } from "@/repositories/get-website";
 import { urlOrigin } from "@/runtime";
 import { BlogJsonLd } from "./_components/blog-json-ld";
 import { BlogPostList } from "./_components/blog-post-list";
+import { IndexPageMainLoading } from "./_components/index-page-main-loading";
 import { SocialLinkList } from "./_components/social-link-list";
 import css from "./page.module.css";
 import type { PageProps } from "./page-props";
@@ -28,11 +29,13 @@ async function IndexPage({ searchParams }: PageProps): Promise<JSX.Element> {
 	return (
 		<>
 			<div className={css.indexPage} data-testid="page">
-				<Suspense>
+				<Suspense fallback={<IndexPageMainLoading />}>
 					<IndexPageMain website={website} draft={draft} />
 				</Suspense>
 			</div>
 
+			{/* no fallback: a JSON-LD injector renders a <script> and no visible
+			    content, so there is nothing for a skeleton to stand in for. */}
 			<Suspense>
 				<BlogJsonLd website={website} />
 			</Suspense>
