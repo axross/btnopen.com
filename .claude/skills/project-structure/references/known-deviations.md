@@ -8,7 +8,7 @@ That matters because an unrecorded deviation reads to the next agent, and to a r
 
 ## Currently Recorded Deviations
 
-Two deviations are recorded, below. The register is exhaustive, which is what makes it useful: anything in this codebase that departs from an installed rule and is not listed here is a finding. Do not read the register as licence to assume an unlisted departure was already blessed, and do not add an entry for a rule this repository merely has not exercised yet — a deviation is recorded when it is accepted, not when it is anticipated.
+Three deviations are recorded, below. The register is exhaustive, which is what makes it useful: anything in this codebase that departs from an installed rule and is not listed here is a finding. Do not read the register as licence to assume an unlisted departure was already blessed, and do not add an entry for a rule this repository merely has not exercised yet — a deviation is recorded when it is accepted, not when it is anticipated.
 
 **Guidelines:**
 
@@ -47,6 +47,29 @@ Both routes in the section below apply here, because this is a deviation and a g
 - MUST NOT re-add `webpack.treeshake` or reach for `bundleSizeOptimizations` in the `withSentryConfig` call to satisfy the rule; neither reaches a Turbopack build, and `next.config.ts` carries a comment saying so.
 - MUST NOT report Sentry debug logging present in the production bundle as a review finding against the installed capability while this entry stands.
 - SHOULD delete this entry rather than leave it standing once `@sentry/nextjs` gains a Turbopack tree-shaking option, and strip the statements then.
+
+### Colour tokens are authored in `oklch()` with no sRGB `@supports` fallback
+
+The React component styling capability's `color-and-gamut` reference makes the fallback a MUST — "MUST author colour in a wide-gamut format (`oklch()`, or `color(display-p3 …)`) and MUST provide an sRGB fallback for browsers that do not parse it" — and names the mechanism for exactly this case: "MUST use the feature-query form (`@supports`) when the colour is assigned to a custom property".
+
+`app/(app)/variables.css` assigns 54 `oklch()` values to custom properties and guards none of them with a gamut feature query; the file's only `@supports` covers `corner-shape: squircle`. The departure is older than the role layer that exposed it — before axross/btnopen.com#221 the count was 25 and the fallback was already absent.
+
+Two of this repository's own MUSTs stand against complying. The visual identity capability's `css-property-usage` reference requires expressing "all new color values in `oklch()` rather than `rgb()` / `hsl()` / hex", and its `color-theming` reference requires keeping "the brand hue as a single global knob". An sRGB fallback is by definition an `rgb()` or hex literal, so the first collides on format; the second collides on structure, because a static literal cannot follow a knob. The scale here is derived rather than pasted — four knobs, a 13-value `--lightness-*` axis that inverts for dark, and 26 alpha values, which is 39 numbers forking per scheme while the 54 `oklch()` declarations sit outside the fork and are written once. Resolving them to literals collapses the `var()` indirection into 108 values (54 × 2 schemes) and grows the per-scheme fork to 147, after which `--accent-hue` no longer recolours the ramp.
+
+Compliance is also all-or-nothing. An unparseable `oklch()` invalidates a custom property at computed-value time — the very reason the capability mandates the feature-query form over the cascade form — so a fallback covering some declarations leaves the rest resolving to `unset` and the page loses its colours anyway. A partial fallback is not a partial fix; it is an inert one.
+
+What settles it is that the capability's own `@scope` rule has already excluded the browsers this fallback would serve. Its `css-modules` reference makes `@scope` a MUST with no fallback and no support caveat, and every CSS Module here obeys it. `@scope` reached Baseline in December 2025, on Firefox 146; `oklch()` reached it in May 2023. A browser that cannot parse `oklch()` predates `@scope` by some 31 months and cannot apply a single component rule on this site, so it never reaches a colour token to fall back on. The mandated fallback has no reachable audience.
+
+This is a gap as much as a deviation, and the gap is the capability's rather than this repository's: one reference mandates an unguarded 2025 feature while a neighbouring one mandates a fallback for a 2023 feature, and nothing reconciles them. It generalizes to any project the capability governs, so it belongs on [`axross/skills`](https://github.com/axross/skills) as well. That issue is not filed yet: the section below requires the maintainer's go-ahead before a public write on a repository this project does not own, and it is pending. This entry is the local half and stands on its own — nothing here waits on the issue landing.
+
+**Guidelines:**
+
+- MUST NOT report an `oklch()` custom property without a gamut `@supports` as a review finding while this entry stands.
+- MUST NOT add an sRGB fallback covering part of the palette. Anything short of all 108 values is inert, because the unguarded remainder invalidates at computed-value time and takes the page's colours with it.
+- MUST keep new colour values in `oklch()` per the visual identity capability; that rule is unaffected by this entry and still governs every component and token added here.
+- SHOULD treat adopting a whole-palette fallback as a standalone change with its own issue, plan, and review — never as part of a change that happens to touch `variables.css`.
+- SHOULD verify that a build-time transform actually reaches a Turbopack `next build` before proposing one as the way to keep the single hue knob; the Sentry entry above records what an option that reaches nothing costs.
+- SHOULD delete this entry rather than leave it standing if the capability gains a browser-baseline qualifier that resolves the inconsistency.
 
 ## Recording a New Deviation or Gap
 
