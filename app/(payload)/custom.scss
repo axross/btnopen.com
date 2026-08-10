@@ -66,3 +66,43 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* inline share-link block on the blog post Metadata tab
+   (payload/components/share-link-field.tsx). Sits at full content width so the
+   whole URL is readable without truncation and the warning line has room to be
+   a sentence. */
+.share-link-field {
+  margin-bottom: var(--base);
+}
+
+.share-link-field__row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.share-link-field__url {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 4px;
+  background-color: var(--theme-input-bg);
+  color: var(--theme-elevation-800);
+  font-family: monospace;
+  font-size: 0.8rem;
+  text-overflow: ellipsis;
+}
+
+.share-link-field__pending,
+.share-link-field__warning {
+  margin: 0;
+  color: var(--theme-elevation-500);
+  font-size: 0.8rem;
+}
+
+.share-link-field__warning {
+  margin-top: 0.5rem;
+  max-width: 68ch;
+}

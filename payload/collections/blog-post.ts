@@ -135,10 +135,15 @@ export const blogPostCollection: CollectionConfig = {
 								create: () => false,
 								update: () => false,
 							},
+							label: "Draft share link",
 							admin: {
 								readOnly: true,
 								description:
 									"Secret that lets a signed-out reviewer read this post's draft. Minted on the server and replaced only by rotating it.",
+								components: {
+									// biome-ignore lint/style/useNamingConvention: follow the API of Payload field admin components
+									Field: "/payload/components/share-link-field#ShareLinkField",
+								},
 							},
 						},
 					],
