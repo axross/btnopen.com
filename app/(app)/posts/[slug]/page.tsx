@@ -192,10 +192,13 @@ export async function generateMetadata({
 		// a draft render is never indexable, whatever it resolved to. the site-wide
 		// `index: true` in the root layout would otherwise leave a leaked or
 		// forwarded share link free to put unpublished content into a search index;
-		// no `?draft=true` URL is in the sitemap, so this costs nothing. A published
-		// render leaves the key unset and keeps the layout's value, exactly as
-		// before.
-		robots: isDraft ? { index: false, follow: false } : undefined,
+		// no `?draft=true` URL is in the sitemap, so this costs nothing.
+		//
+		// spread rather than `robots: isDraft ? … : undefined`: Next.js treats a
+		// present key holding `undefined` as an explicit reset and drops the
+		// layout's `index, follow` tag entirely. Omitting the key is what leaves a
+		// published render's metadata identical to what it is today.
+		...(isDraft ? { robots: { index: false, follow: false } } : {}),
 		openGraph: {
 			title: blogPost.title,
 			description: blogPost.brief,
