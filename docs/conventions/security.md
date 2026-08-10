@@ -56,7 +56,7 @@ places: that realm's barrel, and that realm's rows here.
 | `payload/config.ts` | `PAYLOAD_SECRET`, `LIBSQL_PAYLOAD_TURSO_DATABASE_URL`, `LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN`, `BLOB_PAYLOAD_PREFIX`, `PAYLOAD_TEST_USER_EMAIL`, and `PAYLOAD_TEST_USER_PASSWORD` — the closed list a deployment build needs, read nowhere else in the Payload realm |
 | `next.config.ts` | Config-time access to `CI`, `SENTRY_ORG`, `SENTRY_PROJECT`, `DEPLOYMENT_ID`, and `NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA` |
 | `playwright.config.ts` | Test config-time access to `CI`, `PLAYWRIGHT_BASE_URL`, `PLAYWRIGHT_SERVER_MODE`, and `VERCEL_AUTOMATION_BYPASS_SECRET` |
-| `app/(app)/_/components/markdown.tsx` | `NODE_ENV`, the only read of it anywhere in the repository — see below |
+| `app/(app)/_/components/markdown.tsx` | `NODE_ENV`, which no other source file reads — see below |
 | `e2e/helpers/api/auth.ts`, `e2e/helpers/api/mcp.ts`, `e2e/tests/routes/posts/comments.test.ts` | Test credentials and env-driven gates, reaching the real environment on purpose |
 | `e2e/helpers/api/clerk.ts` | The `+clerk_test` reader identity (`TEST_CLERK_READER_EMAIL`) the Clerk-authenticated comment tests sign in as; unset skips them rather than substituting an account |
 | `e2e/global-setup.ts` | The Clerk availability gate (`NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`), read once before the suite runs so a credential-less run skips Clerk setup and stays green |
