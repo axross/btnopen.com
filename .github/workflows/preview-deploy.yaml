@@ -123,7 +123,7 @@ jobs:
         # this push-only gate entirely — the deploy job never consults
         # `source-changed` on its dispatch branch.
         if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             // Non-deployable path prefixes and exact root files. Keep in sync
@@ -195,7 +195,7 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           INPUT_PR_NUMBER: ${{ inputs.pr_number }}
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             let prNumber;
@@ -286,7 +286,7 @@ jobs:
       TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           # A `pull_request` run checks out its default ref (unchanged). A manual
           # `workflow_dispatch` defaults to the branch it was dispatched from, so
@@ -295,7 +295,7 @@ jobs:
           # branch's. An empty `ref` falls back to checkout's default behavior.
           ref: ${{ github.event_name == 'workflow_dispatch' && needs.preflight.outputs.head-sha || '' }}
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: package.json
           cache: npm
@@ -461,7 +461,7 @@ jobs:
           vercel alias set "${DEPLOYMENT_URL}" "${alias}" --token="${{ secrets.VERCEL_TOKEN }}"
           echo "url=https://${alias}" >> "${GITHUB_OUTPUT}"
       - name: Comment Preview URL
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           # The stable per-PR alias, not the per-commit deployment URL.
           PREVIEW_URL: ${{ steps.alias.outputs.url }}
@@ -534,9 +534,9 @@ jobs:
       - name: Checkout
         # Needed only for the blob-prune script below; the Turso teardown does
         # not read the repository.
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: package.json
       - name: Install Turso CLI
@@ -574,7 +574,7 @@ jobs:
           BLOB_PAYLOAD_READ_WRITE_TOKEN="${BLOB_TOKEN}" \
             node prune-preview-blobs.mjs "pr-${PR_NUMBER}/"
       - name: Comment Preview Torn Down
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           # From the preflight output, not the event context, so the comment
           # renders under `workflow_dispatch` (where `context.issue.number` is

@@ -131,7 +131,7 @@ jobs:
       # on the runner. The checkout only supplies CLAUDE.md, REVIEW.md, and
       # the project skills as trusted review context.
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # The resource attributes that mark this session as CI. They cannot ride
       # in the `env` block above: a settings file's `env` outranks the process
@@ -171,7 +171,7 @@ jobs:
       # (`refs/tags/v1.0.183^{}`) to get the commit. The full convention is in
       # the CI supply chain section of docs/conventions/security.md.
       - name: Claude Review
-        uses: anthropics/claude-code-action@be7b93b1907a4abad570368f3c74b6fe3807510b # v1.0.183
+        uses: anthropics/claude-code-action@1623c36729ac1cd5895198cded705a287de7db79 # v1.0.187
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           # Run the official code-review plugin against this PR. The plugin
