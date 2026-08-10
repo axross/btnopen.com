@@ -169,8 +169,7 @@ jobs:
       # This action's tags are ANNOTATED, so `git ls-remote` returns tag-object
       # SHAs that will not resolve in `uses:` — peel them
       # (`refs/tags/v1.0.183^{}`) to get the commit. The full convention is in
-      # the CI workflow supply chain section of project-structure's
-      # security-conventions.md.
+      # the CI supply chain section of docs/conventions/security.md.
       - name: Claude Review
         uses: anthropics/claude-code-action@be7b93b1907a4abad570368f3c74b6fe3807510b # v1.0.183
         with:
