@@ -252,6 +252,25 @@ describe("McpSanitizedBlogPost", () => {
 		});
 	});
 
+	it("drops shareToken when input carries the post's share secret", () => {
+		// pins `shareToken` out of the allowlist: it is a bearer credential for
+		// unpublished content, and the only tools permitted to return it are the
+		// two built to serve it. Every other tool answers through this sanitizer,
+		// so adding the key here would leak the secret through all of them at once.
+		expect(
+			z.decode(McpSanitizedBlogPost, {
+				id: 15,
+				slug: "with-share-token",
+				title: "Hello",
+				shareToken: "a-share-token",
+			}),
+		).toEqual({
+			id: 15,
+			slug: "with-share-token",
+			title: "Hello",
+		});
+	});
+
 	it("passes tag relation ids through when input was read with depth 0", () => {
 		expect(
 			z.decode(McpSanitizedBlogPost, {
@@ -315,6 +334,24 @@ describe("McpBlogPostResponse", () => {
 			docs: [
 				{ id: 1, slug: "draft-post", brief: "", publishedAt: null },
 				{ id: 2, slug: "published-post", brief: "Brief", coverImage: 7 },
+			],
+		});
+	});
+
+	it("drops shareToken from every doc when a find result carries them", () => {
+		expect(
+			z.decode(McpBlogPostResponse, {
+				totalDocs: 2,
+				docs: [
+					{ id: 1, slug: "first", shareToken: "first-token" },
+					{ id: 2, slug: "second", shareToken: "second-token" },
+				],
+			}),
+		).toEqual({
+			totalDocs: 2,
+			docs: [
+				{ id: 1, slug: "first" },
+				{ id: 2, slug: "second" },
 			],
 		});
 	});

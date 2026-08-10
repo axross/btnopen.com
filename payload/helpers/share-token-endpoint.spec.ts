@@ -1,7 +1,10 @@
 import type { Payload, PayloadRequest, TypedUser } from "payload";
 import { describe, expect, it, vi } from "vitest";
+import { logger } from "./logger";
 import { SHARE_TOKEN_ROTATION_CONTEXT_KEY } from "./share-token";
 import { rotateShareTokenEndpoint } from "./share-token-endpoint";
+
+logger.level = "silent";
 
 const okStatus = 200;
 const badRequestStatus = 400;

@@ -457,6 +457,14 @@ export interface PayloadMcpApiKey {
      * Delete one serialized Payload Lexical node from a blog post body at the requested nested children-array location.
      */
     deleteNodeInBlogPostBody?: boolean | null;
+    /**
+     * Return the draft share link for one blog post: its preview URL with the post's current share secret appended. Anyone holding the link can read the draft without signing in.
+     */
+    getBlogPostShareLink?: boolean | null;
+    /**
+     * Rotate one blog post's draft share secret and return the replacement link. Every link handed out under the previous secret stops working immediately; this is the only way to revoke a share link, and it cannot be undone.
+     */
+    rotateBlogPostShareLink?: boolean | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -770,6 +778,8 @@ export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
     | {
         appendNodeInBlogPostBody?: T;
         deleteNodeInBlogPostBody?: T;
+        getBlogPostShareLink?: T;
+        rotateBlogPostShareLink?: T;
       };
   updatedAt?: T;
   createdAt?: T;
