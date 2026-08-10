@@ -117,30 +117,46 @@ configuration and which surfaces this application routes through them.
 
 ## Capture Settings Already in Force
 
-Sentry and Mixpanel are both configured to capture broadly, so the privacy
-question for a new surface is not "does anything capture this" but "does the
-existing capture already reach it". These settings are the context every new
-form, field, or rendered value inherits.
+Two services capture, on two different bases, and the split is the thing to hold
+onto: **Sentry runs for every visitor**, and **Mixpanel runs only for a visitor
+who has granted consent**. The privacy question for a new surface is therefore
+"which of the two reaches it, and does that one need permission".
 
 | Setting | Where | What it means |
 | --- | --- | --- |
 | `dataCollection`, diagnostics on and content off | `sentry.server.config.ts`, `sentry.edge.config.ts`, `instrumentation-client.ts` | Sentry captures IP address and user identity, request and response headers, URL query parameters, and stack-frame variables with five lines of surrounding source. It does **not** capture cookies, request or response bodies, database query values, generative-AI content, or GraphQL variables. All ten categories are set explicitly in all three files |
-| Session Replay at `replaysSessionSampleRate: 0.1`, `replaysOnErrorSampleRate: 1.0` | Sentry client init | DOM mutations, including form input, are recorded |
-| `tracesSampleRate: 1` | all three Sentry init points | Every transaction is traced |
-| `autocapture` with `capture_text_content: true`, `record_sessions_percent: 100` | Mixpanel, `instrumentation-client.ts` | Mixpanel captures content rendered into the DOM |
+| Session Replay at `replaysSessionSampleRate: 0`, `replaysOnErrorSampleRate: 1.0` | Sentry client init | No ordinary session is recorded. A session that hits an error is, DOM mutations and form input included |
+| `tracesSampleRate: 1` | all three Sentry init points | Every transaction is traced. Each of the three carries the one-line rationale for the rate |
+| `Mixpanel.init` with no capture options at all | `app/(app)/_/helpers/analytics.ts`, in `startAnalytics()` | Every SDK default applies: autocapture off, session recording off, heatmaps off, Do Not Track honoured. Page views and three link-click actions are sent explicitly, and are the whole of what Mixpanel receives |
+| The consent gate | `app/(app)/_/helpers/analytics-consent.ts`, `app/(app)/_/components/analytics-consent-provider.tsx` | The decision is a cookie. Until it reads `granted`, `mixpanel-browser` is not imported, so the SDK is not downloaded and cannot send |
+| The page-view allowlist | `app/(app)/_/helpers/reportable-search-params.ts` | Only `draft` and `agentic` reach a Mixpanel payload. Every other query parameter is dropped, including one the list has never heard of |
 
 **Rules:**
 
-- MUST NOT render a credential, full email address, or other PII into DOM that
-  Mixpanel autocapture visits; use `data-mp-no-capture` or wrap the element to
-  disable capture. Mixpanel has no installed vendor capability, so this rule and
-  the one below are the whole of its contract here.
+- MUST keep Mixpanel initialization inside `startAnalytics()`, reached only from
+  the consent provider, and MUST keep the `mixpanel-browser` import dynamic. A
+  static import at module scope puts the SDK in the bundle of a visitor who
+  declined, which is the gate this design exists to hold. Mixpanel has no
+  installed vendor capability, so these rules are the whole of its contract here.
 - MUST NOT pass a raw email, IP, or payment identifier to `Mixpanel.track(…)` —
   use a hashed or opaque identifier.
+- MUST add a query parameter to `reportableSearchParams` deliberately, or not at
+  all. The list is closed by construction so that a parameter carrying a secret
+  is dropped by default rather than by someone remembering to exclude it —
+  [#205](https://github.com/axross/btnopen.com/issues/205)'s per-post share token
+  is the case it was closed for.
 - MUST NOT lower `replaysOnErrorSampleRate` below `1.0`. The vendor capability
   asks for error-linked capture at or near full rate; this project pins the floor
   at exactly full, because error-time replay is the most diagnostic signal
   available here and a sampled one is absent precisely when it is wanted.
+- MUST NOT raise `replaysSessionSampleRate` above `0` without a stated privacy
+  basis. Recording sessions that never failed is the collection this project
+  removed deliberately — see
+  [../decisions/2026-08-10-collect-only-what-is-read-and-ask-before-collecting-it.md](../decisions/2026-08-10-collect-only-what-is-read-and-ask-before-collecting-it.md).
+- MUST update `/privacy` in the same change as any new collection. The page
+  describes what the code does, not what the site intends, so a new captured
+  field that does not reach it makes the page wrong rather than merely
+  incomplete.
 - MUST keep every `dataCollection` category set explicitly, in all three
   initialization files at once. Omitting one does not leave it at a safe default:
   once `dataCollection` is present the SDK falls back to its all-on defaults, so a
@@ -168,7 +184,7 @@ the vendor's defaults.
 | Email addresses | None. The write path reads no email from Clerk, and the collection has no field for one |
 | What is logged | The Clerk user id, on the Pino line the comment write path emits after a successful create |
 | What reaches Sentry | No linked user — nothing calls `Sentry.setUser()`. Comment submission bodies are excluded by `httpBodies: []`, which the config comment names comment submissions as a reason for |
-| What reaches Mixpanel | No linked user — nothing calls `Mixpanel.identify()`. Commenter names, handles, and avatars do render into the DOM that autocapture visits, but they are public content by construction |
+| What reaches Mixpanel | Nothing about a commenter. No linked user — nothing calls `Mixpanel.identify()` — and with autocapture off, commenter names, handles, and avatars are DOM that Mixpanel never reads |
 
 **Rules:**
 

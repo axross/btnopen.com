@@ -78,6 +78,13 @@ carries its `@scenario:<id>` tag. The reporter
 | localization.english | An English browser gets the English chrome and locale metadata fallback | localization | should |
 | localization.switcher-persists | An explicit locale choice persists across reloads via cookie | localization | should |
 | localization.media-alt | A body image's alt text follows the reader's negotiated locale | localization | should |
+| privacy.page | The privacy page renders its sections and the permanent consent control | privacy | must |
+| privacy.footer-link | The site footer's privacy link reaches the privacy page from the index route | privacy | must |
+| privacy.consent.ungated | A visitor who has not answered sees the banner, and no analytics SDK is fetched | privacy | must |
+| privacy.consent.grant | Granting dismisses the banner and stores the decision without a reload | privacy | must |
+| privacy.consent.revoke | Revoking from the privacy page flips the stored decision and the control's state without a reload | privacy | must |
+| privacy.consent.decided | A visitor who has already answered sees no banner | privacy | should |
+| privacy.consent.collection | Granting starts collection and revoking stops it, observed on the wire | privacy | may |
 | mcp.auth-required | The MCP endpoint rejects requests without an API key | mcp | must |
 | mcp.body-mutation | MCP exposes only its scoped tools and mutates blog post body nodes | mcp | should |
 | metadata.foundational | The index page emits the foundational document metadata | metadata | should |
