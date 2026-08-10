@@ -34,7 +34,7 @@ function assignedShareToken({
 }
 
 describe("createShareToken()", () => {
-	it("mints a token of the full 32-byte length", () => {
+	it("mints a token the length 32 bytes render to in unpadded base64url", () => {
 		expect(createShareToken()).toHaveLength(shareTokenLength);
 	});
 

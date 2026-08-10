@@ -1,10 +1,3 @@
-import type {
-	CollectionBeforeChangeHook,
-	Payload,
-	PayloadRequest,
-	TypeWithID,
-} from "payload";
-
 /**
  * The per-post share token: the bearer credential that lets a signed-out
  * reviewer read one blog post's draft.
@@ -19,6 +12,13 @@ import type {
  * There is no expiry, so rotation is the whole revocation model and
  * {@link rotateShareToken} is the only way to perform it.
  */
+
+import type {
+	CollectionBeforeChangeHook,
+	Payload,
+	PayloadRequest,
+	TypeWithID,
+} from "payload";
 
 /**
  * Bytes of CSPRNG output behind each token — 256 bits, far past guessable and
