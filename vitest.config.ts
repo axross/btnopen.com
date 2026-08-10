@@ -1,4 +1,3 @@
-import { defaultServerConditions } from "vite";
 import { defineConfig } from "vitest/config";
 
 // this project builds with Next.js on Turbopack, so it has no vite.config.ts for
@@ -10,18 +9,24 @@ export default defineConfig({
 		// so the compiler and the runner cannot disagree about where an import
 		// points
 		tsconfigPaths: true,
-	},
-	ssr: {
-		resolve: {
-			// the modules under test are server-realm modules that import
-			// `server-only`, whose own exports map answers the `react-server`
-			// condition with an empty module and every other condition with one that
-			// throws on import. `next/jest` neutralized it by mapping the specifier
-			// to a stub; declaring the realm resolves it through the package's own
-			// mechanism instead. the defaults are spread back in because this option
-			// replaces them rather than extending them.
-			conditions: ["react-server", ...defaultServerConditions],
-		},
+		// the modules under test are server-realm modules that import
+		// `server-only`, whose exports map answers the `react-server` condition
+		// with an empty module and every other condition with one that throws on
+		// import. declaring that condition globally — which this file did until
+		// #179 — satisfies `server-only` but breaks `react-dom/server`, because it
+		// answers the same condition with a module that throws on import in an RSC
+		// realm. a subject needing both, as the markdown pipeline's spec does,
+		// therefore resolves under no single global condition set, and Vite has no
+		// per-package or per-file condition override.
+		//
+		// aliasing the specifier to the package's own empty stub is what
+		// `next/jest` did before #230 replaced it, and it is the only arrangement
+		// measured green across the whole suite. the trade is real and worth
+		// naming: this is a fake standing in for a package, where the condition was
+		// that package's own mechanism. what it costs is that `server-only` no
+		// longer enforces anything under the unit runner — a client-realm module
+		// importing it would fail in the build rather than here.
+		alias: { "server-only": "./node_modules/server-only/empty.js" },
 	},
 	test: {
 		clearMocks: true,
