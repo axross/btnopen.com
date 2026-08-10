@@ -15,12 +15,17 @@ Apply this reference when adding or changing a test, or a component's test hooks
 
 Jest output reads like a behavior report, so the full name — `describe(...)` concatenated with `it(...)` — carries the subject, the condition, and the expected outcome. The suffix conventions below are what make the subject's kind legible at a glance.
 
+Faking a module here has one working shape, and the reason is worth knowing because the broken shape fails silently. SWC's Jest transform hoists a `jest.mock` call only when it is written against the bare global `jest`; importing the API from `@jest/globals`, as the rules below require, compiles it to `_globals.jest.mock(...)`, which is emitted *below* the subject's own `require`. Nothing reports the mismatch — the real module loads, the fake never registers, and a spec written against the fake can still pass for the wrong reason. `jest.doMock()` needs no hoisting, and a dynamic `import()` after it compiles to a deferred `require`, so the pair works. `payload/helpers/image.spec.ts` is the reference.
+
+`jest.resetModules()` is what lets one spec import the same subject twice under different fakes, and it cuts both ways: a reset hands back a second copy of every transitively imported module, so any value the spec compares by reference — a regex, a symbol, a frozen config object — stops matching. `payload/helpers/banner-block.spec.ts` omits it deliberately for that reason.
+
 **Guidelines:**
 
 - MUST colocate unit tests as `*.spec.ts` beside their subject unless an existing local pattern requires otherwise.
 - MUST import Jest APIs from `@jest/globals` — `describe`, `it`, `expect`, `jest`, `beforeEach`, `afterEach`, and any other API used in the file — rather than relying on global-scope symbols.
-- MUST fake a module with `jest.doMock()` plus a dynamic `import()` of the subject, never `jest.mock()`. The two rules above make `jest.mock()` silently useless here: SWC's Jest transform hoists a `jest.mock` call only when it is written against the bare global `jest`, so an imported one compiles to `_globals.jest.mock(...)` and is emitted *below* the subject's own `require`. Nothing reports it — the real module loads, the fake never registers, and a spec written against the fake can still pass for the wrong reason. `jest.doMock()` needs no hoisting, and a dynamic import after it compiles to a deferred `require`. `payload/helpers/image.spec.ts` is the reference.
-- MUST call `jest.resetModules()` between two imports of the same subject under different fakes, and MUST NOT call it where the spec's assertions depend on a shared module's identity — a reset hands back a second copy of every transitively imported module, so a value compared by reference (a regex, a symbol, a frozen config object) stops matching. `payload/helpers/banner-block.spec.ts` deliberately omits it for that reason.
+- MUST fake a module with `jest.doMock()` plus a dynamic `import()` of the subject, never `jest.mock()`.
+- MUST call `jest.resetModules()` between two imports of the same subject under different fakes.
+- MUST NOT call `jest.resetModules()` where the spec's assertions depend on a shared module's identity.
 - MUST use `it(...)` for scenarios and MUST NOT use `test(...)`.
 - MUST suffix callable subjects in `describe(...)` / `it(...)` titles with `()` — `describe("formatLocation()")`, `describe("deleteNodeInBlogPostBodyTool()")` — and leave non-callable subjects bare: schemas, codecs, and type contracts as `describe("McpBlogPostResponse")`, UI components in angle brackets as `describe("<BlogPostHeader>")`.
 - SHOULD prefer integration or e2e coverage when confidence depends on Next.js or Payload runtime wiring, browser behavior, rendering, providers, routing, or user-facing UI.
