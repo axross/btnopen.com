@@ -29,7 +29,7 @@ Design Tokens Only sets the required project default: draw all color, spacing, r
   - Durations: `--duration-sm` / `--duration-md` / `--duration-lg` / `--duration-xl` / `--duration-2xl` / `--duration-3xl`.
   - Easing: `--ease-in-out` (the only easing token).
   - Fonts: `--font-sans` / `--font-mono`, paired with `--font-sans-features` / `--font-mono-features`.
-  - Color: `--accent-*` / `--neutral-*`. Semantic slot reference is in [design-tone-and-taste.md](./design-tone-and-taste.md).
+  - Color: `--color-<tier>-<scheme>-<slot>`, plus an `-alpha` twin of each. The role table is in [design-tone-and-taste › color system](./design-tone-and-taste.md#color-system). The `--accent-*` / `--neutral-*` scales those roles map onto are the theme's private tier: they are declared in `variables.css` and MUST NOT be referenced anywhere else, including from an inline `fill` on a React-authored SVG.
 - MUST NOT introduce hard-coded color, spacing, radius, or duration literals in component CSS. The general prohibition is in [css-authoring.md](./css-authoring.md); this file reinforces that the ban applies to duration / easing / font tokens as well.
 - MAY introduce component-scoped CSS variables when a value needs to vary by context (see the `--max-width` / `--variant` / `--page-variant` / `--blog-post-content-negative-margin` / `--snippet-token-*` patterns). Component-scoped variables MUST still resolve to one of the root tokens somewhere in the chain — do not terminate a `--my-color: #fff` with a literal.
 
@@ -40,13 +40,16 @@ OKLCH and Relative Color sets the required project default: express all new colo
 **Guidelines:**
 
 - MUST express all new color values in `oklch()` rather than `rgb()` / `hsl()` / hex. Every root palette token is defined in `oklch()`, and mixing color spaces produces visible hue shifts.
-- SHOULD derive contextual accent variants using **relative color syntax** on top of a numbered token, not by adding a new top-level token:
+- SHOULD derive contextual accent variants using **relative color syntax** on top of a role token, not by adding a new top-level token:
   ```css
-  background-color: oklch(from var(--accent-11) l c h / 0.5);
-  color: oklch(from var(--accent-11) l calc(c * 0.666) calc(h - 128));
+  color: oklch(from var(--color-text-accent-low) l calc(c * 0.666) calc(h - 128));
+  ```
+- MUST NOT derive a translucent variant that way when the color composites over content the theme does not control; that case is what the `-alpha` twin exists for, and a hand-written alpha is an off-scale value like any other:
+  ```css
+  background-color: var(--color-solid-accent-rest-alpha);
   ```
 - MUST keep the `l` / `c` / `h` channels coherent — if the derivation is about hue only, preserve `l` and `c` so the derived color sits at the same perceptual lightness as its parent. The Shiki token palette in `snippet.module.css` is the canonical example.
-- SHOULD NOT write an `@media (prefers-color-scheme: dark) { ... }` override that merely reassigns a numbered token. If dark-mode parity needs an override, that is a signal to reconsider the step choice or to introduce a theme-aware derivation rather than a fork.
+- SHOULD NOT write an `@media (prefers-color-scheme: dark) { ... }` override that merely reassigns a role. If dark-mode parity needs an override, that is a signal to reconsider the role choice or to introduce a theme-aware derivation rather than a fork.
 
 ## Responsive Layout
 
@@ -115,9 +118,9 @@ Theme and Color-Scheme sets the required project default: rely on the project's 
 
 - MUST rely on the project's color-scheme plumbing:
   - `:root` declares `color-scheme: var(--theme)` with `--theme: light` by default and `--theme: dark` under `@media (prefers-color-scheme: dark)`.
-  - `scrollbar-color` is themed via the accent ramp.
+  - `scrollbar-color` is themed via accent roles.
   - Surfaces that need to branch on theme SHOULD use `@container style(--theme: dark) { ... }` (the project's style-query bridge) rather than a component-local media query. Before reaching for this branch, confirm the design-side rules in [color-theming.md › Legitimate Per-Scheme Overrides](./color-theming.md#legitimate-per-scheme-overrides) — per-surface dark-mode branches are only legitimate for filtered imagery.
-- MUST use `currentColor` for SVG strokes and fills that track surrounding text color. The logo, social icons, and 404 underline patterns all depend on `color: var(--accent-11); fill: currentColor;`.
+- MUST use `currentColor` for SVG strokes and fills that track surrounding text color. The logo, social icons, and 404 underline patterns all depend on `color: var(--color-text-accent-low); fill: currentColor;`.
 
 ## Branded Imagery Filter
 
@@ -195,7 +198,7 @@ Focus Ring captures the project-specific context for the checklist below: Intera
   }
 
   .a:focus-visible {
-    outline: var(--accent-5) solid var(--size-3);
+    outline: var(--color-component-accent-selected) solid var(--size-3);
     outline-offset: var(--size-3);
   }
   ```
@@ -203,7 +206,7 @@ Focus Ring captures the project-specific context for the checklist below: Intera
 **Guidelines:**
 
 - MUST replace the default browser focus ring on interactive surfaces with the project's canonical `:focus-visible` pattern, not remove it outright. The design-side requirement is in [accessibility.md › Keyboard Focus](./accessibility.md#keyboard-focus).
-- MUST NOT retune the outline color, width, or offset per surface. The `--accent-5` palette token handles per-scheme contrast automatically; a per-surface override of any of these three properties is a design-level decision, not a component tweak.
+- MUST NOT retune the outline color, width, or offset per surface. The `--color-component-accent-selected` role handles per-scheme contrast automatically; a per-surface override of any of these three properties is a design-level decision, not a component tweak. That role name reads oddly for a focus ring — the canonical role for one is `border.interactive` — because the ring was placed on this step before the roles were named; keep the ring on it rather than "correcting" it, which would move a color on every interactive surface at once.
 - MUST match the focus target's `border-radius` to the surface's resting corner shape so the ring tracks the squircle silhouette rather than revealing a rectangular underlying box.
 
 ## Hit-Area Expansion

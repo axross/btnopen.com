@@ -67,18 +67,18 @@ Keyboard Focus captures the project-specific context for the checklist below: Ev
 **Guidelines:**
 
 - MUST show a visible focus indicator on every interactive surface when it is reached by keyboard. Removing the browser's default focus ring without a replacement is prohibited.
-- SHOULD use an accent-ramp step for the replacement ring and SHOULD match the surface's corner shape — a squircle card gets a squircle ring, a pill gets a pill ring. The canonical CSS template is in [css-property-usage.md › Focus Ring](./css-property-usage.md#focus-ring).
+- SHOULD use an accent role for the replacement ring and SHOULD match the surface's corner shape — a squircle card gets a squircle ring, a pill gets a pill ring. The canonical CSS template is in [css-property-usage.md › Focus Ring](./css-property-usage.md#focus-ring).
 - MUST NOT retune the ring's width, offset, or color per surface — the shared template is what makes focus affordances feel consistent across the site.
 - MUST preserve keyboard focusability on every clickable surface. Removing a surface from the tab order for styling convenience is prohibited.
 
 ## Theme and Color Parity
 
-Theme and Color Parity captures the project-specific context for the checklist below: Every surface MUST remain legible in both light and dark schemes. A surface that looks correct in one scheme but loses contrast in the other is a design bug, not a polish item. The full theming philosophy (step-role invariance, legitimate per-scheme overrides, imagery compensation) lives in [color-theming.md](./color-theming.md); the step-role meanings are in [design-tone-and-taste › color system](./design-tone-and-taste.md#color-system).
+Theme and Color Parity captures the project-specific context for the checklist below: Every surface MUST remain legible in both light and dark schemes. A surface that looks correct in one scheme but loses contrast in the other is a design bug, not a polish item. The full theming philosophy (role invariance, legitimate per-scheme overrides, imagery compensation) lives in [color-theming.md](./color-theming.md); the role meanings are in [design-tone-and-taste › color system](./design-tone-and-taste.md#color-system).
 
 **Guidelines:**
 
-- MUST keep every surface legible in both light and dark schemes. A surface that looks correct in one scheme but loses contrast in the other is a design bug, not a polish item. The full theming philosophy (step-role invariance, legitimate per-scheme overrides, imagery compensation) lives in [color-theming.md](./color-theming.md); the step-role meanings are in [design-tone-and-taste › color system](./design-tone-and-taste.md#color-system).
-- MUST NOT ship a surface whose text falls below the project's baseline for text-on-background contrast: the highest-contrast text step against the page background step.
+- MUST keep every surface legible in both light and dark schemes. A surface that looks correct in one scheme but loses contrast in the other is a design bug, not a polish item. The full theming philosophy (role invariance, legitimate per-scheme overrides, imagery compensation) lives in [color-theming.md](./color-theming.md); the role meanings are in [design-tone-and-taste › color system](./design-tone-and-taste.md#color-system).
+- MUST NOT ship a surface whose text falls below the project's baseline for text-on-background contrast: `text.<scheme>.high` against `background.<scheme>.plain`.
 - MUST NOT convey state through color alone. Every interactive state change (hover, active, selected, error) MUST also carry a non-color signal — a background fill, an underline, a border, or a shape change.
 - MUST keep a visible underline offset from the baseline on links. Color-only link treatment is not acceptable.
 
@@ -89,12 +89,12 @@ Hover and Interactive Affordances captures the project-specific context for the 
 **Guidelines:**
 
 - MUST give every interactive surface a visible non-color hover affordance that reads the same way to colorblind and low-vision users as it does to everyone else:
-  - **Text links** pick up a background-fill swap (one-step-up on the accent ramp).
-  - **Cards** swap their background one step up on their resting ramp and MAY bump the image brightness.
-  - **Icons** swap both the stroke color and a subtle background pill one step up on their resting ramp.
+  - **Text links** pick up a background-fill swap (one slot along on the accent scheme).
+  - **Cards** swap their background one slot along their resting tier and MAY bump the image brightness.
+  - **Icons** swap both the stroke color and a subtle background pill one slot along their resting tier.
 
 - MUST NOT implement hover with a color change alone — the hover must be perceivable without the color cue.
-- MUST keep hover step deltas consistent with the step-role table in [design-tone-and-taste › color system](./design-tone-and-taste.md#color-system); cross-ramp hover (accent → neutral or vice versa) is prohibited because the result looks inconsistent across schemes.
+- MUST keep hover deltas consistent with the role table in [design-tone-and-taste › color system](./design-tone-and-taste.md#color-system); cross-scheme hover (accent → neutral or vice versa) is prohibited because the result looks inconsistent across color schemes.
 
 ## Tappable Target Size
 

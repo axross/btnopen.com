@@ -1,7 +1,7 @@
 ---
 name: visual-identity
-description: The visual identity of btnopen.com and the CSS that encodes it — the brand half of UI work, which no general design capability can supply. Covers the developer-flavored design language (angle-bracket wordmark, squircle shape tier, accent/neutral ramps on one shared lightness axis, motion tiers, the signature image color-grading recipe), the two breakpoints and per-tier reading-column widths, light/dark theming by scale inversion, Japanese-primary copy with its code-syntax error voice, loading-placeholder and 404 aesthetics, the project's accessibility commitments, and the CSS Modules, design-token, and modern-property conventions that implement all of it.
-when_to_use: Use when designing, building, or reviewing any user-facing surface of this website — choosing a color role, radius, duration, or type tier; deciding responsive behavior; writing or reviewing a CSS Module; writing UI copy or an accessible name; building a loading, empty, or not-found state. Pair it with the general high-fidelity UI design capability, which owns craft such as contrast targets and interaction-state completeness, and with the React component styling capability, which owns styling mechanics in the abstract; this skill owns what is specific to this site.
+description: The visual identity of btnopen.com and the CSS that encodes it — the brand half of UI work, which no general design capability can supply. Covers the developer-flavored design language (angle-bracket wordmark, squircle shape tier, the semantic `--color-*` role layer over private accent/neutral scales on one shared lightness axis, motion tiers, the signature image color-grading recipe), the two breakpoints and per-tier reading-column widths, light/dark theming by scale inversion, Japanese-primary copy with its code-syntax error voice, loading-placeholder and 404 aesthetics, the project's accessibility commitments, and the CSS Modules, design-token, and modern-property conventions that implement all of it.
+when_to_use: Use when designing, building, or reviewing any user-facing surface of this website — choosing a color role, radius, duration, or type tier; deciding responsive behavior; writing or reviewing a CSS Module; writing UI copy or an accessible name; building a loading, empty, or not-found state. Also use when a component reaches for a raw palette scale step instead of a role. Pair it with the general high-fidelity UI design capability, which owns craft such as contrast targets and interaction-state completeness, and with the React component styling capability, which owns styling mechanics in the abstract; this skill owns what is specific to this site.
 user-invocable: false
 ---
 
@@ -20,7 +20,7 @@ File placement, naming, and test hooks are not here — the project's structure 
 See [design-tone-and-taste.md](./references/design-tone-and-taste.md) for:
 
 - the developer-flavored visual identity: angle-bracket wordmark, the sans + Japanese-sibling + monospace type pairing, the code-syntax voice in error and empty states
-- the color system: accent ramp (brand) versus neutral ramp (chrome), the single shared lightness axis, and the 13-step semantic role table
+- the color system: the `--color-<tier>-<scheme>-<slot>` role layer components read, the private accent (brand) and neutral (chrome) scales it maps onto, the single shared lightness axis, the 13-slot role table, and the Radix-derived alpha twins
 - shape language (the squircle corner profile and radius tier), motion language (the shared ease curve and duration tier), and the typography scale with weight-as-hierarchy
 - the imagery color-grading recipe and the layout posture of a centered narrow reading column
 

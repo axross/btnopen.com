@@ -29,39 +29,48 @@ Typography captures the project-specific context for the checklist below: Type t
 
 ## Color System
 
-The palette taste is **Radix-inspired**: a 13-step semantic scale where each step has a defined role, and a single shared lightness axis powers both light and dark schemes. The *role* of each step stays identical across schemes, so a surface that picks the right step needs no per-scheme attention.
+The palette taste is **Radix-inspired**: a 13-step scale where each step carries a defined role, and a single shared lightness axis powers both light and dark schemes. A step's role is identical in both schemes, so a surface that picks the right role needs no per-scheme attention.
 
-Two ramps share the scale:
+The scale itself is the theme's **private tier**. `app/(app)/variables.css` declares it as `--accent-*` and `--neutral-*`, then maps it once onto **semantic role tokens** — and a component reads only those. The reason is that a step index records *how a value looked* when it was picked, while a role records *what the surface is*: with an index at every call site, retuning the scale has to be re-reasoned everywhere, and nothing mechanical tells a deliberate contrast choice from a copy-paste. Referencing `--accent-*` or `--neutral-*` from a component is therefore prohibited; see [css-property-usage › Design Tokens](./css-property-usage.md#design-tokens).
 
-- **Accent ramp** — the **brand ramp**. Used for anything that should visibly carry identity: links, selection, interactive hover, branded card surfaces.
-- **Neutral ramp** — the **chrome ramp**. Used for anything that should read as neutral UI chrome rather than brand.
+Two schemes share the scale:
 
-Pick a color by its semantic role on the scale, not by eyeball:
+- **Accent** — the **brand** scheme. Used for anything that should visibly carry identity: links, selection, interactive hover, branded card surfaces.
+- **Neutral** — the **chrome** scheme. Used for anything that should read as neutral UI chrome rather than brand.
 
-| Step | Role |
-|---|---|
-| 0 | Page / app background |
-| 1 | Subtle app background |
-| 2 | Subtle component background |
-| 3 | Component background (rest) |
-| 4 | Component background (hovered) |
-| 5 | Component background (active / selected) |
-| 6 | Subtle border on non-interactive |
-| 7 | Subtle border on interactive |
-| 8 | Hovered border |
-| 9 | Solid background (rest) |
-| 10 | Solid background (hover) |
-| 11 | Low-contrast text |
-| 12 | High-contrast text |
+Roles are named `--color-<tier>-<scheme>-<slot>`. Every one of the 13 also has a translucent twin with an `-alpha` suffix, for a color that composites over content the theme does not control; its alpha grading is taken from Radix UI Colors, `purple` for the accent scheme and `mauve` for the neutral one.
+
+Pick a color by its semantic role, not by eyeball:
+
+| Step | Role | Token (accent scheme shown) |
+|---|---|---|
+| 0 | Page / app background | `--color-background-accent-plain` |
+| 1 | Subtle app background | `--color-background-accent-app` |
+| 2 | Subtle component background | `--color-background-accent-subtle` |
+| 3 | Component background (rest) | `--color-component-accent-rest` |
+| 4 | Component background (hovered) | `--color-component-accent-hovered` |
+| 5 | Component background (active / selected) | `--color-component-accent-selected` |
+| 6 | Subtle border on non-interactive | `--color-border-accent-subtle` |
+| 7 | Subtle border on interactive | `--color-border-accent-interactive` |
+| 8 | Hovered border | `--color-border-accent-hovered` |
+| 9 | Solid background (rest) | `--color-solid-accent-rest` |
+| 10 | Solid background (hover) | `--color-solid-accent-hovered` |
+| 11 | Low-contrast text | `--color-text-accent-low` |
+| 12 | High-contrast text | `--color-text-accent-high` |
+| — | Text drawn on a solid fill | `--color-text-accent-on-solid` |
+
+The step column is there so the scale stays readable as a scale; it is not an addressing mode. Neither is the role table a promise that every call site's role name reads naturally at that site — a handful of surfaces sit on a step chosen before the roles were named, so the focus ring reads `component.selected` and the monochrome submit button fills from `text.high`. Those are recorded step choices, not licence to pick a role by eyeball.
 
 Operational rules for picking colors:
 
 **Guidelines:**
 
-- SHOULD pair accent and neutral at the *same step number* when composing foreground-on-background — shared lightness means shared perceptual contrast.
-- SHOULD derive one-off variants by tweaking a single channel (hue, chroma, or alpha) of a numbered step rather than introducing a brand-new color. Surface-local color overrides that do not resolve to a numbered step are a design smell.
-- SHOULD NOT author a surface that only works in one color scheme. A dark-mode-only override is a signal that the wrong step was picked — see [color-theming.md](./color-theming.md) for the full light / dark theming philosophy and the narrow set of legitimate per-scheme overrides.
-- SHOULD move interactive hover states *one notch up* on the same ramp rather than crossing ramps — a card resting at Step 3 hovers to Step 4; a transparent surface hovers to Step 2 or Step 3 depending on how prominent the hover should feel.
+- MUST reference color from a component only as a role token; `--accent-*` and `--neutral-*` exist inside `variables.css` and nowhere else.
+- SHOULD pair the accent and neutral scheme at the *same slot* when composing foreground-on-background — shared lightness means shared perceptual contrast.
+- SHOULD derive one-off variants by tweaking a single channel (hue, chroma, or alpha) of a role token rather than introducing a brand-new color. Surface-local color overrides that do not resolve to a role are a design smell.
+- SHOULD use the `-alpha` twin, rather than a flat role picked to look right over today's background, wherever a color composites over imagery or another surface the theme does not control.
+- SHOULD NOT author a surface that only works in one color scheme. A dark-mode-only override is a signal that the wrong role was picked — see [color-theming.md](./color-theming.md) for the full light / dark theming philosophy and the narrow set of legitimate per-scheme overrides.
+- SHOULD move interactive hover states along their own tier rather than crossing tiers or schemes — a card resting at `component.<scheme>.rest` hovers to `component.<scheme>.hovered`; a transparent surface hovers to a background or component slot depending on how prominent the hover should feel.
 
 ## Shape Language
 

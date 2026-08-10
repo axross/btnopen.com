@@ -1,28 +1,28 @@
 # Color Theming (Light / Dark)
 
-Apply these rules when reviewing how a surface behaves under the two color schemes. This file governs **the theming design decisions that determine whether a surface needs any per-scheme attention at all**, and **how imagery is compensated when it does**. The numbered-step palette semantics and step-role table are in [design-tone-and-taste › color-system](./design-tone-and-taste.md#color-system); the color-scheme plumbing and the per-surface scheme-branch mechanic are in [css-property-usage.md › Theme and Color Scheme](./css-property-usage.md#theme-and-color-scheme).
+Apply these rules when reviewing how a surface behaves under the two color schemes. This file governs **the theming design decisions that determine whether a surface needs any per-scheme attention at all**, and **how imagery is compensated when it does**. The palette semantics and the role table are in [design-tone-and-taste › color-system](./design-tone-and-taste.md#color-system); the color-scheme plumbing and the per-surface scheme-branch mechanic are in [css-property-usage.md › Theme and Color Scheme](./css-property-usage.md#theme-and-color-scheme).
 
 ## Shared Lightness, Inverted Between Schemes
 
-Shared Lightness, Inverted Between Schemes captures the project-specific context for the checklist below: Both the accent ramp and the neutral ramp MUST derive from this shared scale so that a step number reads the **same role** in both schemes — accent step 3 is "component background at rest" in both light and dark, even though its actual lightness value differs.
+Shared Lightness, Inverted Between Schemes captures the project-specific context for the checklist below: Both the accent scale and the neutral scale MUST derive from this shared lightness axis so that a **role** resolves to the same meaning in both schemes — `component.<scheme>.rest` is "component background at rest" in both light and dark, even though its actual lightness value differs.
 
-- Light and dark schemes share a single lightness scale (step 0 through step 12). Dark mode re-declares each step's lightness such that the scale is **inverted end-to-end**: step 0 is the brightest value in light mode and the darkest in dark mode; step 12 is the reverse.
-- The visual consequence is the theming promise: a surface that picks the right numbered step per role ADAPTS CORRECTLY to both schemes without any per-surface override. This is the property that makes the palette work, and every other rule below is a consequence of preserving it.
+- Light and dark share a single lightness scale (step 0 through step 12). Dark mode re-declares each step's lightness such that the scale is **inverted end-to-end**: step 0 is the brightest value in light mode and the darkest in dark mode; step 12 is the reverse.
+- Because each role is a fixed map onto one step, both schemes come free: a surface that picks the right role ADAPTS CORRECTLY without any per-surface override. This is the property that makes the palette work, and every other rule below is a consequence of preserving it.
 
 **Guidelines:**
 
-- MUST derive both the accent ramp and the neutral ramp from this shared scale so that a step number reads the **same role** in both schemes — accent step 3 is "component background at rest" in both light and dark, even though its actual lightness value differs.
+- MUST derive both scales from this shared lightness axis so that a role resolves to the same meaning in both schemes — `component.<scheme>.rest` is "component background at rest" in both light and dark, even though its actual lightness value differs.
 
 ## Step-Role Invariance
 
-Step-Role Invariance captures the project-specific context for the checklist below: A surface MUST pick its step by **role**, not by its light-mode appearance. "This is a subtle card background" → accent step 3; never "this looks right because it's a light grey in light mode".
+Role Invariance captures the project-specific context for the checklist below: A surface MUST pick its **role** by what the surface is, not by its light-mode appearance. "This is a subtle card background" → `--color-component-accent-rest`; never "this looks right because it's a light grey in light mode".
 
 **Guidelines:**
 
-- MUST pick a surface's step by **role**, not by its light-mode appearance. "This is a subtle card background" → accent step 3; never "this looks right because it's a light grey in light mode".
-- MUST NOT author a surface that fires under only one scheme. A per-surface dark-mode fork that merely reassigns a numbered token is a strong signal that the wrong step was chosen upstream — fix the step, don't add a branch.
-- MUST NOT cross ramps (e.g., accent → neutral) on hover because the cross-ramp result would look inconsistent across schemes. Hover steps mirror the base step's logic: a resting accent-3 card hovers to accent-4 regardless of scheme.
-- SHOULD verify that a new surface's dark-mode behavior is "acceptable without any override" before merging. If it is not acceptable, the fix is upstream (step choice), not a per-surface branch.
+- MUST pick a surface's role by what the surface is, not by its light-mode appearance. "This is a subtle card background" → `--color-component-accent-rest`; never "this looks right because it's a light grey in light mode".
+- MUST NOT author a surface that fires under only one scheme. A per-surface dark-mode fork that merely reassigns a role is a strong signal that the wrong role was chosen upstream — fix the role, don't add a branch.
+- MUST NOT cross schemes (e.g., accent → neutral) on hover because the cross-scheme result would look inconsistent across color schemes. Hover mirrors the resting role's logic: a card at `component.accent.rest` hovers to `component.accent.hovered` regardless of scheme.
+- SHOULD verify that a new surface's dark-mode behavior is "acceptable without any override" before merging. If it is not acceptable, the fix is upstream (role choice), not a per-surface branch.
 
 ## Legitimate Per-Scheme Overrides
 
@@ -65,7 +65,7 @@ Chrome and Affordance Auto-Adaptation captures the project-specific context for 
 
 - MUST drive scrollbar colors, text-selection background, and focus-ring outlines by palette tokens so they auto-adapt across schemes.
 - MUST keep focus-ring color, width, and offset identical across schemes; the palette token handles contrast. The outline design decision itself (width and offset) lives in [accessibility › keyboard-focus](./accessibility.md#keyboard-focus).
-- MUST NOT retune per-ramp hover deltas (step 3 → step 4 on cards, step 11 → step 12 on icons) per scheme; the shared lightness curve is designed so the same one-step delta reads correctly in both.
+- MUST NOT retune hover deltas (`component.rest` → `component.hovered` on cards, `text.low` → `text.high` on icons) per scheme; the shared lightness curve is designed so the same one-slot delta reads correctly in both.
 
 ## Palette-Hue Drift
 
@@ -84,5 +84,5 @@ Testing Discipline captures the project-specific context for the checklist below
 **Guidelines:**
 
 - MUST verify every new UI surface in both schemes before merging (browser devtools color-scheme emulation at minimum).
-- MUST NOT ship a surface that looks correct in one scheme but loses legibility in the other (see also [accessibility › theme-and-color-parity](./accessibility.md#theme-and-color-parity)). Contrast MUST remain legible in both schemes; the numbered scale's step-11 → step-0 contrast is the project's baseline for text-on-background.
-- SHOULD start root-cause investigation at step choice when a bug report describes "looks wrong in dark mode only"; the surface is usually picking the wrong numbered step rather than needing a dark-mode branch.
+- MUST NOT ship a surface that looks correct in one scheme but loses legibility in the other (see also [accessibility › theme-and-color-parity](./accessibility.md#theme-and-color-parity)). Contrast MUST remain legible in both schemes; `text.<scheme>.low` on `background.<scheme>.plain` is the project's baseline for text-on-background.
+- SHOULD start root-cause investigation at role choice when a bug report describes "looks wrong in dark mode only"; the surface is usually picking the wrong role rather than needing a dark-mode branch.

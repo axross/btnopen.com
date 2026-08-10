@@ -56,7 +56,7 @@ The 404 / Not-Found Aesthetic captures the project-specific context for the chec
 
 - The giant status number ("404") is the signature decorative element:
   - Typeset in the monospace family, bold, at the largest size on the page.
-  - Rendered as a glitched triplet — one base layer in an accent step with two slightly hue-offset copies clipped by alternating noise masks. The visible effect should read as a tasteful terminal-flicker, never as broken.
+  - Rendered as a glitched triplet — one base layer in an accent role with two slightly hue-offset copies clipped by alternating noise masks. The visible effect should read as a tasteful terminal-flicker, never as broken.
   - Hidden from assistive tech so the accessible name comes from the real heading, not the decorative number.
 
 **Guidelines:**
