@@ -60,21 +60,25 @@
 			background-color: var(--color-component-neutral-selected);
 			transition: background-color var(--duration-md) ease-in-out;
 
+			/* both hover states live here, where `&` is the bare `.track`. writing
+			   the checked one inside the `.field[data-checked] .track` rule below
+			   also works — `&` expands to that whole chain, and the single `.field`
+			   satisfies both the hovered and the checked ancestor — but it reads as
+			   though it needed two nested fields, so it is spelled out here
+			   instead. each state stays within its own colour scheme. */
 			@media (hover: hover) and (pointer: fine) {
 				.field:hover & {
 					background-color: var(--color-component-neutral-hovered);
+				}
+
+				.field[data-checked]:hover & {
+					background-color: var(--color-solid-accent-hovered);
 				}
 			}
 		}
 
 		.field[data-checked] .track {
 			background-color: var(--color-solid-accent-rest);
-
-			@media (hover: hover) and (pointer: fine) {
-				.field:hover & {
-					background-color: var(--color-solid-accent-hovered);
-				}
-			}
 		}
 
 		.thumb {

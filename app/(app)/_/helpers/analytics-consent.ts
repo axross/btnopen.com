@@ -32,33 +32,6 @@ export function parseAnalyticsConsent(
 }
 
 /**
- * Reads the decision out of a `document.cookie`-shaped string. The browser
- * gives the client no way to read one cookie by name, so the pair list is
- * scanned here rather than in the component that needs the answer.
- */
-export function readAnalyticsConsentCookie(
-	cookieString: string,
-): AnalyticsConsent | null {
-	for (const pair of cookieString.split(";")) {
-		const separatorIndex = pair.indexOf("=");
-
-		if (separatorIndex === -1) {
-			continue;
-		}
-
-		if (pair.slice(0, separatorIndex).trim() !== analyticsConsentCookieName) {
-			continue;
-		}
-
-		return parseAnalyticsConsent(
-			decodeURIComponent(pair.slice(separatorIndex + 1).trim()),
-		);
-	}
-
-	return null;
-}
-
-/**
  * Persists the decision in the browser, so the next server render already knows
  * it and the banner never flashes in after hydration.
  *
