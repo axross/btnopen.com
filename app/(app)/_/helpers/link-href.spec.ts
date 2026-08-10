@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it } from "vitest";
 import { classifyLinkHref } from "./link-href";
 
 describe("classifyLinkHref()", () => {
@@ -80,6 +80,17 @@ describe("classifyLinkHref()", () => {
 
 	it("blocks a destination whose scheme is empty", () => {
 		expect(classifyLinkHref(":alert(1)")).toBe("blocked");
+	});
+
+	// `https://` is what `@payloadcms/richtext-lexical` substitutes for a
+	// destination its own markdown export refuses, so this is the shape a
+	// CMS-authored `javascript:` link now arrives in.
+	it("blocks an https destination carrying no host", () => {
+		expect(classifyLinkHref("https://")).toBe("blocked");
+	});
+
+	it("blocks an http destination carrying no host", () => {
+		expect(classifyLinkHref("http://")).toBe("blocked");
 	});
 
 	it("blocks an empty destination", () => {

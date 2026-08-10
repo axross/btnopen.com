@@ -1,12 +1,12 @@
 ---
 name: agent-skill-management
-description: Adding, editing, renaming, moving, or removing an agent skill in a project that keeps skills in two tiers; deciding which tier a new skill belongs to; a `git status` showing installed copies or `skills-lock.json` out of sync with their source; or a skill you loaded turning out to be wrong, outdated, or missing a rule — including mid-task, and including when its upstream is one you do not own. The storage and install model, the drift check, and how to route a defect found in an installed skill.
+description: Deciding whether material belongs in a skill at all, or in the project's own documentation instead, before deciding its tier; adding, editing, renaming, moving, or removing an agent skill in a project that keeps skills in two tiers; a `git status` showing installed copies or `skills-lock.json` out of sync with their source; or a skill you loaded turning out to be wrong, outdated, or missing a rule — including mid-task, and including when its upstream is one you do not own. The skill-or-document question, the storage and install model, the drift check, and how to route a defect found in an installed skill.
 user-invocable: false
 ---
 
 # Agent Skill Management
 
-Use this capability whenever you add, edit, rename, move, or remove an agent skill in a project that holds its skills in two tiers. **Distributable** skills — portable capabilities other projects can install — are authored in a source directory (conventionally `skills/`, the source of truth) and **installed** into the skill root (the directory the agent actually loads — `.claude/skills/` for Claude Code, `.agents/skills/` for Codex and several others) with the [vercel-labs/skills](https://github.com/vercel-labs/skills) CLI (`npx skills`); a `skills-lock.json` file records what was installed. **Repository-local** skills — the ones that encode a single project's own conventions — are committed directly under the skill root and are never touched by the CLI.
+Use this capability whenever you add, edit, rename, move, or remove an agent skill in a project that holds its skills in two tiers. **Distributable** skills — portable capabilities other projects can install — are authored in a source directory (conventionally `skills/`, the source of truth) and **installed** into the skill root (the directory the agent actually loads — `.claude/skills/` for Claude Code, `.agents/skills/` for Codex and several others) with the [vercel-labs/skills](https://github.com/vercel-labs/skills) CLI (`npx skills`); a `skills-lock.json` file records what was installed. **Repository-local** skills — capabilities that encode a single project's own process and have to fire while a surface is being edited, never a document the project's own instructions could route to on demand — are committed directly under the skill root and are never touched by the CLI.
 
 Discovery is what routes to a skill in either tier: each skill advertises when it applies through its own `description`, so no written index is required. Some hosts maintain one anyway (e.g. an `AGENTS.md` table), which then becomes a second record to keep current.
 
@@ -18,16 +18,34 @@ This skill is **self-contained**: it names no repository-specific file or layout
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html).
 
+## Is the Material a Skill?
+
+Before asking which tier a skill belongs in, ask whether the material should be a skill at all. A skill's one functional advantage over a document is discovery — it fires unasked while a matching surface is being edited, without anyone remembering to consult it — and that advantage is also its whole recurring cost: every skill's `description` competes for room in every session's listing, on every task, whether or not that task needs it. Material that never has to fire unasked pays that cost for nothing, because an always-loaded instruction file can route to it on demand instead.
+
+| The material is…                                               | Route it to                                                     |
+| -------------------------------------------------------------- | --------------------------------------------------------------- |
+| A rule that has to fire while a surface is being edited        | A skill — continue to [Choosing a Tier](#choosing-a-tier) below |
+| What the product is, means, does, and is constrained by        | The project's product-specification documentation               |
+| How the project is laid out, written, built, operated, and run | The project's contributor documentation                         |
+
+The portability question below cannot make this call. A repository-layout _document_ is exactly as unportable as a repository-layout _skill_, so portability returns "no" for both — asking it first leaves a reader concluding the material must be a repository-local skill, having never asked whether it should be a skill in the first place.
+
+**Guidelines:**
+
+- MUST answer this question before [Choosing a Tier](#choosing-a-tier), for new material and for material a change is about to add to an existing skill.
+- MUST NOT write a skill for material an always-loaded instruction file can already route to on demand; that routing costs one line there and nothing in every other session's listing.
+- MUST retire an existing skill into documentation when this question reclassifies it — move its content into the project's product-specification or contributor documentation, and remove the skill rather than leaving both in place.
+
 ## Choosing a Tier
 
 Every skill lives in exactly one tier, decided by one question: **would the skill work, unchanged, installed into another project?**
 
 - A skill that is self-contained and portable — it names no repository-specific file, workflow, or layout — is **distributable**: author it under the source directory (`skills/<name>/`) and install it with the CLI.
-- A skill that encodes one project's own structure or process — a repository-layout skill, a project-specific development baseline, the skill-authoring rules a project tailors to itself — is **repository-local**: commit it directly under the skill root (`.claude/skills/<name>/`, or `.agents/skills/<name>/` on a host that reads that path).
+- A skill that encodes one project's own process as a capability — the skill-authoring rules a project tailors to itself, a project's own change loop, a review policy written against its own diffs — is **repository-local**: commit it directly under the skill root (`.claude/skills/<name>/`, or `.agents/skills/<name>/` on a host that reads that path).
 
 **Guidelines:**
 
-- MUST place every new skill in exactly one tier using the portability question above, before writing its `SKILL.md`.
+- MUST place every new skill in exactly one tier using the portability question above, once [Is the Material a Skill?](#is-the-material-a-skill) has settled that it is one, and before writing its `SKILL.md`.
 - MUST NOT store a repository-local skill under the source directory or manage it with `npx skills`; it never appears in `skills-lock.json`.
 - MUST move a skill between tiers deliberately when its scope changes — a repository-local skill later generalized for sharing moves its source to `skills/<name>/` and is reinstalled with the CLI — never by keeping a copy in both.
 - MAY read a skill's tier off `skills-lock.json`: a skill listed there is distributable and installed; one absent from it is repository-local.

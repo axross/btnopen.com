@@ -10,6 +10,7 @@ import { NotFoundContent } from "@/components/not-found-content";
 import { fontVariablesClassName } from "@/fonts";
 import { getActiveLocale, htmlLangByLocale } from "@/helpers/i18n";
 import { getWebsite } from "@/repositories/get-website";
+import { Footer } from "./(app)/_components/footer";
 import { Header } from "./(app)/_components/header";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -47,6 +48,12 @@ async function NotFoundDocument(): Promise<JSX.Element> {
 						heading="page.found === false"
 						description={t("page-description")}
 					/>
+
+					{/* the consent banner is deliberately absent: this route bypasses the
+					    root layout, so it carries no analytics provider and reports no
+					    page view. the footer is here because the privacy link has to be
+					    reachable from every route, including this one. */}
+					<Footer data-testid="footer" />
 				</NextIntlClientProvider>
 			</body>
 		</html>

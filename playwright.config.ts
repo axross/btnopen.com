@@ -102,9 +102,8 @@ export default defineConfig({
 			repeatEach: 1,
 		},
 		// two device projects, one per responsive tier the design defines a
-		// structural transformation across (see
-		// .claude/skills/visual-identity/references/responsive-layout.md): `pixel`
-		// at 412px for mobile, `tablet` at 712px for tablet. both run on chromium,
+		// structural transformation across (see docs/specs/reader-surfaces.md):
+		// `pixel` at 412px for mobile, `tablet` at 712px for tablet. both run on chromium,
 		// the only engine CI installs. the desktop tier is deliberately uncovered —
 		// it changes density, not structure, and a third project would add another
 		// serialized pass for that alone.

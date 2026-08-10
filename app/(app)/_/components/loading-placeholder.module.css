@@ -6,7 +6,7 @@
 			height: auto;
 			aspect-ratio: 1;
 			border-radius: var(--radius-md);
-			background-color: var(--neutral-2);
+			background-color: var(--color-background-neutral-subtle);
 			animation: pulse var(--duration-pulse) var(--ease-in-out) infinite
 				alternate;
 
@@ -38,7 +38,7 @@
 			width: attr(data-length ch);
 			height: 1em;
 			border-radius: var(--radius-sm);
-			background-color: var(--neutral-2);
+			background-color: var(--color-background-neutral-subtle);
 			animation: pulse var(--duration-pulse) var(--ease-in-out) infinite
 				alternate;
 
@@ -50,11 +50,11 @@
 
 	@keyframes pulse {
 		0% {
-			background-color: var(--neutral-2);
+			background-color: var(--color-background-neutral-subtle);
 		}
 
 		100% {
-			background-color: var(--neutral-3);
+			background-color: var(--color-component-neutral-rest);
 		}
 	}
 }

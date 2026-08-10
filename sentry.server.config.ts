@@ -21,6 +21,9 @@ initializeSentry({
 	// and its uploaded source maps can never file under different releases.
 	release: sha,
 	environment: vercelEnvironment,
+	// a personal blog's traffic fits inside the free quota whole, so nothing is
+	// gained by sampling and a sampled trace is missing precisely when a slow
+	// page is being chased.
 	tracesSampleRate: 1,
 	// diagnostic context is allowed, user content is not. every category is set
 	// explicitly: once `dataCollection` is present, an omitted category falls back

@@ -3,8 +3,7 @@ import {
 	init as initializeSentry,
 	replayIntegration,
 } from "@sentry/nextjs";
-import Mixpanel from "mixpanel-browser";
-import { mixpanelToken, sentryDsn, sha, vercelEnvironment } from "@/runtime";
+import { sentryDsn, sha, vercelEnvironment } from "@/runtime";
 
 if (sentryDsn) {
 	initializeSentry({
@@ -14,8 +13,16 @@ if (sentryDsn) {
 		release: sha,
 		environment: vercelEnvironment,
 		integrations: [replayIntegration()],
+		// a personal blog's traffic fits inside the free quota whole, so nothing is
+		// gained by sampling and a sampled trace is missing precisely when a slow
+		// page is being chased.
 		tracesSampleRate: 1,
-		replaysSessionSampleRate: 0.1,
+		// ordinary sessions are not recorded. a session is only worth a recording
+		// once it has failed, and replaying the ones that did not buys diagnostics
+		// nobody reads at the cost of capturing every visitor's reading.
+		replaysSessionSampleRate: 0,
+		// error-linked replay stays at full rate — see observability.md, which pins
+		// this floor at exactly 1.0.
 		replaysOnErrorSampleRate: 1.0,
 		// diagnostic context is allowed, user content is not. every category is set
 		// explicitly: once `dataCollection` is present, an omitted category falls back
@@ -44,24 +51,11 @@ if (sentryDsn) {
 	});
 }
 
-if (mixpanelToken) {
-	Mixpanel.init(mixpanelToken, {
-		// biome-ignore-start lint/style/useNamingConvention: Mixpanel prefers snake_case
-		autocapture: {
-			pageview: false,
-			click: true,
-			rage_click: true,
-			dead_click: true,
-			input: true,
-			scroll: true,
-			submit: true,
-			capture_text_content: true,
-		},
-		record_sessions_percent: 100,
-		record_heatmap_data: true,
-		ignore_dnt: true,
-		// biome-ignore-end lint/style/useNamingConvention: Mixpanel prefers snake_case
-	});
-}
+// Mixpanel is deliberately absent from this file. it is initialized from
+// `app/(app)/_/helpers/analytics.ts`, behind the visitor's consent, and loaded
+// by a dynamic import there — so a visitor who has not consented never
+// downloads the SDK, let alone runs it. Sentry stays here and stays ungated:
+// error reporting is the diagnostic basis this site runs on, and it records no
+// ordinary session.
 
 export const onRouterTransitionStart = captureRouterTransitionStart;

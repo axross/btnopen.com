@@ -40,7 +40,7 @@
 		}
 
 		.link:focus-visible {
-			outline: var(--accent-5) solid var(--size-3);
+			outline: var(--color-component-accent-selected) solid var(--size-3);
 			outline-offset: var(--size-3);
 		}
 	}
@@ -52,7 +52,7 @@
 			width: stretch;
 			flex-direction: column;
 			padding-block-end: var(--size-16);
-			background-color: var(--accent-3);
+			background-color: var(--color-component-accent-rest);
 			border-radius: var(--radius-md);
 			text-decoration: inherit;
 			color: inherit;
@@ -77,8 +77,10 @@
 				/* biome-ignore lint/suspicious/noDuplicateCustomProperties: biome doesn't understand @scope */
 				--variant: "desktop";
 
-				&:hover {
-					background-color: var(--accent-4);
+				@media (hover: hover) and (pointer: fine) {
+					&:hover {
+						background-color: var(--color-component-accent-hovered);
+					}
 				}
 			}
 		}
@@ -111,11 +113,13 @@
 				border-bottom-right-radius: var(--radius-md);
 			}
 
-			:where(:scope):hover & {
-				--brightness: 1.1;
+			@media (hover: hover) and (pointer: fine) {
+				:where(:scope):hover & {
+					--brightness: 1.1;
 
-				@container style(--theme: dark) {
-					--brightness: 1;
+					@container style(--theme: dark) {
+						--brightness: 1;
+					}
 				}
 			}
 		}
@@ -140,7 +144,7 @@
 		.title {
 			margin-block-start: var(--size-16);
 			padding-inline: var(--size-16);
-			color: var(--accent-11);
+			color: var(--color-text-accent-low);
 			font-size: var(--text-lg);
 			font-weight: bold;
 			text-decoration: underline;

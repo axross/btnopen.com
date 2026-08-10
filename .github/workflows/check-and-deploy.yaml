@@ -102,8 +102,8 @@ jobs:
       # (.github/dependabot.yml); that comment must name a RELEASE tag and never
       # the v8 alias, or dependabot-core#14716 bumps the pin to the branch HEAD
       # and leaves the comment stale. GitHub's own actions/* entries stay on
-      # major tags — the full convention is in the CI workflow supply chain
-      # section of project-structure's security-conventions.md.
+      # major tags — the full convention is in the CI supply chain section of
+      # docs/conventions/security.md.
       - name: Create Pull Request for Snapshot Updates
         if: ${{ !cancelled() }}
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it } from "vitest";
 import { BlogPostSlug, MAX_BLOG_POST_SLUG_LENGTH } from "./blog-post-slug";
 
 describe("BlogPostSlug", () => {

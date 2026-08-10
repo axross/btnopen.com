@@ -8,7 +8,10 @@
 #   - Dependabot SECURITY updates, which fix advisories from the dependency
 #     graph. Those are a repository setting (Settings -> Advanced Security),
 #     entirely independent of this file, and they bypass the cooldown below.
-#     The outstanding `npm audit` advisories are their own piece of work.
+#     The standing position on `npm audit` advisories — what is fixed, what is
+#     left open and why, and why nothing in CI runs the audit — lives in
+#     docs/operations/dependency-advisories.md, not here: it is a ledger that
+#     moves with upstream, and a comment block is the wrong home for one.
 #   - Auto-merge. Every update lands through the normal review path.
 #
 # Since 2026-07-14 version updates carry a default three-day cooldown — a

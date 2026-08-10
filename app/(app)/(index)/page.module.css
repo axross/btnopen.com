@@ -60,8 +60,8 @@
 
 		.portraitForeground {
 			position: absolute;
-			top: 15cqw;
-			right: 15cqw;
+			inset-block-start: 15cqw;
+			inset-inline-end: 15cqw;
 			width: 85cqw;
 			height: auto;
 			filter: sepia(0.5) saturate(1.75)
@@ -76,7 +76,7 @@
 
 		/* The brush-mark backdrop behind the portrait. The artwork lives at
 		   /images/brush-grunge.svg and is painted by masking it over a box the
-		   palette colours, so the mark follows --accent-9 in both schemes
+		   palette colours, so the mark follows the accent solid in both schemes
 		   instead of baking a colour into the asset.
 
 		   Each layer paints the mark twice: ::before is the offset shadow copy
@@ -98,10 +98,10 @@
 			--grunge-shadow-offset: 2;
 
 			position: absolute;
-			top: 0;
-			left: 0;
+			inset-block-start: 0;
+			inset-inline-start: 0;
 			aspect-ratio: var(--grunge-artwork-width) / var(--grunge-artwork-height);
-			color: var(--accent-9);
+			color: var(--color-solid-accent-rest);
 		}
 
 		.portraitGrunge::before,
@@ -136,25 +136,29 @@
 		}
 
 		.portraitGrunge {
-			right: 0;
+			inset-inline-end: 0;
 			z-index: -5;
 		}
 
 		.portraitGrungeGlitchFirst {
-			right: calc(var(--size-2) * -1);
-			--grunge-outline: oklch(from var(--accent-9) l c calc(h - 32));
+			inset-inline-end: calc(var(--size-2) * -1);
+			--grunge-outline: oklch(
+				from var(--color-solid-accent-rest) l c calc(h - 32)
+			);
 			--grunge-shadow-offset: -2;
-			background-color: var(--neutral-0);
+			background-color: var(--color-background-neutral-plain);
 			animation: noise-fast var(--duration-glitch-fast) infinite linear
 				alternate-reverse;
 			z-index: -4;
 		}
 
 		.portraitGrungeGlitchSecond {
-			right: var(--size-2);
-			--grunge-outline: oklch(from var(--accent-9) l c calc(h + 32));
+			inset-inline-end: var(--size-2);
+			--grunge-outline: oklch(
+				from var(--color-solid-accent-rest) l c calc(h + 32)
+			);
 			--grunge-shadow-offset: 2;
-			background-color: var(--neutral-0);
+			background-color: var(--color-background-neutral-plain);
 			animation: noise-slow var(--duration-glitch-slow) infinite linear
 				alternate-reverse;
 			z-index: -3;
@@ -169,7 +173,7 @@
 
 		.headline {
 			margin-block-start: var(--size-32);
-			color: var(--neutral-12);
+			color: var(--color-text-neutral-high);
 			font-size: var(--text-xl);
 			font-weight: 700;
 			line-height: var(--leading-md);
@@ -208,7 +212,7 @@
 		}
 
 		.sectionHeading {
-			color: var(--neutral-12);
+			color: var(--color-text-neutral-high);
 			font-size: var(--text-xl);
 			font-weight: 700;
 		}

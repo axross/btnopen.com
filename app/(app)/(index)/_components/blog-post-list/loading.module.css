@@ -78,7 +78,7 @@
 		.title {
 			margin-block-start: var(--size-16);
 			padding-inline: var(--size-16);
-			color: var(--accent-11);
+			color: var(--color-text-accent-low);
 			font-size: var(--text-lg);
 
 			@container blog-post-list-loading-item style(--variant: "desktop") {

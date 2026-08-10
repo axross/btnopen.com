@@ -22,6 +22,38 @@
 	"language-switcher": {
 		"label": "言語を切り替える"
 	},
+	"footer": {
+		"copyright": "© btnopen.com",
+		"privacy": "プライバシー"
+	},
+	"analytics-consent": {
+		"banner-label": "アクセス解析の設定",
+		"banner-description": "アクセス解析を許可しますか。許可すると、閲覧されたページと外部リンクのクリックだけを記録します。",
+		"banner-note": "エラー報告は、どちらを選んでも動き続けます。",
+		"banner-link": "プライバシーについて",
+		"grant": "許可する",
+		"deny": "許可しない"
+	},
+	"privacy": {
+		"heading": "プライバシー",
+		"lede": "このサイトが何を集め、何を集めないかを、実装のとおりに書いています。集めるものは2種類だけです。あなたが許可したときだけ動くアクセス解析と、許可の有無に関わらず動くエラー報告です。",
+		"analytics-heading": "許可したときだけ集めるもの",
+		"analytics-body": "Mixpanel を使って、閲覧されたページのパスと、GitHub・LinkedIn・X へのリンクがクリックされたことだけを記録します。クリックやスクロールの自動収集、セッションの録画、ヒートマップは行いません。ブラウザの Do Not Track 設定は尊重します。許可されていない間は Mixpanel のコード自体が読み込まれず、リクエストは1本も送信されません。",
+		"analytics-params": "URL のクエリパラメータは draft と agentic の2つだけを送ります。それ以外は、こちらが知らないものも含めてすべて捨てます。",
+		"diagnostics-heading": "許可の有無に関わらず動くもの",
+		"diagnostics-body": "Sentry によるエラー報告です。エラーが起きたとき、IP アドレスと利用者情報、リクエストとレスポンスのヘッダ、URL のクエリパラメータ、スタックフレームの変数を記録します。Cookie、リクエストとレスポンスの本文、データベースのクエリ値は記録しません。",
+		"diagnostics-replay": "エラーが起きたセッションだけ、画面の再生記録が残ります。エラーの起きていない通常のセッションは、許可の有無にかかわらず一切録画しません。",
+		"comments-heading": "コメントを書いたとき",
+		"comments-body": "GitHub アカウントでのログインを Clerk が仲介します。コメントとともに保存されるのは、Clerk のユーザー ID、表示名、GitHub のユーザー名、アバター画像の URL の4つです。メールアドレスはどこにも保存しません。",
+		"cookies-heading": "Cookie",
+		"cookies-body": "このサイト自身が保存する Cookie は3つです。選択された表示言語、このページでのアクセス解析の選択、そしてコメントを投稿するときの CSRF トークン。",
+		"control-heading": "いつでも変更できます",
+		"control-body": "下のスイッチで、アクセス解析への許可をいつでも切り替えられます。切り替えたその場で収集が始まり、また止まります。ページの再読み込みは要りません。",
+		"control-label": "アクセス解析を許可する",
+		"control-granted": "現在: 許可しています。",
+		"control-denied": "現在: 許可していません。",
+		"control-undecided": "現在: まだ選択されていません。何も収集していません。"
+	},
 	"comments": {
 		"heading": "コメント",
 		"empty-invite": "最初のコメントを書いてみませんか。",

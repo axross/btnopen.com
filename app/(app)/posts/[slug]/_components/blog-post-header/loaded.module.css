@@ -41,7 +41,7 @@
 		.title {
 			margin-block-start: var(--size-32);
 			padding-inline: var(--size-16);
-			color: var(--neutral-12);
+			color: var(--color-text-neutral-high);
 			font-size: var(--text-4xl);
 			font-weight: 700;
 
@@ -85,8 +85,8 @@
 			justify-content: center;
 			inline-size: 100%;
 			block-size: 100%;
-			background-color: var(--neutral-3);
-			color: var(--neutral-11);
+			background-color: var(--color-component-neutral-rest);
+			color: var(--color-text-neutral-low);
 			font-size: var(--text-xs);
 		}
 
@@ -110,9 +110,9 @@
 			list-style: none;
 			padding-block: var(--size-4);
 			padding-inline: var(--size-8);
-			background-color: var(--accent-3);
+			background-color: var(--color-component-accent-rest);
 			border-radius: var(--radius-sm);
-			color: var(--accent-11);
+			color: var(--color-text-accent-low);
 		}
 	}
 }

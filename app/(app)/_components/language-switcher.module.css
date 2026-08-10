@@ -8,20 +8,38 @@
 			block-size: var(--size-40);
 			padding: 0;
 			border-radius: var(--radius-md);
-			color: var(--accent-11);
+			color: var(--color-text-accent-low);
 			background-color: transparent;
 			border: none;
 			cursor: pointer;
 			outline: none;
 
-			&:hover:not(:disabled),
+			/* the trigger is a drawn control with its own background, so it is
+			   sized directly rather than grown by padding; its background grows
+			   with it. 44px is a literal because it is fixed by the input
+			   hardware rather than by the spacing scale. */
+			@media (any-pointer: coarse) {
+				inline-size: 44px;
+				block-size: 44px;
+			}
+
+			/* `[data-popup-open]` stays outside the gate — it marks the menu as
+			   open on every pointer class, so gating it would drop the cue on
+			   touch. the shared declarations are duplicated on purpose. */
+			@media (hover: hover) and (pointer: fine) {
+				&:hover:not(:disabled) {
+					background-color: var(--color-background-accent-subtle);
+					color: var(--color-text-accent-high);
+				}
+			}
+
 			&[data-popup-open] {
-				background-color: var(--accent-2);
-				color: var(--accent-12);
+				background-color: var(--color-background-accent-subtle);
+				color: var(--color-text-accent-high);
 			}
 
 			&:focus-visible {
-				outline: var(--accent-5) solid var(--size-3);
+				outline: var(--color-component-accent-selected) solid var(--size-3);
 				outline-offset: var(--size-3);
 			}
 
@@ -44,8 +62,8 @@
 			min-inline-size: var(--size-160);
 			padding: var(--size-6);
 			border-radius: var(--radius-md);
-			background-color: var(--neutral-1);
-			border: var(--size-1) solid var(--accent-4);
+			background-color: var(--color-background-neutral-app);
+			border: var(--size-1) solid var(--color-component-accent-hovered);
 			box-shadow: 0 var(--size-8) var(--size-24)
 				oklch(
 					var(--lightness-12) var(--neutral-chroma) var(--neutral-hue) /
@@ -73,19 +91,28 @@
 			border-radius: var(--radius-sm);
 			font-size: var(--text-sm);
 			line-height: 1;
-			color: var(--accent-11);
+			color: var(--color-text-accent-low);
 			cursor: pointer;
 			user-select: none;
 			outline: none;
 
-			&[data-highlighted],
-			&:hover {
-				background-color: var(--accent-2);
-				color: var(--accent-12);
+			/* `[data-highlighted]` stays outside the gate — it is Base UI's own
+			   active-item state, not a hover echo, so gating it would drop the
+			   cue on touch. the shared declarations are duplicated on purpose. */
+			@media (hover: hover) and (pointer: fine) {
+				&:hover {
+					background-color: var(--color-background-accent-subtle);
+					color: var(--color-text-accent-high);
+				}
+			}
+
+			&[data-highlighted] {
+				background-color: var(--color-background-accent-subtle);
+				color: var(--color-text-accent-high);
 			}
 
 			&[data-checked] {
-				color: var(--accent-12);
+				color: var(--color-text-accent-high);
 				font-weight: 700;
 			}
 		}
@@ -96,7 +123,7 @@
 			justify-content: center;
 			inline-size: var(--size-16);
 			block-size: var(--size-16);
-			color: var(--accent-11);
+			color: var(--color-text-accent-low);
 		}
 
 		.checkIcon {

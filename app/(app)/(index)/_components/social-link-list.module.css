@@ -14,17 +14,29 @@
 			display: flex;
 			padding: var(--size-8);
 			margin: calc(var(--size-8) * -1);
-			color: var(--accent-11);
+			color: var(--color-text-accent-low);
 			border-radius: var(--radius-md);
 			outline: none;
 
-			&:hover {
-				color: var(--accent-12);
-				background-color: var(--accent-3);
+			/* the glyph is a 24px SVG, so 10px on each side lands the hit area
+			   on the 44px coarse-pointer minimum exactly. the literal lengths
+			   are deliberate: 44px is fixed by the input hardware, not by the
+			   spacing scale, and an equal negative margin keeps the glyph and
+			   the row's spacing where they already are. */
+			@media (any-pointer: coarse) {
+				padding: 10px;
+				margin: -10px;
+			}
+
+			@media (hover: hover) and (pointer: fine) {
+				&:hover {
+					color: var(--color-text-accent-high);
+					background-color: var(--color-component-accent-rest);
+				}
 			}
 
 			&:focus-visible {
-				outline: var(--accent-5) solid var(--size-3);
+				outline: var(--color-component-accent-selected) solid var(--size-3);
 				outline-offset: var(--size-3);
 			}
 		}

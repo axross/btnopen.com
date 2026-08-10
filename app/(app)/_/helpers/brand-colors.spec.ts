@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it } from "vitest";
 import {
 	accentHue,
 	faviconColorDark,
@@ -52,9 +52,12 @@ describe("brand colors", () => {
 		["postThumbnailLogoColor", postThumbnailLogoColor],
 		["postThumbnailCoverTintColor", postThumbnailCoverTintColor],
 		["thumbnailForegroundColor", thumbnailForegroundColor],
-	] as const)("renders %s as the color it has always shipped", (name, color) => {
-		expect(color).toBe(shippedColors[name]);
-	});
+	] as const)(
+		"renders %s as the color it has always shipped",
+		(name, color) => {
+			expect(color).toBe(shippedColors[name]);
+		},
+	);
 
 	it("leaves the achromatic foreground white under any brand hue", () => {
 		expect(oklchToHex(1, 0, accentHue + QUARTER_TURN)).toBe(

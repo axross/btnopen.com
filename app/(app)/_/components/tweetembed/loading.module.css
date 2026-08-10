@@ -6,7 +6,8 @@
 			gap: var(--size-16);
 			padding-block: var(--size-8);
 			padding-inline: var(--size-16);
-			border-inline-start: var(--size-4) solid var(--accent-7);
+			border-inline-start: var(--size-4) solid
+				var(--color-border-accent-interactive);
 		}
 
 		.body {

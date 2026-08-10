@@ -6,11 +6,15 @@ import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { type ReactNode, Suspense } from "react";
+import { AnalyticsConsentProvider } from "@/components/analytics-consent-provider";
 import { fontVariablesClassName } from "@/fonts";
+import { getStoredAnalyticsConsent } from "@/helpers/analytics-consent-request";
 import { themeColorDark, themeColorLight } from "@/helpers/brand-colors";
 import { getActiveLocale, htmlLangByLocale } from "@/helpers/i18n";
 import { getWebsite } from "@/repositories/get-website";
 import { isClerkAvailable, sha, urlOrigin, vercelEnvironment } from "@/runtime";
+import { AnalyticsConsentBanner } from "./_components/analytics-consent-banner";
+import { Footer } from "./_components/footer";
 import { Header } from "./_components/header";
 import { PageViewTracking } from "./_components/page-view-tracking";
 
@@ -67,23 +71,40 @@ export default function RootLayout({
 async function Document({
 	children,
 }: Readonly<{ children: ReactNode }>): Promise<ReactNode> {
-	const locale = await getActiveLocale();
+	// both reads are request-time cookie reads, and this component already sits
+	// behind the Suspense boundary that makes those dynamic.
+	const [locale, analyticsConsent] = await Promise.all([
+		getActiveLocale(),
+		getStoredAnalyticsConsent(),
+	]);
 
 	return (
 		<html lang={htmlLangByLocale[locale]}>
 			<body className={fontVariablesClassName}>
 				<AuthProvider>
 					<NextIntlClientProvider>
-						<Header />
+						<AnalyticsConsentProvider initialConsent={analyticsConsent}>
+							<Header />
 
-						{children}
+							{children}
 
-						{/* no fallback: the page-view tracker is a side-effect-only
-						    client component that returns null, so it has no visible
-						    output a skeleton could stand in for. */}
-						<Suspense>
-							<PageViewTracking />
-						</Suspense>
+							{/* no fallback: the footer is the last thing in the document,
+							    so nothing is painted below it that a late arrival could
+							    displace. a skeleton here would add a flash of chrome
+							    without preventing any layout shift. */}
+							<Suspense>
+								<Footer data-testid="footer" />
+							</Suspense>
+
+							<AnalyticsConsentBanner data-testid="analytics-consent-banner" />
+
+							{/* no fallback: the page-view tracker is a side-effect-only
+							    client component that returns null, so it has no visible
+							    output a skeleton could stand in for. */}
+							<Suspense>
+								<PageViewTracking />
+							</Suspense>
+						</AnalyticsConsentProvider>
 					</NextIntlClientProvider>
 				</AuthProvider>
 			</body>

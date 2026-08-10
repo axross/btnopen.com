@@ -10,15 +10,24 @@ choices are usually load-bearing for people who are not in the room. The default
 shape is what to propose in the absence of a convention, never what to impose
 over one.
 
+That default is not the same as an accident. A `docs/` directory naming
+`conventions/` or `operations/` as siblings of `specs/` and `decisions/`, with
+an index that says as much, is
+[the shape a documentation root takes](./documentation-root.md) when adopted
+on purpose, and detecting it means detecting the whole root rather than
+stopping at the corpus's own three files.
+
 **Guidelines:**
 
 - MUST look for an existing convention first — a `docs/` directory, a wiki
   export, a long `README` section, an `adr/` or `decisions/` directory — and
   adopt its layout and naming where one exists.
-- MUST leave documentation that is out of scope exactly where it is. A `docs/`
-  directory holding deployment runbooks is contributor documentation that
-  happens to share a directory name; adding an index beside it does not make it
-  part of the corpus, and rewriting it is not this capability's business.
+- MUST leave documentation that is out of scope exactly where it is,
+  distinguishing a `docs/` directory that merely shares its name — no
+  `conventions/` or `operations/` siblings, no index naming them — from a
+  documentation root adopted on purpose. Where it merely shares the name:
+  adding an index beside it does not make it part of the corpus, and
+  rewriting it is not this capability's business.
 - MUST ask before relocating or restructuring anything that already exists.
   Where the corpus lives is a project decision with consequences for links,
   bookmarks, and tooling nobody in the session can see.

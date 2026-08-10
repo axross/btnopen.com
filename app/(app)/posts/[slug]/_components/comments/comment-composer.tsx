@@ -6,9 +6,9 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
 	type ComponentProps,
-	type FormEvent,
 	type HTMLAttributes,
 	type JSX,
+	type SubmitEvent,
 	useState,
 } from "react";
 import { GitHubMarkIcon } from "@/components/social-icon";
@@ -88,7 +88,7 @@ export function CommentComposer({
 	}
 
 	async function handleSubmit(
-		event: FormEvent<HTMLFormElement>,
+		event: SubmitEvent<HTMLFormElement>,
 	): Promise<void> {
 		event.preventDefault();
 

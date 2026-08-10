@@ -1,0 +1,53 @@
+@layer components {
+	@scope (.privacyPage) {
+		:where(:scope) {
+			display: flex;
+			width: stretch;
+			container: page / inline-size;
+			flex-direction: column;
+			align-items: center;
+
+			@container (width > 30rem) {
+				--max-width: calc(30rem - var(--size-16) * 2);
+			}
+
+			@container (width > 50rem) {
+				--max-width: min(calc(50rem - var(--size-32) * 2), var(--measure));
+			}
+		}
+
+		.main {
+			display: flex;
+			width: stretch;
+			max-inline-size: var(--max-width);
+			flex-direction: column;
+			gap: var(--size-32);
+			margin-block-start: var(--size-64);
+			padding-inline: var(--size-16);
+		}
+
+		.pageHeading {
+			color: var(--color-text-neutral-high);
+			font-size: var(--text-3xl);
+			line-height: var(--leading-sm);
+			font-weight: 700;
+		}
+
+		.lede {
+			color: var(--color-text-neutral-high);
+		}
+
+		.section {
+			display: flex;
+			flex-direction: column;
+			gap: var(--size-12);
+		}
+
+		.sectionHeading {
+			color: var(--color-text-neutral-high);
+			font-size: var(--text-lg);
+			line-height: var(--leading-sm);
+			font-weight: 600;
+		}
+	}
+}

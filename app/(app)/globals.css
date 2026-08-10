@@ -8,9 +8,10 @@
 
 	:where(:root) {
 		scroll-padding: var(--size-32);
-		background-color: var(--neutral-0);
+		background-color: var(--color-background-neutral-plain);
 		color-scheme: var(--theme);
-		scrollbar-color: var(--accent-7) var(--accent-2);
+		scrollbar-color: var(--color-border-accent-interactive)
+			var(--color-background-accent-subtle);
 
 		--theme: light;
 
@@ -27,8 +28,10 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		padding-block-end: var(--size-160);
-		color: var(--neutral-11);
+		/* the page's trailing breathing room lives on the footer now — it is the
+		   last element on every document, so the space belongs above it rather
+		   than below it. */
+		color: var(--color-text-neutral-low);
 		font-size: var(--text-md);
 		font-family: var(--font-sans);
 		font-feature-settings: var(--font-sans-features);
@@ -38,7 +41,7 @@
 		-moz-osx-font-smoothing: grayscale;
 
 		&::selection {
-			background-color: var(--accent-5);
+			background-color: var(--color-component-accent-selected);
 		}
 	}
 }

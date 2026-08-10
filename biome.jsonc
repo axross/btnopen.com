@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.4.11/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.5.7/schema.json",
 	"vcs": {
 		"enabled": true,
 		"clientKind": "git",
@@ -42,7 +42,7 @@
 			"test": "recommended"
 		},
 		"rules": {
-			"recommended": true,
+			"preset": "recommended",
 			"a11y": {
 				"noNoninteractiveElementInteractions": "error"
 			},
@@ -109,15 +109,8 @@
 				"useUniqueElementIds": "warn"
 			},
 			"nursery": {
-				"noContinue": "off",
-				"noIncrementDecrement": "error",
 				"noFloatingPromises": "warn",
 				"noMisusedPromises": "error",
-				"noParametersOnlyUsedInRecursion": "error",
-				"noShadow": "warn",
-				"noUnknownAttribute": "warn",
-				// off because the rule works inaccurately; anyways it will be checked by typescript
-				"noUnnecessaryConditions": "off",
 				"useExhaustiveSwitchCases": "error",
 				// off because it requires explicit type annotations for variables as well, which is too much
 				"useExplicitType": "off",
@@ -249,7 +242,9 @@
 				"useThrowNewError": "error",
 				"useThrowOnlyError": "error",
 				"useTrimStartEnd": "warn",
-				"useUnifiedTypeSignatures": "warn"
+				"useUnifiedTypeSignatures": "warn",
+				"noContinue": "off",
+				"noIncrementDecrement": "error"
 			},
 			"suspicious": {
 				"noDeprecatedImports": "warn",
@@ -276,7 +271,12 @@
 				"useErrorMessage": "error",
 				"useGuardForIn": "error",
 				"useNumberToFixedDigitsArgument": "error",
-				"useStaticResponseMethods": "error"
+				"useStaticResponseMethods": "error",
+				"noParametersOnlyUsedInRecursion": "error",
+				"noShadow": "warn",
+				"noUnknownAttribute": "warn",
+				// off because the rule works inaccurately; anyways it will be checked by typescript
+				"noUnnecessaryConditions": "off"
 			}
 		}
 	},
@@ -289,6 +289,22 @@
 		}
 	},
 	"overrides": [
+		{
+			// SVGs under public/ are static assets, not markup: they are fetched
+			// as images or consumed as CSS mask-image (page.module.css masks
+			// /images/brush-grunge.svg), so they never reach the accessibility
+			// tree as an <svg> element and have no place to carry an accessible
+			// name. Biome began checking these files in 2.5, which is what
+			// surfaced the rule here.
+			"includes": ["public/**/*.svg"],
+			"linter": {
+				"rules": {
+					"a11y": {
+						"noSvgWithoutTitle": "off"
+					}
+				}
+			}
+		},
 		{
 			"includes": ["**/*.tsx"],
 			"linter": {
