@@ -1,0 +1,54 @@
+@layer components {
+	@scope (.footer) {
+		:where(:scope) {
+			/* the body centers its flex children, so stretch to the full width the
+			   header already spans. */
+			align-self: stretch;
+			/* on a page shorter than the viewport this pushes the footer to the
+			   bottom; the padding below keeps a minimum gap on a longer one. it also
+			   carries the trailing breathing room the body used to hold, now that
+			   the footer rather than the last section ends the page. */
+			margin-block-start: auto;
+			padding-block-start: var(--size-160);
+			padding-inline: var(--size-16);
+		}
+
+		.row {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: var(--size-16);
+			padding-block: var(--size-16);
+			border-block-start: var(--size-1) solid var(--color-border-neutral-subtle);
+			font-size: var(--text-sm);
+		}
+
+		.copyright {
+			font-size: inherit;
+		}
+
+		.link {
+			display: flex;
+			align-items: center;
+			/* the coarse-pointer target floor, kept off the `--size-*` scale on
+			   purpose — it is an input-device minimum rather than a spacing step. */
+			min-block-size: 44px;
+			padding-inline: var(--size-8);
+			margin-inline-end: calc(var(--size-8) * -1);
+			border-radius: var(--radius-sm);
+			color: var(--color-text-accent-low);
+			outline: none;
+
+			@media (hover: hover) {
+				&:hover {
+					background-color: var(--color-background-accent-subtle);
+				}
+			}
+
+			&:focus-visible {
+				outline: var(--color-component-accent-selected) solid var(--size-3);
+				outline-offset: var(--size-3);
+			}
+		}
+	}
+}

@@ -1,0 +1,89 @@
+@layer components {
+	@scope (.control) {
+		:where(:scope) {
+			display: flex;
+			flex-direction: column;
+			gap: var(--size-8);
+			padding: var(--size-16);
+			border: var(--size-1) solid var(--color-border-neutral-subtle);
+			border-radius: var(--radius-md);
+			background-color: var(--color-background-neutral-app);
+		}
+
+		.field {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: var(--size-16);
+			inline-size: stretch;
+			/* the coarse-pointer target floor, kept off the `--size-*` scale on
+			   purpose — it is an input-device minimum rather than a spacing step. */
+			min-block-size: 44px;
+			padding: 0;
+			border: none;
+			border-radius: var(--radius-sm);
+			background: none;
+			color: inherit;
+			font: inherit;
+			text-align: start;
+			cursor: pointer;
+			outline: none;
+
+			&:focus-visible {
+				outline: var(--color-component-accent-selected) solid var(--size-3);
+				outline-offset: var(--size-3);
+			}
+		}
+
+		.label {
+			color: var(--color-text-neutral-high);
+			font-weight: 600;
+		}
+
+		.track {
+			display: flex;
+			align-items: center;
+			flex: none;
+			inline-size: var(--size-48);
+			block-size: var(--size-24);
+			padding: var(--size-2);
+			border-radius: var(--radius-full);
+			background-color: var(--color-component-neutral-selected);
+			transition: background-color var(--duration-md) ease-in-out;
+
+			@media (hover: hover) {
+				.field:hover & {
+					background-color: var(--color-component-neutral-hovered);
+				}
+			}
+		}
+
+		.field[data-checked] .track {
+			background-color: var(--color-solid-accent-rest);
+
+			@media (hover: hover) {
+				.field:hover & {
+					background-color: var(--color-solid-accent-hovered);
+				}
+			}
+		}
+
+		.thumb {
+			display: block;
+			inline-size: var(--size-20);
+			block-size: var(--size-20);
+			border-radius: var(--radius-full);
+			background-color: var(--color-background-neutral-plain);
+			transition: translate var(--duration-md) ease-in-out;
+
+			&[data-checked] {
+				translate: var(--size-24) 0;
+			}
+		}
+
+		.state {
+			color: var(--color-text-neutral-low);
+			font-size: var(--text-sm);
+		}
+	}
+}

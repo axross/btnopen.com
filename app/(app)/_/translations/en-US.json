@@ -17,6 +17,38 @@
 	"language-switcher": {
 		"label": "Switch language"
 	},
+	"footer": {
+		"copyright": "© btnopen.com",
+		"privacy": "Privacy"
+	},
+	"analytics-consent": {
+		"banner-label": "Analytics preference",
+		"banner-description": "Allow analytics? If you do, this site records the pages you view and clicks on its outbound links — nothing else.",
+		"banner-note": "Error reporting keeps running either way.",
+		"banner-link": "About privacy",
+		"grant": "Allow",
+		"deny": "Don't allow"
+	},
+	"privacy": {
+		"heading": "Privacy",
+		"lede": "What this site collects, and what it does not, as the code actually does it. There are only two kinds: analytics, which runs only if you allow it, and error reporting, which runs either way.",
+		"analytics-heading": "Only if you allow it",
+		"analytics-body": "Mixpanel records the path of the page you viewed, and the fact that a GitHub, LinkedIn, or X link was clicked. Nothing else — no automatic capture of clicks or scrolling, no session recording, no heatmaps. Your browser's Do Not Track setting is honoured. Until you allow it, the Mixpanel code is not even downloaded and not a single request is sent.",
+		"analytics-params": "Two URL query parameters are reported: draft and agentic. Everything else is dropped, including parameters this site has never heard of.",
+		"diagnostics-heading": "Either way",
+		"diagnostics-body": "Error reporting, through Sentry. When something fails it records your IP address and user information, request and response headers, URL query parameters, and stack-frame variables. It does not record cookies, request or response bodies, or database query values.",
+		"diagnostics-replay": "A session that hits an error is replayed to Sentry. A session that does not is never recorded, whichever way you answered.",
+		"comments-heading": "If you leave a comment",
+		"comments-body": "Clerk brokers your GitHub sign-in. Four things are stored with the comment: your Clerk user id, display name, GitHub username, and avatar image URL. No email address is stored anywhere.",
+		"cookies-heading": "Cookies",
+		"cookies-body": "This site sets three of its own: the language you chose, the analytics answer you gave on this page, and a CSRF token while you submit a comment.",
+		"control-heading": "Change your mind at any time",
+		"control-body": "The switch below turns analytics on and off. It takes effect where you stand — collection starts or stops immediately, with no page reload.",
+		"control-label": "Allow analytics",
+		"control-granted": "Currently allowed.",
+		"control-denied": "Currently not allowed.",
+		"control-undecided": "Not answered yet. Nothing is being collected."
+	},
 	"comments": {
 		"heading": "Comments",
 		"empty-invite": "Be the first to comment.",

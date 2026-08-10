@@ -1,0 +1,116 @@
+@layer components {
+	@scope (.banner) {
+		:where(:scope) {
+			/* `position: fixed` stays viewport-relative here even though `body`
+			   declares `container-type: inline-size`: the CSS Working Group
+			   deliberately kept a size container from becoming a containing block
+			   for fixed descendants, so a banner anchored to the viewport does not
+			   have to escape the container the whole app sits in. Verified in
+			   Chromium against this layout rather than assumed. */
+			position: fixed;
+			z-index: 1;
+			inset-block-end: var(--size-16);
+			/* mobile: a full-width card inset from both edges. the corner anchoring
+			   below replaces this once there is room beside the reading column. */
+			inset-inline: var(--size-16);
+			display: flex;
+			flex-direction: column;
+			gap: var(--size-8);
+			padding: var(--size-16);
+			border: var(--size-1) solid var(--color-border-neutral-subtle);
+			border-radius: var(--radius-md);
+			background-color: var(--color-background-neutral-app);
+			color: var(--color-text-neutral-low);
+			font-size: var(--text-sm);
+
+			@container body (width > 30rem) {
+				inset-inline: auto var(--size-24);
+				inline-size: min(24rem, calc(100% - var(--size-48)));
+			}
+		}
+
+		.description {
+			color: var(--color-text-neutral-high);
+		}
+
+		.note {
+			font-size: var(--text-xs);
+		}
+
+		.link {
+			color: var(--color-text-accent-low);
+			text-decoration-line: underline;
+			text-underline-offset: var(--size-2);
+			border-radius: var(--radius-xs);
+			outline: none;
+
+			@media (hover: hover) {
+				&:hover {
+					color: var(--color-text-accent-high);
+				}
+			}
+
+			&:focus-visible {
+				outline: var(--color-component-accent-selected) solid var(--size-3);
+				outline-offset: var(--size-3);
+			}
+		}
+
+		.actions {
+			display: flex;
+			gap: var(--size-8);
+			margin-block-start: var(--size-4);
+		}
+
+		/* both answers are the same size and sit side by side: neither the accepting
+		   nor the refusing control is made easier to reach than the other. */
+		.deny,
+		.grant {
+			flex: 1;
+			/* the coarse-pointer target floor, kept off the `--size-*` scale on
+			   purpose — it is an input-device minimum rather than a spacing step. */
+			min-block-size: 44px;
+			padding-inline: var(--size-16);
+			border: var(--size-1) solid transparent;
+			border-radius: var(--radius-sm);
+			font-size: var(--text-sm);
+			font-weight: 600;
+			cursor: pointer;
+			outline: none;
+			transition: background-color var(--duration-md) ease-in-out;
+
+			&:focus-visible {
+				outline: var(--color-component-accent-selected) solid var(--size-3);
+				outline-offset: var(--size-3);
+			}
+		}
+
+		/* both answers sit at the same slot of their own scheme, so they carry the
+		   same weight and differ only in hue: the accepting one is not made
+		   easier to pick than the refusing one. each hovers within its own scheme
+		   rather than crossing to the other. */
+		.deny {
+			border-color: var(--color-border-neutral-interactive);
+			background-color: var(--color-component-neutral-rest);
+			color: var(--color-text-neutral-high);
+
+			@media (hover: hover) {
+				&:hover {
+					background-color: var(--color-component-neutral-hovered);
+				}
+			}
+		}
+
+		.grant {
+			border-color: var(--color-border-accent-interactive);
+			background-color: var(--color-component-accent-rest);
+			color: var(--color-text-accent-high);
+
+			@media (hover: hover) {
+				&:hover {
+					background-color: var(--color-component-accent-hovered);
+				}
+			}
+		}
+	}
+}
