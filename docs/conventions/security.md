@@ -11,24 +11,34 @@ and what already guards it.
 Application code reaches runtime configuration through exactly one barrel per
 realm — `app/(app)/_/runtime.ts` for the app, `payload/helpers/runtime.ts` for
 Payload — so a review only has to look in one place to know what a deployment
-exposes. `payload/config.ts` is the sanctioned exception: the secret, the
-database credentials, the storage prefix, and the seed user are read only where
-the config object is built, so routing them through the barrel would add an
-export with a single caller. A value a second module in the realm also needs
-goes through the barrel instead, as `vercelBlobToken` does — `payload/config.ts`
-and `payload/helpers/image.ts` both import it. Config and test files have no
-barrel to read through, so they appear in the table too, as does the one
-component that keeps a literal `NODE_ENV` comparison for the reason below. The
-table is the complete set of source files Biome lints that read `process.env`
-outside an override — every one of them carries a directive naming its reason.
+exposes. The app realm has no file-level exception: every value goes through its
+barrel however few modules consume it, and `clerkPublishableKey` — which has no
+consumer outside `app/(app)/_/runtime.ts` at all — still lives there.
+
+`payload/config.ts` is the one sanctioned file-level exception. The secret, the
+database credentials, the storage prefix, and the seed user are build-time
+values: `next build` resolves this config — a build against an unmigrated
+database fails while prerendering — so they must be present at build time and
+not only at run time. They are runtime values too, since the same module is
+evaluated in every server process that imports it. What keeps the exception
+narrow is that no other module in the Payload realm reads any of the six. Once a
+second one does, the value belongs in the barrel instead, as `vercelBlobToken`
+shows — `payload/config.ts` and `payload/helpers/image.ts` both import it from
+there. That is a property of this exception, not a rule about barrels.
+
+Config and test files have no barrel to read through, so they appear in the
+table too, as does the one component that keeps a literal `NODE_ENV` comparison
+for the reason below. The table is the complete set of source files Biome lints
+that read `process.env` outside an override — every one of them carries a
+directive naming its reason.
 
 | File | Why it may read `process.env` |
 | --- | --- |
 | `app/(app)/_/runtime.ts` | The app realm's sanctioned barrel, exporting `urlOrigin`, `vercelEnvironment`, `sentryDsn`, `mixpanelToken`, and friends |
-| `payload/helpers/runtime.ts` | The Payload realm's counterpart, exporting `urlOrigin` and `vercelBlobToken` — each read by more than one module in the realm, which is what earns a value its place here. It exists so the realm never imports `app/`, and resolves the origin through the same `shared/url-origin.ts` the app barrel uses |
-| `payload/config.ts` | The secret, the database credentials, the storage prefix, and the seed user, each consumed only here where the config object is built. The module is evaluated by the Payload CLI and by every server process that imports it, so these are not build-time values |
-| `next.config.ts` | Config-time access to `CI`, `SENTRY_ORG`, `SENTRY_PROJECT` |
-| `playwright.config.ts` | Test config-time access to `CI`, `PLAYWRIGHT_BASE_URL`, `VERCEL_AUTOMATION_BYPASS_SECRET` |
+| `payload/helpers/runtime.ts` | The Payload realm's counterpart, exporting `urlOrigin` and `vercelBlobToken`. It exists so the realm never imports `app/`, and resolves the origin through the same `shared/url-origin.ts` the app barrel uses |
+| `payload/config.ts` | The secret, the database credentials, the storage prefix, and the seed user — build-time values `next build` needs to resolve this config, and read nowhere else in the Payload realm |
+| `next.config.ts` | Config-time access to `CI`, `SENTRY_ORG`, `SENTRY_PROJECT`, `DEPLOYMENT_ID`, and `NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA` |
+| `playwright.config.ts` | Test config-time access to `CI`, `PLAYWRIGHT_BASE_URL`, `PLAYWRIGHT_SERVER_MODE`, and `VERCEL_AUTOMATION_BYPASS_SECRET` |
 | `app/(app)/_/components/markdown.tsx` | The one sanctioned `NODE_ENV` check in application code — see below |
 | `e2e/helpers/api/auth.ts`, `e2e/helpers/api/mcp.ts`, `e2e/tests/routes/posts/comments.test.ts` | Test credentials and env-driven gates, reaching the real environment on purpose |
 | `e2e/helpers/api/clerk.ts` | The `+clerk_test` reader identity (`TEST_CLERK_READER_EMAIL`) the Clerk-authenticated comment tests sign in as; unset skips them rather than substituting an account |
@@ -47,11 +57,13 @@ configuration* rather than to `process.env` as a token.
 
 - MUST read runtime configuration through `app/(app)/_/runtime.ts` from any
   component, repository, helper, or route handler, and through
-  `payload/helpers/runtime.ts` from anything inside `payload/`. An inline
-  `process.env.NODE_ENV` comparison that a bundler must see literally to eliminate
-  a branch, as `app/(app)/_/components/markdown.tsx` has, is the single exemption
-  — it is build-time substitution rather than deployment configuration, and it
-  extends to no other variable.
+  `payload/helpers/runtime.ts` from anything inside `payload/` — except
+  `payload/config.ts`, whose six build-time values are the file-level exception
+  described above. An inline `process.env.NODE_ENV` comparison that a
+  bundler must see literally to eliminate a branch, as
+  `app/(app)/_/components/markdown.tsx` has, is the single variable-level
+  exemption — it is build-time substitution rather than deployment
+  configuration, and it extends to no other variable.
 - MUST carry a `noProcessEnv` suppression with a reason on any sanctioned direct
   `process.env` access, in whichever of Biome's three forms fits the site: a
   single-line `// biome-ignore lint/style/noProcessEnv:` above the access, a

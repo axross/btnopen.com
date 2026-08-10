@@ -18,14 +18,14 @@ import { payloadMcpPlugin } from "./helpers/mcp";
 import { vercelBlobToken } from "./helpers/runtime";
 import { seed } from "./helpers/seed";
 
-// biome-ignore-start lint/style/noProcessEnv: values read only where this config object is built
+// biome-ignore-start lint/style/noProcessEnv: build-time values read nowhere else in the Payload realm
 const payloadSecret = process.env.PAYLOAD_SECRET ?? "local";
 const libsqlUrl = process.env.LIBSQL_PAYLOAD_TURSO_DATABASE_URL;
 const libsqlToken = process.env.LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN;
 const blobPrefix = process.env.BLOB_PAYLOAD_PREFIX ?? "";
 const testUserEmail = process.env.PAYLOAD_TEST_USER_EMAIL;
 const testUserPassword = process.env.PAYLOAD_TEST_USER_PASSWORD;
-// biome-ignore-end lint/style/noProcessEnv: values read only where this config object is built
+// biome-ignore-end lint/style/noProcessEnv: build-time values read nowhere else in the Payload realm
 
 const selfDirname = dirname(new URL(import.meta.url).pathname);
 
