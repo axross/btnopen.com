@@ -115,15 +115,23 @@ export const ShareLinkField: TextFieldClientComponent = ({ field, path }) => {
 		}
 	}, [config.routes.api, config.serverURL, id, setValue]);
 
+	// Payload's own text field derives its input id from the field path this way,
+	// so the label and the warning line associate with the input the same way
+	// every other field on the tab does.
+	const inputId = `field-${path.replaceAll(".", "__")}`;
+	const warningId = `${inputId}-warning`;
+
 	return (
 		<div className={baseClass} data-testid="share-link-field">
-			<FieldLabel label={field?.label} path={path} />
+			<FieldLabel htmlFor={inputId} label={field?.label} path={path} />
 
 			{id && value ? (
 				<div className={`${baseClass}__row`}>
 					<input
+						aria-describedby={warningId}
 						className={`${baseClass}__url`}
 						data-testid="share-link-url"
+						id={inputId}
 						readOnly={true}
 						value={shareUrl}
 					/>
@@ -164,7 +172,11 @@ export const ShareLinkField: TextFieldClientComponent = ({ field, path }) => {
 				</p>
 			)}
 
-			<p className={`${baseClass}__warning`} data-testid="share-link-warning">
+			<p
+				className={`${baseClass}__warning`}
+				data-testid="share-link-warning"
+				id={warningId}
+			>
 				{
 					"Anyone holding this link can read the draft, with no sign-in. It never expires — rotating is the only way to revoke it, and rotating revokes every copy at once."
 				}
