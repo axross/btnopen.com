@@ -11,6 +11,7 @@ import * as migration_20260712_222856_authoring_notes_field from './20260712_222
 import * as migration_20260716_041641_comments_collection from './20260716_041641_comments_collection';
 import * as migration_20260716_185233_rename_is_comments_enabled from './20260716_185233_rename_is_comments_enabled';
 import * as migration_20260718_091804_blob_prefix_field from './20260718_091804_blob_prefix_field';
+import * as migration_20260810_164456_share_token_field from './20260810_164456_share_token_field';
 
 export const migrations = [
   {
@@ -76,6 +77,11 @@ export const migrations = [
   {
     up: migration_20260718_091804_blob_prefix_field.up,
     down: migration_20260718_091804_blob_prefix_field.down,
-    name: '20260718_091804_blob_prefix_field'
+    name: '20260718_091804_blob_prefix_field',
+  },
+  {
+    up: migration_20260810_164456_share_token_field.up,
+    down: migration_20260810_164456_share_token_field.down,
+    name: '20260810_164456_share_token_field'
   },
 ];

@@ -246,6 +246,10 @@ export interface BlogPost {
    */
   isCommentsEnabled?: boolean | null;
   /**
+   * Secret that lets a signed-out reviewer read this post's draft. Minted on the server and replaced only by rotating it.
+   */
+  shareToken?: string | null;
+  /**
    * Authoring outline for the agent-driven authoring loop. A single Markdown bullet-point list — only list items and inline elements are permitted; no paragraphs or other block types.
    */
   outline?: string | null;
@@ -608,6 +612,7 @@ export interface BlogPostsSelect<T extends boolean = true> {
   author?: T;
   publishedAt?: T;
   isCommentsEnabled?: T;
+  shareToken?: T;
   outline?: T;
   authoringNotes?: T;
   updatedAt?: T;

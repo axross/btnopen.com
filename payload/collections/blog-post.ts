@@ -6,6 +6,7 @@ import {
 import { logger } from "../helpers/logger";
 import { shouldInvalidatePostCaches } from "../helpers/post-cache-invalidation";
 import { urlOrigin } from "../helpers/runtime";
+import { assignShareToken } from "../helpers/share-token";
 
 export const blogPostCollection: CollectionConfig = {
 	slug: "blog-posts",
@@ -116,6 +117,29 @@ export const blogPostCollection: CollectionConfig = {
 									"Show the reader comments section at the bottom of this post.",
 							},
 						},
+						{
+							name: "shareToken",
+							type: "text",
+							// this repository's first field-level access rule, and it closes
+							// the field to everyone rather than opening it — the inverse of
+							// the case docs/conventions/payload.md covers, where a field-level
+							// rule returns `true` on an otherwise-gated collection. The token
+							// is a bearer credential for unpublished content, so `read`
+							// requires a session, and `create` and `update` deny everyone so
+							// no value a REST, GraphQL, or MCP caller sends is ever honoured.
+							// `assignShareToken` below owns the stored value instead; opening
+							// the field to an author would only add a way to weaken it.
+							access: {
+								read: ({ req }) => Boolean(req.user),
+								create: () => false,
+								update: () => false,
+							},
+							admin: {
+								readOnly: true,
+								description:
+									"Secret that lets a signed-out reviewer read this post's draft. Minted on the server and replaced only by rotating it.",
+							},
+						},
 					],
 				},
 				{
@@ -151,6 +175,7 @@ export const blogPostCollection: CollectionConfig = {
 	},
 	trash: true,
 	hooks: {
+		beforeChange: [assignShareToken],
 		beforeDelete: [
 			async ({ req, id }) => {
 				// comments hold a required (NOT NULL) foreign key to their post, so
