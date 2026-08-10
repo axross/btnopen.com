@@ -66,7 +66,6 @@ const nextConfig: NextConfig = {
 	// pino-pretty are stream-based and equally incompatible.
 	serverExternalPackages: ["re2", "pino", "pino-pretty"],
 	experimental: {
-		viewTransition: true,
 		globalNotFound: true,
 	},
 	headers: () => [

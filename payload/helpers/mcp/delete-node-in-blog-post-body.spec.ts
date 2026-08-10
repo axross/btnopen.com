@@ -241,10 +241,10 @@ describe("deleteNodeInBlogPostBodyTool()", () => {
 		expect(responseJson.deletedNode).toEqual({ type: "text", text: "Delete" });
 		expect(
 			(
-				updatedBody?.root.children[0] as unknown as {
-					children: Array<{ children: unknown[] }>;
-				}
-			).children[0]?.children,
+				updatedBody?.root.children[0] as unknown as
+					| { children: Array<{ children: unknown[] }> }
+					| undefined
+			)?.children[0]?.children,
 		).toEqual([{ type: "text", text: "Keep" }]);
 	});
 
