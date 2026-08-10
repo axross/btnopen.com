@@ -16,7 +16,7 @@
 		/* One muted line, a step below body copy — the surface stands in for
 		 * content rather than announcing itself. */
 		.message {
-			color: var(--neutral-11);
+			color: var(--color-text-neutral-low);
 			font-size: var(--text-sm);
 			line-height: var(--leading-lg);
 		}
@@ -30,7 +30,7 @@
 			border: none;
 			border-radius: var(--radius-md);
 			background-color: transparent;
-			color: var(--accent-11);
+			color: var(--color-text-accent-low);
 			font-family: var(--font-mono);
 			font-feature-settings: var(--font-mono-features);
 			font-size: var(--text-sm);
@@ -43,12 +43,14 @@
 			outline: none;
 			transition: background-color var(--duration-md) ease-in-out;
 
-			&:hover {
-				background-color: var(--accent-2);
+			@media (hover: hover) and (pointer: fine) {
+				&:hover {
+					background-color: var(--color-background-accent-subtle);
+				}
 			}
 
 			&:focus-visible {
-				outline: var(--accent-5) solid var(--size-3);
+				outline: var(--color-component-accent-selected) solid var(--size-3);
 				outline-offset: var(--size-3);
 			}
 
