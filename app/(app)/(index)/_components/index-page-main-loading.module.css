@@ -1,8 +1,17 @@
 @layer components {
-	/* Every rule here mirrors its counterpart in the index page's own
-	 * `page.module.css`, because a CSS Module may not import another component's.
-	 * The two move together: a spacing change on either side belongs on both, or
-	 * the skeleton stops collapsing into the loaded region without a shift.
+	/* Every rule below the scope root mirrors its counterpart in the index page's
+	 * own `page.module.css`, because a CSS Module may not import another
+	 * component's. The two move together: a spacing change on either side belongs
+	 * on both, or the skeleton stops collapsing into the loaded region without a
+	 * shift.
+	 *
+	 * The scope root is the exception, and has nothing to mirror: `page.tsx`
+	 * renders its `<main>` under a `css.main` that `page.module.css` never
+	 * defines, so the loaded region's root ships class-less and takes its column
+	 * layout from the `.indexPage` flex container above it. These declarations
+	 * restate that layout so the two roots lay their children out alike — which
+	 * they measurably do: the `.intro` box starts at the same y in both states at
+	 * 412px, 712px, and 1280px.
 	 *
 	 * `--max-width` and `--page-variant` are not restated — they come from the
 	 * `.indexPage` container this skeleton renders inside, the same ancestor the
