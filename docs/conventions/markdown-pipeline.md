@@ -113,10 +113,33 @@ Lexical data from Payload CMS and converts it via `convertLexicalToMarkdown`.
 
 **Rules:**
 
-- MUST NOT read markdown from the filesystem at runtime — all blog content comes
-  from Payload CMS.
+- MUST NOT load markdown from the filesystem **or from arbitrary HTTP** at
+  runtime — all blog content comes from Payload CMS. A constrained input source is
+  itself a control: content the pipeline cannot reach is content it never has to
+  defend against.
 - MUST NOT modify the Lexical-to-markdown conversion logic without understanding
   the `@payloadcms/richtext-lexical` API.
+
+## Content Safety
+
+What the pipeline guarantees about CMS-authored content, and which controls hold
+each guarantee, is in
+[../specs/markdown-rendering.md](../specs/markdown-rendering.md). Two rules bind
+the code that implements them.
+
+**Rules:**
+
+- MUST extend `classifyLinkHref` (`app/(app)/_/helpers/link-href.ts`) itself —
+  never one of its call sites — when a new URL scheme becomes legitimate. It is
+  called from both `rehypeAllowedLinkProtocols` and the `Link` component, and
+  those two exist as independent layers precisely so removing one does not open
+  the surface; widening one call site instead of the shared helper is what lets
+  them drift apart, which turns the redundancy into an inconsistency.
+- MUST re-check a pipeline change against every control at once — the
+  link-protocol allowlist, the `Embed` http(s) gate, the `unknownHandler`'s
+  permissive behaviour, and the output encoding `rehypeReact` provides. They are
+  arranged as layers, so a change is safe only against the set rather than against
+  whichever one it happens to touch.
 
 ## Error Handling
 
