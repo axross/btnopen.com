@@ -84,12 +84,15 @@
 			display: flex;
 		}
 
-		/* The real icons are 24px SVGs; `--size-24` is the token for that size and
-		 * runs a few pixels larger at the widest viewports, which is the cost of
-		 * sizing from the scale rather than from a literal. */
+		/* The real icons are 24px SVGs, so this is a literal rather than
+		 * `--size-24`: that token is fluid and resolves to 24.48px at 412px and
+		 * 29.14px at 1280px, which showed up as the skeleton standing ~5px taller
+		 * than the row it was replaced by at desktop width. A glyph's size is a
+		 * fixed asset dimension rather than a spacing step, so it does not belong
+		 * on the scale. */
 		.socialIcon {
-			width: var(--size-24);
-			height: var(--size-24);
+			width: 24px;
+			height: 24px;
 			aspect-ratio: 1;
 		}
 
