@@ -1,10 +1,22 @@
-import { beforeAll, describe, expect, it, jest } from "@jest/globals";
 import type { Block } from "payload";
+import { describe, expect, it, vi } from "vitest";
+import { bannerBlock } from "./banner-block";
 import {
 	bannerEndRegex,
 	bannerStartRegex,
 	defaultBannerType,
 } from "./banner-directive";
+
+/**
+ * `banner-block.ts` pulls in `@payloadcms/richtext-lexical` for the nested
+ * body's editor, which is ESM-only and irrelevant here — the subject is the
+ * block's field contract and its markdown round trip, not the editor. Vitest
+ * hoists this registration above the imports above, so the fake is in place
+ * before the subject loads.
+ */
+vi.mock("@payloadcms/richtext-lexical", () => ({
+	lexicalEditor: () => ({}),
+}));
 
 /**
  * A stand-in for the parent editor's `lexicalToMarkdown`: it reads a `markdown`
@@ -53,32 +65,6 @@ function parseExportedBanner(markdown: string): {
 function findField(block: Block, name: string) {
 	return block.fields.find((field) => "name" in field && field.name === name);
 }
-
-let bannerBlock: Block;
-
-/**
- * `banner-block.ts` pulls in `@payloadcms/richtext-lexical` for the nested
- * body's editor, which is ESM-only and irrelevant here — the subject is the
- * block's field contract and its markdown round trip, not the editor. Fake it
- * at the boundary and import the block afterwards.
- *
- * `jest.mock()` is deliberately not used: SWC's Jest transform only hoists a
- * `jest.mock` call written against the bare global `jest`, and this project
- * imports its Jest APIs from `@jest/globals` (see `testing-conventions.md`), so
- * a hoisted mock would never be registered before the subject's own import.
- * `jest.doMock()` needs no hoisting, and the dynamic import below compiles to a
- * `require` that runs after it. the module registry is deliberately not reset:
- * nothing has required the editor package yet, and a reset would hand
- * `banner-block.ts` a second copy of `banner-directive.ts`, breaking the
- * identity the fence assertions rely on.
- */
-beforeAll(async () => {
-	jest.doMock("@payloadcms/richtext-lexical", () => ({
-		lexicalEditor: () => ({}),
-	}));
-
-	({ bannerBlock } = await import("./banner-block"));
-});
 
 describe("bannerBlock", () => {
 	it("is registered under the banner slug", () => {

@@ -1,13 +1,7 @@
-import {
-	afterEach,
-	beforeAll,
-	describe,
-	expect,
-	it,
-	jest,
-} from "@jest/globals";
 import type { MCPAccessSettings, mcpPlugin } from "@payloadcms/plugin-mcp";
 import type { PayloadRequest, TypedUser } from "payload";
+import { describe, expect, it, vi } from "vitest";
+import "./mcp";
 import { mcpLogger } from "./mcp/logger";
 
 type PluginConfig = Parameters<typeof mcpPlugin>[0];
@@ -17,7 +11,13 @@ type OverrideResponse = NonNullable<
 	>]
 >["overrideResponse"];
 
-let capturedConfig: PluginConfig;
+/**
+ * Holds the configuration object across the hoisting boundary. `vi.hoisted()`
+ * runs before the mock factory below, which in turn runs before this module's
+ * own body, so an ordinary module-level binding would still be in its temporal
+ * dead zone when the factory assigned to it.
+ */
+const captured = vi.hoisted(() => ({ config: undefined as unknown }));
 
 /**
  * `mcp.ts` exports only the built plugin, and deliberately exports none of the
@@ -25,29 +25,18 @@ let capturedConfig: PluginConfig;
  * test would be the wrong trade. Fake the plugin package instead so importing
  * the module captures the configuration object, then exercise the closures on
  * it directly; that covers the same functions plus the wiring around them.
- *
- * `jest.mock()` is deliberately not used: SWC's Jest transform only hoists a
- * `jest.mock` call written against the bare global `jest`, and this project
- * imports its Jest APIs from `@jest/globals` (see `testing-conventions.md`), so
- * a hoisted mock would never be registered before the subject's own import.
- * `jest.doMock()` needs no hoisting, and the dynamic import below compiles to a
- * `require` that runs after it.
  */
-beforeAll(async () => {
-	jest.doMock("@payloadcms/plugin-mcp", () => ({
-		mcpPlugin: (config: PluginConfig) => {
-			capturedConfig = config;
+vi.mock("@payloadcms/plugin-mcp", () => ({
+	mcpPlugin: (config: unknown) => {
+		captured.config = config;
 
-			return () => undefined;
-		},
-	}));
+		return () => undefined;
+	},
+}));
 
-	await import("./mcp");
-});
-
-afterEach(() => {
-	jest.restoreAllMocks();
-});
+// the side-effect import of `./mcp` above resolves before this module's body
+// runs, so the faked plugin factory has already captured the configuration.
+const capturedConfig = captured.config as PluginConfig;
 
 const emptyResponse = { content: [] };
 const fakeRequest = {} as PayloadRequest;
@@ -84,7 +73,12 @@ function websiteOverrideResponse(): NonNullable<OverrideResponse> {
 	return overrideResponse;
 }
 
-/** Reads back the JSON payload a sanitized MCP text response carries. */
+/**
+ * Reads back the JSON payload a sanitized MCP text response carries. The shape
+ * checks throw rather than assert, matching how the override lookups above
+ * report a missing hook: they are preconditions for reading the payload at all,
+ * so the scenario's own assertion stays the one that reports a failure.
+ */
 function sanitizedPayload(
 	overrideResponse: NonNullable<OverrideResponse>,
 	doc: unknown,
@@ -95,8 +89,11 @@ function sanitizedPayload(
 		fakeRequest,
 	);
 
-	expect(response.content).toHaveLength(1);
-	expect(response.content[0].type).toBe("text");
+	if (response.content.length !== 1 || response.content[0].type !== "text") {
+		throw new Error(
+			"A sanitized MCP response must carry exactly one text content entry.",
+		);
+	}
 
 	return JSON.parse(response.content[0].text);
 }
@@ -238,7 +235,7 @@ describe("overrideResponse()", () => {
 	});
 
 	it("returns an explicit error payload when sanitizing throws", () => {
-		const warn = jest
+		const warn = vi
 			.spyOn(mcpLogger, "warn")
 			.mockImplementation(() => undefined);
 
@@ -262,7 +259,7 @@ describe("overrideResponse()", () => {
 
 describe("onEvent()", () => {
 	it("logs an unknown type for an event that is not a record", () => {
-		const info = jest
+		const info = vi
 			.spyOn(mcpLogger, "info")
 			.mockImplementation(() => undefined);
 
@@ -275,7 +272,7 @@ describe("onEvent()", () => {
 	});
 
 	it("normalizes an unknown-shaped record to an unknown type and no facets", () => {
-		const info = jest
+		const info = vi
 			.spyOn(mcpLogger, "info")
 			.mockImplementation(() => undefined);
 
@@ -302,7 +299,7 @@ describe("onEvent()", () => {
 	});
 
 	it("passes a well-formed event's facets through", () => {
-		const info = jest
+		const info = vi
 			.spyOn(mcpLogger, "info")
 			.mockImplementation(() => undefined);
 
@@ -334,10 +331,10 @@ describe("onEvent()", () => {
 	});
 
 	it("warns on an ERROR event, reducing its error to a message", () => {
-		const warn = jest
+		const warn = vi
 			.spyOn(mcpLogger, "warn")
 			.mockImplementation(() => undefined);
-		const info = jest
+		const info = vi
 			.spyOn(mcpLogger, "info")
 			.mockImplementation(() => undefined);
 
@@ -351,7 +348,7 @@ describe("onEvent()", () => {
 	});
 
 	it("accepts an error already reported as a string", () => {
-		const warn = jest
+		const warn = vi
 			.spyOn(mcpLogger, "warn")
 			.mockImplementation(() => undefined);
 
