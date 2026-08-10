@@ -60,8 +60,8 @@
 
 		.portraitForeground {
 			position: absolute;
-			top: 15cqw;
-			right: 15cqw;
+			inset-block-start: 15cqw;
+			inset-inline-end: 15cqw;
 			width: 85cqw;
 			height: auto;
 			filter: sepia(0.5) saturate(1.75)
@@ -98,8 +98,8 @@
 			--grunge-shadow-offset: 2;
 
 			position: absolute;
-			top: 0;
-			left: 0;
+			inset-block-start: 0;
+			inset-inline-start: 0;
 			aspect-ratio: var(--grunge-artwork-width) / var(--grunge-artwork-height);
 			color: var(--color-solid-accent-rest);
 		}
@@ -136,12 +136,12 @@
 		}
 
 		.portraitGrunge {
-			right: 0;
+			inset-inline-end: 0;
 			z-index: -5;
 		}
 
 		.portraitGrungeGlitchFirst {
-			right: calc(var(--size-2) * -1);
+			inset-inline-end: calc(var(--size-2) * -1);
 			--grunge-outline: oklch(
 				from var(--color-solid-accent-rest) l c calc(h - 32)
 			);
@@ -153,7 +153,7 @@
 		}
 
 		.portraitGrungeGlitchSecond {
-			right: var(--size-2);
+			inset-inline-end: var(--size-2);
 			--grunge-outline: oklch(
 				from var(--color-solid-accent-rest) l c calc(h + 32)
 			);

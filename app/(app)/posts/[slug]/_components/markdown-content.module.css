@@ -468,7 +468,7 @@
 	}
 
 	.tableWrapper::before {
-		left: 0;
+		inset-inline-start: 0;
 		background: linear-gradient(
 			to right,
 			var(--color-background-neutral-plain),
@@ -477,7 +477,7 @@
 	}
 
 	.tableWrapper::after {
-		right: 0;
+		inset-inline-end: 0;
 		background: linear-gradient(
 			to left,
 			var(--color-background-neutral-plain),
