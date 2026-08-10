@@ -1,0 +1,60 @@
+@layer components {
+	/* The surface and its action render as siblings rather than nested, so each
+	 * roots its own scope. */
+	@scope (.stateMessage) {
+		:where(:scope) {
+			display: flex;
+			width: stretch;
+			flex-direction: column;
+			align-items: center;
+			row-gap: var(--size-4);
+			padding-block: var(--size-48);
+			padding-inline: var(--size-16);
+			text-align: center;
+		}
+
+		/* One muted line, a step below body copy — the surface stands in for
+		 * content rather than announcing itself. */
+		.message {
+			color: var(--neutral-11);
+			font-size: var(--text-sm);
+			line-height: var(--leading-lg);
+		}
+	}
+
+	@scope (.stateMessageAction) {
+		:where(:scope) {
+			appearance: none;
+			padding-block: var(--size-12);
+			padding-inline: var(--size-16);
+			border: none;
+			border-radius: var(--radius-md);
+			background-color: transparent;
+			color: var(--accent-11);
+			font-family: var(--font-mono);
+			font-feature-settings: var(--font-mono-features);
+			font-size: var(--text-sm);
+			/* the underline is what marks this as a link-shaped control; the
+			 * padding above carries the tap target to ~40px without a negative
+			 * margin, which the root of a component may not set. */
+			text-decoration: underline;
+			text-underline-offset: var(--size-4);
+			cursor: pointer;
+			outline: none;
+			transition: background-color var(--duration-md) ease-in-out;
+
+			&:hover {
+				background-color: var(--accent-2);
+			}
+
+			&:focus-visible {
+				outline: var(--accent-5) solid var(--size-3);
+				outline-offset: var(--size-3);
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				transition: none;
+			}
+		}
+	}
+}
