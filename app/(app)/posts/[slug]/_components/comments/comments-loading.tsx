@@ -15,6 +15,11 @@ import css from "./comments-loading.module.css";
  * `<Comments>` fetches its own threads but is mounted conditionally by the
  * page, so this stands in at the page's boundary rather than as the `loading`
  * half of a triad.
+ *
+ * The caller supplies `aria-label`, so the region announces itself under the
+ * same name the loaded section does. Resolving it here instead would make this
+ * an async component, and a `<Suspense>` fallback that suspends hands the wait
+ * to the nearest ancestor boundary rather than rendering.
  */
 export function CommentsLoading({
 	className,

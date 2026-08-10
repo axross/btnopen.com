@@ -39,6 +39,11 @@ export default async function BlogPostPage({
 		return <BlogPostAgenticView slug={slug} draft={draft} data-testid="page" />;
 	}
 
+	// the comments skeleton needs the same accessible name its loaded counterpart
+	// sets, and a <Suspense> fallback may not suspend — an async skeleton would
+	// push the wait up to the nearest ancestor boundary, which is the document's.
+	// so the label is resolved here and passed in.
+	const t = await getTranslations("comments");
 	const preview = searchParams.then((p) => p.preview === "true");
 	// resolve the locale inside the promise callback (not as an eagerly
 	// evaluated argument) so the dynamic cookie read happens within the Suspense
@@ -69,7 +74,14 @@ export default async function BlogPostPage({
 				    this skeleton briefly shows and then vanishes there. that is the
 				    accepted cost of showing one on the posts that do have comments,
 				    which is most of them (decided on #179). */}
-				<Suspense fallback={<CommentsLoading data-testid="comments-loading" />}>
+				<Suspense
+					fallback={
+						<CommentsLoading
+							aria-label={t("heading")}
+							data-testid="comments-loading"
+						/>
+					}
+				>
 					<MaybeComments blogPost={blogPost} slug={slug} draft={draft} />
 				</Suspense>
 			</article>
