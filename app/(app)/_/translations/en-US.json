@@ -1,7 +1,8 @@
 {
 	"index": {
 		"introduction-label": "Introduction",
-		"posts-heading": "Posts"
+		"posts-heading": "Posts",
+		"posts-empty": "No posts yet."
 	},
 	"not-found": {
 		"home-link": "Go back home",

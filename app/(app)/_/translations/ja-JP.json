@@ -1,7 +1,8 @@
 {
 	"index": {
 		"introduction-label": "自己紹介",
-		"posts-heading": "投稿"
+		"posts-heading": "投稿",
+		"posts-empty": "まだ投稿がありません。"
 	},
 	"not-found": {
 		"home-link": "ホームに戻る",
