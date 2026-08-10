@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it } from "vitest";
 import enUS from "../translations/en-US.json" with { type: "json" };
 import jaJP from "../translations/ja-JP.json" with { type: "json" };
 import { resolveRenderFailure } from "./render-failure";

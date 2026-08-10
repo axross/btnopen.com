@@ -1,7 +1,7 @@
-import { describe, expect, it } from "@jest/globals";
 import { Fragment } from "react";
 import jsxRuntime from "react/jsx-runtime";
 import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, it } from "vitest";
 import { renderMarkdown } from "./markdown";
 
 // a themed token span emitted by the real Shiki highlighter, e.g.
