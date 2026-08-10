@@ -8,7 +8,7 @@
 			flex: 0 0 auto;
 			border-radius: var(--radius-full);
 			object-fit: cover;
-			background-color: var(--accent-4);
+			background-color: var(--color-component-accent-hovered);
 			filter: sepia(1) saturate(var(--saturation))
 				hue-rotate(calc(var(--accent-hue) - 92deg))
 				brightness(var(--brightness));
@@ -42,8 +42,8 @@
 			justify-content: center;
 			font-weight: 600;
 			text-transform: uppercase;
-			color: oklch(0.98 0.02 var(--accent-hue));
-			background-color: var(--accent-9);
+			color: var(--color-text-accent-on-solid);
+			background-color: var(--color-solid-accent-rest);
 		}
 	}
 }

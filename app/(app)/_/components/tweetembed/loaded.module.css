@@ -9,11 +9,12 @@
 			margin-inline: 0;
 			padding-block: var(--size-8);
 			padding-inline: var(--size-16);
-			border-inline-start: var(--size-4) solid var(--accent-7);
+			border-inline-start: var(--size-4) solid
+				var(--color-border-accent-interactive);
 		}
 
 		.body {
-			color: var(--neutral-12);
+			color: var(--color-text-neutral-high);
 			font-size: var(--text-md);
 			font-style: italic;
 			/* match the site blockquote's weight */
@@ -22,7 +23,7 @@
 		}
 
 		.link {
-			color: var(--accent-11);
+			color: var(--color-text-accent-low);
 			text-decoration: underline;
 			text-underline-offset: 0.15em;
 		}
@@ -32,14 +33,14 @@
 			align-items: baseline;
 			flex-wrap: wrap;
 			gap: var(--size-8);
-			color: var(--neutral-10);
+			color: var(--color-solid-neutral-hovered);
 			font-size: var(--text-sm);
 		}
 
 		.name {
 			min-inline-size: 0;
 			overflow-wrap: anywhere;
-			color: var(--neutral-11);
+			color: var(--color-text-neutral-low);
 			font-size: var(--text-md);
 			font-weight: 400;
 		}

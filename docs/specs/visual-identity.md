@@ -19,40 +19,59 @@ brand marks, mascots, or logo variants.
 
 ## Colour
 
-The palette is Radix-inspired: a **13-step semantic scale** where each step has a
-defined role, and a single shared lightness axis powers both light and dark
-schemes. The *role* of each step is identical across schemes, so a surface that
-picks the right step needs no per-scheme attention.
+Components never name a colour by its position on a scale. They read a **semantic
+role** — `--color-<tier>-<scheme>-<slot>` — and the role says what the surface
+*is*: a page background, a component at rest, a border on something interactive,
+low-contrast text. The 13-step scales those roles resolve to are the theme's
+private tier, declared once in `app/(app)/variables.css` and referenced nowhere
+else. A single shared lightness axis powers both light and dark schemes.
 
-Two ramps share the scale. The **accent ramp** is the brand ramp, used for
-anything that should visibly carry identity — links, selection, interactive
-hover, branded card surfaces. The **neutral ramp** is the chrome ramp, used for
-anything that should read as neutral UI rather than brand.
+That split is the point. A step index records how a value looked when it was
+chosen; a role records what it is for. With the index at the call site, retuning
+the scale has to be re-reasoned at every one of them, and nothing mechanical can
+tell a deliberate contrast choice from a copy-paste.
 
-| Step | Role |
-| --- | --- |
-| 0 | Page / app background |
-| 1 | Subtle app background |
-| 2 | Subtle component background |
-| 3 | Component background (rest) |
-| 4 | Component background (hovered) |
-| 5 | Component background (active / selected) |
-| 6 | Subtle border on non-interactive |
-| 7 | Subtle border on interactive |
-| 8 | Hovered border |
-| 9 | Solid background (rest) |
-| 10 | Solid background (hover) |
-| 11 | Low-contrast text |
-| 12 | High-contrast text |
+Two schemes share the role vocabulary. The **accent** scheme is the brand one,
+used for anything that should visibly carry identity — links, selection,
+interactive hover, branded card surfaces. The **neutral** scheme is chrome, used
+for anything that should read as neutral UI rather than brand.
 
-A colour is picked by its semantic role on the scale, not by eye. Accent and
-neutral pair at the *same step number* when composing foreground on background,
-because shared lightness means shared perceptual contrast. A one-off variant is
-derived by tweaking a single channel — hue, chroma, or alpha — of a numbered step
-rather than introducing a new colour; a surface-local colour that resolves to no
-numbered step is a design smell. An interactive hover moves *one notch up the same
-ramp*: a card resting at step 3 hovers to step 4, and crossing ramps on hover is
-prohibited because the result reads inconsistently between the two schemes.
+| Slot | What the surface is | Step |
+| --- | --- | --- |
+| `background.plain` | Page / app background | 0 |
+| `background.app` | Subtle app background | 1 |
+| `background.subtle` | Subtle component background | 2 |
+| `component.rest` | Component background, at rest | 3 |
+| `component.hovered` | Component background, hovered | 4 |
+| `component.selected` | Component background, active or selected | 5 |
+| `border.subtle` | Subtle border on non-interactive | 6 |
+| `border.interactive` | Border on interactive, and focus rings | 7 |
+| `border.hovered` | Hovered border | 8 |
+| `solid.rest` | Solid background, at rest | 9 |
+| `solid.hovered` | Solid background, hovered | 10 |
+| `text.low` | Low-contrast text | 11 |
+| `text.high` | High-contrast text | 12 |
+
+`text.onSolid` sits outside that run, one per scheme. Steps 11 and 12 are text on
+a *background* step; text drawn on a solid fill needs its own value, and guessing
+white is only right for some hues.
+
+Every slot also carries a translucent `-alpha` twin, for a colour that composites
+over content the theme does not control — imagery, a scrolling surface, another
+component. Their alphas are the published Radix UI Colors scales taken verbatim,
+`purple` for accent and `mauve` for its purple-tinted neutral, so the grading is
+inherited rather than invented. A hand-written `rgba()` or slash-alpha in a
+component is an off-scale value like any other.
+
+A role is picked by what the surface *is*, never by how a value looks in one
+scheme. Accent and neutral pair at the *same slot* when composing foreground on
+background, because shared lightness means shared perceptual contrast. A one-off
+variant is derived by tweaking a single channel — hue, chroma, or alpha — of a
+role token rather than introducing a new colour; a surface-local colour that
+resolves to no role is a design smell. An interactive state moves along its own
+tier: a card at `component.rest` hovers to `component.hovered`, and crossing
+schemes on hover is prohibited because the result reads inconsistently between
+light and dark.
 
 The brand hue is a **single global knob**. Rotating it recolours the entire brand
 ramp, keeps the neutral ramp slightly hue-coupled so neutrals do not feel
@@ -66,8 +85,8 @@ dark-mode-only hue, and no per-surface hue override.
 
 Both schemes share one lightness scale, **inverted end to end**. Step 0 is the
 brightest value in light mode and the darkest in dark mode; step 12 is the
-reverse. The consequence is the theming promise: a surface that picks the right
-numbered step per role adapts correctly to both schemes with no per-surface
+reverse. Because each role is a fixed map onto one step, both schemes come free:
+a surface that picks the right role adapts correctly with no per-surface
 override, and every other rule here exists to preserve that property.
 
 Only two categories legitimately need a per-scheme override:
@@ -81,9 +100,9 @@ Only two categories legitimately need a per-scheme override:
    and are never redeclared per surface.
 
 A third category is a design smell. A per-surface dark-mode fork that merely
-reassigns a numbered token means the wrong step was chosen upstream; the fix is
-the step, not the branch. When a bug report says "looks wrong in dark mode only",
-step choice is where the investigation starts.
+reassigns a role means the wrong role was chosen upstream; the fix is the role,
+not the branch. When a bug report says "looks wrong in dark mode only", role
+choice is where the investigation starts.
 
 ## Typography
 
@@ -284,15 +303,16 @@ treatment is not acceptable.
 **Focus.** Every interactive surface shows a visible focus indicator when reached
 by keyboard. Removing the browser default without a replacement is prohibited, as
 is removing a clickable surface from the tab order for styling convenience. The
-replacement ring uses an accent-ramp step and matches the surface's corner shape,
+replacement ring uses an accent role and matches the surface's corner shape,
 and its width, offset, and colour are never retuned per surface.
 
 **Colour and state.** Every surface stays legible in both schemes; a surface that
 loses contrast in one is a design bug. No state is conveyed through colour alone —
 every hover, active, selected, and error state also carries a non-colour signal.
-Text links pick up a background-fill swap one step up the accent ramp; cards swap
-their background one step up their resting ramp and may bump image brightness;
-icons swap both stroke colour and a subtle background pill one step up.
+Text links pick up a background-fill swap one slot along the accent scheme; cards
+swap their background one slot along their resting tier and may bump image
+brightness; icons swap both stroke colour and a subtle background pill one slot
+along.
 
 **Targets.** Every interactive icon and small inline control has an effective tap
 area of at least roughly 40×40 regardless of its visual size — the drawn bounds

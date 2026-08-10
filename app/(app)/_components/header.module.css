@@ -25,11 +25,11 @@
 			outline: none;
 
 			&:hover {
-				background-color: var(--accent-2);
+				background-color: var(--color-background-accent-subtle);
 			}
 
 			&:focus-visible {
-				outline: var(--accent-5) solid var(--size-3);
+				outline: var(--color-component-accent-selected) solid var(--size-3);
 				outline-offset: var(--size-3);
 			}
 		}
@@ -37,7 +37,7 @@
 		.logo {
 			width: auto;
 			height: var(--size-32);
-			color: var(--accent-11);
+			color: var(--color-text-accent-low);
 		}
 
 		.switcher {

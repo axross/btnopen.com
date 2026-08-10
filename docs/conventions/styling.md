@@ -29,7 +29,7 @@ tokens declared in `app/(app)/variables.css`.
 | Duration | `--duration-sm` / `--duration-md` / `--duration-lg` / `--duration-xl` / `--duration-2xl` / `--duration-3xl` |
 | Easing | `--ease-in-out` — the only easing token |
 | Font | `--font-sans` / `--font-mono`, each paired with `--font-sans-features` / `--font-mono-features` |
-| Colour | `--accent-*` (brand) / `--neutral-*` (chrome) |
+| Colour | `--color-<tier>-<scheme>-<slot>`, plus an `-alpha` twin of each; `<scheme>` is `accent` (brand) or `neutral` (chrome) |
 
 **Rules:**
 
@@ -46,11 +46,12 @@ tokens declared in `app/(app)/variables.css`.
   tier. Reuse the 3-second value for further slow reveals; promote it to a token
   only once it recurs in three or more places.
 
-Components currently reference ramp steps (`--accent-5`, `--accent-11`) directly
-rather than through semantic colour roles, which the installed capability
-forbids. That gap is tracked in
-[#221](https://github.com/axross/btnopen.com/issues/221) and is not something a
-component-level change should fix locally.
+Components read colour only through semantic roles. The `--accent-*` /
+`--neutral-*` scales those roles map onto are the theme's private tier: they are
+declared in `app/(app)/variables.css` and MUST NOT be referenced anywhere else,
+including from an inline `fill` on a React-authored SVG. The slot vocabulary and
+what each one means is in
+[../specs/visual-identity.md](../specs/visual-identity.md).
 
 ## Breakpoints and the `--variant` Convention
 
@@ -151,7 +152,7 @@ Interactive hover transitions use the medium duration token with the
 }
 
 .a:focus-visible {
-  outline: var(--accent-5) solid var(--size-3);
+  outline: var(--color-component-accent-selected) solid var(--size-3);
   outline-offset: var(--size-3);
 }
 ```
@@ -160,9 +161,9 @@ Interactive hover transitions use the medium duration token with the
 
 - MUST replace the default browser focus ring on an interactive surface with that
   template rather than removing it outright.
-- MUST NOT retune the outline colour, width, or offset per surface. `--accent-5`
-  handles per-scheme contrast automatically, and changing any of the three is a
-  design-level decision.
+- MUST NOT retune the outline colour, width, or offset per surface.
+  `component.accent.selected` handles per-scheme contrast automatically, and
+  changing any of the three is a design-level decision.
 - MUST match the focus target's `border-radius` to the surface's resting corner
   shape, so the ring tracks the squircle silhouette rather than revealing a
   rectangular underlying box.
@@ -204,3 +205,12 @@ negation match exactly, so the visible position does not move.
 - Pixel literals are acceptable inside hairline borders (`var(--size-1)`,
   `0.5px`), SVG `width` / `height` attributes, and the root-level definitions in
   `variables.css`.
+- Four surfaces name a role whose generic label does not match their local job,
+  and they are deliberate rather than mistakes: the focus ring sits on
+  `component.accent.selected` where the canonical role for a focus ring would be
+  `border.interactive`, the monochrome submit button fills from `text.high`, the
+  markdown horizontal rule paints from `border.subtle`, and the table scrollbar
+  thumb from `border.hovered`. Each preserves the colour the surface had before
+  the role layer existed. Correcting them means moving colour on several surfaces
+  at once, so it is a design change with its own issue — not a rename to fix in
+  passing.

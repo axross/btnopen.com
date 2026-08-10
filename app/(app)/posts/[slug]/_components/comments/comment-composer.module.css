@@ -25,20 +25,20 @@
 			min-block-size: var(--size-64);
 			resize: vertical;
 			font: inherit;
-			color: var(--neutral-12);
-			background-color: var(--neutral-0);
-			border: var(--size-1) solid var(--neutral-7);
+			color: var(--color-text-neutral-high);
+			background-color: var(--color-background-neutral-plain);
+			border: var(--size-1) solid var(--color-border-neutral-interactive);
 			border-radius: var(--radius-sm);
 			padding-block: var(--size-12);
 			padding-inline: var(--size-12);
 			outline: none;
 
 			&::placeholder {
-				color: var(--neutral-11);
+				color: var(--color-text-neutral-low);
 			}
 
 			&:focus-visible {
-				outline: var(--accent-5) solid var(--size-3);
+				outline: var(--color-component-accent-selected) solid var(--size-3);
 				outline-offset: var(--size-3);
 			}
 		}
@@ -70,8 +70,8 @@
 			font: inherit;
 			font-weight: 700;
 			font-size: var(--text-sm);
-			color: var(--neutral-0);
-			background-color: var(--neutral-12);
+			color: var(--color-background-neutral-plain);
+			background-color: var(--color-text-neutral-high);
 			border: none;
 			border-radius: var(--radius-sm);
 			padding-block: var(--size-8);
@@ -85,7 +85,7 @@
 			}
 
 			&:focus-visible {
-				outline: var(--accent-5) solid var(--size-3);
+				outline: var(--color-component-accent-selected) solid var(--size-3);
 				outline-offset: var(--size-3);
 			}
 		}
@@ -109,7 +109,7 @@
 	@scope (.hint) {
 		:where(:scope) {
 			font-size: var(--text-xs);
-			color: var(--neutral-11);
+			color: var(--color-text-neutral-low);
 		}
 	}
 }

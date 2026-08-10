@@ -34,7 +34,7 @@
 		}
 
 		.title {
-			color: var(--neutral-12);
+			color: var(--color-text-neutral-high);
 			font-size: var(--text-3xl);
 			font-weight: 700;
 			line-height: var(--leading-sm);
@@ -63,7 +63,7 @@
 		}
 
 		.sectionHeading {
-			color: var(--neutral-12);
+			color: var(--color-text-neutral-high);
 			font-size: var(--text-xl);
 			font-weight: 700;
 		}
@@ -74,7 +74,7 @@
 		   paint their own background, so `color` is inert on the loading side).
 		   keep this rule byte-identical to its counterpart in the paired module. */
 		.bodyText {
-			color: var(--neutral-10);
+			color: var(--color-solid-neutral-hovered);
 			font-size: var(--text-md);
 			line-height: var(--leading-lg);
 		}
