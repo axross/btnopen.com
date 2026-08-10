@@ -1,5 +1,5 @@
-import { describe, expect, it } from "@jest/globals";
 import type { PayloadRequest } from "payload";
+import { describe, expect, it } from "vitest";
 import type { McpEvent, McpTextResponse, McpTool } from "./mcp-types";
 
 describe("McpTextResponse", () => {
