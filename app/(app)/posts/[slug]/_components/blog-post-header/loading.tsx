@@ -23,8 +23,13 @@ export function BlogPostHeaderLoading({
 			</div>
 
 			<h1 className={css.title} data-testid="title-loading">
+				{/* the sample runs long on purpose: it has to wrap past two rows at
+				    every width so the two-line clamp is what sets this block's height.
+				    the shorter sample it replaced fitted on one row from ~800px up,
+				    leaving the skeleton a whole title line short of the header it
+				    stands in for. */}
 				<LoadingPlaceholderText
-					sampleText="Lorem ipsum dolor sit amet"
+					sampleText="Lorem ipsum dolor sit amet consectetur adipiscing elit sed do"
 					maxLines={2}
 				/>
 			</h1>

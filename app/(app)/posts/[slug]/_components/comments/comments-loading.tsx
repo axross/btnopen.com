@@ -34,9 +34,14 @@ export function CommentsLoading({
 			<ol className={css.list} data-testid="list-loading">
 				<CommentsLoadingItem />
 
+				{/* the second row's body sample is as long as the first's for a
+				    reason: both have to wrap past two rows at every width so the
+				    two-line clamp is what sets the row height. the shorter sample this
+				    replaced fitted on one row from ~800px up, so the two rows rendered
+				    at visibly different heights there. */}
 				<CommentsLoadingItem
 					nameSample="Consectetur adipiscing"
-					bodySample="Faucibus ex sapien vitae pellentesque sem placerat in id cursus."
+					bodySample="Faucibus ex sapien vitae pellentesque sem placerat in id cursus mi pretium tellus duis convallis tempus leo eu aenean."
 				/>
 			</ol>
 		</section>
