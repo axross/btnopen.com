@@ -55,7 +55,7 @@ It is a personal blog, and several things follow from that:
 
 A single Next.js application on the App Router, with **Payload CMS running
 in-process** rather than as a separate service. TypeScript throughout, Biome for
-formatting and linting, Jest for unit tests and Playwright for end-to-end tests,
+formatting and linting, Vitest for unit tests and Playwright for end-to-end tests,
 deployed on Vercel and backed by Turso (SQLite) with media in Vercel Blob. Clerk
 brokers GitHub OAuth for commenters, Sentry and Pino carry errors and logs, and
 Mixpanel carries analytics. The [README](../README.md) holds the command table and

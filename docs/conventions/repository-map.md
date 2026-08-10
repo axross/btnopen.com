@@ -223,6 +223,7 @@ configures.
 | `payload/` | Payload collections, globals, helpers, migrations, and seed helpers |
 | `instrumentation.ts` / `instrumentation-client.ts` | Next.js instrumentation entry points |
 | `sentry.server.config.ts` / `sentry.edge.config.ts` | Sentry runtime initialization |
+| `vitest.config.ts` | Vitest unit runner configuration: discovery globs, resolution, and mock hygiene |
 | `playwright.config.ts` | Playwright e2e runner configuration |
 | `biome.jsonc` | Biome formatting and linting rules |
 | `skills-lock.json` | Lockfile for the agent skills installed from the shared library |
@@ -265,8 +266,8 @@ page.
   or public exposure.
 - MUST consult [observability.md](./observability.md) before changing
   instrumentation, Sentry config, or logger setup.
-- MUST consult [testing.md](./testing.md) before changing `playwright.config.ts`
-  or files under `e2e/`.
+- MUST consult [testing.md](./testing.md) before changing `vitest.config.ts`,
+  `playwright.config.ts`, or files under `e2e/`.
 - MUST consult the CI supply-chain section of [security.md](./security.md)
   before adding or changing a `uses:` entry under `.github/workflows/`, or an
   ecosystem in `.github/dependabot.yml`. A third-party action is pinned to a
