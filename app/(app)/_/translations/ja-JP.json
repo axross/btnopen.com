@@ -11,7 +11,7 @@
 	},
 	"error": {
 		"message": "コンテンツを読み込めませんでした。",
-		"retry": "Try again"
+		"retry": "もう一度試す"
 	},
 	"agentic": {
 		"label": "エージェント",
