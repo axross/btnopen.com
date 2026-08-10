@@ -5,6 +5,13 @@
 	 * on both, or the skeleton stops collapsing into the loaded region without a
 	 * shift.
 	 *
+	 * The social-link rules are the one section whose counterpart lives elsewhere:
+	 * the loaded region delegates that row to `<SocialLinkList>`, so they mirror
+	 * `social-link-list.module.css` instead, and carry its selector names so the
+	 * pairing is legible from either side. `.socialIcon` is the exception within
+	 * the exception — it has no counterpart at all, because the loaded glyph takes
+	 * its size from the SVG asset rather than from a rule.
+	 *
 	 * The scope root is the exception, and has nothing to mirror: `page.tsx`
 	 * renders its `<main>` under a `css.main` that `page.module.css` never
 	 * defines, so the loaded region's root ships class-less and takes its column
@@ -74,13 +81,13 @@
 			line-height: var(--leading-lg);
 		}
 
-		.socialLinks {
+		.socialLinkList {
 			display: flex;
 			column-gap: var(--size-32);
 			list-style: none;
 		}
 
-		.socialLink {
+		.listItem {
 			display: flex;
 		}
 

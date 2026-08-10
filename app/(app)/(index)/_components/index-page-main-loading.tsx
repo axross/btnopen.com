@@ -54,16 +54,16 @@ export function IndexPageMainLoading({
 						/>
 					</div>
 
-					<ul className={css.socialLinks} data-testid="social-links-loading">
-						<li className={css.socialLink}>
+					<ul className={css.socialLinkList} data-testid="social-links-loading">
+						<li className={css.listItem}>
 							<LoadingPlaceholderRect className={css.socialIcon} />
 						</li>
 
-						<li className={css.socialLink}>
+						<li className={css.listItem}>
 							<LoadingPlaceholderRect className={css.socialIcon} />
 						</li>
 
-						<li className={css.socialLink}>
+						<li className={css.listItem}>
 							<LoadingPlaceholderRect className={css.socialIcon} />
 						</li>
 					</ul>
