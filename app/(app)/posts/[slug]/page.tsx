@@ -18,6 +18,7 @@ import { BlogPostContent } from "./_components/blog-post-content";
 import { BlogPostHeader } from "./_components/blog-post-header";
 import { BlogPostingJsonLd } from "./_components/blog-posting-json-ld";
 import { Comments } from "./_components/comments/comments";
+import { CommentsLoading } from "./_components/comments/comments-loading";
 import { PayloadLivePreview } from "./_components/payload-live-preview";
 import css from "./page.module.css";
 import type { PageProps } from "./page-props";
@@ -56,20 +57,31 @@ export default async function BlogPostPage({
 				/>
 
 				<main className={css.content} data-testid="content">
+					{/* no fallback: the post body is what this page exists to show, so
+					    this boundary blocks rather than streaming a skeleton the reader
+					    would only watch be replaced. */}
 					<Suspense>
 						<BlogPostContent slug={slug} draft={draft} />
 					</Suspense>
 				</main>
 
-				<Suspense>
+				{/* `MaybeComments` renders nothing on a post with comments disabled, so
+				    this skeleton briefly shows and then vanishes there. that is the
+				    accepted cost of showing one on the posts that do have comments,
+				    which is most of them (decided on #179). */}
+				<Suspense fallback={<CommentsLoading data-testid="comments-loading" />}>
 					<MaybeComments blogPost={blogPost} slug={slug} draft={draft} />
 				</Suspense>
 			</article>
 
+			{/* no fallback: a JSON-LD injector renders a <script> and no visible
+			    content, so there is nothing for a skeleton to stand in for. */}
 			<Suspense>
 				<BlogPostingJsonLd blogPost={blogPost} />
 			</Suspense>
 
+			{/* no fallback: the live-preview wrapper only subscribes to Payload's
+			    save events and renders nothing at all. */}
 			<Suspense>
 				<MaybePayloadLivePreview slug={slug} preview={preview} />
 			</Suspense>
