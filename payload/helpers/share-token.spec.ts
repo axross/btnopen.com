@@ -224,7 +224,13 @@ describe("rotateShareToken()", () => {
 		return { payload: { update } as unknown as Payload, update };
 	}
 
-	const fakeRequest = { user: { id: 7 } } as unknown as PayloadRequest;
+	// `context` is not optional on a real `PayloadRequest` — `createPayloadRequest`
+	// seeds it to `{}` and `createLocalReq` replaces it — and `assignShareToken`
+	// already reads it unguarded, so the fake carries one too.
+	const fakeRequest = {
+		context: {},
+		user: { id: 7 },
+	} as unknown as PayloadRequest;
 
 	// the rule `payload/collections/blog-post.ts` states for every write here: run
 	// with the caller's identity and let the collection's own `update` rule
@@ -262,5 +268,66 @@ describe("rotateShareToken()", () => {
 		await expect(
 			rotateShareToken({ id: 1, payload, req: fakeRequest }),
 		).rejects.toThrow("Rotating a blog post's share token produced no token.");
+	});
+
+	/**
+	 * Stands in for `createLocalReq`, which merges the operation's `context` into
+	 * the request object it was handed rather than into a copy of it — the
+	 * mutation that would otherwise leave the rotation signal set for the rest of
+	 * the request.
+	 */
+	function mutatingPayload(shareToken: null | string): Payload {
+		const update = vi.fn(
+			({ context, req }: { context: object; req: PayloadRequest }) => {
+				req.context = { ...req.context, ...context };
+
+				return Promise.resolve({ id: 1, shareToken });
+			},
+		);
+
+		return { update } as unknown as Payload;
+	}
+
+	it("leaves the rotation signal off the caller's request", async () => {
+		const request = {
+			context: {},
+			user: { id: 7 },
+		} as unknown as PayloadRequest;
+
+		await rotateShareToken({
+			id: 1,
+			payload: mutatingPayload("rotated"),
+			req: request,
+		});
+
+		expect(request.context[SHARE_TOKEN_ROTATION_CONTEXT_KEY]).not.toBe(true);
+	});
+
+	it("leaves the rotation signal off the request even when the write throws", async () => {
+		const request = {
+			context: {},
+			user: { id: 7 },
+		} as unknown as PayloadRequest;
+
+		await expect(
+			rotateShareToken({ id: 1, payload: mutatingPayload(null), req: request }),
+		).rejects.toThrow();
+
+		expect(request.context[SHARE_TOKEN_ROTATION_CONTEXT_KEY]).not.toBe(true);
+	});
+
+	it("leaves the caller's other context keys alone", async () => {
+		const request = {
+			context: { skipBlogPostCacheBust: true },
+			user: { id: 7 },
+		} as unknown as PayloadRequest;
+
+		await rotateShareToken({
+			id: 1,
+			payload: mutatingPayload("rotated"),
+			req: request,
+		});
+
+		expect(request.context.skipBlogPostCacheBust).toBe(true);
 	});
 });

@@ -171,6 +171,19 @@ async function findLatestShareToken(
  * collection, which is where {@link assignShareToken} writes. Verified against
  * the installed `payload`, in `dist/fields/hooks/beforeValidate/promise.js` and
  * the ordering `dist/collections/operations/utilities/update.js` documents.
+ *
+ * The rotation signal is cleared off the request afterwards, because Payload
+ * leaves it there. `createLocalReq` merges the operation's `context` into the
+ * request object it was handed — `req.context = getRequestContext(req, context)`
+ * — and the local update operation then passes that same request straight
+ * through, so without the reset below the flag would stay `true` for the rest of
+ * the request and a later write to `blog-posts` on it would rotate a second
+ * time. Neither caller writes again today; clearing it is what keeps
+ * {@link SHARE_TOKEN_ROTATION_CONTEXT_KEY}'s "an ordinary write can never change
+ * the value" true for the handler that does. Cloning `req` instead is not an
+ * option: a `PayloadRequest` is the runtime `Request` with Payload's own fields
+ * assigned onto it (`Object.assign(request, customRequest)`), so a spread would
+ * drop every prototype accessor, `headers` included.
  */
 export async function rotateShareToken({
 	id,
@@ -181,20 +194,26 @@ export async function rotateShareToken({
 	payload: Payload;
 	req: PayloadRequest;
 }): Promise<string> {
-	const updated = await payload.update({
-		collection: "blog-posts",
-		context: { [SHARE_TOKEN_ROTATION_CONTEXT_KEY]: true },
-		data: {},
-		depth: 0,
-		draft: true,
-		id,
-		overrideAccess: false,
-		req,
-	});
+	try {
+		const updated = await payload.update({
+			collection: "blog-posts",
+			context: { [SHARE_TOKEN_ROTATION_CONTEXT_KEY]: true },
+			data: {},
+			depth: 0,
+			draft: true,
+			id,
+			overrideAccess: false,
+			req,
+		});
 
-	if (!updated.shareToken) {
-		throw new Error("Rotating a blog post's share token produced no token.");
+		if (!updated.shareToken) {
+			throw new Error("Rotating a blog post's share token produced no token.");
+		}
+
+		return updated.shareToken;
+	} finally {
+		// `false` rather than removing the key: the hook compares against `true`,
+		// and this repository's lint rules rule out `delete`.
+		req.context[SHARE_TOKEN_ROTATION_CONTEXT_KEY] = false;
 	}
-
-	return updated.shareToken;
 }
