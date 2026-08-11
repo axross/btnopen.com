@@ -8,6 +8,7 @@ import {
 	getActiveLocale,
 	openGraphLocaleByLocale,
 } from "@/helpers/i18n";
+import { canReadPostDraft } from "@/helpers/post-draft-access";
 import { thumbnailHeight, thumbnailWidth } from "@/helpers/thumbnail";
 import { type BlogPostDetail, getBlogPost } from "@/repositories/get-blog-post";
 import { getBlogPostAgentic } from "@/repositories/get-blog-post-agentic";
@@ -222,6 +223,13 @@ export async function generateMetadata({
 		notFound();
 	}
 
+	// whether this render actually resolved as a draft, rather than merely asked
+	// to. `canReadPostDraft` is `cache()`-keyed on exactly this `(slug,
+	// shareToken)` pair, which `getBlogPost` above has already resolved, so this
+	// reads the request's existing answer rather than performing a second lookup.
+	// The `isDraft` guard short-circuits it away entirely on the published path,
+	// which therefore still reads no dynamic API.
+	const isDraftRead = isDraft && (await canReadPostDraft(slug, shareToken));
 	const thumbnailUrl = `${urlOrigin}/posts/${blogPost.slug}/thumbnail.png`;
 
 	return {
@@ -259,8 +267,13 @@ export async function generateMetadata({
 					// token appears in the draft page's rendered HTML — only a holder can
 					// render that page. The published path builds the bare URL it always
 					// did, so a published render's metadata is unchanged.
+					//
+					// keyed on the read having resolved as a draft rather than on a token
+					// merely being present, so a published post fetched at
+					// `?draft=true&token=<anything>` no longer echoes that value back into
+					// its own <head> for a URL the gate would reject anyway.
 					url:
-						isDraft && shareToken
+						isDraftRead && shareToken
 							? `${thumbnailUrl}?token=${encodeURIComponent(shareToken)}`
 							: thumbnailUrl,
 					width: thumbnailWidth,
