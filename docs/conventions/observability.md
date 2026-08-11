@@ -125,7 +125,7 @@ who has granted consent**. The privacy question for a new surface is therefore
 | Setting | Where | What it means |
 | --- | --- | --- |
 | `dataCollection`, diagnostics on and content off | `sentry.server.config.ts`, `sentry.edge.config.ts`, `instrumentation-client.ts` | Sentry captures IP address and user identity, request and response headers, URL query parameters, and stack-frame variables with five lines of surrounding source. It does **not** capture cookies, request or response bodies, database query values, generative-AI content, or GraphQL variables. All ten categories are set explicitly in all three files |
-| The share-token redaction | `app/(app)/_/helpers/share-token-scrubbing.ts`, wired into `beforeSend` and `beforeSendTransaction` in all three files | A post's draft share token is replaced with `[Filtered]` on five surfaces: the event's request URL, its `query_string` field, every request header value (`Referer` carries the token back on every same-origin subresource), every string a breadcrumb carries — its `message` as well as its `data`, because the console integration puts the logged line in the former — and every span attribute, the root span's under `contexts.trace.data` and each child span's under `spans[].data`. `urlQueryParams` is not this control and cannot be: the SDK attaches the full URL unconditionally and reads that option only for the separate `query_string` field |
+| The share-token redaction | `app/(app)/_/helpers/share-token-scrubbing.ts`, wired into `beforeSend` and `beforeSendTransaction` in all three files | A post's draft share token is replaced with `[Filtered]` in every event field that can hold a string. Those are: `request.url`, `request.query_string`, and each `request.headers` value (`Referer` carries the token back on every same-origin subresource); each breadcrumb's `message` as well as its `data`, because the console integration puts the logged line in the former; each context's own string values — `contexts.nextjs.request_path`, which `captureRequestError` sets flat — **and** those under a nested `data` record, which is where `contexts.trace` holds the root span's attributes; each `spans[].data`; and `exception.values[]`, `message`, `logentry`, `extra`, and `tags`. What it does not reach: `user`, `sdkProcessingMetadata`, an attachment, a stack frame's `filename`, and anything nested more than one array level deep — none of which carries a request URL, and the last of which is bounded deliberately so a self-referencing logged value cannot exhaust the stack. `urlQueryParams` is not this control and cannot be: the SDK attaches the full URL unconditionally and reads that option only for the separate `query_string` field |
 | Session Replay at `replaysSessionSampleRate: 0`, `replaysOnErrorSampleRate: 1.0` | Sentry client init | No ordinary session is recorded. A session that hits an error is, DOM mutations and form input included — unless the document has carried a share token, in which case `beforeErrorSampling` suppresses the upload |
 | `tracesSampleRate: 1` | all three Sentry init points | Every transaction is traced. Each of the three carries the one-line rationale for the rate |
 | `Mixpanel.init` with no capture options at all | `app/(app)/_/helpers/analytics.ts`, in `startAnalytics()` | Every SDK default applies: autocapture off, session recording off, heatmaps off, Do Not Track honoured. Page views and three link-click actions are sent explicitly, and are the whole of what Mixpanel receives |
@@ -155,6 +155,15 @@ who has granted consent**. The privacy question for a new surface is therefore
   post's share token, because a replay records the URL through a path no
   `beforeSend` sees. Suppressing there rather than lowering the rate is what
   keeps every other visitor's error replay intact.
+- MUST re-check that suppression before adding the Sentry **Feedback** widget.
+  `beforeErrorSampling` is consulted on the error-sampling path only. The
+  installed `@sentry/replay` flushes a buffered replay from two further places,
+  and both are Feedback's — the `beforeSendFeedback` and `openFeedbackWidget`
+  client hooks — neither of which consults the hook. No Feedback integration is
+  installed today, so the suppression is complete as things stand; adding one
+  would reopen the replay upload from a token-bearing page without touching a
+  line of this configuration, which is exactly the kind of silent reopening this
+  note exists to prevent.
 - MUST redact a secret that travels in a URL through `beforeSend` **and**
   `beforeSendTransaction`, in all three initialization files, rather than
   through `dataCollection.urlQueryParams`. That option is not an alternative:
@@ -166,16 +175,29 @@ who has granted consent**. The privacy question for a new surface is therefore
   in every trace. `share-token-scrubbing.ts` is the worked example; keep such a
   module IO-free and total, because a throw inside one of these hooks loses the
   event and takes the response being rendered with it.
-- MUST make such a redaction reach `contexts.trace.data` and every
-  `spans[].data`, not `request` alone. Wiring `beforeSendTransaction` is
-  necessary and not sufficient: a transaction carries the URL as a **span
-  attribute**, which the request object does not hold. Next's root server span
-  sets `http.target` to `req.url` with its query string, the
-  OpenTelemetry-to-Sentry exporter copies every attribute verbatim into both
-  places, and browser tracing sets `url.full` on the pageload span. The SDK's
-  own `SENSITIVE_KEY_SNIPPETS` filter does not save this: it matches attribute
-  *names* against `auth`, `token`, `secret`, and the rest, and `http.target`,
-  `url.full`, and `http.url` contain none of them.
+- MUST make such a redaction reach `contexts` and every `spans[].data`, not
+  `request` alone, and MUST walk a context's **own** string values as well as
+  any nested `data` record. Wiring `beforeSendTransaction` is necessary and not
+  sufficient: a transaction carries the URL as a **span attribute**, which the
+  request object does not hold. Next's root server span sets `http.target` to
+  `req.url` with its query string, the OpenTelemetry-to-Sentry exporter copies
+  every attribute verbatim into both places, and browser tracing sets `url.full`
+  on the pageload span. The SDK's own `SENSITIVE_KEY_SNIPPETS` filter does not
+  save this: it matches attribute *names* against `auth`, `token`, `secret`, and
+  the rest, and `http.target`, `url.full`, and `http.url` contain none of them.
+  Reaching only a nested `data` is what this rule was first written as, and it
+  was wrong: `captureRequestError`, which `instrumentation.ts` exports as Next's
+  `onRequestError` hook, sets a **flat** `contexts.nextjs.request_path` from
+  `req.url` — query string included — with no `data` record anywhere in the
+  context, so a `data`-only walk shipped the raw secret while `request.url`
+  beside it read `[Filtered]`.
+- SHOULD prefer covering an event's whole string surface over enumerating the
+  fields believed to carry a URL. `share-token-scrubbing.ts` walks
+  `exception.values[]`, `message`, `logentry`, `extra`, and `tags` although
+  nothing writes a request URL into any of them today, because the cost of the
+  extra walk is a few lines and the cost of a short enumeration is a secret in
+  an issue nobody notices — one
+  ``captureException(new Error(`failed for ${request.url}`))`` is all it takes.
 - MUST match such a redaction on a header's, an attribute's, or a breadcrumb
   field's **value** rather than on its name. `Referer` is why: `Referrer-Policy:
   strict-origin-when-cross-origin` sends the full URL on a same-origin request,

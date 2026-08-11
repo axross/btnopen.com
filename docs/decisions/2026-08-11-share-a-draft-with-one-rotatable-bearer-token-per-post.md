@@ -44,14 +44,24 @@ latest version, cannot carry a revoked secret forward either.
 The secret reaches browser history, server and CDN access logs, and the draft
 page's own rendered HTML, where the `og:image` URL carries it so an unfurl of the
 shared link shows the draft's card. Three sinks were closed in the same change:
-Sentry events have the parameter redacted out of every surface that carries a
-URL — the request URL, the query string, each request header value, every string
-a breadcrumb carries, and every span attribute, meaning `contexts.trace.data` and
-each `spans[].data`; no error-linked replay is uploaded from a page that has
-carried a token, because a replay records the URL through a path no `beforeSend`
-sees; and every `?draft=true` render that resolves opts out of search indexing,
-so a forwarded link cannot put unpublished content into an index. Mixpanel needed
-no work — its page-view allowlist was already closed by construction.
+Sentry events have the parameter redacted out of a named set of fields — the
+request URL, the query string, each request header value, every string a
+breadcrumb carries, every string a context carries both directly and under a
+nested `data` record, each `spans[].data`, and `exception.values[]`, `message`,
+`logentry`, `extra`, and `tags`; no error-linked replay is uploaded from a page
+that has carried a token, because a replay records the URL through a path no
+`beforeSend` sees; and every `?draft=true` render that resolves opts out of
+search indexing, so a forwarded link cannot put unpublished content into an
+index. Mixpanel needed no work — its page-view allowlist was already closed by
+construction.
+
+That set is named rather than described as "every surface that carries a URL",
+because the shorter claim was made once here and was false. The redaction
+originally reached a context only through a nested `data` record, and
+`contexts.nextjs.request_path` — which `captureRequestError` sets flat, from the
+request target with its query string — carried the raw secret past it. The set
+above is what the code walks; `../conventions/observability.md` states what it
+deliberately does not.
 
 The span and breadcrumb surfaces are named because they are the ones that do not
 look like sinks. A transaction carries the request URL as a span attribute rather
