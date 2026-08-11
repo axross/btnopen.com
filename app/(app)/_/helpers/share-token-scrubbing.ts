@@ -107,6 +107,10 @@ export function hasShareToken(url: string): boolean {
  * `TransactionEvent`.
  */
 export function redactShareTokenInEvent<E extends Event>(event: E): E {
+	if (!isRecord(event)) {
+		return event;
+	}
+
 	const { breadcrumbs, request } = event;
 
 	return {
@@ -173,10 +177,18 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === "object" && value !== null;
 }
 
-function redactShareTokenInQueryPair([name, value]: [string, string]): [
-	string,
-	string,
-] {
+/**
+ * Rewrites one `[name, value]` pair. Destructuring is done inside rather than in
+ * the parameter list, because the pair-list form of `query_string` is JSON and a
+ * malformed entry would throw on the way in.
+ */
+function redactShareTokenInQueryPair(pair: [string, string]): [string, string] {
+	if (!Array.isArray(pair)) {
+		return pair;
+	}
+
+	const [name, value] = pair;
+
 	return name === shareTokenSearchParamName
 		? [name, redactedShareToken]
 		: [name, value];

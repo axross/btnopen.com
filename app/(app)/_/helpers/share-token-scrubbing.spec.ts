@@ -214,6 +214,9 @@ describe("redactShareTokenInEvent()", () => {
 			"a null breadcrumb data",
 			{ breadcrumbs: [{ category: "x", data: null }] },
 		],
+		["a malformed query_string pair", { request: { query_string: [null] } }],
+		["a null event", null],
+		["an undefined event", undefined],
 	];
 
 	it.each(malformedEvents)("survives %s without throwing", (_label, event) => {
