@@ -1,4 +1,4 @@
-# Repository Map
+# Directory Structure
 
 Where a file goes in this repository, what it and its symbols are called, which
 alias reaches it, and which support file configures which surface.
