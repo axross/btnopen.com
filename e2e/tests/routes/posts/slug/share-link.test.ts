@@ -22,6 +22,9 @@ test.use({ storageState: authenticatedStorageState });
 
 const okStatus = 200;
 const notFoundStatus = 404;
+// wide enough that the anonymous read below returns every published post rather
+// than a first page that might happen to exclude the one carrying a token.
+const anonymousReadLimit = 100;
 // hoisted because a regex literal rebuilt per call is recompiled per call.
 const noindexPattern = /noindex/;
 const draftTitle = "共有リンクの下書きタイトル";
@@ -311,6 +314,97 @@ test(
 							.getByTestId("header")
 							.getByTestId("title"),
 					).toHaveText(draftTitle);
+				});
+			} finally {
+				await reader.close();
+			}
+		} finally {
+			if (createdId !== null) {
+				const id = createdId;
+
+				await test.step("Clean up the draft post", async () => {
+					await deleteBlogPost({ id, page, testInfo });
+				});
+			}
+		}
+	},
+);
+
+// the exposure the field's `access.read` exists to close, asserted rather than
+// assumed. `getBlogPostShareToken` reads the token through the *authenticated*
+// REST API and its comment has always claimed the same request signed out
+// "comes back without the field at all" — nothing checked it.
+//
+// The subject has to be the PUBLISHED post rather than the draft created here:
+// the collection's own `read` rule narrows an anonymous caller to
+// `_status: published`, so a draft is absent from the response entirely and an
+// assertion over an empty list would pass while proving nothing. The published
+// seed post is in the response, was backfilled with a token of its own, and is
+// therefore the row that can actually leak one. The document count is asserted
+// first for that reason.
+test(
+	"An anonymous REST read returns no share token for any post",
+	{
+		tag: [
+			"@scenario:post.share-link.unreadable",
+			"@area:posts",
+			"@priority:must",
+		],
+	},
+	async ({ browser, page }, testInfo) => {
+		let createdId: number | null = null;
+
+		try {
+			const slug = uniqueSlug(
+				"share-link-unreadable",
+				testInfo.repeatEachIndex,
+				testInfo.workerIndex,
+			);
+
+			await test.step("Create a draft post", async () => {
+				({ id: createdId } = await createDraftBlogPost({
+					body: createParagraphBlogPostBody(draftBody),
+					page,
+					slug,
+					testInfo,
+					title: draftTitle,
+				}));
+			});
+
+			const shareToken =
+				await test.step("Read the post's share token as the author", async () =>
+					await getBlogPostShareToken({ page, slug, testInfo }));
+
+			const reader = await openSignedOutContext({ browser, testInfo });
+
+			try {
+				const url = new URL("/api/blog-posts", testInfo.project.use.baseURL);
+
+				url.searchParams.set("draft", "true");
+				url.searchParams.set("limit", String(anonymousReadLimit));
+
+				const response = await reader.request.get(`${url}`);
+
+				await test.step("Verify the read succeeds", async () => {
+					expect(response.status()).toBe(okStatus);
+				});
+
+				const body = await response.text();
+				const docs: unknown = JSON.parse(body).docs;
+
+				await test.step("Verify it returned posts to check", async () => {
+					expect(Array.isArray(docs)).toBe(true);
+					expect((docs as unknown[]).length).toBeGreaterThan(0);
+				});
+
+				await test.step("Verify no document carries a shareToken key", async () => {
+					for (const doc of docs as Record<string, unknown>[]) {
+						expect(doc).not.toHaveProperty("shareToken");
+					}
+				});
+
+				await test.step("Verify this post's secret is nowhere in the body", async () => {
+					expect(body).not.toContain(shareToken);
 				});
 			} finally {
 				await reader.close();
