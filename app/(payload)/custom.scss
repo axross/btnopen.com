@@ -95,6 +95,19 @@
   text-overflow: ellipsis;
 }
 
+/* the focus ring, stated here rather than inherited. Payload's own bare
+   `:focus-visible` rule already reaches this input, because the rules above
+   override background and border but never `outline` — but that rule sets no
+   offset, so the ring sits flush against a border this file drew itself, while
+   Payload's buttons, pills, and table links all get the offset. Pinning both
+   custom properties keeps the indicator on Payload's own accessibility tokens
+   (so it follows the light and dark themes) and keeps it from depending on a
+   global rule this block otherwise departs from. */
+.share-link-field__url:focus-visible {
+  outline: var(--accessibility-outline);
+  outline-offset: var(--accessibility-outline-offset);
+}
+
 .share-link-field__pending,
 .share-link-field__warning {
   margin: 0;

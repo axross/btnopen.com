@@ -27,7 +27,15 @@ const rotateModalSlug = "rotate-blog-post-share-link";
  * action, and a rotate action, rendered inline among the post's Metadata
  * fields.
  *
- * Three things about it are deliberate rather than incidental:
+ * Its props contract is Payload's rather than this repository's:
+ * `TextFieldClientComponent` is the shape Payload's admin runtime instantiates
+ * a `Field` slot with, and its props are field descriptors, not DOM
+ * attributes. That is why this component does not base its props on the element
+ * it roots and does not spread a rest object onto it, which the installed
+ * React-component capability otherwise requires — the departure is recorded in
+ * `docs/operations/agent-skills.md`.
+ *
+ * Four things about it are deliberate rather than incidental:
  *
  * - **Rotation persists by itself.** Rotate posts to the collection's rotation
  *   endpoint, which writes the replacement server-side, and the new value is
@@ -42,6 +50,11 @@ const rotateModalSlug = "rotate-blog-post-share-link";
  * - **There is no signed-out branch.** `shareToken` is unreadable without a
  *   session, so this renders only for a signed-in author; a visitor state would
  *   be dead code describing a case that cannot happen.
+ * - **There are no test hooks.** The Playwright suite authenticates against the
+ *   API and never drives `/admin`, so `docs/conventions/testing.md`'s rule —
+ *   test ids go on elements tests need to identify — puts none here. An admin
+ *   suite would add the ones it actually locates by, against the markup as it
+ *   stands then.
  */
 export const ShareLinkField: TextFieldClientComponent = ({ field, path }) => {
 	const { setValue, value } = useField<string>({ path });
@@ -122,7 +135,7 @@ export const ShareLinkField: TextFieldClientComponent = ({ field, path }) => {
 	const warningId = `${inputId}-warning`;
 
 	return (
-		<div className={baseClass} data-testid="share-link-field">
+		<div className={baseClass}>
 			<FieldLabel htmlFor={inputId} label={field?.label} path={path} />
 
 			{id && value ? (
@@ -130,7 +143,6 @@ export const ShareLinkField: TextFieldClientComponent = ({ field, path }) => {
 					<input
 						aria-describedby={warningId}
 						className={`${baseClass}__url`}
-						data-testid="share-link-url"
 						id={inputId}
 						readOnly={true}
 						value={shareUrl}
@@ -139,7 +151,6 @@ export const ShareLinkField: TextFieldClientComponent = ({ field, path }) => {
 					<Button
 						buttonStyle="secondary"
 						disabled={shareUrl === ""}
-						extraButtonProps={{ "data-testid": "share-link-copy" }}
 						margin={false}
 						onClick={copyShareUrl}
 						size="small"
@@ -156,7 +167,6 @@ export const ShareLinkField: TextFieldClientComponent = ({ field, path }) => {
 						buttonStyle="error"
 						className={`${baseClass}__rotate`}
 						disabled={isRotating}
-						extraButtonProps={{ "data-testid": "share-link-rotate" }}
 						icon={<RotateGlyph />}
 						iconPosition="left"
 						margin={false}
@@ -172,11 +182,7 @@ export const ShareLinkField: TextFieldClientComponent = ({ field, path }) => {
 				</p>
 			)}
 
-			<p
-				className={`${baseClass}__warning`}
-				data-testid="share-link-warning"
-				id={warningId}
-			>
+			<p className={`${baseClass}__warning`} id={warningId}>
 				{
 					"Anyone holding this link can read the draft, with no sign-in. It never expires — rotating is the only way to revoke it, and rotating revokes every copy at once."
 				}
