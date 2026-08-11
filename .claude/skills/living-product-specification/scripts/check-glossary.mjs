@@ -9,12 +9,12 @@
 // written down. checking the other direction would need an exception list for
 // both, and an exception list is where a rule goes to be ignored.
 
-import { extractHeadings, main, selfName, siblingHelp, slug } from "./corpus.mjs";
+import { extractHeadings, main, selfName, siblingHelp, slug } from "./docs.mjs";
 
-const USAGE = `Usage: ${selfName(import.meta.url)} [<corpus-dir>]
+const USAGE = `Usage: ${selfName(import.meta.url)} [<docs-dir>]
 
-Check that every spec in a product-specification corpus has a matching heading
-in glossary.md. Run it after adding or renaming a spec, or after editing the
+Check that every spec under a project's docs has a matching heading in
+glossary.md. Run it after adding or renaming a spec, or after editing the
 glossary.
 
 A specs/<domain>.md file pairs with a "## <Domain>" heading, compared on a
@@ -22,15 +22,15 @@ slug so "## Job Templates" pairs with job-templates.md. The reverse is not
 required: a heading may define cross-cutting vocabulary that no single spec
 owns. Defaults to ./docs.
 
-Exit codes: 0 every spec has a heading, or there is no corpus or no specs/.
+Exit codes: 0 every spec has a heading, or the project has no docs, or no specs/.
             1 findings. 2 bad invocation.
 ${siblingHelp(selfName(import.meta.url))}`;
 
-function run(corpus) {
-  const specs = corpus.documents.filter((doc) => doc.relative.startsWith("specs/"));
+function run(docs) {
+  const specs = docs.documents.filter((doc) => doc.relative.startsWith("specs/"));
   if (specs.length === 0) return [];
 
-  const glossary = corpus.documents.find((doc) => doc.relative === "glossary.md");
+  const glossary = docs.documents.find((doc) => doc.relative === "glossary.md");
   if (!glossary) {
     return [
       {
@@ -69,8 +69,8 @@ process.exitCode = await main({
   needs: "specs",
   absent: "Nothing to check.",
   run,
-  pass: (corpus) =>
+  pass: (docs) =>
     `Every spec has a heading in glossary.md (${
-      corpus.documents.filter((doc) => doc.relative.startsWith("specs/")).length
+      docs.documents.filter((doc) => doc.relative.startsWith("specs/")).length
     } checked).`,
 });

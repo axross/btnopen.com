@@ -80,7 +80,7 @@ the stored dimensions from the CMS and falls back to serving the file unoptimize
 when they are missing. An image with an unusable source renders nothing rather
 than breaking the page. In-content images keep their natural colour — the branded
 colour-grading recipe applies to covers and embed previews, not to body media; see
-[visual-identity.md](./visual-identity.md).
+[../conventions/visual-identity.md](../conventions/visual-identity.md).
 
 ### What Does Not Render
 

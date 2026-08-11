@@ -19,31 +19,31 @@ import {
   resolveLink,
   selfName,
   siblingHelp,
-} from "./corpus.mjs";
+} from "./docs.mjs";
 
-const USAGE = `Usage: ${selfName(import.meta.url)} [<corpus-dir>]
+const USAGE = `Usage: ${selfName(import.meta.url)} [<docs-dir>]
 
-Check that every document in a product-specification corpus is listed in
-index.md. Run it after adding or removing a document.
+Check that every document under a project's docs is listed in index.md. Run it
+after adding or removing a document.
 
 An individual decision record is not listed — the index links decisions/ once, as
 a directory, because an append-only log would otherwise grow the index without
 bound. Linking a record individually is reported, not exempted. Defaults to
 ./docs.
 
-Exit codes: 0 every document is listed, or the project has no corpus.
+Exit codes: 0 every document is listed, or the project has no docs.
             1 findings. 2 bad invocation.
 ${siblingHelp(selfName(import.meta.url))}`;
 
-function run(corpus) {
-  const index = corpus.documents.find((doc) => doc.relative === "index.md");
+function run(docs) {
+  const index = docs.documents.find((doc) => doc.relative === "index.md");
   const linked = new Set(
     extractLinks(index.text).map(({ target }) => resolveLink(index.path, target)),
   );
 
   const findings = [];
 
-  for (const doc of nonDecisionDocuments(corpus)) {
+  for (const doc of nonDecisionDocuments(docs)) {
     if (doc.relative === "index.md") continue;
     if (!linked.has(doc.path)) {
       findings.push({
@@ -53,8 +53,8 @@ function run(corpus) {
     }
   }
 
-  if (corpus.hasDecisions) {
-    const decisionsDir = join(corpus.root, "decisions");
+  if (docs.hasDecisions) {
+    const decisionsDir = join(docs.root, "decisions");
     let linksDirectory = false;
 
     for (const target of linked) {
@@ -91,8 +91,8 @@ process.exitCode = await main({
   usage: USAGE,
   argv: process.argv.slice(2),
   run,
-  pass: (corpus) =>
-    `Every document is listed in index.md (${nonDecisionDocuments(corpus).length - 1} indexed${
-      corpus.hasDecisions ? ", plus the decision log as a directory" : ""
+  pass: (docs) =>
+    `Every document is listed in index.md (${nonDecisionDocuments(docs).length - 1} indexed${
+      docs.hasDecisions ? ", plus the decision log as a directory" : ""
     }).`,
 });

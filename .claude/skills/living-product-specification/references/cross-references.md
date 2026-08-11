@@ -1,7 +1,7 @@
 # Cross-References
 
 Apply this reference when deciding whether one document should link to another,
-or when reviewing a corpus whose links have multiplied.
+or when reviewing a `docs/` tree whose links have multiplied.
 
 ## The Rule
 
@@ -13,7 +13,7 @@ already free.
 > **A link exists only where it carries information the structure does not
 > already encode.**
 
-One test, applied to every reference a corpus can contain:
+One test, applied to every reference `docs/` can contain:
 
 | Reference                  | Does structure already encode it?                               | Verdict                                                  |
 | -------------------------- | --------------------------------------------------------------- | -------------------------------------------------------- |
@@ -35,7 +35,7 @@ was written, and why the behaviour must be able to point at it.
 
 - MUST apply the rule above before adding any cross-reference, and leave the
   link out when the answer is that structure already says it.
-- MUST use a relative path from the linking document, so the corpus stays
+- MUST use a relative path from the linking document, so `docs/` stays
   correct when read from a checkout rather than a rendered site.
 - MUST NOT link to a heading with a fragment. An agent reads whole files rather
   than navigating to anchors, so the fragment is never consumed, while it
@@ -59,10 +59,10 @@ the glossary is for.
 
 ## From a Spec to a Decision
 
-This is the corpus's most durable reference and the one most worth having. The
-target filename never changes, so the link does not break — and that stability
-is what lets a check find the failure that matters: a link that still resolves
-while the rationale behind it has been replaced.
+This is the most durable reference in `docs/` and the one most worth having.
+The target filename never changes, so the link does not break — and that
+stability is what lets a check find the failure that matters: a link that
+still resolves while the rationale behind it has been replaced.
 
 **Guidelines:**
 
@@ -73,17 +73,17 @@ while the rationale behind it has been replaced.
 
 ## Co-located Bodies
 
-A documentation root that also holds `conventions/` or `operations/` —
-[the shape documentation-root.md names](./documentation-root.md) — extends
-where a link can point without changing the rule that decides whether one
-belongs. The no-outbound-links rule in
+Once `docs/` also holds `conventions/` or `operations/` —
+[the shape documentation-structure.md names](./documentation-structure.md) —
+a link can point into either without changing the rule that decides whether
+one belongs. The no-outbound-links rule in
 [Out of a Decision](#out-of-a-decision) is unaffected: a decision record still
 links nothing, whichever body would have received it.
 
-| Reference                                           | Does structure already encode it?                                                                 | Verdict                                                                                                          |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| A corpus document → `conventions/` or `operations/` | —                                                                                                 | Governed by [The Rule](#the-rule) alone; this capability adds no dependency condition for a body it does not own |
-| `conventions/` or `operations/` → `decisions/`      | No — a decision exists only when its rationale is unrecoverable from the code, same as for a spec | **Link**, under the same condition as [From a Spec to a Decision](#from-a-spec-to-a-decision)                    |
+| Reference                                                  | Does structure already encode it?                                                                 | Verdict                                                                                                          |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `specs/` or `decisions/` → `conventions/` or `operations/` | —                                                                                                 | Governed by [The Rule](#the-rule) alone; this capability adds no dependency condition for a body it does not own |
+| `conventions/` or `operations/` → `decisions/`             | No — a decision exists only when its rationale is unrecoverable from the code, same as for a spec | **Link**, under the same condition as [From a Spec to a Decision](#from-a-spec-to-a-decision)                    |
 
 **Guidelines:**
 
@@ -91,9 +91,10 @@ links nothing, whichever body would have received it.
   [From a Spec to a Decision](#from-a-spec-to-a-decision) to a document under
   `conventions/` or `operations/` exactly as to a spec, when it cites the
   decision that constrains it.
-- MUST NOT state a dependency condition for a link from a corpus document into
-  `conventions/` or `operations/`; [The Rule](#the-rule) alone decides it, and
-  this capability owns no further condition for a body it does not own.
+- MUST NOT state a dependency condition for a link from `specs/` or
+  `decisions/` into `conventions/` or `operations/`; [The Rule](#the-rule)
+  alone decides it, and this capability owns no further condition for a body
+  it does not own.
 
 ## Out of a Decision
 

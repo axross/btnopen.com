@@ -1,7 +1,10 @@
 # Blog Posts
 
-The site's primary content type. This describes what a post is, what it carries,
-and how it moves from draft to published. How a post's body renders is
+The site's only content type. This describes what a post is, what it carries, and
+how it moves from draft to published. A post takes tags and, when enabled,
+comments; beyond that there is no page builder, no newsletter, and no series or
+category hierarchy, so the content model a reader meets is this one type. How a
+post's body renders is
 [markdown-rendering.md](./markdown-rendering.md); the surfaces it appears on are
 [reader-surfaces.md](./reader-surfaces.md); the editing surfaces are
 [content-authoring.md](./content-authoring.md).

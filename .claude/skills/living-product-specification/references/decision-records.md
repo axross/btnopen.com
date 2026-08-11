@@ -14,7 +14,7 @@ Most decisions need no record. A record is owed when **both** hold:
    why it lost.
 
 Without the second condition a log accretes one record per change and becomes
-noise the corpus carries forever; without the first it fills with observations
+noise the log carries forever; without the first it fills with observations
 nobody is bound by.
 
 **Guidelines:**
@@ -54,7 +54,7 @@ already pointed at them.
 ## The Frontmatter
 
 A decision record — and only a decision record — carries frontmatter. The rest
-of the corpus is plain Markdown.
+of `docs/` is plain Markdown.
 
 ```yaml
 ---
@@ -99,8 +99,10 @@ rejected options matter as much as the chosen one.
   rejected with why, and the consequences accepted along with it.
 - SHOULD write in the past tense about the decision and the present tense about
   its consequences; the decision is a historical act, its constraint is current.
-- MUST NOT restate what the product does. That is the spec's, and a copy here
-  goes stale the first time behaviour changes without the decision changing.
+- MUST NOT restate what the constrained document already says — the product's
+  behaviour, a convention, or a procedure. That belongs to the spec,
+  convention, or operational document the decision constrains, and a copy
+  here goes stale the first time it changes without the decision changing.
 
 ## Superseding
 

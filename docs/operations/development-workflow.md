@@ -1,6 +1,6 @@
 # Development Workflow
 
-Read this to know how a change gets from an idea to a merged pull request here.
+How a change gets from an idea to a merged pull request here.
 
 Development in this repository is agent-assisted via
 [Claude Code](https://claude.com/claude-code). The working agreement lives in
@@ -45,13 +45,12 @@ The policy a posted review applies is [`REVIEW.md`](../../REVIEW.md).
 
 ## Branches and Merging
 
-**Rules:**
+A session MUST NOT push to the default branch. Work on a `claude/`-prefixed
+branch and leave merging to the maintainer, @axross.
 
-- MUST NOT push to the default branch. Work on a `claude/`-prefixed branch and
-  leave merging to the maintainer, @axross.
-- MUST begin every agent-authored GitHub comment with the fixed marker line
-  `<!-- agent -->`, reused identically across every run and session, so a later
-  run can tell its own output from human input.
+Every agent-authored GitHub comment MUST begin with the fixed marker line
+`<!-- agent -->`, reused identically across every run and session, so a later run
+can tell its own output from human input.
 
 ## Blog Post Authoring
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// reference resolution: every relative link in the corpus addresses something
+// reference resolution: every relative link under docs/ addresses something
 // that exists.
 //
-// this is the corpus's most-run check, because every edit can break one. it
+// this is the most-run check here, because every edit can break one. it
 // covers index.md's own entries too — whether a listed file is *missing* is a
 // broken link, while whether an existing file is *unlisted* belongs to
 // check-index.mjs.
@@ -13,18 +13,18 @@
 
 import { stat } from "node:fs/promises";
 
-import { extractLinks, main, resolveLink, selfName, siblingHelp } from "./corpus.mjs";
+import { extractLinks, main, resolveLink, selfName, siblingHelp } from "./docs.mjs";
 
-const USAGE = `Usage: ${selfName(import.meta.url)} [<corpus-dir>]
+const USAGE = `Usage: ${selfName(import.meta.url)} [<docs-dir>]
 
-Check that every relative Markdown link in a product-specification corpus
-resolves to a file or directory that exists. Run it after editing any document.
+Check that every relative Markdown link under a project's docs resolves to a
+file or directory that exists. Run it after editing any document.
 
 Only relative links are checked; an http(s) URL is left to a link-freshness
 audit, which needs the network and a different failure policy. Defaults to
 ./docs.
 
-Exit codes: 0 every link resolves, or the project has no corpus.
+Exit codes: 0 every link resolves, or the project has no docs.
             1 findings. 2 bad invocation.
 ${siblingHelp(selfName(import.meta.url))}`;
 
@@ -39,10 +39,10 @@ async function exists(path) {
 
 let checked = 0;
 
-async function run(corpus) {
+async function run(docs) {
   const findings = [];
 
-  for (const doc of corpus.documents) {
+  for (const doc of docs.documents) {
     for (const { target, line } of extractLinks(doc.text)) {
       checked += 1;
       if (!(await exists(resolveLink(doc.path, target)))) {
@@ -61,6 +61,6 @@ process.exitCode = await main({
   usage: USAGE,
   argv: process.argv.slice(2),
   run,
-  pass: (corpus) =>
-    `Every relative link resolves (${checked} across ${corpus.documents.length} documents).`,
+  pass: (docs) =>
+    `Every relative link resolves (${checked} across ${docs.documents.length} documents).`,
 });

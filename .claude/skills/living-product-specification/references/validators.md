@@ -19,7 +19,7 @@ author who touched one spec read findings about everything else.
 
 ```bash
 node <skill>/scripts/check-references.mjs           # defaults to ./docs
-node <skill>/scripts/check-references.mjs app/docs  # or name the corpus root
+node <skill>/scripts/check-references.mjs app/docs  # or name the docs directory
 node <skill>/scripts/check-references.mjs --help    # names the other four
 ```
 
@@ -44,22 +44,22 @@ for check in <skill>/scripts/check-*.mjs; do node "$check" || failed=1; done
 
 ## The Two-Level Opt-In
 
-`index.md` is the marker that a project has adopted a corpus at all. Without it
+`index.md` is the marker that a project has adopted `docs/` at all. Without it
 every command exits 0 and reports nothing — installing this skill must never
 turn red a `docs/` directory that holds something else entirely. Within an
-adopted corpus, each command additionally does nothing when its own subject is
+adopted `docs/`, each command additionally does nothing when its own subject is
 absent: no `specs/`, no `decisions/`.
 
 **Guidelines:**
 
-- MUST create `index.md` as the deliberate act of adopting the corpus; until it
+- MUST create `index.md` as the deliberate act of adopting `docs/`; until it
   exists the checks are inert by design, not misconfigured.
 - MUST NOT make a command fail on an absent subject. A project with no decision
   log has not failed a check; it has not adopted one.
 - MUST treat a document under `conventions/` or `operations/` as in scope for
-  `check-index.mjs` once a project has adopted
-  [one documentation root](./documentation-root.md); the check does not
-  exempt a co-located body just because it sits outside the corpus.
+  `check-index.mjs` exactly as a spec — see
+  [conventions-and-operations.md](./conventions-and-operations.md#what-the-validators-see)
+  for the full picture across all five commands.
 
 ## Why No Defect Is Reported Twice
 
@@ -103,7 +103,7 @@ for reasons that are stated rather than assumed:
 **Guidelines:**
 
 - MUST NOT add a check for a defect visible in the file its author just wrote,
-  unless it guards another check's input or a reference stability the corpus
+  unless it guards another check's input or a reference stability `docs/`
   depends on — and MUST state which, where the check is defined.
 - MUST NOT add a check that compares documentation against implementation. The
   comparison is undecidable, and a confident wrong answer is worse than no

@@ -1,4 +1,4 @@
-# Bootstrapping a Corpus
+# Bootstrapping docs/
 
 Apply this reference when a project has no product specification and one is
 being started.
@@ -13,9 +13,9 @@ over one.
 That default is not the same as an accident. A `docs/` directory naming
 `conventions/` or `operations/` as siblings of `specs/` and `decisions/`, with
 an index that says as much, is
-[the shape a documentation root takes](./documentation-root.md) when adopted
-on purpose, and detecting it means detecting the whole root rather than
-stopping at the corpus's own three files.
+[the shape documentation-structure.md names](./documentation-structure.md)
+when adopted on purpose, and detecting it means detecting all of `docs/`
+rather than stopping at `specs/` and `decisions/` alone.
 
 **Guidelines:**
 
@@ -25,33 +25,33 @@ stopping at the corpus's own three files.
 - MUST leave documentation that is out of scope exactly where it is,
   distinguishing a `docs/` directory that merely shares its name — no
   `conventions/` or `operations/` siblings, no index naming them — from a
-  documentation root adopted on purpose. Where it merely shares the name:
-  adding an index beside it does not make it part of the corpus, and
-  rewriting it is not this capability's business.
+  `docs/` tree adopted on purpose. Where it merely shares the name: adding an
+  index beside it does not bring it into scope, and rewriting it is not this
+  capability's business.
 - MUST ask before relocating or restructuring anything that already exists.
-  Where the corpus lives is a project decision with consequences for links,
+  Where `docs/` lives is a project decision with consequences for links,
   bookmarks, and tooling nobody in the session can see.
 - SHOULD adopt an existing decision-record convention rather than converting it,
   even when it numbers records sequentially. A conversion invalidates every
   reference that already points at them, which is a cost with no matching
   benefit.
 
-## The Smallest Corpus Worth Having
+## The Smallest `docs/` Worth Having
 
-Adoption fails when it starts as a template to fill. Three files, each with real
-content, beat a complete tree of headings with nothing under them.
+Adoption fails when it starts as a template to fill. A handful of files, each
+with real content, beat a complete tree of headings with nothing under them.
 
 Write in this order:
 
-1. **`index.md`** — the adoption marker. Until it exists there is no corpus, and
-   the bundled validators stay silent.
-2. **`overview.md`** — what the product is, who it is for, and what it
-   deliberately does not do. One page. The boundary is the part people disagree
-   about, so it is the part worth writing first.
-3. **`specs/<domain>.md` for one domain** — the one whose behaviour is most
-   often asked about, or most often got wrong.
-4. **`glossary.md`** — seeded from that spec's own vocabulary.
-5. **`decisions/`** — from the next decision made, not backfilled.
+1. **`index.md`** — the adoption marker. Until it exists there is no `docs/`
+   the bundled validators recognize, and they stay silent.
+2. **`specs/<domain>.md` for one domain** — the one whose behaviour is most
+   often asked about, or most often got wrong. State the domain's boundary and
+   what it deliberately does not do alongside what it does; the boundary is
+   the part people disagree about, so it is worth settling in the first spec
+   rather than deferred to a document written later.
+3. **`glossary.md`** — seeded from that spec's own vocabulary.
+4. **`decisions/`** — from the next decision made, not backfilled.
 
 **Guidelines:**
 
@@ -59,12 +59,12 @@ Write in this order:
   written rather than afterwards.
 - MUST NOT scaffold empty files or heading-only documents. An empty document is
   indistinguishable from a subject nobody has considered, and it makes the index
-  claim coverage the corpus does not have.
+  claim coverage `docs/` does not have.
 - MUST NOT backfill decision records for choices already made. Reconstructed
   rationale is a guess presented as history, and the existence condition rules
   out most of what would be written.
-- SHOULD grow the corpus one domain at a time, as changes touch each area,
-  rather than in a single documentation push that nobody has a reason to keep
+- SHOULD grow `docs/` one domain at a time, as changes touch each area, rather
+  than in a single documentation push that nobody has a reason to keep
   current.
 
 ## Seeding the Glossary
@@ -85,16 +85,16 @@ reconciling it, not inventing it.
 
 ## What Not to Import
 
-| Tempting to move in                          | Why it stays out                                                                |
-| -------------------------------------------- | ------------------------------------------------------------------------------- |
-| README, setup, commands, deployment runbooks | Contributor documentation, with its own owner and audience                      |
-| Roadmap, upcoming work, deprecation plans    | The corpus is the present tense; a plan owns the future                         |
-| API reference generated from source          | Generated output goes stale differently and is better regenerated than restated |
-| Meeting notes, incident timelines            | History, not steady state; a decision record captures the part that constrains  |
+| Tempting to move in                          | Why it stays out                                                                                                          |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| README, setup, commands, deployment runbooks | Contributor documentation; belongs under `conventions/` or `operations/` if the project adopts that shape, never `specs/` |
+| Roadmap, upcoming work, deprecation plans    | A spec is the present tense; a plan owns the future                                                                       |
+| API reference generated from source          | Generated output goes stale differently and is better regenerated than restated                                           |
+| Meeting notes, incident timelines            | History, not steady state; a decision record captures the part that constrains                                            |
 
 **Guidelines:**
 
-- MUST keep the corpus to the present tense of the product. Anything describing
+- MUST keep a spec to the present tense of the product. Anything describing
   what will change belongs to a plan.
 - SHOULD extract the constraint from an incident or a long discussion into a
   decision record when it meets the existence condition, and leave the narrative

@@ -1,10 +1,11 @@
 # Security
 
-Read this when touching environment access, an outbound fetch, a route handler's
-input, an upload, or a `uses:` entry in a GitHub Actions workflow. The OWASP-level
-discipline belongs to the installed application-security capability; this
-document records where each of those surfaces actually lives in this repository
-and what already guards it.
+Where environment access, an outbound fetch, a route handler's input, an upload,
+and a GitHub Actions `uses:` entry are guarded here.
+
+The OWASP-level discipline belongs to the installed application-security
+capability. What follows is where each of those surfaces actually lives in this
+repository and what already guards it.
 
 ## Environment Access
 
@@ -71,48 +72,50 @@ would ship to production. That static-visibility requirement is why the rule
 below is scoped to *runtime configuration* rather than to `process.env` as a
 token.
 
-**Rules:**
+Runtime configuration MUST therefore be read through `app/(app)/_/runtime.ts`
+from any component, repository, helper, or route handler, and through
+`payload/helpers/runtime.ts` from anything inside `payload/`. Two exceptions
+stand, each bounded to the variables the table names for it. The six
+`payload/config.ts` reads are one, so a seventh direct read there belongs in the
+barrel like any other. The inline `process.env.NODE_ENV` comparison a bundler
+must see literally to eliminate a branch, as
+`app/(app)/_/components/markdown.tsx` has, is the other; it reaches `NODE_ENV`
+and no further variable, because it is build-time substitution rather than
+deployment configuration.
 
-- MUST read runtime configuration through `app/(app)/_/runtime.ts` from any
-  component, repository, helper, or route handler, and through
-  `payload/helpers/runtime.ts` from anything inside `payload/`. Two exceptions
-  stand, each bounded to the variables the table names for it. The six
-  `payload/config.ts` reads are one, so a seventh direct read there belongs in
-  the barrel like any other. The inline `process.env.NODE_ENV` comparison a
-  bundler must see literally to eliminate a branch, as
-  `app/(app)/_/components/markdown.tsx` has, is the other; it reaches `NODE_ENV`
-  and no further variable, because it is build-time substitution rather than
-  deployment configuration.
-- MUST carry a `noProcessEnv` suppression with a reason on any sanctioned direct
-  `process.env` access, in whichever of Biome's three forms fits the site: a
-  single-line `// biome-ignore lint/style/noProcessEnv:` above one access, as
-  `app/(app)/_/components/markdown.tsx` has; a file-wide
-  `// biome-ignore-all lint/style/noProcessEnv:`, as both barrels have; or a
-  `// biome-ignore-start` / `// biome-ignore-end` pair around a block, as
-  `payload/config.ts` has. Whichever form is used — not a config whitelist — is
-  what exempts every file in the table above, and it is the marker a review
-  looks for.
-- MUST keep `noProcessEnv` at `"error"` in `biome.jsonc`, so an unsanctioned
-  access fails `npm run lint` instead of scrolling past as a warning. That
-  severity is what makes the rule above literal rather than aspirational: every
-  file in the table passes on its directive alone, and deleting one fails the
-  check. The `off` overrides cover only `*.config.js`, `*.config.cjs`,
-  `e2e/reporters/*.ts`, `e2e/check-scenario-coverage.mjs`, and `scripts/*.mjs` —
-  no file in the table above.
-- MUST NOT add a `biome.jsonc` override that exempts a file under `app/`,
-  `payload/`, or `shared/` from `noProcessEnv`; the directive-per-site rule is
-  what keeps the sanctioned set enumerable.
-- MUST NOT assign a `PAYLOAD_SECRET` literal outside `payload/config.ts`, and
-  MUST NOT write a `PAYLOAD_TEST_USER_PASSWORD` literal anywhere but
-  `.env.example`.
-- MUST treat a new `NEXT_PUBLIC_*` variable as a publication decision, not a
-  typing convenience — everything prefixed ships to every visitor. Prefer exposing
-  a derived boolean or public identifier over the underlying value.
-- MUST NOT read `CLERK_SECRET_KEY` from anywhere in this repository, and MUST NOT
-  add it to a `runtime.ts` barrel to "complete" the pair. `@clerk/nextjs` reads it
-  from the environment itself; only its public counterpart passes through
-  `app/(app)/_/runtime.ts`, as `clerkPublishableKey`. A file here reading the
-  secret is a finding, not the missing half of a convention.
+Any sanctioned direct `process.env` access MUST carry a `noProcessEnv`
+suppression with a reason, in whichever of Biome's three forms fits the site: a
+single-line `// biome-ignore lint/style/noProcessEnv:` above one access, as
+`app/(app)/_/components/markdown.tsx` has; a file-wide
+`// biome-ignore-all lint/style/noProcessEnv:`, as both barrels have; or a
+`// biome-ignore-start` / `// biome-ignore-end` pair around a block, as
+`payload/config.ts` has. Whichever form is used — not a config whitelist — is
+what exempts every file in the table above, and it is the marker a review
+looks for.
+
+`noProcessEnv` MUST stay at `"error"` in `biome.jsonc`, so an unsanctioned
+access fails `npm run lint` instead of scrolling past as a warning. That
+severity is what makes the rule above literal rather than aspirational: every
+file in the table passes on its directive alone, and deleting one fails the
+check. The `off` overrides cover only `*.config.js`, `*.config.cjs`,
+`e2e/reporters/*.ts`, `e2e/check-scenario-coverage.mjs`, and `scripts/*.mjs` —
+no file in the table above. A `biome.jsonc` override that exempts a file under
+`app/`, `payload/`, or `shared/` from `noProcessEnv` MUST NOT be added; the
+directive-per-site rule is what keeps the sanctioned set enumerable.
+
+A `PAYLOAD_SECRET` literal MUST NOT be assigned outside `payload/config.ts`, and
+a `PAYLOAD_TEST_USER_PASSWORD` literal MUST NOT be written anywhere but
+`.env.example`.
+
+A new `NEXT_PUBLIC_*` variable MUST be treated as a publication decision, not a
+typing convenience — everything prefixed ships to every visitor. Prefer exposing
+a derived boolean or public identifier over the underlying value.
+
+`CLERK_SECRET_KEY` MUST NOT be read from anywhere in this repository, and it
+MUST NOT be added to a `runtime.ts` barrel to "complete" the pair.
+`@clerk/nextjs` reads it from the environment itself; only its public
+counterpart passes through `app/(app)/_/runtime.ts`, as `clerkPublishableKey`. A
+file here reading the secret is a finding, not the missing half of a convention.
 
 ## Outbound Fetch and SSRF
 
@@ -133,6 +136,20 @@ against every `Location` before the next request leaves, bounded at
 `maxRedirectHops`. The deployment's own `urlOrigin` is the single permitted
 exception, with no environment branch: locally that is a loopback origin, and on
 preview and production it is a public host the range check would pass anyway.
+
+Every outbound fetch of a CMS-authored URL MUST be routed through
+`fetchPermittedUrl`, and `assertFetchableUrl` MUST keep running **per redirect
+hop** rather than once at the start. Calling `fetch` directly on such a URL,
+widening the permitted-origin exception beyond `urlOrigin`, or restoring
+`redirect: "follow"` on that path is a finding — each one reopens the surface the
+guard exists to close.
+
+The `URL.canParse(href)` validation in `remarkEmbeds` (in
+`app/(app)/_/helpers/markdown.ts`) and the `isHttpUrl` scheme check in
+`app/(app)/_/components/embed.tsx` MUST NOT be removed. The guard does not
+replace them: they sit upstream of it, keeping a malformed URL out of the
+directive and a `javascript:` URL out of a rendered anchor, which is a different
+sink from the outbound fetch.
 
 **What the guard does not close.** The address is validated by this resolver and
 then `fetch` resolves the name again to open the connection, so a name whose
@@ -157,49 +174,37 @@ URL either: that entry exists to accept a Clerk-returned URL pointing at GitHub'
 host, and the e2e avatar fixtures are local. Narrow them once Clerk documents a
 stable prefix, or once this repository constructs the URL itself.
 
-**Rules:**
+Every `next.config.ts` `images.remotePatterns` entry MUST stay scoped to a single
+origin, and prefer a path scope within it. Of the four existing entries,
+`http://localhost:3000/api/**` and `https://cdn.hashnode.com/res/hashnode/**` are
+the pattern to copy; the two avatar hosts are whole-origin for the reason above,
+and MUST NOT be narrowed on the strength of an observed URL. A wildcard hostname
+(`**`) is never acceptable.
 
-- MUST route every outbound fetch of a CMS-authored URL through
-  `fetchPermittedUrl`, and MUST keep `assertFetchableUrl` running **per redirect
-  hop** rather than once at the start. Calling `fetch` directly on such a URL,
-  widening the permitted-origin exception beyond `urlOrigin`, or restoring
-  `redirect: "follow"` on that path is a finding — each one reopens the surface
-  the guard exists to close.
-- MUST NOT remove the `URL.canParse(href)` validation in `remarkEmbeds` (in
-  `app/(app)/_/helpers/markdown.ts`) or the `isHttpUrl` scheme check in
-  `app/(app)/_/components/embed.tsx`. The guard does not replace them: they sit
-  upstream of it, keeping a malformed URL out of the directive and a
-  `javascript:` URL out of a rendered anchor, which is a different sink from the
-  outbound fetch.
-- MUST keep every `next.config.ts` `images.remotePatterns` entry scoped to a
-  single origin, and prefer a path scope within it. Of the four existing entries,
-  `http://localhost:3000/api/**` and `https://cdn.hashnode.com/res/hashnode/**`
-  are the pattern to copy; the two avatar hosts are whole-origin for the reason
-  above, and MUST NOT be narrowed on the strength of an observed URL. A wildcard
-  hostname (`**`) is never acceptable.
-- MUST NOT let an OG image route (`thumbnail.png`, or a future `route.tsx`)
-  accept a `src` query parameter that flows into `fetch(src)` without an
-  allowlist; this is the canonical Next.js OG-image SSRF shape.
-- MUST keep `sitemap.ts` and `robots.ts` fetching only Payload data through the
-  repository layer, never an unbounded fetch to a CMS-controlled URL.
+An OG image route (`thumbnail.png`, or a future `route.tsx`) MUST NOT be allowed
+to accept a `src` query parameter that flows into `fetch(src)` without an
+allowlist; this is the canonical Next.js OG-image SSRF shape.
+
+`sitemap.ts` and `robots.ts` MUST keep fetching only Payload data through the
+repository layer, never an unbounded fetch to a CMS-controlled URL.
 
 ## Cross-Site Request Forgery
 
-**Rules:**
+A `route.ts` mutation handler MUST check `Origin` or `Sec-Fetch-Site`, through
+`isSameSiteRequest` from `app/(app)/_/helpers/request-origin.ts`. Even an
+idempotent endpoint such as `posts/caches` `DELETE` can be abused — here, to
+flush caches.
 
-- MUST check `Origin` or `Sec-Fetch-Site` on a `route.ts` mutation handler,
-  through `isSameSiteRequest` from
-  `app/(app)/_/helpers/request-origin.ts`. Even an idempotent endpoint such as
-  `posts/caches` `DELETE` can be abused — here, to flush caches.
-- MUST additionally carry a double-submit token on a mutation handler that acts
-  on an authenticated user's behalf, as `app/(app)/_/helpers/comment-csrf.ts`
-  does for the comment write path. That helper is this repository's worked CSRF
-  example: `GET .../comments/token` mints a token, returns it in the body, and
-  pins it in an `HttpOnly`, `SameSite=Strict` cookie; the `POST` handler accepts
-  the write only when the header matches the cookie, compared in constant time.
-  Reuse it rather than writing a second token scheme.
-- MUST NOT treat `app/(payload)/` as in scope for this lens; the Payload admin
-  routes own their own CSRF and request validation.
+A mutation handler that acts on an authenticated user's behalf MUST additionally
+carry a double-submit token, as `app/(app)/_/helpers/comment-csrf.ts` does for
+the comment write path. That helper is this repository's worked CSRF example:
+`GET .../comments/token` mints a token, returns it in the body, and pins it in an
+`HttpOnly`, `SameSite=Strict` cookie; the `POST` handler accepts the write only
+when the header matches the cookie, compared in constant time. Reuse it rather
+than writing a second token scheme.
+
+`app/(payload)/` MUST NOT be treated as in scope for this lens; the Payload admin
+routes own their own CSRF and request validation.
 
 ## Input Validation
 
@@ -207,32 +212,33 @@ Everything crossing into the app from a URL, a request body, or an upload is
 attacker-controlled until something proves otherwise, and the proof has to run
 before the value is used rather than after.
 
-**Rules:**
+A `searchParams` flag MUST be compared by value, not truthiness —
+`params.draft === "true"`, as `app/(app)/(index)/page.tsx` and
+`app/(app)/posts/[slug]/page.tsx` do. A truthy check treats `?draft=false` as
+enabled. That comparison MUST happen at the route boundary rather than in the
+data layer. `app/(app)/_/repositories/get-blog-post.ts` takes `draft` as an
+already-parsed `boolean`, so a repository re-parsing a query string is a sign the
+boundary leaked.
 
-- MUST compare a `searchParams` flag by value, not truthiness —
-  `params.draft === "true"`, as `app/(app)/(index)/page.tsx` and
-  `app/(app)/posts/[slug]/page.tsx` do. A truthy check treats `?draft=false` as
-  enabled.
-- MUST do that comparison at the route boundary rather than in the data layer.
-  `app/(app)/_/repositories/get-blog-post.ts` takes `draft` as an already-parsed
-  `boolean`, so a repository re-parsing a query string is a sign the boundary
-  leaked.
-- MUST validate `request.json()`, `request.formData()`, or `request.url` in a
-  `route.ts` handler with a Zod schema or equivalent runtime check before use.
-  `CommentSubmission` from `shared/comments.ts`, parsed in the comment write
-  path, is the worked example — it is what bounds the only body a member of the
-  public can send this application.
-- MUST parse Payload documents through the matching schema in
-  `shared/payload-types.ts` before returning them from a route handler or server
-  action; returning them directly leaks fields the consumer never requested,
-  including draft-only ones.
-- MUST validate attribute values in a new custom MDAST directive, as
-  `remarkEmbeds` does with `URL.canParse(href)`.
-- MUST sanitize uploaded filenames in a new upload collection by adding
-  `createUploadFilenameHook(<collection label>)` from
-  `payload/helpers/upload-filename.ts` to its `beforeOperation` hooks. It rewrites
-  `req.file.name` to `${uuid}.${ext}`; reuse it rather than copying the body, so
-  the sanitization keeps one definition to audit.
+`request.json()`, `request.formData()`, or `request.url` in a `route.ts` handler
+MUST be validated with a Zod schema or equivalent runtime check before use.
+`CommentSubmission` from `shared/comments.ts`, parsed in the comment write path,
+is the worked example — it is what bounds the only body a member of the public
+can send this application.
+
+Payload documents MUST be parsed through the matching schema in
+`shared/payload-types.ts` before being returned from a route handler or server
+action; returning them directly leaks fields the consumer never requested,
+including draft-only ones.
+
+Attribute values in a new custom MDAST directive MUST be validated, as
+`remarkEmbeds` does with `URL.canParse(href)`.
+
+Uploaded filenames in a new upload collection MUST be sanitized by adding
+`createUploadFilenameHook(<collection label>)` from
+`payload/helpers/upload-filename.ts` to its `beforeOperation` hooks. It rewrites
+`req.file.name` to `${uuid}.${ext}`; reuse it rather than copying the body, so
+the sanitization keeps one definition to audit.
 
 ## CI Workflow Supply Chain
 
@@ -258,50 +264,47 @@ supply-chain reference covers the dependency manifest and the lockfile only, and
 names no CI surface. What follows is this repository's own convention, decided in
 [#181](https://github.com/axross/btnopen.com/issues/181).
 
-**Rules:**
+A new third-party `uses:` entry MUST be pinned to a full 40-hex commit SHA with
+the release tag as a trailing comment — `uses: owner/action@<sha> # v1.2.3` — and
+MUST be given an automated bump path in `.github/dependabot.yml` rather than
+leaving the pin to rot. That SHA MUST be taken from a **release** tag rather than
+a floating major alias, and an annotated tag MUST be peeled to its commit
+(`git ls-remote <url> 'refs/tags/v1.2.3^{}'`) — a tag-object SHA is not usable in
+`uses:`. Dependabot bumps a SHA that carries no direct release tag to the
+containing branch's HEAD and leaves the version comment stale
+(`dependabot/dependabot-core#14716`). A pinned SHA that was not resolved with
+`git ls-remote` MUST NOT be written; a wrong SHA fails at the run that first uses
+it, never at lint time.
 
-- MUST pin a new third-party `uses:` entry to a full 40-hex commit SHA with the
-  release tag as a trailing comment — `uses: owner/action@<sha> # v1.2.3` — and
-  MUST give it an automated bump path in `.github/dependabot.yml` rather than
-  leaving the pin to rot.
-- MUST take that SHA from a **release** tag rather than a floating major alias,
-  and MUST peel an annotated tag to its commit
-  (`git ls-remote <url> 'refs/tags/v1.2.3^{}'`) — a tag-object SHA is not usable
-  in `uses:`. Dependabot bumps a SHA that carries no direct release tag to the
-  containing branch's HEAD and leaves the version comment stale
-  (`dependabot/dependabot-core#14716`).
-- MUST NOT write a pinned SHA that was not resolved with `git ls-remote`; a wrong
-  SHA fails at the run that first uses it, never at lint time.
-- MUST leave GitHub's own `actions/*` entries on their major tags, and MUST NOT
-  report that as a review finding — it is the recorded decision, not an oversight.
-- MUST NOT rely on `npm run lint` to check anything under `.github/`. Biome's
-  `files.ignoreUnknown` leaves the directory unprocessed — `biome check .github/`
-  reports zero files — so a YAML error there survives a green lint. Parse the file
-  explicitly instead.
-- MUST NOT assume GitHub's immutable releases make a tag reference safe: they
-  protect the tag cut for a release, never a floating `v1`-style alias, which the
-  upstream owner repoints on every release.
+GitHub's own `actions/*` entries MUST be left on their major tags, and that
+MUST NOT be reported as a review finding — it is the recorded decision, not an
+oversight. GitHub's immutable releases MUST NOT be assumed to make a tag
+reference safe: they protect the tag cut for a release, never a floating
+`v1`-style alias, which the upstream owner repoints on every release.
+
+`npm run lint` MUST NOT be relied on to check anything under `.github/`. Biome's
+`files.ignoreUnknown` leaves the directory unprocessed — `biome check .github/`
+reports zero files — so a YAML error there survives a green lint. Parse the file
+explicitly instead.
 
 ## Dependencies
 
 A package excluded from the bundler keeps running from `node_modules` at runtime,
-so the list is a standing exception rather than a preference.
+so the list is a standing exception rather than a preference. A new entry in
+`next.config.ts` `serverExternalPackages` MUST therefore be justified. The
+existing entries — `re2`, `pino`, `pino-pretty` — are there because they are
+native or stream-based and incompatible with Next's bundler; the list should stay
+minimal.
+
+An entry MUST NOT be pruned merely because no file imports it. `re2` is declared
+nowhere in `package.json` and imported nowhere in this repository, yet removing
+it fails `npm run build` with `non-ecmascript placeable asset`: it is a native
+binding reached transitively through `@metascraper/helpers` →
+`metascraper-title` → `app/(app)/_/repositories/get-webembed-metadata.ts`. Trace
+an entry's provenance through the lockfile before concluding it is dead.
 
 Advisories against those packages are tracked separately, in
 [../operations/dependency-advisories.md](../operations/dependency-advisories.md):
 it holds the current `npm audit` counts, the reachability judgement behind every
 finding still open, and the decision that no audit step gates CI. Read it before
 concluding that an open finding is an oversight.
-
-**Rules:**
-
-- MUST justify a new entry in `next.config.ts` `serverExternalPackages`. The
-  existing entries — `re2`, `pino`, `pino-pretty` — are there because they are
-  native or stream-based and incompatible with Next's bundler; the list should
-  stay minimal.
-- MUST NOT prune an entry merely because no file imports it. `re2` is declared
-  nowhere in `package.json` and imported nowhere in this repository, yet removing
-  it fails `npm run build` with `non-ecmascript placeable asset`: it is a native
-  binding reached transitively through `@metascraper/helpers` →
-  `metascraper-title` → `app/(app)/_/repositories/get-webembed-metadata.ts`. Trace
-  an entry's provenance through the lockfile before concluding it is dead.
