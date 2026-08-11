@@ -205,7 +205,41 @@ list. The glitch visual plus one escape hatch is the intended aesthetic.
 
 A list that can legitimately be empty renders a muted message **inside** the list
 container rather than collapsing the container, so the surrounding chrome stays
-anchored and the page does not reflow. An empty-state heading takes the same
-code-syntax voice as a not-found heading where that reads naturally, and any
-future empty-state surface is a shared component following the not-found surface's
-composition pattern rather than a route-local one-off.
+anchored and the page does not reflow. That message carries **no heading**. It
+sits in a region the surrounding page has already titled, and a heading would
+announce the absence more loudly than the content it stands in for. The
+code-syntax voice belongs to the not-found surface's own heading, which names a
+whole route the reader did not reach; an in-container empty message inherits
+nothing from it.
+
+An empty region and a failed one render through the same shared component rather
+than each reproducing the not-found surface's composition separately, so the two
+cannot drift apart in spacing, tone, or hierarchy. A future empty state uses that
+component rather than a route-local one-off.
+
+## Error
+
+A route that fails to render falls to **one shared error surface** covering
+everything under `(app)`. The reader keeps the site around it: the boundary
+renders inside the root layout, so the header and the footer both survive and
+only the page's own content is replaced. A failure takes the page, not the site.
+
+The surface is the same quiet component the empty state uses — a single muted
+line saying the content could not be loaded, centred in the space the page
+content would have filled. It carries no heading and no decorative element. The
+not-found surface's glitched status number is deliberately not reused: that
+surface marks a destination that does not exist, while this one marks a transient
+fault on one the reader reached correctly.
+
+Where retrying can plausibly succeed, the surface offers a single action styled
+as a text link. It is a real button rather than a link because it **re-renders
+the failed region in place rather than reloading the document** — the reader
+keeps their scroll position, and nothing that had already succeeded is fetched
+again. A failure that retrying cannot clear shows the line alone rather than a
+control that would not help. Every failure the site can currently produce is
+retryable; the distinction is carried so the surface needs no change on the day
+one is not.
+
+A missing post is not a failure and never reaches here — it renders the not-found
+surface instead. Failures that do reach here are reported to error tracking from
+the boundary itself, so a reader-visible break is never silent.

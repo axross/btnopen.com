@@ -1,0 +1,126 @@
+@layer components {
+	/* Every rule below the scope root mirrors its counterpart in the index page's
+	 * own `page.module.css`, because a CSS Module may not import another
+	 * component's. The two move together: a spacing change on either side belongs
+	 * on both, or the skeleton stops collapsing into the loaded region without a
+	 * shift.
+	 *
+	 * The social-link rules are the one section whose counterpart lives elsewhere:
+	 * the loaded region delegates that row to `<SocialLinkList>`, so they mirror
+	 * `social-link-list.module.css` instead, and carry its selector names so the
+	 * pairing is legible from either side. `.socialIcon` is the exception within
+	 * the exception — it has no counterpart at all, because the loaded glyph takes
+	 * its size from the SVG asset rather than from a rule.
+	 *
+	 * The scope root is the exception, and has nothing to mirror: `page.tsx`
+	 * renders its `<main>` under a `css.main` that `page.module.css` never
+	 * defines, so the loaded region's root ships class-less and takes its column
+	 * layout from the `.indexPage` flex container above it. These declarations
+	 * restate that layout so the two roots lay their children out alike — which
+	 * they measurably do: the `.intro` box starts at the same y in both states at
+	 * 412px, 712px, and 1280px.
+	 *
+	 * `--max-width` and `--page-variant` are not restated — they come from the
+	 * `.indexPage` container this skeleton renders inside, the same ancestor the
+	 * loaded region reads them from. */
+	@scope (.indexPageMainLoading) {
+		:where(:scope) {
+			display: flex;
+			width: stretch;
+			flex-direction: column;
+			align-items: center;
+		}
+
+		.intro {
+			display: flex;
+			width: stretch;
+			max-inline-size: var(--max-width);
+			align-items: center;
+			flex-direction: column;
+			margin-block-start: var(--size-64);
+			padding-inline: var(--size-16);
+
+			@container style(--page-variant: "desktop") {
+				flex-direction: row-reverse;
+				column-gap: var(--size-32);
+				padding-inline: unset;
+			}
+		}
+
+		/* The portrait is a square measured against the page container, exactly as
+		 * the loaded one is; the glitch backdrop behind it is decoration the
+		 * skeleton has nothing to stand in for. */
+		.portrait {
+			width: 75cqw;
+			height: auto;
+			aspect-ratio: 1;
+
+			@container style(--page-variant: "desktop") {
+				flex: 2;
+			}
+		}
+
+		.bio {
+			display: flex;
+			flex-direction: column;
+			align-items: stretch;
+			row-gap: var(--size-32);
+			margin-block-start: var(--size-32);
+
+			@container style(--page-variant: "desktop") {
+				flex: 3;
+			}
+		}
+
+		.bioContent {
+			display: flex;
+			flex-direction: column;
+			align-items: stretch;
+			row-gap: var(--size-16);
+			font-size: var(--text-md);
+			line-height: var(--leading-lg);
+		}
+
+		.socialLinkList {
+			display: flex;
+			column-gap: var(--size-32);
+			list-style: none;
+		}
+
+		.listItem {
+			display: flex;
+		}
+
+		/* The real icons are 24px SVGs, so this is a literal rather than
+		 * `--size-24`: that token is fluid and resolves to 24.48px at 412px and
+		 * 29.14px at 1280px, which showed up as the skeleton standing ~5px taller
+		 * than the row it was replaced by at desktop width. A glyph's size is a
+		 * fixed asset dimension rather than a spacing step, so it does not belong
+		 * on the scale. */
+		.socialIcon {
+			width: 24px;
+			height: 24px;
+			aspect-ratio: 1;
+		}
+
+		.section {
+			width: stretch;
+			max-inline-size: var(--max-width);
+			margin-block-start: var(--size-48);
+			padding-inline: var(--size-16);
+
+			@container style(--page-variant: "desktop") {
+				padding-inline: unset;
+			}
+		}
+
+		.sectionHeading {
+			font-size: var(--text-xl);
+			font-weight: 700;
+		}
+
+		.blogPosts {
+			margin-block-start: var(--size-24);
+		}
+	}
+}

@@ -57,10 +57,31 @@ data, `<name>/loading.tsx` renders the skeleton.
 behind the split — no layout shift between skeleton and content — is in
 [../specs/reader-surfaces.md](../specs/reader-surfaces.md).
 
+What holds a triad together is file adjacency: `loaded.module.css` and
+`loading.module.css` sit side by side, so a cell added to one is hard to forget
+on the other. A skeleton standing at a **route-level** `<Suspense>` boundary
+cannot buy that, because no single component owns both states there — the page
+does. `<IndexPageMain>` is declared inline in `app/(app)/(index)/page.tsx` and
+has no component file to be a triad's root; `<Comments>` has a file but is
+mounted conditionally by `app/(app)/posts/[slug]/page.tsx`, so the pending state
+belongs to the page's boundary rather than to the component. Splitting either
+out purely to earn the triad would move a route's own markup into a component
+the route is the only caller of. The standalone `<region>-loading.tsx` is the
+sanctioned shape instead, and it carries by hand the discipline adjacency used
+to enforce. `index-page-main-loading.tsx` and `comments/comments-loading.tsx`
+are the two that exist.
+
 **Rules:**
 
 - MUST split a data-fetching component into the orchestrator / `loaded` /
   `loading` triad when its loading state is user-visible.
+- MAY instead build a standalone `<region>-loading.tsx` beside the region it
+  covers when the pending state is owned by a route-level `<Suspense>` boundary
+  rather than by a component with a `loaded` sibling.
+- MUST give a standalone skeleton a stylesheet whose rules mirror the loaded
+  region's selectors, and MUST move the two together on any change to either.
+- MUST record in a standalone skeleton's doc comment why it is not a triad,
+  since no `loaded` sibling is there to imply it.
 - MUST NOT let `loading.tsx` import the loaded data type or render fields from
   it; the skeleton has to render before the fetch resolves.
 - MUST keep the `loaded` and `loading` siblings on the same CSS-Module selectors

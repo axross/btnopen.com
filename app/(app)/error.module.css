@@ -1,0 +1,17 @@
+@layer components {
+	/* The boundary replaces the whole page body, so its landmark stands where the
+	 * failed route's own `<main>` would have: stretched across the column the
+	 * layout centres, filling the height left below the header, with the message
+	 * centred in it. That is the composition `not-found-content.module.css` uses,
+	 * minus the 404 surface's own decoration. */
+	@scope (.appError) {
+		:where(:scope) {
+			display: flex;
+			width: stretch;
+			flex: 1;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+		}
+	}
+}

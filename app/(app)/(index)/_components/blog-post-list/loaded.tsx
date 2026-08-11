@@ -2,7 +2,9 @@ import { clsx } from "clsx";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { type ComponentProps, type JSX, ViewTransition } from "react";
+import { StateMessage } from "@/components/state-message";
 import { dateFnsLocaleByLocale, getActiveLocale } from "@/helpers/i18n";
 import { getBlogPosts } from "@/repositories/get-blog-posts";
 import css from "./loaded.module.css";
@@ -15,36 +17,51 @@ export async function BlogPostListLoaded({
 }: ComponentProps<"ul"> & {
 	draft?: Promise<boolean>;
 }): Promise<JSX.Element> {
-	const [locale, isDraft] = await Promise.all([getActiveLocale(), draft]);
+	const [locale, isDraft, t] = await Promise.all([
+		getActiveLocale(),
+		draft,
+		getTranslations("index"),
+	]);
 	const blogPosts = await getBlogPosts({ draft: isDraft, locale });
 	const dateFnsLocale = dateFnsLocaleByLocale[locale];
 
+	// the empty branch is decided here rather than at the call site, because only
+	// this component knows the collection came back empty rather than pending. it
+	// renders inside the list container so the section heading above it stays
+	// anchored and the page does not reflow — hence the wrapping <li>, the only
+	// child a <ul> may carry.
 	return (
 		<ul className={clsx(css.blogPostListLoaded, className)} {...props}>
-			{blogPosts.map((blogPost) => (
-				<li className={css.item} key={blogPost.slug}>
-					<Link
-						href={{
-							pathname: `/posts/${blogPost.slug}`,
-							search: isDraft ? "draft=true" : undefined,
-						}}
-						className={css.link}
-						data-testid="blog-post"
-						data-slug={blogPost.slug}
-					>
-						<BlogPostListItem
-							slug={blogPost.slug}
-							title={blogPost.title}
-							brief={blogPost.brief}
-							thumbnailImage={blogPost.thumbnailImage}
-							publishedLabel={formatDistanceToNow(blogPost.publishedAt, {
-								addSuffix: true,
-								locale: dateFnsLocale,
-							})}
-						/>
-					</Link>
+			{blogPosts.length === 0 ? (
+				<li className={css.empty}>
+					<StateMessage message={t("posts-empty")} data-testid="empty" />
 				</li>
-			))}
+			) : (
+				blogPosts.map((blogPost) => (
+					<li className={css.item} key={blogPost.slug}>
+						<Link
+							href={{
+								pathname: `/posts/${blogPost.slug}`,
+								search: isDraft ? "draft=true" : undefined,
+							}}
+							className={css.link}
+							data-testid="blog-post"
+							data-slug={blogPost.slug}
+						>
+							<BlogPostListItem
+								slug={blogPost.slug}
+								title={blogPost.title}
+								brief={blogPost.brief}
+								thumbnailImage={blogPost.thumbnailImage}
+								publishedLabel={formatDistanceToNow(blogPost.publishedAt, {
+									addSuffix: true,
+									locale: dateFnsLocale,
+								})}
+							/>
+						</Link>
+					</li>
+				))
+			)}
 		</ul>
 	);
 }

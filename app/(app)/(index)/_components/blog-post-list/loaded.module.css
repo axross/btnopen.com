@@ -22,6 +22,14 @@
 			width: stretch;
 		}
 
+		/* The empty branch's only list item. It carries no styling of its own —
+		 * the shared surface owns its own padding and centring — and exists
+		 * because a <ul> may carry nothing but <li>. */
+		.empty {
+			display: flex;
+			width: stretch;
+		}
+
 		.link {
 			display: flex;
 			width: stretch;

@@ -218,8 +218,8 @@ locale rendering a missing-message fallback.
 
 ### Voice
 
-Error and empty-state headings adopt a **code-syntax voice** — a JS-expression
-shaped line reading `<subject>.<predicate> === <value>`:
+A **not-found heading** adopts a **code-syntax voice** — a JS-expression shaped
+line reading `<subject>.<predicate> === <value>`:
 
 - 404, generic: `page.found === false`
 - 404, blog post not found: `post.found === false`
@@ -228,6 +228,10 @@ Predicates may be past-tense states such as `loaded`, `authorized`, or `exists`
 when those read more naturally than `found`. Each code-syntax heading is paired
 with a humanized Japanese description of what was not found —
 `お探しのページは見つかりませんでした`, `お探しの投稿は見つかりませんでした`.
+
+The voice reaches only a heading that exists. The shared empty-and-error surface
+deliberately has none, so nothing on it takes this form; its composition is in
+[reader-surfaces.md](./reader-surfaces.md).
 
 Primary-action copy in an error state is a short English sentence-case imperative
 — `Go back home`. Section headings on index and listing surfaces are short

@@ -1,0 +1,72 @@
+@layer components {
+	/* Every rule here mirrors its counterpart in `comments.module.css`, because a
+	 * CSS Module may not import another component's. The two move together: a
+	 * spacing change on either side belongs on both, or the skeleton stops
+	 * collapsing into the loaded region without a shift. */
+	@scope (.commentsLoading) {
+		:where(:scope) {
+			width: stretch;
+			max-inline-size: var(--max-width);
+			margin-block-start: var(--size-64);
+			padding-inline: var(--size-16);
+			display: flex;
+			flex-direction: column;
+			gap: var(--size-24);
+
+			@container style(--page-variant: "desktop") {
+				padding-inline: unset;
+			}
+		}
+
+		/* The loaded head is the heading beside its comment count; the count is a
+		 * short pill on the same baseline and adds no height, so the skeleton
+		 * stands in for the heading alone. */
+		.head {
+			display: flex;
+			align-items: baseline;
+			gap: var(--size-8);
+			font-size: var(--text-md);
+			font-weight: 600;
+		}
+
+		.list {
+			list-style: none;
+			display: flex;
+			flex-direction: column;
+			gap: var(--size-32);
+		}
+
+		.comment {
+			display: flex;
+			gap: var(--size-12);
+		}
+
+		.avatar {
+			inline-size: var(--size-40);
+			block-size: var(--size-40);
+			flex: 0 0 auto;
+			border-radius: var(--radius-full);
+			aspect-ratio: 1;
+		}
+
+		.body {
+			flex: 1 1 auto;
+			min-inline-size: 0;
+		}
+
+		/* The loaded meta row is the name, the handle, the author badge, and the
+		 * timestamp on one baseline; one placeholder line occupies the same
+		 * height. */
+		.meta {
+			display: flex;
+			align-items: baseline;
+			flex-wrap: wrap;
+			gap: var(--size-8);
+			font-weight: 600;
+		}
+
+		.text {
+			margin-block-start: var(--size-4);
+		}
+	}
+}

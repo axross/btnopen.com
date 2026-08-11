@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import enUS from "../translations/en-US.json" with { type: "json" };
-import jaJP from "../translations/ja-JP.json" with { type: "json" };
+import enUS from "./en-US.json" with { type: "json" };
+import jaJP from "./ja-JP.json" with { type: "json" };
 
 /** Collects the dot-joined leaf key paths of a nested translation catalog. */
 function collectKeyPaths(value: unknown, prefix = ""): string[] {
