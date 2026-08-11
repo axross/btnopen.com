@@ -45,9 +45,15 @@ shared link shows the draft's card. Three sinks were closed in the same change:
 Sentry events have the parameter redacted out of the request URL, the query
 string, and every breadcrumb; no error-linked replay is uploaded from a page that
 has carried a token, because a replay records the URL through a path no
-`beforeSend` sees; and every `?draft=true` render opts out of search indexing, so
-a forwarded link cannot put unpublished content into an index. Mixpanel needed no
-work — its page-view allowlist was already closed by construction.
+`beforeSend` sees; and a `?draft=true` post render opts out of search indexing,
+so a forwarded link cannot put unpublished content into an index. Mixpanel needed
+no work — its page-view allowlist was already closed by construction.
+
+The redaction is the one piece of this that is code rather than configuration,
+and that is a liability worth naming: it runs inside `beforeSend`, where a throw
+does not merely lose the event but tears down whatever response is being
+rendered. It is kept IO-free and total, and its unit tests exist as much to pin
+that as to pin the redaction.
 
 Four alternatives were weighed and rejected.
 
