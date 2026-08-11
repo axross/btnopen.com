@@ -43,8 +43,11 @@ wrong everywhere at once.
   to an anonymous caller, so a secret added without one is published alongside
   the post it protects. `shareToken` is the worked example, and the shape it
   establishes is `read` consulting `req.user` with `create` and `update` both
-  returning `false`, so no value a REST, GraphQL, or MCP caller sends is ever
-  honoured and a server-side `beforeChange` hook owns the stored value alone.
+  returning `false`, so no value a REST or MCP caller sends is ever honoured and
+  a server-side `beforeChange` hook owns the stored value alone. Those two are
+  the live surfaces: `payload/config.ts` sets `graphQL: { disable: true }`, so
+  there is no GraphQL API to reason about — and re-enabling one would put every
+  field-level rule in this repository back into play at once.
 - MUST NOT review or hand-edit files under `app/(payload)/`, with one exception:
   `app/(payload)/custom.scss` is this repository's hand-authored admin
   stylesheet and always has been. Payload generates and owns everything else in

@@ -3,7 +3,8 @@
  * reviewer read one blog post's draft.
  *
  * The token is minted on the server and nowhere else. Field-level access on
- * `shareToken` discards whatever a REST, GraphQL, or MCP caller sends, and
+ * `shareToken` discards whatever a REST or MCP caller sends — the two surfaces
+ * there are, since `payload/config.ts` disables GraphQL — and
  * {@link assignShareToken} — a collection `beforeChange` hook, which Payload
  * runs after that field access — has the last word on the stored value. That is
  * what makes "generated from a CSPRNG" a property of the system rather than of

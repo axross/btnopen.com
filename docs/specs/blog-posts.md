@@ -111,8 +111,10 @@ the secret — rotation, described in
 link at once and is the only revocation there is. Why it works that way is
 [../decisions/2026-08-11-share-a-draft-with-one-rotatable-bearer-token-per-post.md](../decisions/2026-08-11-share-a-draft-with-one-rotatable-bearer-token-per-post.md).
 
-The secret never reaches a signed-out caller: not through `/api/blog-posts`, not
-through GraphQL, and not through any MCP tool but the two built to serve it. It
+The secret never reaches a signed-out caller: not through `/api/blog-posts`, and
+not through any MCP tool but the two built to serve it. GraphQL is not a third
+surface to close — `payload/config.ts` disables that API outright, so no such
+endpoint exists to ask. It
 is minted on the server, so a write that tries to set it leaves the stored value
 unchanged. It does reach one public place by design — the draft page's rendered
 HTML, in the `og:image` URL — because an unfurl of the shared link has to hand

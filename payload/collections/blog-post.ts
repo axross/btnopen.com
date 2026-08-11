@@ -127,7 +127,8 @@ export const blogPostCollection: CollectionConfig = {
 							// rule returns `true` on an otherwise-gated collection. The token
 							// is a bearer credential for unpublished content, so `read`
 							// requires a session, and `create` and `update` deny everyone so
-							// no value a REST, GraphQL, or MCP caller sends is ever honoured.
+							// no value a REST or MCP caller sends is ever honoured — the two
+							// surfaces there are, since `payload/config.ts` disables GraphQL.
 							// `assignShareToken` below owns the stored value instead; opening
 							// the field to an author would only add a way to weaken it.
 							access: {
