@@ -335,7 +335,7 @@ test(
 // REST API and its comment has always claimed the same request signed out
 // "comes back without the field at all" — nothing checked it.
 //
-// The subject has to be the PUBLISHED post rather than the draft created here:
+// the subject has to be the PUBLISHED post rather than the draft created here:
 // the collection's own `read` rule narrows an anonymous caller to
 // `_status: published`, so a draft is absent from the response entirely and an
 // assertion over an empty list would pass while proving nothing. The published

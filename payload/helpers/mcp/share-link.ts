@@ -1,12 +1,3 @@
-import type { PayloadRequest } from "payload";
-import z from "zod";
-import { PayloadBlogPost } from "@/shared/payload-types";
-import type { BlogPost } from "../../types";
-import { urlOrigin } from "../runtime";
-import { findBlogPostBySlug } from "./blog-post-body";
-import type { McpTextResponse } from "./mcp-types";
-import { mcpErrorResponse } from "./tool-handler";
-
 /**
  * What the two share-link tools share: their argument shape, the refusal they
  * both answer an anonymous caller with, the lookup that reads the token, and
@@ -16,6 +7,15 @@ import { mcpErrorResponse } from "./tool-handler";
  * answers through `sanitize.ts`, whose allowlist simply omits the field — so
  * the exclusion holds by construction rather than by remembering to strip it.
  */
+
+import type { PayloadRequest } from "payload";
+import z from "zod";
+import { PayloadBlogPost } from "@/shared/payload-types";
+import type { BlogPost } from "../../types";
+import { urlOrigin } from "../runtime";
+import { findBlogPostBySlug } from "./blog-post-body";
+import type { McpTextResponse } from "./mcp-types";
+import { mcpErrorResponse } from "./tool-handler";
 
 /** Both tools address a post the way an author does: by its slug. */
 export const BlogPostShareLinkParameters = z.object({

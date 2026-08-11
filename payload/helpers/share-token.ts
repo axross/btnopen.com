@@ -238,8 +238,17 @@ export async function rotateShareToken({
 
 		return updated.shareToken;
 	} finally {
+		// guarded because this runs in a `finally`: a request reaching here without
+		// a `context` would throw from the cleanup and replace whatever error the
+		// `try` was already propagating with a `TypeError` about the wrong thing.
+		// Payload builds `context` on every request it constructs, so nothing gets
+		// here without one today — the guard costs a line and removes the failure
+		// mode rather than relying on that staying true.
+		//
 		// `false` rather than removing the key: the hook compares against `true`,
 		// and this repository's lint rules rule out `delete`.
-		req.context[SHARE_TOKEN_ROTATION_CONTEXT_KEY] = false;
+		if (req.context) {
+			req.context[SHARE_TOKEN_ROTATION_CONTEXT_KEY] = false;
+		}
 	}
 }
