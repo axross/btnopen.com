@@ -125,7 +125,7 @@ who has granted consent**. The privacy question for a new surface is therefore
 | Setting | Where | What it means |
 | --- | --- | --- |
 | `dataCollection`, diagnostics on and content off | `sentry.server.config.ts`, `sentry.edge.config.ts`, `instrumentation-client.ts` | Sentry captures IP address and user identity, request and response headers, URL query parameters, and stack-frame variables with five lines of surrounding source. It does **not** capture cookies, request or response bodies, database query values, generative-AI content, or GraphQL variables. All ten categories are set explicitly in all three files |
-| The share-token redaction | `app/(app)/_/helpers/share-token-scrubbing.ts`, wired into `beforeSend` and `beforeSendTransaction` in all three files | A post's draft share token is replaced with `[Filtered]` in the event's request URL, its `query_string` field, and every breadcrumb URL. `urlQueryParams` is not this control and cannot be: the SDK attaches the full URL unconditionally and reads that option only for the separate `query_string` field |
+| The share-token redaction | `app/(app)/_/helpers/share-token-scrubbing.ts`, wired into `beforeSend` and `beforeSendTransaction` in all three files | A post's draft share token is replaced with `[Filtered]` on five surfaces: the event's request URL, its `query_string` field, every request header value (`Referer` carries the token back on every same-origin subresource), every breadcrumb URL, and every span attribute — the root span's under `contexts.trace.data` and each child span's under `spans[].data`. `urlQueryParams` is not this control and cannot be: the SDK attaches the full URL unconditionally and reads that option only for the separate `query_string` field |
 | Session Replay at `replaysSessionSampleRate: 0`, `replaysOnErrorSampleRate: 1.0` | Sentry client init | No ordinary session is recorded. A session that hits an error is, DOM mutations and form input included — unless the document has carried a share token, in which case `beforeErrorSampling` suppresses the upload |
 | `tracesSampleRate: 1` | all three Sentry init points | Every transaction is traced. Each of the three carries the one-line rationale for the rate |
 | `Mixpanel.init` with no capture options at all | `app/(app)/_/helpers/analytics.ts`, in `startAnalytics()` | Every SDK default applies: autocapture off, session recording off, heatmaps off, Do Not Track honoured. Page views and three link-click actions are sent explicitly, and are the whole of what Mixpanel receives |
@@ -165,7 +165,23 @@ who has granted consent**. The privacy question for a new surface is therefore
   the URL just as an error does, so wiring only the first hook leaves the secret
   in every trace. `share-token-scrubbing.ts` is the worked example; keep such a
   module IO-free and total, because a throw inside one of these hooks loses the
-  event.
+  event and takes the response being rendered with it.
+- MUST make such a redaction reach `contexts.trace.data` and every
+  `spans[].data`, not `request` alone. Wiring `beforeSendTransaction` is
+  necessary and not sufficient: a transaction carries the URL as a **span
+  attribute**, which the request object does not hold. Next's root server span
+  sets `http.target` to `req.url` with its query string, the
+  OpenTelemetry-to-Sentry exporter copies every attribute verbatim into both
+  places, and browser tracing sets `url.full` on the pageload span. The SDK's
+  own `SENSITIVE_KEY_SNIPPETS` filter does not save this: it matches attribute
+  *names* against `auth`, `token`, `secret`, and the rest, and `http.target`,
+  `url.full`, and `http.url` contain none of them.
+- MUST match such a redaction on a header's or an attribute's **value** rather
+  than on its name. `Referer` is why: `Referrer-Policy:
+  strict-origin-when-cross-origin` sends the full URL on a same-origin request,
+  so every subresource a token-bearing page asks for reports that URL back, and
+  a name-keyed check is one header rename or one new span attribute away from
+  silently missing.
 - MUST NOT log a secret that travels in a URL, and prefer adding no log line on
   its path at all over adding one that omits it. The share-token path carries no
   logging for exactly that reason: no line to get wrong is a stronger guarantee

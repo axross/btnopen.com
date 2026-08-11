@@ -42,12 +42,23 @@ reinstating the one that version carried.
 The secret reaches browser history, server and CDN access logs, and the draft
 page's own rendered HTML, where the `og:image` URL carries it so an unfurl of the
 shared link shows the draft's card. Three sinks were closed in the same change:
-Sentry events have the parameter redacted out of the request URL, the query
-string, and every breadcrumb; no error-linked replay is uploaded from a page that
-has carried a token, because a replay records the URL through a path no
-`beforeSend` sees; and a `?draft=true` post render opts out of search indexing,
-so a forwarded link cannot put unpublished content into an index. Mixpanel needed
-no work — its page-view allowlist was already closed by construction.
+Sentry events have the parameter redacted out of every surface that carries a
+URL — the request URL, the query string, each request header value, every
+breadcrumb URL, and every span attribute, meaning `contexts.trace.data` and each
+`spans[].data`; no error-linked replay is uploaded from a page that has carried a
+token, because a replay records the URL through a path no `beforeSend` sees; and
+every `?draft=true` render opts out of search indexing, so a forwarded link
+cannot put unpublished content into an index. Mixpanel needed no work — its
+page-view allowlist was already closed by construction.
+
+The span surfaces are named because they are the ones that do not look like
+sinks. A transaction carries the request URL as a span attribute rather than in
+its request object, so a redaction that reads only `request` leaves the secret in
+every trace while appearing to cover the event; and the header pass exists
+because `Referrer-Policy: strict-origin-when-cross-origin` sends the full URL
+back on every same-origin subresource a draft page asks for. Both are matched on
+the value rather than the name, so a renamed header or a newly added attribute
+does not silently reopen them.
 
 The redaction is the one piece of this that is code rather than configuration,
 and that is a liability worth naming: it runs inside `beforeSend`, where a throw

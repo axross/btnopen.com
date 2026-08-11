@@ -66,6 +66,13 @@ as destructive through shape and label as well as colour, and confirms before it
 fires. It persists the new secret itself, so there is no save step to forget, and
 the control shows the replacement as soon as it lands.
 
+Rotating writes a **draft**, which is what keeps it from publishing anything an
+author had pending. The visible consequence is that rotating an already-published
+post with nothing pending leaves it reading as having unpublished changes: the
+new secret lands in a fresh draft version while the published row keeps the old
+one. Nothing about the published post has changed, and publishing it again is
+never required — the share link resolves against the latest version either way.
+
 A share link exists for a published post too. It is meaningless there — the post
 is already public — and the control is not conditioned on status, because
 conditioning it would add a state to explain for no gain.
