@@ -61,11 +61,21 @@ test(
 			try {
 				const readerPage = await reader.newPage();
 
-				await test.step("Open the share link signed out", async () => {
-					await readerPage.goto(shareLinkPath(slug, shareToken));
-				});
+				const shareLinkResponse =
+					await test.step("Open the share link signed out", async () =>
+						await readerPage.goto(shareLinkPath(slug, shareToken)));
 
 				const postPage = readerPage.getByTestId("page");
+
+				// the header is what keeps the token out of the `Referer` a reviewer's
+				// browser sends when they follow a link off the draft. `next.config.ts`
+				// sets it and three documents assert the guarantee, so an edit to
+				// `headers()` that dropped it would otherwise leave every gate green.
+				await test.step("Verify the response carries an explicit Referrer-Policy", async () => {
+					expect(shareLinkResponse?.headers()["referrer-policy"]).toBe(
+						"strict-origin-when-cross-origin",
+					);
+				});
 
 				await test.step("Verify the draft's title is rendered", async () => {
 					await expect(
