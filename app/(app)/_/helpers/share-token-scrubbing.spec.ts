@@ -1,4 +1,5 @@
 // biome-ignore-all lint/style/useNamingConvention: fixtures mirror the snake_case Sentry event payload
+import type { Event } from "@sentry/nextjs";
 import { describe, expect, it } from "vitest";
 import {
 	hasShareToken,
@@ -195,6 +196,36 @@ describe("redactShareTokenInEvent()", () => {
 		expect(redactShareTokenInEvent({ message: "boom" })).toEqual({
 			message: "boom",
 		});
+	});
+
+	// the event types declare these fields optional, so TypeScript is satisfied by
+	// an `undefined` check — but the payload is JSON assembled by several
+	// integrations and a `null` arrives in practice. A throw here loses the event
+	// and takes the response being rendered with it, so each shape is pinned.
+	const malformedEvents: [string, unknown][] = [
+		["a null request", { request: null }],
+		["a null request url", { request: { url: null } }],
+		["a null query_string", { request: { query_string: null } }],
+		["a non-string request url", { request: { url: 42 } }],
+		["a non-string, non-object query_string", { request: { query_string: 7 } }],
+		["null breadcrumbs", { breadcrumbs: null }],
+		["a null breadcrumb", { breadcrumbs: [null] }],
+		[
+			"a null breadcrumb data",
+			{ breadcrumbs: [{ category: "x", data: null }] },
+		],
+	];
+
+	it.each(malformedEvents)("survives %s without throwing", (_label, event) => {
+		expect(() => redactShareTokenInEvent(event as Event)).not.toThrow();
+	});
+
+	it("leaves a null request url and query_string exactly as they arrived", () => {
+		const event = redactShareTokenInEvent({
+			request: { url: null, query_string: null },
+		} as unknown as Event);
+
+		expect(event.request).toEqual({ url: null, query_string: null });
 	});
 
 	it("does not modify the event it was handed", () => {

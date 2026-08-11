@@ -111,12 +111,12 @@ export function redactShareTokenInEvent<E extends Event>(event: E): E {
 
 	return {
 		...event,
-		...(request === undefined
-			? {}
-			: { request: redactShareTokenInRequest(request) }),
-		...(breadcrumbs === undefined
-			? {}
-			: { breadcrumbs: breadcrumbs.map(redactShareTokenInBreadcrumb) }),
+		...(isRecord(request)
+			? { request: redactShareTokenInRequest(request) }
+			: {}),
+		...(Array.isArray(breadcrumbs)
+			? { breadcrumbs: breadcrumbs.map(redactShareTokenInBreadcrumb) }
+			: {}),
 	};
 }
 
@@ -127,8 +127,8 @@ function redactShareTokenInRequest(
 
 	return {
 		...request,
-		...(url === undefined ? {} : { url: redactShareTokenInUrl(url) }),
-		...(queryString === undefined
+		...(typeof url === "string" ? { url: redactShareTokenInUrl(url) } : {}),
+		...(queryString === undefined || queryString === null
 			? {}
 			: // biome-ignore lint/style/useNamingConvention: mirrors the Sentry event payload
 				{ query_string: redactShareTokenInQueryString(queryString) }),
@@ -139,6 +139,7 @@ function redactShareTokenInRequest(
  * The SDK types `query_string` three ways — a raw string, an object, or a list
  * of pairs — and which one arrives depends on the integration that built the
  * event, so all three are handled rather than the one seen in testing.
+ * Anything else is handed back untouched rather than coerced.
  */
 function redactShareTokenInQueryString(queryString: QueryString): QueryString {
 	if (typeof queryString === "string") {
@@ -149,9 +150,27 @@ function redactShareTokenInQueryString(queryString: QueryString): QueryString {
 		return queryString.map(redactShareTokenInQueryPair);
 	}
 
-	return Object.fromEntries(
-		Object.entries(queryString).map(redactShareTokenInQueryPair),
-	);
+	if (isRecord(queryString)) {
+		return Object.fromEntries(
+			Object.entries(queryString).map(redactShareTokenInQueryPair),
+		);
+	}
+
+	return queryString;
+}
+
+/**
+ * Whether a value is a non-null object, which is what separates a field the SDK
+ * populated from one it left as `null`.
+ *
+ * The event types declare these fields optional, so TypeScript is satisfied by
+ * an `undefined` check — but the payload is JSON built by several integrations,
+ * and a `null` reaches here in practice. A hook that throws loses the event and
+ * takes the response being rendered with it, so every branch below narrows on
+ * the runtime value rather than trusting the declared type.
+ */
+function isRecord(value: unknown): value is Record<string, unknown> {
+	return typeof value === "object" && value !== null;
 }
 
 function redactShareTokenInQueryPair([name, value]: [string, string]): [
@@ -164,9 +183,13 @@ function redactShareTokenInQueryPair([name, value]: [string, string]): [
 }
 
 function redactShareTokenInBreadcrumb(breadcrumb: Breadcrumb): Breadcrumb {
+	if (!isRecord(breadcrumb)) {
+		return breadcrumb;
+	}
+
 	const { data } = breadcrumb;
 
-	if (data === undefined) {
+	if (!isRecord(data)) {
 		return breadcrumb;
 	}
 
