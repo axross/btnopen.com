@@ -95,7 +95,12 @@ published post, or the not-found surface when there is nothing published.
 A draft render is never indexable. Every `?draft=true` render that resolves — of
 `/posts/<slug>` and of the index route alike — carries `noindex, nofollow`, so
 a link that leaks or gets forwarded cannot put unpublished content into a search
-index. A published render's metadata is untouched on both. A `?draft=true`
+index. The thumbnail the shared page advertises is covered too: a
+`/posts/<slug>/thumbnail.png` request that resolves as a draft answers with an
+`X-Robots-Tag: noindex` header, since it is a separate response from the page
+and the URL that reaches it is itself the secret. It carries no `nofollow`,
+because an image has no links to follow. A published render's metadata and a
+published thumbnail's response are untouched on all three. A `?draft=true`
 request that resolves to nothing renders the not-found surface instead, which
 carries no such opt-out: it answers `404`, which is what keeps it out of an
 index, and it has no draft content on it to protect. The index route's

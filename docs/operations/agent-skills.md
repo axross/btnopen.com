@@ -349,9 +349,11 @@ controls, each of which is load-bearing rather than decorative:
   replay records the URL through a path no `beforeSend` sees.
 - Mixpanel's page-view parameter allowlist is closed by construction, so the
   parameter never reaches an event.
-- Every `?draft=true` render that resolves opts out of search indexing, and
-  `Referrer-Policy: strict-origin-when-cross-origin` is set explicitly rather
-  than inherited.
+- Every `?draft=true` render that resolves opts out of search indexing — the
+  page through its metadata and the thumbnail it advertises through an
+  `X-Robots-Tag` header, since that image is a separate response and its URL is
+  itself the secret — and `Referrer-Policy: strict-origin-when-cross-origin` is
+  set explicitly rather than inherited.
 - Nothing on the path logs the request URL, and the convention document forbids
   adding a line there.
 
