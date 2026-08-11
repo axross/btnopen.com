@@ -44,35 +44,36 @@ latest version, cannot carry a revoked secret forward either.
 The secret reaches browser history, server and CDN access logs, and the draft
 page's own rendered HTML, where the `og:image` URL carries it so an unfurl of the
 shared link shows the draft's card. Three sinks were closed in the same change:
-Sentry events have the parameter redacted out of a named set of fields — the
-request URL, the query string, each request header value, every string a
-breadcrumb carries, every string a context carries both directly and under a
-nested `data` record, each `spans[].data`, and `exception.values[]`, `message`,
-`logentry`, `extra`, and `tags`; no error-linked replay is uploaded from a page
-that has carried a token, because a replay records the URL through a path no
-`beforeSend` sees; and every `?draft=true` render that resolves opts out of
-search indexing, so a forwarded link cannot put unpublished content into an
-index. Mixpanel needed no work — its page-view allowlist was already closed by
-construction.
+every string a Sentry event carries has the parameter redacted out of it; no
+error-linked replay is uploaded from a page that has carried a token, because a
+replay records the URL through a path no `beforeSend` sees; and every
+`?draft=true` render that resolves opts out of search indexing, so a forwarded
+link cannot put unpublished content into an index. Mixpanel needed no work — its
+page-view allowlist was already closed by construction.
 
-That set is named rather than described as "every surface that carries a URL",
-because the shorter claim was made once here and was false. The redaction
-originally reached a context only through a nested `data` record, and
-`contexts.nextjs.request_path` — which `captureRequestError` sets flat, from the
-request target with its query string — carried the raw secret past it. The set
-above is what the code walks; `../conventions/observability.md` states what it
-deliberately does not.
+The redaction covers the event structurally rather than by naming the fields
+that carry a URL, and that shape was arrived at the expensive way. It began as a
+list, and the list was found short four times: `request.headers`, then
+`contexts.trace.data` and `spans[].data`, then `contexts.nextjs.request_path`
+— which `captureRequestError` sets flat, from the request target with its query
+string — and then `spans[].description`, which `@sentry/browser-utils` sets to
+the full document URL on every navigation-timing child span, so a share-link
+pageload shipped the raw secret in half a dozen spans while `request.url` beside
+them read `[Filtered]`. Each was found by a reviewer, because a list cannot
+report what is missing from it. So the walk now names no field at all: it visits
+every string an event holds, at every depth, and matches on the value.
+`../conventions/observability.md` states the rule and the two things the walk
+still does not reach.
 
-The span and breadcrumb surfaces are named because they are the ones that do not
-look like sinks. A transaction carries the request URL as a span attribute rather
-than in its request object, so a redaction that reads only `request` leaves the
-secret in every trace while appearing to cover the event; a console breadcrumb
-carries it in `message`, which no list of URL-bearing key names reaches at all;
-and the header pass exists because `Referrer-Policy:
-strict-origin-when-cross-origin` sends the full URL back on every same-origin
-subresource a draft page asks for. All three are matched on the value rather than
-the name, so a renamed header, a newly added attribute, or a breadcrumb field
-nobody listed does not silently reopen them.
+The surfaces that do not look like sinks are the reason value-matching is the
+rule rather than a preference. A transaction carries the request URL as a span
+attribute and as a span's own description rather than in its request object; a
+console breadcrumb carries it in `message`, which no list of URL-bearing key
+names reaches at all; and a `Referer` header carries it back on every same-origin
+subresource a draft page asks for, because `Referrer-Policy:
+strict-origin-when-cross-origin` says so. Matching on the value means a renamed
+header, a newly added attribute, or a field nobody listed cannot silently reopen
+any of them.
 
 The redaction is the one piece of this that is code rather than configuration,
 and that is a liability worth naming: it runs inside `beforeSend`, where a throw

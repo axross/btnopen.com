@@ -125,7 +125,7 @@ who has granted consent**. The privacy question for a new surface is therefore
 | Setting | Where | What it means |
 | --- | --- | --- |
 | `dataCollection`, diagnostics on and content off | `sentry.server.config.ts`, `sentry.edge.config.ts`, `instrumentation-client.ts` | Sentry captures IP address and user identity, request and response headers, URL query parameters, and stack-frame variables with five lines of surrounding source. It does **not** capture cookies, request or response bodies, database query values, generative-AI content, or GraphQL variables. All ten categories are set explicitly in all three files |
-| The share-token redaction | `app/(app)/_/helpers/share-token-scrubbing.ts`, wired into `beforeSend` and `beforeSendTransaction` in all three files | A post's draft share token is replaced with `[Filtered]` in every event field that can hold a string. Those are: `request.url`, `request.query_string`, and each `request.headers` value (`Referer` carries the token back on every same-origin subresource); each breadcrumb's `message` as well as its `data`, because the console integration puts the logged line in the former; each context's own string values — `contexts.nextjs.request_path`, which `captureRequestError` sets flat — **and** those under a nested `data` record, which is where `contexts.trace` holds the root span's attributes; each `spans[].data`; and `exception.values[]`, `message`, `logentry`, `extra`, and `tags`. What it does not reach: `user`, `sdkProcessingMetadata`, an attachment, a stack frame's `filename`, and anything nested more than one array level deep — none of which carries a request URL, and the last of which is bounded deliberately so a self-referencing logged value cannot exhaust the stack. `urlQueryParams` is not this control and cannot be: the SDK attaches the full URL unconditionally and reads that option only for the separate `query_string` field |
+| The share-token redaction | `app/(app)/_/helpers/share-token-scrubbing.ts`, wired into `beforeSend` and `beforeSendTransaction` in all three files | A post's draft share token is replaced with `[Filtered]` in **every string the event carries** — at every depth, under every key, inside every array. The walk names no event field, so this row states how it works rather than what it covers: `request.url`, a `Referer` header, a console breadcrumb's `message`, `contexts.nextjs.request_path`, `contexts.trace.data`, `spans[].data`, `spans[].description`, `transaction`, an exception value, and a field a later SDK version adds are each reached because they are part of the event and not because they are on a list. It matches on the **value**, in the escaped forms as well as the literal one, and replaces whatever is bound to the name `token` as a record key or as the head of a `[name, value]` pair — which is what the object and pair-list forms of `request.query_string`, holding the bare secret, need. What it does not reach: `sdkProcessingMetadata`, lifted out because it holds live objects rather than JSON and `createEventEnvelope` deletes it before serializing; an attachment, which is not part of the event; a value behind a reference cycle or nested past 32 levels, both of which come back as `[Circular ~]` / `[Object]` rather than as the unvisited subtree; and a bare secret bound to no name it can recognize. `urlQueryParams` is not this control and cannot be: the SDK attaches the full URL unconditionally and reads that option only for the separate `query_string` field |
 | Session Replay at `replaysSessionSampleRate: 0`, `replaysOnErrorSampleRate: 1.0` | Sentry client init | No ordinary session is recorded. A session that hits an error is, DOM mutations and form input included — unless the document has carried a share token, in which case `beforeErrorSampling` suppresses the upload |
 | `tracesSampleRate: 1` | all three Sentry init points | Every transaction is traced. Each of the three carries the one-line rationale for the rate |
 | `Mixpanel.init` with no capture options at all | `app/(app)/_/helpers/analytics.ts`, in `startAnalytics()` | Every SDK default applies: autocapture off, session recording off, heatmaps off, Do Not Track honoured. Page views and three link-click actions are sent explicitly, and are the whole of what Mixpanel receives |
@@ -175,40 +175,47 @@ who has granted consent**. The privacy question for a new surface is therefore
   in every trace. `share-token-scrubbing.ts` is the worked example; keep such a
   module IO-free and total, because a throw inside one of these hooks loses the
   event and takes the response being rendered with it.
-- MUST make such a redaction reach `contexts` and every `spans[].data`, not
-  `request` alone, and MUST walk a context's **own** string values as well as
-  any nested `data` record. Wiring `beforeSendTransaction` is necessary and not
-  sufficient: a transaction carries the URL as a **span attribute**, which the
-  request object does not hold. Next's root server span sets `http.target` to
-  `req.url` with its query string, the OpenTelemetry-to-Sentry exporter copies
-  every attribute verbatim into both places, and browser tracing sets `url.full`
-  on the pageload span. The SDK's own `SENSITIVE_KEY_SNIPPETS` filter does not
-  save this: it matches attribute *names* against `auth`, `token`, `secret`, and
-  the rest, and `http.target`, `url.full`, and `http.url` contain none of them.
-  Reaching only a nested `data` is what this rule was first written as, and it
-  was wrong: `captureRequestError`, which `instrumentation.ts` exports as Next's
-  `onRequestError` hook, sets a **flat** `contexts.nextjs.request_path` from
-  `req.url` — query string included — with no `data` record anywhere in the
-  context, so a `data`-only walk shipped the raw secret while `request.url`
-  beside it read `[Filtered]`.
-- SHOULD prefer covering an event's whole string surface over enumerating the
-  fields believed to carry a URL. `share-token-scrubbing.ts` walks
-  `exception.values[]`, `message`, `logentry`, `extra`, and `tags` although
-  nothing writes a request URL into any of them today, because the cost of the
-  extra walk is a few lines and the cost of a short enumeration is a secret in
-  an issue nobody notices — one
-  ``captureException(new Error(`failed for ${request.url}`))`` is all it takes.
+- MUST write such a redaction as a walk over the **whole event** — every string,
+  at every depth, under every key, in every array — and MUST NOT write it as a
+  set of fields believed to carry the URL. This rule was four times an
+  enumeration and four times short, and each round read like the last one's fix:
+  `request.headers`, then `contexts.trace.data` and `spans[].data`, then
+  `contexts.nextjs.request_path`, then `spans[].description`, which
+  `@sentry/browser-utils` sets to the full document URL on every navigation-timing
+  child span of every pageload. Each of those was found by a reviewer rather than
+  by the walk, because a list cannot report what is missing from it. Whole-event
+  coverage costs a few lines more than the shortest list that happens to be
+  right today; a list costs a secret in an issue nobody notices, and one
+  ``captureException(new Error(`failed for ${request.url}`))`` is all it takes to
+  make yesterday's list wrong. `share-token-scrubbing.ts` is the worked example
+  and names no event field anywhere.
+- MUST bound such a walk against a cycle and against depth, and MUST answer a
+  value it declines to visit with a marker rather than with the value itself.
+  Handing the unvisited subtree back is the one outcome a redaction cannot
+  have — it returns the branch that was never redacted straight into the event
+  about to be sent. `share-token-scrubbing.ts` answers with `@sentry/core`'s own
+  `[Circular ~]` and `[Object]`, so a reader of an issue meets one convention
+  rather than two.
 - MUST match such a redaction on a header's, an attribute's, or a breadcrumb
   field's **value** rather than on its name. `Referer` is why: `Referrer-Policy:
   strict-origin-when-cross-origin` sends the full URL on a same-origin request,
   so every subresource a token-bearing page asks for reports that URL back, and
   a name-keyed check is one header rename or one new span attribute away from
-  silently missing. A breadcrumb is where that bites hardest, because the field
-  a console crumb carries the URL in is `message` rather than anything under
-  `data`, and `data.arguments` is an array rather than a string — so the walk
-  covers a breadcrumb's message and the strings inside an array value, and stops
-  one level down rather than recursing into a logged value that may reference
-  itself.
+  silently missing. The SDK's own `SENSITIVE_KEY_SNIPPETS` filter is no help
+  either: it matches attribute *names* against `auth`, `token`, `secret` and the
+  rest, and `http.target`, `url.full`, and `http.url` contain none of them. Match
+  on the name only where the value cannot be recognized at all — the object and
+  pair-list forms of `request.query_string` hold the bare secret with no `token=`
+  prefix to see — and apply that check wherever such a binding appears rather
+  than at the one field that needs it, so it does not become a small enumeration
+  of its own.
+- SHOULD accept over-redaction as the cheap direction of this trade. A
+  value-matched walk rewrites any string that reads like the assignment,
+  including a source-context line that quotes one, and it rewrites the escaped
+  forms — `&amp;` from an HTML-escaped href, `%3F` / `%26` / `%3D` from a link
+  nested as another URL's query value — that a name-and-shape-matched one would
+  pass through. Losing a byte of diagnostic context is recoverable; a leaked
+  bearer credential is not.
 - MUST NOT log a secret that travels in a URL, and prefer adding no log line on
   its path at all over adding one that omits it. The share-token path carries no
   logging for exactly that reason: no line to get wrong is a stronger guarantee

@@ -334,13 +334,15 @@ controls, each of which is load-bearing rather than decorative:
   else, and grants no write, no admin, and no cache eviction.
 - Rotation revokes it, from both the admin and the MCP server, taking effect on
   the next request.
-- `share-token-scrubbing.ts` redacts it out of every event field that can hold a
-  string — request, breadcrumbs, contexts, spans, exception values, `message`,
-  `logentry`, `extra`, and `tags` — wired into `beforeSend` **and**
-  `beforeSendTransaction` in all three initialization files. The covered set is
-  named rather than assumed total: the table and rules in
+- `share-token-scrubbing.ts` redacts it out of **every string an event carries**,
+  at every depth and under every key, wired into `beforeSend` **and**
+  `beforeSendTransaction` in all three initialization files. The guarantee is
+  structural rather than a covered set: the walk names no event field, so a field
+  a later SDK version adds is reached on the day it appears. That shape replaced
+  a named set which four review rounds each found short by one field, most
+  recently `spans[].description`. The table and rules in
   [../conventions/observability.md](../conventions/observability.md) are the
-  contract, they state what the walk deliberately does not reach, and they are
+  contract, they state the two things the walk still does not reach, and they are
   what the capability's own "scrub in the hook for the signal that carries it"
   asks for.
 - No error-linked replay is uploaded from a page that has carried one, because a
