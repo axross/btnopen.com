@@ -225,10 +225,10 @@ export async function generateMetadata({
 
 	// whether the request carried THIS post's own current token — not whether the
 	// render resolved as a draft, which for a signed-in author is true whatever
-	// token the URL carried. `matchesPostShareToken` shares the `cache()`d lookup
-	// `getBlogPost` above already performed, so this costs no second read, and the
-	// `isDraft` guard short-circuits it away entirely on the published path, which
-	// therefore still reads no dynamic API.
+	// token the URL carried. The token lookup beneath `matchesPostShareToken` is
+	// `cache()`d on the slug, so a render performs it at most once however many
+	// callers ask, and the `isDraft` guard short-circuits this away entirely on
+	// the published path, which therefore still reads no dynamic API.
 	const carriesOwnShareToken =
 		isDraft && (await matchesPostShareToken(slug, shareToken));
 	const thumbnailUrl = `${urlOrigin}/posts/${blogPost.slug}/thumbnail.png`;

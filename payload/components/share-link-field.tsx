@@ -24,9 +24,9 @@ const rotateModalSlug = "rotate-blog-post-share-link";
 
 /**
  * Lines the link box falls back to where `field-sizing: content` — which sizes
- * it to the URL exactly — is not supported. Three holds this site's longest
- * mintable link at every width the admin lays this control out at, and the
- * box's resize handle covers anything past that.
+ * it to the URL exactly — is not supported. Three fits an ordinary link at the
+ * widths the admin lays this control out at; a long enough slug at a narrow
+ * enough width still overflows them, which the box's resize handle covers.
  */
 const shareLinkRows = 3;
 

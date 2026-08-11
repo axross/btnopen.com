@@ -43,3 +43,13 @@ Beyond those five, load whichever installed skill matches the surface you are ch
 Two conventions are this repository's own, and no installed skill can supply them because each defers the specific to its host. Begin every agent-authored GitHub comment with the one fixed marker line `<!-- agent -->`, reused identically across every run and session, so a later run can tell its own output from human input; `github-operation` owns the practice and falls back to `<!-- ai-agent -->` only where a project defines no marker, and this line is what defines it here. And never push to the default branch — work on a `claude/`-prefixed branch and leave merging to the maintainer, @axross.
 
 The independent review `loop-engineering` requires applies [REVIEW.md](REVIEW.md), this repository's posted-review policy, which sets what a posted review reports and what it must not.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
