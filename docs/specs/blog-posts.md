@@ -92,12 +92,14 @@ live-preview refresh action. A request with no secret, a rotated one, a malforme
 one, or another post's sees exactly what it saw before the feature existed — the
 published post, or the not-found surface when there is nothing published.
 
-A draft **post page** is never indexable. Every `?draft=true` render of
-`/posts/<slug>` carries `noindex, nofollow`, so a link that leaks or gets
-forwarded cannot put unpublished content into a search index. A published
-render's metadata is untouched. The index route needs no such opt-out: its
-`?draft=true` list resolves from the session alone, so a crawler reaching it
-sees the published posts it would have seen anyway.
+A draft render is never indexable. Every `?draft=true` render — of
+`/posts/<slug>` and of the index route alike — carries `noindex, nofollow`, so
+a link that leaks or gets forwarded cannot put unpublished content into a search
+index. A published render's metadata is untouched on both. The index route's
+draft list resolves from the session alone, so a crawler reaching it would see
+only published posts either way; it opts out regardless, because the rule is
+about the render rather than about what each route currently happens to
+disclose.
 
 The secret is a **bearer credential**: anyone holding the link can read the
 draft, there is no expiry, and there is no per-recipient revocation. Replacing

@@ -119,8 +119,13 @@ async function IndexPageMain({
 	);
 }
 
-export async function generateMetadata(): Promise<Metadata> {
-	const locale = await getActiveLocale();
+export async function generateMetadata({
+	searchParams,
+}: PageProps): Promise<Metadata> {
+	const [{ draft }, locale] = await Promise.all([
+		searchParams,
+		getActiveLocale(),
+	]);
 	const website = await getWebsite({ locale });
 
 	if (!website) {
@@ -138,6 +143,19 @@ export async function generateMetadata(): Promise<Metadata> {
 		],
 		creator: website.creator.name,
 		publisher: website.creator.name,
+		// a draft render is never indexable, on this route as on the post page.
+		// the list itself resolves from the session alone, so a crawler already
+		// sees only published posts here and the residual risk is nil — but the
+		// rule is "every `?draft=true` render carries noindex", and a rule with one
+		// route quietly exempt is the kind that stops holding when the exemption's
+		// reason changes. no `?draft=true` URL is in the sitemap, so this costs
+		// nothing.
+		//
+		// spread rather than `robots: isDraft ? … : undefined`: Next.js treats a
+		// present key holding `undefined` as an explicit reset and drops the
+		// layout's `index, follow` tag entirely. Omitting the key is what leaves a
+		// published render's metadata identical to what it is today.
+		...(draft === "true" ? { robots: { index: false, follow: false } } : {}),
 		openGraph: {
 			url: urlOrigin,
 			title: website.name,
