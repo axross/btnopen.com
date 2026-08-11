@@ -34,9 +34,11 @@ link at once — cutting off one reviewer cuts off all of them. Because that mak
 revocation an operational habit rather than a mechanism, rotation is built into
 both surfaces an author already uses, the Payload admin and the MCP server, and
 takes effect on the next request with no save step. It also cannot be undone:
-the minting hook reads the stored document rather than the incoming write, so
-restoring an older version of a post keeps the current secret rather than
-reinstating the one that version carried.
+the minting hook resolves the current secret from the post's latest version
+rather than from the incoming write, so restoring an older version of a post
+keeps the current secret rather than reinstating the one that version carried —
+and a later bulk write, which Payload hands the collection row rather than the
+latest version, cannot carry a revoked secret forward either.
 
 **A URL-borne secret was accepted with its costs named rather than waved past.**
 The secret reaches browser history, server and CDN access logs, and the draft
@@ -47,10 +49,9 @@ URL — the request URL, the query string, each request header value, every stri
 a breadcrumb carries, and every span attribute, meaning `contexts.trace.data` and
 each `spans[].data`; no error-linked replay is uploaded from a page that has
 carried a token, because a replay records the URL through a path no `beforeSend`
-sees; and
-every `?draft=true` render opts out of search indexing, so a forwarded link
-cannot put unpublished content into an index. Mixpanel needed no work — its
-page-view allowlist was already closed by construction.
+sees; and every `?draft=true` render that resolves opts out of search indexing,
+so a forwarded link cannot put unpublished content into an index. Mixpanel needed
+no work — its page-view allowlist was already closed by construction.
 
 The span and breadcrumb surfaces are named because they are the ones that do not
 look like sinks. A transaction carries the request URL as a span attribute rather
