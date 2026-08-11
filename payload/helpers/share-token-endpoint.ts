@@ -6,13 +6,13 @@ import { rotateShareToken } from "./share-token";
  * Rotates one blog post's share token, and is where the rotation path's
  * authorization lives.
  *
- * {@link rotateShareToken} writes through Payload's local API, which runs with
- * `overrideAccess: true` — the collection's `update` rule never runs for it, so
- * the helper authorizes nothing of its own. This endpoint is the only check
- * standing between an HTTP caller and a replaced token, which is why it refuses
- * a request carrying no `req.user` rather than assuming one is there: as
- * `payload/helpers/mcp/api-key-fields.ts` records, a request can reach this
- * realm with no identity at all.
+ * {@link rotateShareToken} writes with `overrideAccess: false` and this
+ * request's user, so the collection's `update` rule runs and is the authority
+ * on who may rotate. This endpoint's own check is the layer above it: it
+ * refuses a request carrying no `req.user` rather than assuming one is there —
+ * as `payload/helpers/mcp/api-key-fields.ts` records, a request can reach this
+ * realm with no identity at all — and answers 401 rather than letting the
+ * collection rule surface as a generic forbidden error.
  *
  * Payload mounts it at `POST /api/blog-posts/:id/rotate-share-token`. It
  * returns the replacement token, because the admin control shows the new link

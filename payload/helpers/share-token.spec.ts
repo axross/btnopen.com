@@ -1,8 +1,9 @@
-import type { PayloadRequest } from "payload";
-import { describe, expect, it } from "vitest";
+import type { Payload, PayloadRequest } from "payload";
+import { describe, expect, it, vi } from "vitest";
 import {
 	assignShareToken,
 	createShareToken,
+	rotateShareToken,
 	SHARE_TOKEN_ROTATION_CONTEXT_KEY,
 } from "./share-token";
 
@@ -95,5 +96,56 @@ describe("assignShareToken()", () => {
 		};
 
 		expect(result.title).toBe("A post");
+	});
+});
+
+describe("rotateShareToken()", () => {
+	function fakePayload(shareToken: null | string): {
+		payload: Payload;
+		update: ReturnType<typeof vi.fn>;
+	} {
+		const update = vi.fn().mockResolvedValue({ id: 1, shareToken });
+
+		return { payload: { update } as unknown as Payload, update };
+	}
+
+	const fakeRequest = { user: { id: 7 } } as unknown as PayloadRequest;
+
+	// the rule `payload/collections/blog-post.ts` states for every write here: run
+	// with the caller's identity and let the collection's own `update` rule
+	// decide, rather than compensating with a check at each call site. Field
+	// access does not interfere, because it runs in the `beforeValidate` fields
+	// pass, before the `beforeChange` hook that mints.
+	it("writes as the request's user with the collection's access rule enforced", async () => {
+		const { payload, update } = fakePayload("rotated-token");
+
+		await rotateShareToken({ id: 1, payload, req: fakeRequest });
+
+		expect(update).toHaveBeenCalledWith({
+			collection: "blog-posts",
+			context: { [SHARE_TOKEN_ROTATION_CONTEXT_KEY]: true },
+			data: {},
+			depth: 0,
+			draft: true,
+			id: 1,
+			overrideAccess: false,
+			req: fakeRequest,
+		});
+	});
+
+	it("returns the replacement the hook minted", async () => {
+		const { payload } = fakePayload("rotated-token");
+
+		expect(await rotateShareToken({ id: 1, payload, req: fakeRequest })).toBe(
+			"rotated-token",
+		);
+	});
+
+	it("throws when the write comes back with no token", async () => {
+		const { payload } = fakePayload(null);
+
+		await expect(
+			rotateShareToken({ id: 1, payload, req: fakeRequest }),
+		).rejects.toThrow("Rotating a blog post's share token produced no token.");
 	});
 });

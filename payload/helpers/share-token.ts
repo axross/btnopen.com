@@ -81,6 +81,23 @@ export const assignShareToken: CollectionBeforeChangeHook<
  * forward; this helper mints nothing itself, so the hook stays the only place a
  * token is created. The write is a draft write, so rotating never publishes
  * pending content.
+ *
+ * It runs with `overrideAccess: false` and the request's user, matching the MCP
+ * write path and the rule `payload/collections/blog-post.ts` states, so the
+ * collection's own `update` rule is what authorizes a rotation. Both callers
+ * check `req.user` before reaching here and would deny the same request, but
+ * enforcing it once in the collection is what keeps a future tightening of that
+ * rule from silently not applying to this path. `req` is required for the same
+ * reason: with access enforced, a call without one is a denial rather than a
+ * default.
+ *
+ * Minting is unaffected by that, because field write access runs earlier than
+ * the hook that mints. Payload's update pipeline is `beforeValidate` fields —
+ * where `field.access[operation]` is evaluated and a denied value deleted from
+ * the incoming data — then `beforeValidate` collection, then `beforeChange`
+ * collection, which is where {@link assignShareToken} writes. Verified against
+ * the installed `payload`, in `dist/fields/hooks/beforeValidate/promise.js` and
+ * the ordering `dist/collections/operations/utilities/update.js` documents.
  */
 export async function rotateShareToken({
 	id,
@@ -89,7 +106,7 @@ export async function rotateShareToken({
 }: {
 	id: number | string;
 	payload: Payload;
-	req?: PayloadRequest;
+	req: PayloadRequest;
 }): Promise<string> {
 	const updated = await payload.update({
 		collection: "blog-posts",
@@ -98,6 +115,7 @@ export async function rotateShareToken({
 		depth: 0,
 		draft: true,
 		id,
+		overrideAccess: false,
 		req,
 	});
 
