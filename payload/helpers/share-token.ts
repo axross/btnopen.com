@@ -76,8 +76,34 @@ export function createShareToken(): string {
  * the reader-facing gate compares against, so the two can never disagree.
  *
  * The cost is one indexed single-column query per write that carries a token
- * forward — every save and every autosave included. A create and a rotation
- * both mint, so neither pays it.
+ * forward — every save and every autosave included, and one per row of a bulk
+ * update. A create and a rotation both mint, so neither pays it.
+ *
+ * That cost is paid unconditionally rather than narrowed to the branch that
+ * needs it, and the narrowing was considered rather than missed. Only a bulk
+ * write that is neither a draft write nor a trash attempt takes the stale
+ * `originalDoc`; `updateByID` reads `getLatestCollectionVersion` on every path,
+ * draft or not, so every single-document write — autosave included — already
+ * holds the right value. But a `beforeChange` collection hook is handed
+ * `{ collection, context, data, operation, originalDoc, req }` and nothing
+ * more: Payload passes it neither the operation's `draft` argument nor any
+ * signal of single versus bulk. Reconstructing one means a `beforeOperation`
+ * hook stashing `args.draft` on `req.context` for this hook to read back — a
+ * second hook and a second mutable key on an object shared for the whole
+ * request, to save one indexed single-row read that already runs inside the
+ * write's own transaction, next to a full document-version write. The failure
+ * mode of getting that protocol wrong is silently republishing a revoked token,
+ * which is the exact thing this read exists to prevent, so the read stays
+ * unconditional.
+ *
+ * It also fails **closed**. `??` catches a lookup that resolves to `null`, not
+ * one that rejects: a rejected `payload.find` propagates out of this hook and
+ * fails the whole write, an ordinary autosave included. That is deliberate. The
+ * alternative — falling back to `originalDoc` when the read fails — would carry
+ * whatever the collection row happens to hold, which on the one path that
+ * matters is the revoked token, so an intermittent database error would
+ * silently un-rotate a link. A failed save the author sees and retries is the
+ * better outcome than a revoked link quietly coming back to life.
  */
 export const assignShareToken: CollectionBeforeChangeHook<
 	BlogPostShareToken
