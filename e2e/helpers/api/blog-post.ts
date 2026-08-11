@@ -158,6 +158,41 @@ export async function rotateBlogPostShareToken({
 	);
 }
 
+// writes through the collection's BULK update endpoint — `?where[...]` with no
+// `draft` parameter — which is the path the admin list view's Edit → "Publish
+// changes" takes. It matters here because Payload sources each document from the
+// collection row on that path, rather than from its latest version the way every
+// single-document write does, so it is the one write a token rotation has to
+// survive without being carried backwards.
+export async function bulkUpdateBlogPost({
+	data,
+	id,
+	page,
+	testInfo,
+}: {
+	data: Record<string, unknown>;
+	id: number;
+	page: Page;
+	testInfo: TestInfo;
+}): Promise<void> {
+	const url = new URL("/api/blog-posts", testInfo.project.use.baseURL);
+	url.searchParams.set("where[id][equals]", String(id));
+	url.searchParams.set("locale", "ja-JP");
+
+	const response = await page.request.patch(`${url}`, {
+		headers: {
+			"content-type": "application/json",
+		},
+		data,
+	});
+
+	if (!response.ok()) {
+		throw new Error(
+			`Failed to bulk-update the blog post: ${response.status()} ${await response.text()}`,
+		);
+	}
+}
+
 // the share link an author hands out: the post's own preview URL with the
 // secret appended. Built here rather than spelled out per test so the shape
 // stays in one place — it is the same one `payload/helpers/mcp/share-link.ts`

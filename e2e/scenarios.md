@@ -41,7 +41,7 @@ carries its `@scenario:<id>` tag. The reporter
 | post.draft.freshness | A draft edit shows on the next load of a post's live-preview URL, in both its title and its body | posts | must |
 | post.share-link.valid | A signed-out reviewer holding a post's share link reads the draft page, its body, and its thumbnail, on a render that opts out of indexing | posts | must |
 | post.share-link.absent | A signed-out request for the same post without the share token, or with an empty one, shows the not-found page | posts | must |
-| post.share-link.rotated | A share link that worked stops rendering the draft once the post's token is rotated, and the replacement link works | posts | must |
+| post.share-link.rotated | A share link that worked stops rendering the draft once the post's token is rotated, and the replacement link works and survives a later bulk write | posts | must |
 | post.embed | A blog post page renders an embed block as a web-embed card linking to the embedded URL | posts | should |
 | post.embed.x | A blog post page renders an `x.com` embed block as a first-party tweet card that links out to the tweet without an iframe or X widget | posts | should |
 | post.banner | A blog post page renders note and warning banner blocks as callouts with a type label and rich-text body | posts | should |

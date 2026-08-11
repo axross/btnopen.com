@@ -51,26 +51,98 @@ export function createShareToken(): string {
 /**
  * Owns `shareToken` end to end as the collection's single minting site: mints
  * on create, mints a replacement when the write carries the rotation signal,
- * and otherwise carries the stored value forward — minting one when the stored
- * document has none, so a row that predates the field heals itself on its next
- * write.
+ * and otherwise carries the stored value forward — minting one when the post
+ * has none, so a row that predates the field heals itself on its next write.
  *
- * The stored value is read from `originalDoc`, never from `data`. Field access
- * has already dropped a `shareToken` that arrived over REST, GraphQL, or MCP,
- * but a local-API write runs with `overrideAccess: true` and would keep one —
- * ignoring `data` closes that path too. The token is never logged.
+ * The stored value never comes from `data`. Field access has already dropped a
+ * `shareToken` that arrived over REST or MCP, but a local-API write runs with
+ * `overrideAccess: true` and would keep one — ignoring `data` closes that path
+ * too. The token is never logged.
+ *
+ * It does not come from `originalDoc` either, and that is the whole reason this
+ * hook reads. Payload sources `originalDoc` differently per operation:
+ * `updateByID` and `restoreVersion` both take it from
+ * `getLatestCollectionVersion`, but a **bulk** `payload.update({ where })` that
+ * is not itself a draft write takes it from the collection row instead
+ * (`dist/collections/operations/update.js`, the
+ * `hasDraftsEnabled(…) && (shouldSaveDraft || isTrashAttempt)` branch). A
+ * rotation writes a draft, so on a published post the replacement lives in a
+ * version row while the collection row still holds the revoked value — and that
+ * bulk path would carry the revoked value forward and publish it, silently
+ * un-rotating the token. The admin list view's Edit → "Publish changes" and a
+ * `PATCH /api/blog-posts?where[…]` without `draft=true` both take it.
+ * {@link findLatestShareToken} therefore resolves the value from the same place
+ * the reader-facing gate compares against, so the two can never disagree.
+ *
+ * The cost is one indexed single-column query per write that carries a token
+ * forward — every save and every autosave included. A create and a rotation
+ * both mint, so neither pays it.
  */
 export const assignShareToken: CollectionBeforeChangeHook<
 	BlogPostShareToken
-> = ({ data, originalDoc, req }) => {
-	const stored = originalDoc?.shareToken ?? "";
-	const rotating = req.context[SHARE_TOKEN_ROTATION_CONTEXT_KEY] === true;
+> = async ({ data, operation, originalDoc, req }) => {
+	if (
+		operation === "create" ||
+		req.context[SHARE_TOKEN_ROTATION_CONTEXT_KEY] === true
+	) {
+		return { ...data, shareToken: createShareToken() };
+	}
+
+	// `originalDoc` is the fallback rather than the source: it is correct on
+	// every single-document path and is all there is if the lookup answers with
+	// nothing at all.
+	const stored =
+		(await findLatestShareToken(req, originalDoc?.id)) ??
+		originalDoc?.shareToken ??
+		"";
 
 	return {
 		...data,
-		shareToken: rotating || stored === "" ? createShareToken() : stored,
+		shareToken: stored === "" ? createShareToken() : stored,
 	};
 };
+
+/**
+ * Reads one post's current share token from its latest version — the same
+ * `draft: true` read `app/(app)/_/helpers/post-draft-access.ts` performs, so
+ * what this hook carries forward is by construction what a share link is
+ * compared against.
+ *
+ * Answers `null` rather than an empty string when there is nothing to read, so
+ * the caller can tell "this post has no token" (mint one) from "this lookup
+ * found no post" (fall back rather than mint, because minting would rotate a
+ * live link nobody asked to revoke).
+ *
+ * Trashed documents are included deliberately: restoring one from trash is an
+ * ordinary update, and the default excludes it, which would read as a post with
+ * no token.
+ */
+async function findLatestShareToken(
+	req: PayloadRequest,
+	id: number | string | undefined,
+): Promise<null | string> {
+	if (id === undefined) {
+		return null;
+	}
+
+	const result = await req.payload.find({
+		collection: "blog-posts",
+		depth: 0,
+		draft: true,
+		limit: 1,
+		// the hook is the last word on this field, so it reads past the field's own
+		// access rule rather than depending on who happens to be writing.
+		overrideAccess: true,
+		pagination: false,
+		// shares the write's transaction, so it sees the row as this write does.
+		req,
+		select: { shareToken: true },
+		trash: true,
+		where: { id: { equals: id } },
+	});
+
+	return result.docs[0]?.shareToken ?? null;
+}
 
 /**
  * Rotates one post's share token and returns the replacement, invalidating

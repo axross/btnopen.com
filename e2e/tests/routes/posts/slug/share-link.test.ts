@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { authenticatedStorageState } from "@/e2e/helpers/api/auth";
 import {
+	bulkUpdateBlogPost,
 	createDraftBlogPost,
 	createParagraphBlogPostBody,
 	getBlogPostShareToken,
@@ -256,6 +257,42 @@ test(
 				});
 
 				await test.step("Verify the replacement link renders the draft", async () => {
+					await readerPage.goto(shareLinkPath(slug, rotatedToken));
+
+					await expect(
+						readerPage
+							.getByTestId("page")
+							.getByTestId("header")
+							.getByTestId("title"),
+					).toHaveText(draftTitle);
+				});
+
+				// a rotation writes a draft, so the replacement lives in a version row
+				// while the collection row keeps the revoked secret. A bulk write is
+				// the one path that reads the collection row, so it is the one that
+				// could carry the revoked secret forward and undo the revocation —
+				// which no other step here would notice.
+				await test.step("Bulk-update the post without asking for a draft write", async () => {
+					if (createdId === null) {
+						throw new Error("The draft post was not created.");
+					}
+
+					await bulkUpdateBlogPost({
+						data: { _status: "draft", isCommentsEnabled: false },
+						id: createdId,
+						page,
+						testInfo,
+					});
+				});
+
+				await test.step("Verify the revoked link is still dead after the bulk write", async () => {
+					await readerPage.goto(shareLinkPath(slug, shareToken));
+
+					await expect(readerPage.getByTestId("not-found")).toBeVisible();
+					await expect(readerPage.getByTestId("page")).toHaveCount(0);
+				});
+
+				await test.step("Verify the replacement link still renders the draft", async () => {
 					await readerPage.goto(shareLinkPath(slug, rotatedToken));
 
 					await expect(
