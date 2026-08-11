@@ -1,9 +1,8 @@
 # Agent Skills
 
-Read this when installing or refreshing the agent skills this repository uses,
-when an installed capability's rule appears to collide with this codebase, when
-one turns out to be wrong or silent on a case that comes up here, or when
-reviewing a change that looks like a skill violation.
+How the agent skills this repository uses are installed and refreshed, and where
+a collision with one — or a gap in one — gets recorded instead of acted on
+silently.
 
 Every skill under `.claude/skills/` is **installed**, not written here. All of
 them come from the shared [axross/skills](https://github.com/axross/skills)
@@ -34,15 +33,13 @@ comma-separated list. A comma-separated value matches nothing, installs nothing,
 writes no lockfile, and reports an available-skill list that reads like ordinary
 help rather than a failure.
 
-**Rules:**
-
-- MUST treat every directory under `.claude/skills/` as a generated artifact.
-  Editing one is pointless — the next install discards it — so a change to a
-  skill goes upstream to the library as an issue or pull request there.
-- MUST commit the regenerated skill directories and `skills-lock.json` together.
-- MUST NOT add a skill to `.claude/skills/` that is absent from
-  `skills-lock.json`; the lockfile describes the directory's entire contents, and
-  that correspondence is what makes drift detectable.
+Every directory under `.claude/skills/` MUST be treated as a generated artifact.
+Editing one is pointless — the next install discards it — so a change to a skill
+goes upstream to the library as an issue or pull request there. The regenerated
+skill directories and `skills-lock.json` MUST be committed together, and a skill
+absent from `skills-lock.json` MUST NOT be added to `.claude/skills/`: the
+lockfile describes the directory's entire contents, and that correspondence is
+what makes drift detectable.
 
 ## Deviations and Gaps
 
@@ -50,53 +47,44 @@ Two different things route here, and they resolve the same way. A **deviation**
 is a collision — an installed capability requires one thing, this repository
 deliberately does another. A **gap** is an installed capability being wrong,
 outdated, or simply silent on a case that comes up here. Either way the installed
-skill is left exactly as it is, and the resolution is written down in this
-document.
+skill is left exactly as it is: an installed skill MUST NOT be edited to fix a
+rule that is wrong, outdated, or missing, because the edit does not survive a
+reinstall and misrepresents the library until it is discarded.
 
-That matters because an unrecorded deviation reads to the next agent, and to a
+The resolution is written down in this document instead. A new deviation MUST be
+recorded in the register below — the rule, the capability it departs from, and why
+it was accepted — rather than an installed skill being violated silently. That
+matters because an unrecorded deviation reads to the next agent, and to a
 reviewer, as a plain violation of a MUST rule, and an unrecorded gap gets
 rediscovered from scratch by whoever hits it next.
 
-**Rules:**
+A gap MUST be resolved by one or both of two routes: an issue opened on
+[`axross/skills`](https://github.com/axross/skills) when the gap generalizes
+beyond this project, and a written note here saying what the capability states,
+what this repository does instead, and how to handle the case meanwhile. The
+human's go-ahead MUST be obtained before opening an upstream issue — it is a
+public write on a repository this project does not own — and the gap MUST be
+recorded locally in the meantime rather than leaving the finding to depend on that
+issue landing. Any upstream issue filed or left pending SHOULD be named in the
+work's completion report, so the finding outlives the session that produced it.
 
-- MUST NOT edit an installed skill to fix a rule that is wrong, outdated, or
-  missing; the edit does not survive a reinstall and misrepresents the library
-  until it is discarded.
-- MUST record a new deviation in the register below — the rule, the capability it
-  departs from, and why it was accepted — rather than violating an installed skill
-  silently.
-- MUST resolve a gap by one or both of two routes: an issue opened on
-  [`axross/skills`](https://github.com/axross/skills) when the gap generalizes
-  beyond this project, and a written note here saying what the capability states,
-  what this repository does instead, and how to handle the case meanwhile.
-- MUST obtain the human's go-ahead before opening an upstream issue — it is a
-  public write on a repository this project does not own — and MUST record the gap
-  locally in the meantime rather than leaving the finding to depend on that issue
-  landing.
-- MUST verify that a suspected gap is real by reading the installed skill's own
-  text before routing it anywhere; a rule that turns out to be stated correctly is
-  a compliance failure to own, not a defect to file.
-- MUST continue the task that exposed the finding under the skill exactly as
-  installed; routing a change never blocks the work, and never licenses acting as
-  though the proposed rule were already in force.
-- SHOULD name any upstream issue filed or left pending in the work's completion
-  report, so the finding outlives the session that produced it.
+A suspected gap MUST be verified as real by reading the installed skill's own text
+before it is routed anywhere; a rule that turns out to be stated correctly is a
+compliance failure to own, not a defect to file. Meanwhile the task that exposed
+the finding MUST continue under the skill exactly as installed; routing a change
+never blocks the work, and never licenses acting as though the proposed rule were
+already in force.
 
 ## The Register
 
 The register is exhaustive, which is what makes it useful: anything in this
-codebase that departs from an installed rule and is not listed here is a finding.
-Do not read the register as licence to assume an unlisted departure was already
-blessed, and do not add an entry for a rule this repository merely has not
-exercised yet — a deviation is recorded when it is accepted, not when it is
-anticipated.
-
-**Rules:**
-
-- MUST treat a departure from an installed capability's rule as a finding while
-  no entry below matches it.
-- MUST NOT add an entry here for a hypothetical or anticipated collision; an entry
-  records a decision the human accepted, with its reason.
+codebase that departs from an installed rule and is not listed here is a finding,
+and a departure from an installed capability's rule MUST be treated as one while
+no entry below matches it. Do not read the register as licence to assume an
+unlisted departure was already blessed. An entry MUST NOT be added here for a
+hypothetical or anticipated collision either; an entry records a decision the
+human accepted, with its reason — a deviation is recorded when it is accepted, not
+when it is anticipated.
 
 ### Deviation — feature-agnostic modules are grouped by kind under `app/(app)/_/`
 
@@ -114,7 +102,13 @@ live in `app/(app)/_/` split by kind — `components/`, `helpers/`,
 route-local in underscore-prefixed folders such as `_components/` under the owning
 route directory. There are no domain directories, no `common/`, and no `core/`.
 [../conventions/directory-structure.md](../conventions/directory-structure.md) states that
-layout as this repository's own MUST and routes new files into it.
+layout as this repository's own MUST and routes new files into it. So a new
+feature-agnostic module MUST be placed under `app/(app)/_/` by kind, and a new
+route-specific module in the owning route's `_components/`, exactly as that
+document states; a `src/` source root, a `common/` tier, a `core/` tier, or a
+top-level domain directory MUST NOT be introduced in order to satisfy the
+installed capability, because that would split the codebase across two
+conventions.
 
 The departure was accepted in
 [#185](https://github.com/axross/btnopen.com/issues/185), the refresh that
@@ -128,26 +122,17 @@ the routable surface is one content type with its comments, while most of
 embeds, analytics — that would land in a portable tier rather than in any domain.
 The by-domain axis would yield one thin domain directory beside a large
 `common/`, which buys none of the blast-radius clarity the rule exists to create.
+A proposal to adopt the domain axis SHOULD therefore be treated as a standalone
+migration with its own issue, plan, and review — never as part of a change that
+happens to touch the affected files.
 
 Nothing else in that capability is affected. Its source-root rule already blesses
 this repository's repository-root `app/`, and its thin-route-file,
 no-queries-in-route-modules, and `server-only` fencing rules apply here unchanged
-— only the grouping axis beneath the source root diverges.
-
-**Rules:**
-
-- MUST place a new feature-agnostic module under `app/(app)/_/` by kind, and a
-  new route-specific module in the owning route's `_components/`, exactly as this
-  repository's own structure conventions state.
-- MUST NOT introduce a `src/` source root, a `common/` tier, a `core/` tier, or a
-  top-level domain directory in order to satisfy the installed capability; doing so
-  would split the codebase across two conventions.
-- MUST NOT report a by-kind placement under `app/(app)/_/` as a review finding
-  against the installed capability's grouping rules; every other rule in that
-  reference still applies in full.
-- SHOULD treat a proposal to adopt the domain axis as a standalone migration with
-  its own issue, plan, and review — never as part of a change that happens to
-  touch the affected files.
+— only the grouping axis beneath the source root diverges. A by-kind placement
+under `app/(app)/_/` MUST NOT be reported as a review finding against the
+installed capability's grouping rules; every other rule in that reference still
+applies in full.
 
 ### Deviation and gap — Sentry's debug and logging statements ship in the production bundle
 
@@ -176,7 +161,10 @@ bundle-content verification, to recover a few kilobytes on a personal blog. The
 inert option was deleted instead, in
 [#188](https://github.com/axross/btnopen.com/issues/188), which leaves the bundle
 exactly as it already was rather than leaving configuration that reads as though
-the rule were satisfied.
+the rule were satisfied. To satisfy the rule, `webpack.treeshake` MUST NOT be
+re-added to the `withSentryConfig` call, nor `bundleSizeOptimizations` reached for
+there; neither reaches a Turbopack build, and `next.config.ts` carries a comment
+saying so.
 
 Both routes apply here, because this is a deviation and a gap at once. The
 deviation is the declined substitute. The gap is that the capability states the
@@ -186,17 +174,11 @@ all. That generalizes past this repository, so it is also filed upstream as
 [axross/skills#181](https://github.com/axross/skills/issues/181) — which asks the
 Bundle Footprint section to carry the same bundler-split qualifier its own
 neighbouring section already applies to component annotation. This entry stands
-until that lands, and nothing here waits on it.
-
-**Rules:**
-
-- MUST NOT re-add `webpack.treeshake` or reach for `bundleSizeOptimizations` in
-  the `withSentryConfig` call to satisfy the rule; neither reaches a Turbopack
-  build, and `next.config.ts` carries a comment saying so.
-- MUST NOT report Sentry debug logging present in the production bundle as a
-  review finding against the installed capability while this entry stands.
-- SHOULD delete this entry rather than leave it standing once `@sentry/nextjs`
-  gains a Turbopack tree-shaking option, and strip the statements then.
+until that lands, and nothing here waits on it. While it stands, Sentry debug
+logging present in the production bundle MUST NOT be reported as a review finding
+against the installed capability. Once `@sentry/nextjs` gains a Turbopack
+tree-shaking option, this entry SHOULD be deleted rather than left standing, and
+the statements stripped then.
 
 ### Deviation and gap — colour tokens are authored in `oklch()` with no sRGB `@supports` fallback
 
@@ -222,13 +204,20 @@ pasted — four knobs, a 13-value `--lightness-*` axis that inverts for dark, an
 declarations sit outside the fork and are written once. Resolving them to
 literals collapses the `var()` indirection into 108 values (54 × 2 schemes) and
 grows the per-scheme fork to 147, after which rotating the hue recolours only
-half the palette.
+half the palette. A build-time transform proposed as the way to keep the single
+hue knob SHOULD first be verified to actually reach a Turbopack `next build`; the
+Sentry entry above records what an option that reaches nothing costs.
 
 Compliance is also all-or-nothing. An unparseable `oklch()` invalidates a custom
 property at computed-value time — the very reason the capability mandates the
 feature-query form over the cascade form — so a fallback covering some
 declarations leaves the rest resolving to `unset` and the page loses its colours
-anyway. A partial fallback is not a partial fix; it is an inert one.
+anyway. A partial fallback is not a partial fix; it is an inert one. An sRGB
+fallback covering part of the palette MUST NOT be added: anything short of all 108
+values is inert, because the unguarded remainder invalidates at computed-value
+time and takes the page's colours with it. Adopting a whole-palette fallback
+SHOULD be treated as a standalone change with its own issue, plan, and review —
+never as part of a change that happens to touch `variables.css`.
 
 What settles it is that the capability's own `@scope` rule has already excluded
 the browsers this fallback would serve. Its `css-modules` reference makes
@@ -247,19 +236,7 @@ fallback for a 2023 feature, and nothing reconciles them — so it is also filed
 upstream as [axross/skills#316](https://github.com/axross/skills/issues/316),
 which asks that the fallback MUST be qualified by interoperability rather than by
 colour format. This entry stands until that lands, and nothing here waits on it.
-
-**Rules:**
-
-- MUST NOT report an `oklch()` custom property without a gamut `@supports` as a
-  review finding while this entry stands.
-- MUST NOT add an sRGB fallback covering part of the palette. Anything short of
-  all 108 values is inert, because the unguarded remainder invalidates at
-  computed-value time and takes the page's colours with it.
-- SHOULD treat adopting a whole-palette fallback as a standalone change with its
-  own issue, plan, and review — never as part of a change that happens to touch
-  `variables.css`.
-- SHOULD verify that a build-time transform actually reaches a Turbopack
-  `next build` before proposing one as the way to keep the single hue knob; the
-  Sentry entry above records what an option that reaches nothing costs.
-- SHOULD delete this entry rather than leave it standing if the capability gains
-  a browser-baseline qualifier that resolves the inconsistency.
+While it stands, an `oklch()` custom property without a gamut `@supports` MUST NOT
+be reported as a review finding. If the capability gains a browser-baseline
+qualifier that resolves the inconsistency, this entry SHOULD be deleted rather
+than left standing.
