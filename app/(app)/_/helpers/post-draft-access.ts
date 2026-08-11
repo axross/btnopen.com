@@ -76,6 +76,15 @@ export const matchesPostShareToken = cache(
 /**
  * Reads one post's stored share token. The value never leaves this module —
  * both exports above return a boolean, and nothing logs the token.
+ *
+ * The read deliberately bypasses the field's own `access.read`, which requires
+ * `req.user`: this is the local API, whose `overrideAccess` defaults to `true`,
+ * and the whole point of this lookup is to answer for a request that has no
+ * session. The field rule exists to keep `/api/blog-posts` from handing the
+ * token to an anonymous caller, not to stop the gate from comparing against it.
+ * The bypass is named here rather than left implicit because it is
+ * security-relevant and invisible at the call — the same reason
+ * `payload/helpers/share-token.ts` spells out its own `overrideAccess: true`.
  */
 const findShareToken = cache(async (slug: string): Promise<null | string> => {
 	const payload = await getPayload({ config });

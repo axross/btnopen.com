@@ -4,6 +4,7 @@ import { PayloadBlogPost } from "@/shared/payload-types";
 import type { BlogPost } from "../../types";
 import { urlOrigin } from "../runtime";
 import { findBlogPostBySlug } from "./blog-post-body";
+import type { McpTextResponse } from "./mcp-types";
 import { mcpErrorResponse } from "./tool-handler";
 
 /**
@@ -42,10 +43,17 @@ const shareTokenLocale = "ja-JP";
  * a bearer credential for unpublished content, so neither answers one
  * anonymously — `hasSignedInUser` in `tool-handler.ts` is the check, and this
  * is the refusal.
+ *
+ * A function rather than a shared constant, so each refusal is its own object.
+ * A single instance returned by both handlers on every anonymous call is one
+ * object handed to the transport repeatedly, and anything downstream that
+ * annotated it in place would be editing the next caller's response too. Every
+ * other response in this realm is built per call by `mcpErrorResponse` and
+ * `mcpTextResponse`; this now matches them.
  */
-export const unauthenticatedShareLinkResponse = mcpErrorResponse(
-	"This tool requires an API key bound to a user.",
-);
+export function unauthenticatedShareLinkResponse(): McpTextResponse {
+	return mcpErrorResponse("This tool requires an API key bound to a user.");
+}
 
 /**
  * Reads one post's id and share token.

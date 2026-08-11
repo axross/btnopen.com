@@ -141,12 +141,24 @@ export const ShareLinkField: TextFieldClientComponent = ({ field, path }) => {
 	// every other field on the tab does.
 	const inputId = `field-${path.replaceAll(".", "__")}`;
 	const warningId = `${inputId}-warning`;
+	// an unsaved post has no id and no minted token, so the link box — and with
+	// it the only form control this field renders — is not on the page yet.
+	const hasShareLink = Boolean(id && value);
 
 	return (
 		<div className={baseClass}>
-			<FieldLabel htmlFor={inputId} label={field?.label} path={path} />
+			{/* `htmlFor` and `path` are both withheld while there is no control to
+			    point at, because withholding one is not enough: `FieldLabel` falls
+			    back to `generateFieldID(path, …)` when `htmlFor` is absent, and only
+			    renders a `<span>` instead of a dangling `<label for>` once both
+			    resolve to nothing. */}
+			<FieldLabel
+				htmlFor={hasShareLink ? inputId : undefined}
+				label={field?.label}
+				path={hasShareLink ? path : undefined}
+			/>
 
-			{id && value ? (
+			{hasShareLink ? (
 				<div className={`${baseClass}__row`}>
 					{/* a textarea rather than an input, because an input cannot wrap and
 					    the whole point of putting this control at full content width is

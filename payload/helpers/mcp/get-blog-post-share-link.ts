@@ -24,7 +24,7 @@ export const getBlogPostShareLinkTool = {
 		req: PayloadRequest,
 	): Promise<McpTextResponse> => {
 		if (!hasSignedInUser(req)) {
-			return unauthenticatedShareLinkResponse;
+			return unauthenticatedShareLinkResponse();
 		}
 
 		const parsedArgs = BlogPostShareLinkParameters.safeParse(args);
