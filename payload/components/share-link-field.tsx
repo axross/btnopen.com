@@ -23,6 +23,14 @@ const baseClass = "share-link-field";
 const rotateModalSlug = "rotate-blog-post-share-link";
 
 /**
+ * Lines the link box falls back to where `field-sizing: content` — which sizes
+ * it to the URL exactly — is not supported. Three holds this site's longest
+ * mintable link at every width the admin lays this control out at, and the
+ * box's resize handle covers anything past that.
+ */
+const shareLinkRows = 3;
+
+/**
  * The `shareToken` field's admin control: the draft's share link, a copy
  * action, and a rotate action, rendered inline among the post's Metadata
  * fields.
@@ -140,11 +148,18 @@ export const ShareLinkField: TextFieldClientComponent = ({ field, path }) => {
 
 			{id && value ? (
 				<div className={`${baseClass}__row`}>
-					<input
+					{/* a textarea rather than an input, because an input cannot wrap and
+					    the whole point of putting this control at full content width is
+					    that the whole URL is readable. It stays a form control so the
+					    label still associates, the warning still describes it, and the
+					    value is still focusable and selectable by keyboard. */}
+					<textarea
 						aria-describedby={warningId}
 						className={`${baseClass}__url`}
 						id={inputId}
 						readOnly={true}
+						rows={shareLinkRows}
+						spellCheck={false}
 						value={shareUrl}
 					/>
 

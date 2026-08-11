@@ -49,8 +49,9 @@ post's **draft share link** — the reader-facing half of it is in
 [blog-posts.md](./blog-posts.md).
 
 The control is an inline block on the post's **Metadata** tab, at full content
-width so the whole URL is readable without truncation. It carries three things:
-the link, a copy action, and a rotate action. It is author-only by construction
+width, and the link wraps across as many lines as it needs rather than
+truncating — the whole URL is readable, which is the reason for the placement.
+It carries three things: the link, a copy action, and a rotate action. It is author-only by construction
 rather than by conditional rendering — the underlying field is unreadable to an
 unauthenticated caller, so there is no state in which a visitor could see it.
 
