@@ -1,9 +1,7 @@
 import type { PayloadRequest, TypedUser } from "payload";
-import { describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { getBlogPostShareLinkTool } from "./get-blog-post-share-link";
 import { mcpLogger } from "./logger";
-
-mcpLogger.level = "silent";
 
 const signedInUser = { id: 1 } as unknown as TypedUser;
 
@@ -34,6 +32,22 @@ async function respondText(
 }
 
 describe("getBlogPostShareLinkTool()", () => {
+	// the logger is a module singleton, so silencing it is a mutation of shared
+	// state rather than of this file's own. Vitest isolates per file today and
+	// nothing leaks, but that is a runner setting rather than a property of the
+	// code — restoring the level is what keeps this file from becoming
+	// order-dependent the day `isolate: false` or a different pool lands.
+	let mcpLoggerLevel = mcpLogger.level;
+
+	beforeAll(() => {
+		mcpLoggerLevel = mcpLogger.level;
+		mcpLogger.level = "silent";
+	});
+
+	afterAll(() => {
+		mcpLogger.level = mcpLoggerLevel;
+	});
+
 	it("refuses the read when the request carries no user", async () => {
 		const find = vi.fn();
 

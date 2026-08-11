@@ -1,10 +1,8 @@
 import type { Payload, PayloadRequest, TypedUser } from "payload";
-import { describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { logger } from "./logger";
 import { SHARE_TOKEN_ROTATION_CONTEXT_KEY } from "./share-token";
 import { rotateShareTokenEndpoint } from "./share-token-endpoint";
-
-logger.level = "silent";
 
 const okStatus = 200;
 const badRequestStatus = 400;
@@ -44,6 +42,22 @@ async function respond(input: RequestInput): Promise<{
 const signedInUser = { id: 1 } as unknown as TypedUser;
 
 describe("rotateShareTokenEndpoint", () => {
+	// the logger is a module singleton, so silencing it is a mutation of shared
+	// state rather than of this file's own. Vitest isolates per file today and
+	// nothing leaks, but that is a runner setting rather than a property of the
+	// code — restoring the level is what keeps this file from becoming
+	// order-dependent the day `isolate: false` or a different pool lands.
+	let loggerLevel = logger.level;
+
+	beforeAll(() => {
+		loggerLevel = logger.level;
+		logger.level = "silent";
+	});
+
+	afterAll(() => {
+		logger.level = loggerLevel;
+	});
+
 	it("is mounted as a POST under the collection's own id", () => {
 		expect(rotateShareTokenEndpoint.method).toBe("post");
 		expect(rotateShareTokenEndpoint.path).toBe("/:id/rotate-share-token");
