@@ -13,8 +13,9 @@ to the subject matter. The site carries a **developer-flavoured,
 technical-but-playful** voice: code-syntax flourishes appear where another site
 would use marketing language, an error heading is shaped as a JavaScript
 expression, and technical numerics — status codes, timestamps, URLs — are
-celebrated in monospace rather than hidden. The mood is monochromatic with a single accent:
-there are no multi-hue gradients, no drop shadows, and no secondary accent hue.
+celebrated in monospace rather than hidden. The mood is monochromatic with a
+single accent: there are no multi-hue gradients, no drop shadows, and no
+secondary accent hue.
 
 Identity is carried by one wordmark and one accent hue. There are no additional
 brand marks, mascots, or logo variants.
