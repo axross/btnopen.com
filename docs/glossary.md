@@ -87,6 +87,48 @@ the viewport edge, reserved for content meant to read as atmospherically large.
 at the same dimensions and grid as the loaded surface so no layout shift occurs
 when it fills in.
 
+## Content Authoring
+
+**Agentic View** — the `noindex` rendering of a **Blog Post** at
+`?agentic=true` that shows its authoring artifacts instead of the published
+article, and is the surface handed back after writing either of them.
+
+**Outline** — the authoring artifact mapping a **Blog Post**'s body structure: one
+nested bullet list, one top-level bullet per section, with each section's
+substance nested beneath. It carries no meta content and is never rendered
+publicly.
+
+**Authoring Notes** — the authoring artifact holding everything *about* the
+writing — aims, conclusion, target reader, editorial policy, progress, and the
+pre-publication checklist. It is never rendered publicly.
+
+**Website Profile** — the CMS global holding the site's own name, description,
+keywords, and creator, and the source of the reader-facing metadata.
+
+**MCP API Key** — a credential for the CMS's Model Context Protocol server, scoped
+to a specific set of tools, so what an agent can do is a property of its key.
+
+# Development vocabulary
+
+## Directory Structure
+
+**Realm** — one of the two halves of the codebase that must not import each
+other: the app realm under `app/`, and the Payload realm under `payload/`. Logic
+both need lives in a realm-neutral tier they each import.
+
+**Directory Tier** — the level a module is placed at, resolved from how many
+callers it has: route-local, route-group-shared, the Payload realm, or
+realm-neutral.
+
+**Environment Barrel** — the single module per **Realm** through which runtime
+configuration is read, so a review has one place to look to know what is exposed.
+
+## React Components
+
+**Loaded / Loading Triad** — the three-file shape of a component that fetches its
+own data and shows a visible loading state: an orchestrator, a `loaded` sibling
+rendering real data, and a `loading` sibling rendering the **Skeleton**.
+
 ## Visual Identity
 
 **Accent Ramp** — the brand colour ramp, used for anything that should visibly
@@ -113,48 +155,6 @@ shaped as a JavaScript expression such as `post.found === false`.
 
 **Wordmark** — the brand mark `<btn open />`, spaces and angle brackets
 intentional, which appears as the trailing suffix of every browser-tab title.
-
-## Content Authoring
-
-**Agentic View** — the `noindex` rendering of a **Blog Post** at
-`?agentic=true` that shows its authoring artifacts instead of the published
-article, and is the surface handed back after writing either of them.
-
-**Outline** — the authoring artifact mapping a **Blog Post**'s body structure: one
-nested bullet list, one top-level bullet per section, with each section's
-substance nested beneath. It carries no meta content and is never rendered
-publicly.
-
-**Authoring Notes** — the authoring artifact holding everything *about* the
-writing — aims, conclusion, target reader, editorial policy, progress, and the
-pre-publication checklist. It is never rendered publicly.
-
-**Website Profile** — the CMS global holding the site's own name, description,
-keywords, and creator, and the source of the reader-facing metadata.
-
-**MCP API Key** — a credential for the CMS's Model Context Protocol server, scoped
-to a specific set of tools, so what an agent can do is a property of its key.
-
-# Development vocabulary
-
-## Repository Structure
-
-**Realm** — one of the two halves of the codebase that must not import each
-other: the app realm under `app/`, and the Payload realm under `payload/`. Logic
-both need lives in a realm-neutral tier they each import.
-
-**Directory Tier** — the level a module is placed at, resolved from how many
-callers it has: route-local, route-group-shared, the Payload realm, or
-realm-neutral.
-
-**Environment Barrel** — the single module per **Realm** through which runtime
-configuration is read, so a review has one place to look to know what is exposed.
-
-## React Components
-
-**Loaded / Loading Triad** — the three-file shape of a component that fetches its
-own data and shows a visible loading state: an orchestrator, a `loaded` sibling
-rendering real data, and a `loading` sibling rendering the **Skeleton**.
 
 ## Observability
 

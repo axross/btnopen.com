@@ -15,7 +15,7 @@ this document; what follows assumes it.
 
 The design rationale behind the tokens and tiers — what each colour role means,
 why the shape and motion tiers are what they are — is in
-[../specs/visual-identity.md](../specs/visual-identity.md).
+[visual-identity.md](./visual-identity.md).
 
 ## Tokens
 
@@ -51,7 +51,7 @@ Components read colour only through semantic roles. The `--accent-*` /
 declared in `app/(app)/variables.css` and MUST NOT be referenced anywhere else,
 including from an inline `fill` on a React-authored SVG. The slot vocabulary and
 what each one means is in
-[../specs/visual-identity.md](../specs/visual-identity.md).
+[visual-identity.md](./visual-identity.md).
 
 ## Breakpoints and the `--variant` Convention
 
@@ -100,14 +100,14 @@ and `--theme: dark` under `@media (prefers-color-scheme: dark)`.
   project's style-query bridge — rather than a component-local media query.
 - MUST NOT add a per-surface dark-mode branch except for filtered imagery; see
   the legitimate-override rules in
-  [../specs/visual-identity.md](../specs/visual-identity.md).
+  [visual-identity.md](./visual-identity.md).
 
 ## Branded Imagery Filter
 
 Thumbnails and web-embed cover images share one filter chain, so external imagery
 joins the palette rather than sitting beside it. The design intent and the
 per-scheme saturation/brightness values are in
-[../specs/visual-identity.md](../specs/visual-identity.md).
+[visual-identity.md](./visual-identity.md).
 
 ```css
 filter:

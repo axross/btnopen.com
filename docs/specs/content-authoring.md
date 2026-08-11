@@ -1,7 +1,15 @@
 # Content Authoring
 
 The author-facing half of the product: the surfaces the site's author and their
-agents use to write, review, and publish. What a post is made of is
+agents use to write, review, and publish. There is one author, so no multi-author
+workflow, editorial role, or per-author archive exists.
+
+Being writable by an agent is deliberate rather than incidental. The CMS exposes
+an MCP server, and a post carries authoring artifacts durable enough that a fresh
+agent session can resume writing it from CMS state alone — the two halves of that
+are the agentic view and the MCP server below.
+
+What a post is made of is
 [blog-posts.md](./blog-posts.md); how to connect an agent is
 [../operations/payload-mcp.md](../operations/payload-mcp.md).
 

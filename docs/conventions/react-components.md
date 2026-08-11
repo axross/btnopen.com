@@ -4,7 +4,7 @@ Read this when adding or changing a React component. Composition, props
 contracts, state, and memoization in the abstract belong to the installed
 React-component capability; server/client mechanics belong to the installed
 Next.js capability; appearance belongs to
-[../specs/visual-identity.md](../specs/visual-identity.md) and the token
+[visual-identity.md](./visual-identity.md) and the token
 mechanics to [styling.md](./styling.md). This document records the shapes this
 repository has settled on, and the seams a component must not cross.
 
@@ -147,7 +147,7 @@ place.
 
 An import that runs against the tier hierarchy couples layers meant to stay
 independent. The tiers themselves are in
-[repository-map.md](./repository-map.md).
+[directory-structure.md](./directory-structure.md).
 
 **Rules:**
 

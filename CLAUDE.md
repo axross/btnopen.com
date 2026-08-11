@@ -23,11 +23,11 @@ This section is the whole of how work runs here. Five things apply to every sess
 | Changing | Read |
 | --- | --- |
 | Anything at all | The [README](README.md) for the command to verify it with |
-| Where a file goes, or what it is called | [docs/conventions/repository-map.md](docs/conventions/repository-map.md) |
+| Where a file goes, or what it is called | [docs/conventions/directory-structure.md](docs/conventions/directory-structure.md) |
 | A route under `app/` | [docs/conventions/routing.md](docs/conventions/routing.md) |
 | A comment or an import | [docs/conventions/code-style.md](docs/conventions/code-style.md) |
 | A React component | [docs/conventions/react-components.md](docs/conventions/react-components.md) |
-| A CSS Module | [docs/conventions/styling.md](docs/conventions/styling.md) and [docs/specs/visual-identity.md](docs/specs/visual-identity.md) |
+| A CSS Module | [docs/conventions/styling.md](docs/conventions/styling.md) and [docs/conventions/visual-identity.md](docs/conventions/visual-identity.md) |
 | A Payload collection, a repository, or a cache | [docs/conventions/payload.md](docs/conventions/payload.md) |
 | Environment access, an outbound fetch, a handler's input, or a workflow `uses:` | [docs/conventions/security.md](docs/conventions/security.md) |
 | Logging, error reporting, or analytics | [docs/conventions/observability.md](docs/conventions/observability.md) |

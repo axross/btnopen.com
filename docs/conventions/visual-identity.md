@@ -3,15 +3,17 @@
 What btnopen.com looks and sounds like. This is the brand half of the product —
 the part no general design capability can supply, because it is particular to
 this site. How the CSS encodes it is
-[../conventions/styling.md](../conventions/styling.md); the surfaces it is
-applied to are [reader-surfaces.md](./reader-surfaces.md).
+[styling.md](./styling.md); the surfaces it is
+applied to are [../specs/reader-surfaces.md](../specs/reader-surfaces.md).
 
 ## Tone
 
-The site carries a **developer-flavoured, technical-but-playful** identity.
-Code-syntax flourishes appear where another site would use marketing language,
-and technical numerics — status codes, timestamps, URLs — are celebrated in
-monospace rather than hidden. The mood is monochromatic with a single accent:
+The audience is developers, and the identity MUST show it rather than leaving it
+to the subject matter. The site carries a **developer-flavoured,
+technical-but-playful** voice: code-syntax flourishes appear where another site
+would use marketing language, an error heading is shaped as a JavaScript
+expression, and technical numerics — status codes, timestamps, URLs — are
+celebrated in monospace rather than hidden. The mood is monochromatic with a single accent:
 there are no multi-hue gradients, no drop shadows, and no secondary accent hue.
 
 Identity is carried by one wordmark and one accent hue. There are no additional
@@ -204,7 +206,7 @@ width and centred alignment already inset content from the viewport edge.
 Full-bleed surfaces — mobile cover images, mobile code snippets — break out to the
 viewport edge by extending past the reading column's gutter. That treatment is
 reserved for content meant to read as atmospherically large, not a default. The
-tiers and their widths are in [reader-surfaces.md](./reader-surfaces.md).
+tiers and their widths are in [../specs/reader-surfaces.md](../specs/reader-surfaces.md).
 
 ## Copy
 
@@ -231,7 +233,7 @@ with a humanized Japanese description of what was not found —
 
 The voice reaches only a heading that exists. The shared empty-and-error surface
 deliberately has none, so nothing on it takes this form; its composition is in
-[reader-surfaces.md](./reader-surfaces.md).
+[../specs/reader-surfaces.md](../specs/reader-surfaces.md).
 
 Primary-action copy in an error state is a short English sentence-case imperative
 — `Go back home`. Section headings on index and listing surfaces are short

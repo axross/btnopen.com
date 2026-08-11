@@ -113,7 +113,7 @@ live in `app/(app)/_/` split by kind — `components/`, `helpers/`,
 `repositories/`, `translations/` — while feature-specific modules stay
 route-local in underscore-prefixed folders such as `_components/` under the owning
 route directory. There are no domain directories, no `common/`, and no `core/`.
-[../conventions/repository-map.md](../conventions/repository-map.md) states that
+[../conventions/directory-structure.md](../conventions/directory-structure.md) states that
 layout as this repository's own MUST and routes new files into it.
 
 The departure was accepted in
@@ -215,7 +215,7 @@ layer that exposed it — before
 fallback was already absent.
 
 Complying would break a rule that does stand here. The brand hue is a single
-global knob, per [../specs/visual-identity.md](../specs/visual-identity.md), and
+global knob, per [../conventions/visual-identity.md](../conventions/visual-identity.md), and
 a static sRGB literal cannot follow a knob. The scale is derived rather than
 pasted — four knobs, a 13-value `--lightness-*` axis that inverts for dark, and
 26 alpha values, which is 39 numbers forking per scheme while the 54 `oklch()`

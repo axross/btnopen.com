@@ -86,10 +86,10 @@ rather than presenting the change as fully verified.
 
 ## Where everything else lives
 
-- **[`docs/`](docs/index.md)** — the documentation root, in three parts:
-  what the product does (`specs/`), how the code is written (`conventions/`),
-  and how the repository is built and run (`operations/`), with the decision log
-  beside them. Start at [`docs/index.md`](docs/index.md).
+- **[`docs/`](docs/index.md)** — everything this project knows about itself, in
+  three parts: what the product does (`specs/`), how the code is written
+  (`conventions/`), and how the repository is built and run (`operations/`), with
+  the decision log beside them. Start at [`docs/index.md`](docs/index.md).
 - **[`CLAUDE.md`](CLAUDE.md)** — the working agreement for agent sessions.
   Another assistant reading this repository should treat it the way the
   tool-agnostic [AGENTS.md](https://agents.md) convention would otherwise signal.
