@@ -263,3 +263,44 @@ colour format. This entry stands until that lands, and nothing here waits on it.
   Sentry entry above records what an option that reaches nothing costs.
 - SHOULD delete this entry rather than leave it standing if the capability gains
   a browser-baseline qualifier that resolves the inconsistency.
+
+### Deviation — a Payload admin slot component takes Payload's props contract, not its root element's
+
+The React-component capability's props reference states two of these as MUSTs:
+"MUST base the props type on the root rendered element" and "MUST collect
+undeclared props into a rest object and spread it onto the component's root
+element", carving out only a root that renders no node of its own.
+[../conventions/react-components.md](../conventions/react-components.md)
+restates the spread as this repository's own rule.
+
+Both components under `payload/components/` do neither.
+`share-link-field.tsx` is typed `TextFieldClientComponent`, destructures
+`field` and `path`, and drops the rest; `embed-block-card.tsx` declares no props
+at all.
+
+Payload dictates that shape and leaves no seam for one of ours. Neither
+component is ever called from this repository's code: each is named as a string
+in a collection's `admin.components` — a field's `Field` slot, a Lexical block's
+`Block` slot — resolved through `app/(payload)/admin/importMap.js`, and
+instantiated by Payload's admin runtime. What that runtime passes is field
+descriptors — `field`, `path`, `permissions`, `schemaPath`, `readOnly` — not DOM
+attributes. Spreading that rest object onto the root `<div>` would put `field`
+and `permissions` on an HTML element as unknown attributes, and basing the props
+type on `ComponentProps<"div">` would type away the contract Payload actually
+calls it with. There is also no caller who could pass a `data-*` attribute,
+which is the propagation the rule exists to protect.
+
+The departure is confined to that seam: every component this repository itself
+renders — everything under `app/` — is unaffected, and only another Payload
+admin slot component could join it.
+
+**Rules:**
+
+- MUST type a Payload admin slot component with the client-component type Payload
+  publishes for that slot, and MUST NOT rebase it on `ComponentProps<T>` or
+  spread its rest object onto the rendered element in order to satisfy the
+  installed capability.
+- MUST NOT report a Payload admin slot component's missing props spread as a
+  review finding against the installed capability while this entry stands.
+- MUST keep applying both rules in full to every component under `app/`; nothing
+  outside `payload/components/` is covered here.

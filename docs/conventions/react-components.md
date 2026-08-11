@@ -10,8 +10,15 @@ repository has settled on, and the seams a component must not cross.
 
 ## Anatomy
 
-Every component here is typed from the element it roots, so a caller can pass any
-attribute that element accepts without the component enumerating them.
+Every component this repository renders is typed from the element it roots, so a
+caller can pass any attribute that element accepts without the component
+enumerating them. The rules below reach the components under `app/` — the ones
+this repository's own code instantiates.
+
+They do not reach a Payload admin slot component under `payload/components/`,
+whose props contract is Payload's rather than ours and which no caller here
+renders. That departure, and why it was accepted, is recorded in
+[../operations/agent-skills.md](../operations/agent-skills.md).
 
 **Rules:**
 
