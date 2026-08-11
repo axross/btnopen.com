@@ -18,6 +18,11 @@ function request({
 	user = signedInUser,
 }: RequestInput): PayloadRequest {
 	return {
+		// every real `PayloadRequest` carries one: `createPayloadRequest` seeds it
+		// to `{}` and `createLocalReq` replaces it, and the type declares it
+		// non-optional. `rotateShareToken` reads it unguarded, so a fake without
+		// one stands in for a request that cannot arrive.
+		context: {},
 		payload: {
 			find: vi.fn().mockResolvedValue({ docs }),
 			update:

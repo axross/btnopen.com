@@ -20,6 +20,12 @@ function request(input: RequestInput): PayloadRequest {
 	const id = "id" in input ? input.id : "7";
 
 	return {
+		// every real `PayloadRequest` carries one: `createPayloadRequest` seeds it
+		// to `{}` and `createLocalReq` replaces it, and the type declares it
+		// non-optional. `assignShareToken` and `rotateShareToken` both read it
+		// unguarded, so a fake without one stands in for a request that cannot
+		// arrive.
+		context: {},
 		payload: {
 			update:
 				input.update ??
