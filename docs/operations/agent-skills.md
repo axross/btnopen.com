@@ -342,7 +342,7 @@ controls, each of which is load-bearing rather than decorative:
   a named set which four review rounds each found short by one field, most
   recently `spans[].description`. The table and rules in
   [../conventions/observability.md](../conventions/observability.md) are the
-  contract, they state the two things the walk still does not reach, and they are
+  contract, they state what the walk still does not reach, and they are
   what the capability's own "scrub in the hook for the signal that carries it"
   asks for.
 - No error-linked replay is uploaded from a page that has carried one, because a

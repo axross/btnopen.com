@@ -98,9 +98,11 @@ a link that leaks or gets forwarded cannot put unpublished content into a search
 index. The thumbnail the shared page advertises is covered too: a
 `/posts/<slug>/thumbnail.png` request that resolves as a draft answers with an
 `X-Robots-Tag: noindex` header, since it is a separate response from the page
-and the URL that reaches it is itself the secret. It carries no `nofollow`,
-because an image has no links to follow. A published render's metadata and a
-published thumbnail's response are untouched on all three. A `?draft=true`
+and the URL that reaches it is itself the secret. That response carries no
+`nofollow`, because an image has no links to follow. A published render's
+metadata is untouched on both routes, and a thumbnail request that does not
+resolve as a draft — which is every request not carrying that post's current
+token — answers exactly as it did before. A `?draft=true`
 request that resolves to nothing renders the not-found surface instead, which
 carries no such opt-out: it answers `404`, which is what keeps it out of an
 index, and it has no draft content on it to protect. The index route's

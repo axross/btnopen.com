@@ -62,8 +62,8 @@ pageload shipped the raw secret in half a dozen spans while `request.url` beside
 them read `[Filtered]`. Each was found by a reviewer, because a list cannot
 report what is missing from it. So the walk now names no field at all: it visits
 every string an event holds, at every depth, and matches on the value.
-`../conventions/observability.md` states the rule and the two things the walk
-still does not reach.
+`../conventions/observability.md` states the rule and what the walk still does
+not reach.
 
 The surfaces that do not look like sinks are the reason value-matching is the
 rule rather than a preference. A transaction carries the request URL as a span
