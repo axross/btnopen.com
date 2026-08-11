@@ -19,7 +19,12 @@
  * configurations never spell it out themselves.
  */
 
-import type { Breadcrumb, Event, RequestEventData } from "@sentry/nextjs";
+import type {
+	Breadcrumb,
+	Contexts,
+	Event,
+	RequestEventData,
+} from "@sentry/nextjs";
 
 /**
  * The query parameter a share link carries its token in — the one
@@ -101,9 +106,11 @@ export function hasShareToken(url: string): boolean {
 
 /**
  * Redacts every share token an event carries: the request URL, the separate
- * `query_string` field, every request header value, and each breadcrumb URL.
- * Returns a new event rather than editing the one it was handed, so nothing
- * downstream observes a half-redacted payload.
+ * `query_string` field, every request header value, each breadcrumb URL, and
+ * every span attribute — both the root span's, under `contexts.trace.data`, and
+ * each child span's, under `spans[].data`. Returns a new event rather than
+ * editing the one it was handed, so nothing downstream observes a half-redacted
+ * payload.
  *
  * Generic over the event so one function serves both `beforeSend`, which is
  * handed an `ErrorEvent`, and `beforeSendTransaction`, which is handed a
@@ -114,7 +121,7 @@ export function redactShareTokenInEvent<E extends Event>(event: E): E {
 		return event;
 	}
 
-	const { breadcrumbs, request } = event;
+	const { breadcrumbs, contexts, request, spans } = event;
 
 	return {
 		...event,
@@ -123,6 +130,12 @@ export function redactShareTokenInEvent<E extends Event>(event: E): E {
 			: {}),
 		...(Array.isArray(breadcrumbs)
 			? { breadcrumbs: breadcrumbs.map(redactShareTokenInBreadcrumb) }
+			: {}),
+		...(isRecord(contexts)
+			? { contexts: redactShareTokenInContexts(contexts) }
+			: {}),
+		...(Array.isArray(spans)
+			? { spans: spans.map(redactShareTokenInSpanData) }
 			: {}),
 	};
 }
@@ -169,15 +182,84 @@ function redactShareTokenInRequest(
  * here would lose the event and tear down the response being rendered.
  */
 function redactShareTokenInHeaders(headers: RequestHeaders): RequestHeaders {
-	const redacted = { ...headers };
+	return redactShareTokenInStringValues(headers);
+}
 
-	for (const [name, value] of Object.entries(redacted)) {
-		if (typeof value === "string" && hasShareToken(value)) {
-			redacted[name] = redactShareTokenInUrl(value);
+/**
+ * Redacts every share token an event's contexts carry, which on a transaction
+ * means `contexts.trace.data` — the root span's attributes, copied there
+ * verbatim.
+ *
+ * Every context is walked rather than `trace` alone, because the shape that
+ * carries a URL is "a context with a `data` record" rather than one context's
+ * name, and a context holding no `data` record comes back untouched.
+ */
+function redactShareTokenInContexts(contexts: Contexts): Contexts {
+	return Object.fromEntries(
+		Object.entries(contexts).map(([name, context]) => [
+			name,
+			redactShareTokenInSpanData(context),
+		]),
+	);
+}
+
+/**
+ * Redacts every share token a span's attributes carry, for one entry of
+ * `spans[]` or one context under `contexts`. Both are a record with an optional
+ * `data` record of attributes, so one walker serves them.
+ *
+ * **This is the surface a transaction leaks the token through, and it is not
+ * `request`.** Next's root server span sets `'http.target': req.url` — query
+ * string included (`next/dist/server/base-server.js`) — and the
+ * OpenTelemetry-to-Sentry exporter copies every span attribute verbatim into
+ * `contexts.trace.data` and into each `spans[].data`; browser tracing sets
+ * `url.full` on the pageload span the same way. With `tracesSampleRate: 1`,
+ * every share-link request ships one of these, so `beforeSendTransaction` has
+ * to reach here and not only into `request`.
+ *
+ * Nothing upstream covers it. The SDK's own `SENSITIVE_KEY_SNIPPETS` filter is
+ * applied to span attributes, but it matches attribute *names* against snippets
+ * like `auth`, `token`, and `secret` — and `http.target`, `url.full`, and
+ * `http.url` contain none of them. So this matches on the value, exactly as the
+ * header pass above does and for the same reason.
+ */
+function redactShareTokenInSpanData<S>(span: S): S {
+	if (!isRecord(span)) {
+		return span;
+	}
+
+	const { data } = span;
+
+	if (!isRecord(data)) {
+		return span;
+	}
+
+	return { ...span, data: redactShareTokenInStringValues(data) };
+}
+
+/**
+ * Rewrites every **string** value of a flat record and leaves every other value
+ * exactly as it arrived, which is what keeps this total against the numbers,
+ * booleans, arrays, and `null`s a JSON payload puts beside them. A value
+ * carrying no token comes back identical, so a record with nothing to redact is
+ * copied rather than rewritten.
+ *
+ * The assertion holds because each string is replaced by another string and no
+ * other value is touched, so the record's declared shape survives — something
+ * `Object.entries` erases on the way through.
+ */
+function redactShareTokenInStringValues<R extends Record<string, unknown>>(
+	record: R,
+): R {
+	const redacted: Record<string, unknown> = { ...record };
+
+	for (const [key, value] of Object.entries(redacted)) {
+		if (typeof value === "string") {
+			redacted[key] = redactShareTokenInUrl(value);
 		}
 	}
 
-	return redacted;
+	return redacted as R;
 }
 
 /**

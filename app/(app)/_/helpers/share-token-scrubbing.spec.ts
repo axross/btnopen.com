@@ -266,6 +266,95 @@ describe("redactShareTokenInEvent()", () => {
 		expect(event.breadcrumbs?.[0]?.data).toEqual({ url: 42, status_code: 500 });
 	});
 
+	// the surface a transaction actually leaks through. Next's root server span
+	// sets `http.target` to the request URL, query string included, and the
+	// OpenTelemetry exporter copies every span attribute verbatim into
+	// `contexts.trace.data` and each `spans[].data`. The SDK's own filter matches
+	// attribute *names* against `auth`, `token`, `secret`, … and none of these
+	// keys contains one, so nothing upstream removes the value.
+	it("redacts the token in contexts.trace.data", () => {
+		const event = redactShareTokenInEvent({
+			contexts: {
+				trace: {
+					span_id: "aaaaaaaaaaaaaaaa",
+					trace_id: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+					data: {
+						"http.method": "GET",
+						"http.target": `/posts/declarative-ui?draft=true&token=${shareToken}`,
+						"url.full": `${postUrl}?draft=true&token=${shareToken}`,
+						"http.query": `?draft=true&token=${shareToken}`,
+						"http.status_code": 200,
+					},
+				},
+			},
+		});
+
+		expect(event.contexts?.trace?.data).toEqual({
+			"http.method": "GET",
+			"http.target": "/posts/declarative-ui?draft=true&token=[Filtered]",
+			"url.full": `${postUrl}?draft=true&token=[Filtered]`,
+			"http.query": "?draft=true&token=[Filtered]",
+			"http.status_code": 200,
+		});
+	});
+
+	it("redacts the token in every span's data", () => {
+		const event = redactShareTokenInEvent({
+			spans: [
+				{
+					span_id: "cccccccccccccccc",
+					trace_id: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+					start_timestamp: 0,
+					data: {
+						"http.url": `${postUrl}/thumbnail.png?token=${shareToken}`,
+					},
+				},
+				{
+					span_id: "dddddddddddddddd",
+					trace_id: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+					start_timestamp: 0,
+					data: { "sentry.op": "function.nextjs" },
+				},
+			],
+		});
+
+		expect(event.spans?.[0]?.data).toEqual({
+			"http.url": `${postUrl}/thumbnail.png?token=[Filtered]`,
+		});
+		expect(event.spans?.[1]?.data).toEqual({ "sentry.op": "function.nextjs" });
+	});
+
+	it("leaves a context carrying no data record alone", () => {
+		const event = redactShareTokenInEvent({
+			contexts: { runtime: { name: "node", version: "v24.0.0" } },
+		});
+
+		expect(event.contexts).toEqual({
+			runtime: { name: "node", version: "v24.0.0" },
+		});
+	});
+
+	it("leaves a non-string span attribute alone", () => {
+		const event = redactShareTokenInEvent({
+			spans: [
+				{
+					span_id: "cccccccccccccccc",
+					trace_id: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+					start_timestamp: 0,
+					data: {
+						"http.status_code": 200,
+						"sentry.parent_span_already_sent": true,
+					},
+				},
+			],
+		});
+
+		expect(event.spans?.[0]?.data).toEqual({
+			"http.status_code": 200,
+			"sentry.parent_span_already_sent": true,
+		});
+	});
+
 	it("leaves an event carrying no token untouched", () => {
 		const event = {
 			breadcrumbs: [{ category: "navigation", data: { from: "/", to: "/" } }],
@@ -301,6 +390,14 @@ describe("redactShareTokenInEvent()", () => {
 			{ breadcrumbs: [{ category: "x", data: null }] },
 		],
 		["a malformed query_string pair", { request: { query_string: [null] } }],
+		["null contexts", { contexts: null }],
+		["a null context", { contexts: { trace: null } }],
+		["a non-record context", { contexts: { trace: 7 } }],
+		["a null context data", { contexts: { trace: { data: null } } }],
+		["null spans", { spans: null }],
+		["a null span", { spans: [null] }],
+		["a null span data", { spans: [{ data: null }] }],
+		["a non-record span data", { spans: [{ data: "x" }] }],
 		["a null event", null],
 		["an undefined event", undefined],
 	];
@@ -326,15 +423,25 @@ describe("redactShareTokenInEvent()", () => {
 			breadcrumbs: [
 				{ category: "fetch", data: { url: `${postUrl}?token=${shareToken}` } },
 			],
+			contexts: {
+				trace: { data: { "http.target": `/posts?token=${shareToken}` } },
+			},
+			spans: [{ data: { "http.url": `${postUrl}?token=${shareToken}` } }],
 		};
 
-		redactShareTokenInEvent(event);
+		redactShareTokenInEvent(event as unknown as Event);
 
 		expect(event.request.url).toBe(`${postUrl}?token=${shareToken}`);
 		expect(event.request.headers.referer).toBe(
 			`${postUrl}?token=${shareToken}`,
 		);
 		expect(event.breadcrumbs[0]?.data.url).toBe(
+			`${postUrl}?token=${shareToken}`,
+		);
+		expect(event.contexts.trace.data["http.target"]).toBe(
+			`/posts?token=${shareToken}`,
+		);
+		expect(event.spans[0]?.data["http.url"]).toBe(
 			`${postUrl}?token=${shareToken}`,
 		);
 	});
