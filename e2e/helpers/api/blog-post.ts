@@ -80,7 +80,7 @@ export async function getPublishedBlogPost({
 // only readable that way: the field's access rule requires `req.user`, so the
 // same request signed out comes back without the field at all — which is what
 // makes this helper's success a check on the access rule as well as a fixture.
-// Not parsed through `PayloadBlogPost`: that schema is the content model MCP
+// not parsed through `PayloadBlogPost`: that schema is the content model MCP
 // responses are sanitized against, and `shareToken` is deliberately absent from
 // it.
 export async function getBlogPostShareToken({

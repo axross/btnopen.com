@@ -227,7 +227,7 @@ export async function generateMetadata({
 	// to. `canReadPostDraft` is `cache()`-keyed on exactly this `(slug,
 	// shareToken)` pair, which `getBlogPost` above has already resolved, so this
 	// reads the request's existing answer rather than performing a second lookup.
-	// The `isDraft` guard short-circuits it away entirely on the published path,
+	// the `isDraft` guard short-circuits it away entirely on the published path,
 	// which therefore still reads no dynamic API.
 	const isDraftRead = isDraft && (await canReadPostDraft(slug, shareToken));
 	const thumbnailUrl = `${urlOrigin}/posts/${blogPost.slug}/thumbnail.png`;
