@@ -69,7 +69,9 @@ generated and owned by Payload routing.
 - MUST place feature-specific route modules under the owning route directory,
   using underscore-prefixed folders such as `_components/` for route-local
   implementation details.
-- MUST NOT change `app/(payload)/` for normal application work.
+- MUST NOT change `app/(payload)/` for normal application work, except
+  `app/(payload)/custom.scss` — the one hand-authored file in that segment. See
+  the carve-out in [payload.md](./payload.md).
 - MUST place Payload CMS collection and configuration changes under `payload/`.
 - MUST place a module under `shared/` only when both `app/` and `payload/`
   import it, and MUST keep it free of imports from either — a `shared/` module
@@ -111,6 +113,9 @@ from where a file is convenient to drop.
   framework import here breaks `npm run migrate:*` rather than failing at build
   time.
 - MUST NOT add files under `app/(payload)/` — Payload owns that route segment.
+  Editing the existing `custom.scss` there is the one carve-out, and adding a
+  file is not covered by it; a custom admin component belongs under `payload/`
+  and reaches the admin through the generated import map.
 - MUST NOT place a helper or component at the repository root or directly inside
   `app/` (outside an `_/` or `_components/` directory); Next.js would treat the
   directory as a route segment.

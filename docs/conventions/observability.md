@@ -125,7 +125,8 @@ who has granted consent**. The privacy question for a new surface is therefore
 | Setting | Where | What it means |
 | --- | --- | --- |
 | `dataCollection`, diagnostics on and content off | `sentry.server.config.ts`, `sentry.edge.config.ts`, `instrumentation-client.ts` | Sentry captures IP address and user identity, request and response headers, URL query parameters, and stack-frame variables with five lines of surrounding source. It does **not** capture cookies, request or response bodies, database query values, generative-AI content, or GraphQL variables. All ten categories are set explicitly in all three files |
-| Session Replay at `replaysSessionSampleRate: 0`, `replaysOnErrorSampleRate: 1.0` | Sentry client init | No ordinary session is recorded. A session that hits an error is, DOM mutations and form input included |
+| The share-token redaction | `app/(app)/_/helpers/share-token-scrubbing.ts`, wired into `beforeSend` and `beforeSendTransaction` in all three files | A post's draft share token is replaced with `[Filtered]` in the event's request URL, its `query_string` field, and every breadcrumb URL. `urlQueryParams` is not this control and cannot be: the SDK attaches the full URL unconditionally and reads that option only for the separate `query_string` field |
+| Session Replay at `replaysSessionSampleRate: 0`, `replaysOnErrorSampleRate: 1.0` | Sentry client init | No ordinary session is recorded. A session that hits an error is, DOM mutations and form input included — unless the document has carried a share token, in which case `beforeErrorSampling` suppresses the upload |
 | `tracesSampleRate: 1` | all three Sentry init points | Every transaction is traced. Each of the three carries the one-line rationale for the rate |
 | `Mixpanel.init` with no capture options at all | `app/(app)/_/helpers/analytics.ts`, in `startAnalytics()` | Every SDK default applies: autocapture off, session recording off, heatmaps off, Do Not Track honoured. Page views and three link-click actions are sent explicitly, and are the whole of what Mixpanel receives |
 | The consent gate | `app/(app)/_/helpers/analytics-consent.ts`, `app/(app)/_/components/analytics-consent-provider.tsx` | The decision is a cookie. Until it reads `granted`, `mixpanel-browser` is not imported, so the SDK is not downloaded and cannot send |
@@ -148,7 +149,27 @@ who has granted consent**. The privacy question for a new surface is therefore
 - MUST NOT lower `replaysOnErrorSampleRate` below `1.0`. The vendor capability
   asks for error-linked capture at or near full rate; this project pins the floor
   at exactly full, because error-time replay is the most diagnostic signal
-  available here and a sampled one is absent precisely when it is wanted.
+  available here and a sampled one is absent precisely when it is wanted. The
+  `beforeErrorSampling` hook beside it is the deliberate exception and is not a
+  sampling decision: it withholds the upload from a document that has carried a
+  post's share token, because a replay records the URL through a path no
+  `beforeSend` sees. Suppressing there rather than lowering the rate is what
+  keeps every other visitor's error replay intact.
+- MUST redact a secret that travels in a URL through `beforeSend` **and**
+  `beforeSendTransaction`, in all three initialization files, rather than
+  through `dataCollection.urlQueryParams`. That option is not an alternative:
+  `@sentry/core` 10.69 attaches the full request URL unconditionally — its own
+  source comment says so — and consults the option only for the separate
+  `query_string` field, while the allow and deny forms the option's type permits
+  are applied to query parameters in no installed package. A transaction carries
+  the URL just as an error does, so wiring only the first hook leaves the secret
+  in every trace. `share-token-scrubbing.ts` is the worked example; keep such a
+  module IO-free and total, because a throw inside one of these hooks loses the
+  event.
+- MUST NOT log a secret that travels in a URL, and prefer adding no log line on
+  its path at all over adding one that omits it. The share-token path carries no
+  logging for exactly that reason: no line to get wrong is a stronger guarantee
+  than a line that currently happens to be right.
 - MUST NOT raise `replaysSessionSampleRate` above `0` without a stated privacy
   basis. Recording sessions that never failed is the collection this project
   removed deliberately — see

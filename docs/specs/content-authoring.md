@@ -42,6 +42,34 @@ author sees is the real page rather than an editor approximation.
 
 The admin login locks out after five failed attempts, for five minutes.
 
+## The Draft Share Link
+
+An author hands an unpublished post to someone with no CMS account through the
+post's **draft share link** — the reader-facing half of it is in
+[blog-posts.md](./blog-posts.md).
+
+The control is an inline block on the post's **Metadata** tab, at full content
+width so the whole URL is readable without truncation. It carries three things:
+the link, a copy action, and a rotate action. It is author-only by construction
+rather than by conditional rendering — the underlying field is unreadable to an
+unauthenticated caller, so there is no state in which a visitor could see it.
+
+A warning line sits in the block rather than beside it, because the trade-off is
+part of the control: the link has no expiry and no per-recipient revocation, so
+anyone holding it can read the draft.
+
+**Rotating** replaces the post's secret. It is the only revocation this design
+has, so it invalidates every outstanding link at once, it takes effect on the
+next request, and it cannot be undone — restoring an older version of the post
+keeps the current secret rather than reinstating that version's. The action reads
+as destructive through shape and label as well as colour, and confirms before it
+fires. It persists the new secret itself, so there is no save step to forget, and
+the control shows the replacement as soon as it lands.
+
+A share link exists for a published post too. It is meaningless there — the post
+is already public — and the control is not conditioned on status, because
+conditioning it would add a state to explain for no gain.
+
 ## The Agentic View
 
 A post can be read at `/posts/<slug>?agentic=true` — adding `&draft=true` for a
@@ -97,10 +125,18 @@ Depending on the key, the tools cover:
 - **create, update, and delete** for CMS content;
 - two **body-editing** tools, `appendNodeInBlogPostBody` and
   `deleteNodeInBlogPostBody`, for controlled edits to a post's rich-text body
-  rather than wholesale replacement.
+  rather than wholesale replacement;
+- two **share-link** tools, `getBlogPostShareLink` and
+  `rotateBlogPostShareLink`, which read and replace a post's draft share link.
+  Each is granted separately and each defaults to off for a new key, and both
+  refuse a key that is bound to no user — a share link is a bearer credential for
+  unpublished content, so neither answers an anonymous caller.
 
 Responses are sanitized before they leave the server, so a tool result carries the
-fields the content model exposes rather than the raw stored document.
+fields the content model exposes rather than the raw stored document. The share
+secret is not among those fields, so the two tools above are the only ones that
+can return it and every other tool omits it by construction rather than by
+stripping it.
 
 A key authenticates against **its own environment's database**: a local key does
 not work against production, and vice versa. A production key writes to the live

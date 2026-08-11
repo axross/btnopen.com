@@ -18,8 +18,15 @@ either a **Draft** or **Published**, and it is addressed by its **Slug**.
 **Slug** — the non-localized identifier in a post's URL, unique across all posts.
 It is also the key every cache entry for that post is tagged with.
 
-**Draft** — a post's unpublished state. A draft is readable only by a request
-authenticated through the CMS, and never appears in the sitemap or the post list.
+**Draft** — a post's unpublished state. A draft is readable by a request
+authenticated through the CMS, or by one presenting that post's **Draft Share
+Link**, and never appears in the sitemap or the post list.
+
+**Draft Share Link** — a **Blog Post**'s preview URL carrying that post's own
+secret, which lets whoever holds it read that post's draft without signing in. It
+has no expiry and no per-recipient revocation, so replacing the secret —
+rotating it — invalidates every outstanding link at once and is the only
+revocation there is.
 
 **Published** — a post's world-readable state. Moving into or out of it is what
 clears the cached output for that post and for the post list.

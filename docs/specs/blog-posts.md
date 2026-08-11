@@ -21,9 +21,11 @@ and how it moves from draft to published. How a post's body renders is
 | `isCommentsEnabled` | no | yes | Defaults to on; controls whether the comments section appears |
 | `outline` | no | no | An authoring artifact, never rendered publicly |
 | `authoringNotes` | no | no | An authoring artifact, never rendered publicly |
+| `shareToken` | no | yes | The draft share link's secret. Minted on the server, never returned to a signed-out caller |
 
 `outline` and `authoringNotes` are described in
-[content-authoring.md](./content-authoring.md).
+[content-authoring.md](./content-authoring.md); the share link `shareToken`
+carries is below, and the author's control over it is in the same document.
 
 ## Localization
 
@@ -52,9 +54,14 @@ autosave.
 
 A published post is world-readable. A draft is not: an unauthenticated read of the
 public API sees published posts only, and the reader-facing route serves a draft
-only to a request authenticated through the CMS. A `?draft=true` search parameter
-asks for the draft, but asking is not authorization — the authentication is what
-grants it.
+to a request authenticated through the CMS, or to one presenting that post's own
+secret — see [The Draft Share Link](#the-draft-share-link). A `?draft=true`
+search parameter asks for the draft, but asking is not authorization; a session
+or the right secret is what grants it.
+
+A session stays the primary control and is still the *only* one for everything
+but a single post's own page: the draft list, the agentic view, and the
+live-preview refresh action all resolve from the session alone.
 
 `?preview=true` does **not** unlock draft content. It only decides whether the
 live-preview bridge renders, so an author editing in the admin sees the page
@@ -63,6 +70,47 @@ update as they type.
 A post can also be moved to trash rather than deleted outright. Permanently
 deleting one deletes its comments first, since a comment holds a required
 reference to its post.
+
+## The Draft Share Link
+
+A session is not the only way to read a draft. Every post carries its own secret,
+and a request presenting that post's current secret reads that post's draft while
+signed out — the page, its body, and its Open Graph thumbnail. The link is the
+post's own preview URL with the secret appended:
+
+```text
+https://btnopen.com/posts/<slug>?draft=true&token=<secret>
+```
+
+The reviewer sees the real page. Nothing on it says the post is a draft, and the
+only signal is the URL.
+
+What a link **does not** unlock is the point of the design. The secret is per
+post, so it opens that post and no other; it does not open the draft list at
+`/?draft=true`, the agentic view at `?agentic=true&draft=true`, or the
+live-preview refresh action. A request with no secret, a rotated one, a malformed
+one, or another post's sees exactly what it saw before the feature existed — the
+published post, or the not-found surface when there is nothing published.
+
+A draft render is never indexable. Every `?draft=true` response carries
+`noindex, nofollow`, so a link that leaks or gets forwarded cannot put
+unpublished content into a search index. A published post's metadata is
+untouched.
+
+The secret is a **bearer credential**: anyone holding the link can read the
+draft, there is no expiry, and there is no per-recipient revocation. Replacing
+the secret — rotation, described in
+[content-authoring.md](./content-authoring.md) — invalidates every outstanding
+link at once and is the only revocation there is. Why it works that way is
+[../decisions/2026-08-11-share-a-draft-with-one-rotatable-bearer-token-per-post.md](../decisions/2026-08-11-share-a-draft-with-one-rotatable-bearer-token-per-post.md).
+
+The secret never reaches a signed-out caller: not through `/api/blog-posts`, not
+through GraphQL, and not through any MCP tool but the two built to serve it. It
+is minted on the server, so a write that tries to set it leaves the stored value
+unchanged. It does reach one public place by design — the draft page's rendered
+HTML, in the `og:image` URL — because an unfurl of the shared link has to hand
+the secret back to render the draft's own card. Only a holder can render that
+page.
 
 ## Publishing Side Effects
 
