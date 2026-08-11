@@ -3,6 +3,7 @@ import {
 	init as initializeSentry,
 	replayIntegration,
 } from "@sentry/nextjs";
+import { redactShareTokenInEvent } from "@/helpers/share-token-scrubbing";
 import { sentryDsn, sha, vercelEnvironment } from "@/runtime";
 
 if (sentryDsn) {
@@ -13,6 +14,11 @@ if (sentryDsn) {
 		release: sha,
 		environment: vercelEnvironment,
 		integrations: [replayIntegration()],
+		// every event leaves with the share token redacted out of its URL, its
+		// query string, and its breadcrumbs. Both hooks are wired, because a
+		// transaction carries the URL just as an error does.
+		beforeSend: redactShareTokenInEvent,
+		beforeSendTransaction: redactShareTokenInEvent,
 		// a personal blog's traffic fits inside the free quota whole, so nothing is
 		// gained by sampling and a sampled trace is missing precisely when a slow
 		// page is being chased.
@@ -34,7 +40,15 @@ if (sentryDsn) {
 			userInfo: true,
 			// the SDK filters sensitive keys (authorization, cookie, token, …) regardless.
 			httpHeaders: { request: true, response: true },
-			// this app's query parameters are routing state, never secrets.
+			// left on, and deliberately not the control that keeps a post's share
+			// token out of an event. The SDK attaches the full request URL
+			// unconditionally and consults this flag only for the separate
+			// `query_string` field, and the allow/deny forms its type permits are
+			// applied to query parameters in no installed package (verified against
+			// @sentry/core 10.69). Turning it off would therefore drop the routing
+			// state that makes an issue answerable and keep the token; the
+			// `beforeSend` / `beforeSendTransaction` redaction in this file is what
+			// actually removes it, from the URL, this field, and every breadcrumb.
 			urlQueryParams: true,
 			stackFrameVariables: true,
 			frameContextLines: 5,
