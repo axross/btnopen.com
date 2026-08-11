@@ -92,10 +92,13 @@ live-preview refresh action. A request with no secret, a rotated one, a malforme
 one, or another post's sees exactly what it saw before the feature existed — the
 published post, or the not-found surface when there is nothing published.
 
-A draft render is never indexable. Every `?draft=true` render — of
+A draft render is never indexable. Every `?draft=true` render that resolves — of
 `/posts/<slug>` and of the index route alike — carries `noindex, nofollow`, so
 a link that leaks or gets forwarded cannot put unpublished content into a search
-index. A published render's metadata is untouched on both. The index route's
+index. A published render's metadata is untouched on both. A `?draft=true`
+request that resolves to nothing renders the not-found surface instead, which
+carries no such opt-out: it answers `404`, which is what keeps it out of an
+index, and it has no draft content on it to protect. The index route's
 draft list resolves from the session alone, so a crawler reaching it would see
 only published posts either way; it opts out regardless, because the rule is
 about the render rather than about what each route currently happens to
