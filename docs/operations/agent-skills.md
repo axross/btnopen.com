@@ -280,11 +280,12 @@ at all.
 
 Payload dictates that shape and leaves no seam for one of ours. Neither
 component is ever called from this repository's code: each is named as a string
-in a collection's `admin.components` — a field's `Field` slot, a Lexical block's
-`Block` slot — resolved through `app/(payload)/admin/importMap.js`, and
-instantiated by Payload's admin runtime. What that runtime passes is field
-descriptors — `field`, `path`, `permissions`, `schemaPath`, `readOnly` — not DOM
-attributes. Spreading that rest object onto the root `<div>` would put `field`
+in an `admin.components` slot — the `shareToken` field's `Field` in
+`payload/collections/blog-post.ts`, the `embed` block's `Block` in
+`payload/helpers/embed-block.ts` — resolved through
+`app/(payload)/admin/importMap.js`, and instantiated by Payload's admin runtime.
+What that runtime passes is field descriptors — `field`, `path`, `permissions`,
+`schemaPath`, `readOnly` — not DOM attributes. Spreading that rest object onto the root `<div>` would put `field`
 and `permissions` on an HTML element as unknown attributes, and basing the props
 type on `ComponentProps<"div">` would type away the contract Payload actually
 calls it with. There is also no caller who could pass a `data-*` attribute,
