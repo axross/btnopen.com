@@ -47,9 +47,12 @@ if (sentryDsn) {
 		integrations: [
 			replayIntegration({ beforeErrorSampling: mayUploadErrorReplay }),
 		],
-		// every event leaves with the share token redacted out of its URL, its
-		// query string, and its breadcrumbs. Both hooks are wired, because a
-		// transaction carries the URL just as an error does.
+		// every event leaves with a post's share token redacted out of it, through
+		// `beforeSend` for an error and `beforeSendTransaction` for a transaction,
+		// which carries the URL just as an error does. what the redaction reaches
+		// is `share-token-scrubbing.ts`'s to state rather than this file's: it
+		// walks the whole event rather than a list of fields, so there is no
+		// covered set named here that could fall behind it.
 		beforeSend: redactShareTokenInEvent,
 		beforeSendTransaction: redactShareTokenInEvent,
 		// a personal blog's traffic fits inside the free quota whole, so nothing is
@@ -81,7 +84,7 @@ if (sentryDsn) {
 			// @sentry/core 10.69). Turning it off would therefore drop the routing
 			// state that makes an issue answerable and keep the token; the
 			// `beforeSend` / `beforeSendTransaction` redaction in this file is what
-			// actually removes it, from the URL, this field, and every breadcrumb.
+			// actually removes it, from this field and from everywhere else in the event.
 			urlQueryParams: true,
 			stackFrameVariables: true,
 			frameContextLines: 5,
