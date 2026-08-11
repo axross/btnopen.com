@@ -95,6 +95,14 @@ describe("hasShareToken()", () => {
 		expect(hasShareToken(`?token=${shareToken}`)).toBe(true);
 	});
 
+	// deliberately not the gate's answer: `matchesShareToken` rejects an empty
+	// secret, and this reports it as carried. Each errs the safe way for what it
+	// decides — the gate refuses to unlock, this refuses to upload a recording.
+	it("reports an empty token parameter as carried", () => {
+		expect(hasShareToken(`${postUrl}?draft=true&token=`)).toBe(true);
+		expect(hasShareToken("?token=")).toBe(true);
+	});
+
 	it("reports no token for a URL without the parameter", () => {
 		expect(hasShareToken(`${postUrl}?draft=true`)).toBe(false);
 		expect(hasShareToken("")).toBe(false);

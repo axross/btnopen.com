@@ -97,8 +97,14 @@ export function redactShareTokenInUrl(url: string): string {
  * Whether a URL or query string carries a share token with a value.
  *
  * The client configuration uses this to decide whether the page it is on is one
- * a session replay may be uploaded from. A parameter present but empty reads as
- * absent, matching the gate in `share-token-match.ts`, which never accepts one.
+ * a session replay may be uploaded from.
+ *
+ * A parameter present but empty reads as **present**, so `?token=` suppresses
+ * the replay even though `share-token-match.ts` would never accept that value
+ * as a key. The two deliberately disagree, and each errs the safe way for what
+ * it decides: the gate refuses to unlock a post on an empty secret, and this
+ * refuses to upload a recording of a page whose URL says a secret was being
+ * carried.
  */
 export function hasShareToken(url: string): boolean {
 	return redactShareTokenInUrl(url) !== url;
