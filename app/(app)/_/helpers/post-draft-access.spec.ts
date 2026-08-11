@@ -26,7 +26,9 @@ vi.mock("payload", () => ({
  */
 vi.mock("@/payload/config", () => ({ config: {} }));
 
-const { canReadPostDraft } = await import("./post-draft-access");
+const { canReadPostDraft, matchesPostShareToken } = await import(
+	"./post-draft-access"
+);
 
 const slug = "declarative-ui";
 const storedToken = "pnryCl0emXnq8uYvQGiGKTgwg2NYZ_fQf6o3KPhbXSA";
@@ -123,5 +125,52 @@ describe("canReadPostDraft()", () => {
 			limit: 1,
 			draft: true,
 		});
+	});
+});
+
+describe("matchesPostShareToken()", () => {
+	beforeEach(() => {
+		fakes.canReadDrafts.mockResolvedValue(false);
+		fakes.find.mockResolvedValue({ docs: [] });
+	});
+
+	// the whole reason this sits beside `canReadPostDraft` rather than inside it:
+	// the post page advertises a token-bearing `og:image` URL, and a signed-in
+	// author's session must not make that advertisement true for a token the
+	// thumbnail gate would reject.
+	it("ignores the session entirely", async () => {
+		fakes.canReadDrafts.mockResolvedValue(true);
+		fakes.find.mockResolvedValue({ docs: [{ shareToken: storedToken }] });
+
+		expect(await matchesPostShareToken(slug, otherPostToken)).toBe(false);
+		expect(fakes.canReadDrafts).not.toHaveBeenCalled();
+	});
+
+	it("accepts this post's stored token", async () => {
+		fakes.find.mockResolvedValue({ docs: [{ shareToken: storedToken }] });
+
+		expect(await matchesPostShareToken(slug, storedToken)).toBe(true);
+	});
+
+	it("rejects another post's stored token", async () => {
+		fakes.find.mockResolvedValue({ docs: [{ shareToken: storedToken }] });
+
+		expect(await matchesPostShareToken(slug, otherPostToken)).toBe(false);
+	});
+
+	it("rejects an absent token, without reading the token", async () => {
+		expect(await matchesPostShareToken(slug, undefined)).toBe(false);
+		expect(fakes.find).not.toHaveBeenCalled();
+	});
+
+	it("rejects an empty token, without reading the token", async () => {
+		expect(await matchesPostShareToken(slug, "")).toBe(false);
+		expect(fakes.find).not.toHaveBeenCalled();
+	});
+
+	it("rejects a token when the post has none stored", async () => {
+		fakes.find.mockResolvedValue({ docs: [{ shareToken: null }] });
+
+		expect(await matchesPostShareToken(slug, storedToken)).toBe(false);
 	});
 });

@@ -18,14 +18,14 @@ import { matchesShareToken } from "./share-token-match";
  *
  * The two checks are ordered by cost. The session check runs first: it is
  * `cache()`-wrapped, so one lookup already serves the whole request, and a
- * signed-in author never pays for the token read. The token read runs only for
- * a request that was denied by the session **and** carried a non-empty token,
- * and it reads the latest version, so a rotation takes effect on the next
- * request in every draft state.
+ * signed-in author never pays for the token read. The token half is
+ * {@link matchesPostShareToken}, which runs only for a request the session
+ * denied, and it reads the latest version, so a rotation takes effect on the
+ * next request in every draft state.
  *
  * React's `cache()` keys this on `(slug, shareToken)` — positionally, because
  * that is how `cache()` compares arguments — so the page, the body, and the
- * thumbnail of one render share a single lookup. Both arguments are supplied on
+ * thumbnail of one render share a single answer. Both arguments are supplied on
  * every call, so the arity never varies and the key never splits.
  *
  * Like {@link canReadDrafts}, this reads dynamic request state; call it only
@@ -37,6 +37,31 @@ export const canReadPostDraft = cache(
 			return true;
 		}
 
+		return await matchesPostShareToken(slug, shareToken);
+	},
+);
+
+/**
+ * Resolves whether the request carried **this post's own** current token,
+ * ignoring the session entirely.
+ *
+ * This is the narrower half of {@link canReadPostDraft}, and it exists because
+ * one caller needs the token's answer rather than the draft read's. The post
+ * page advertises a token-bearing `og:image` URL so an unfurl of a shared link
+ * can render the draft's card, and keying that on "this render resolved as a
+ * draft" would write *any* supplied token into the page for a signed-in author
+ * — including another post's, on a URL this post's thumbnail gate rejects
+ * anyway. Keying it here means the page only ever echoes back a credential that
+ * is already this post's.
+ *
+ * Short-circuits on an absent or empty token before touching the database, so a
+ * request that carries none costs nothing. `cache()`-wrapped on the same
+ * `(slug, shareToken)` pair as {@link canReadPostDraft}, and the lookup beneath
+ * both is cached on the slug alone, so one render performs one read however
+ * many of these two it calls.
+ */
+export const matchesPostShareToken = cache(
+	async (slug: string, shareToken: string | undefined): Promise<boolean> => {
 		if (!shareToken) {
 			return false;
 		}
@@ -50,9 +75,9 @@ export const canReadPostDraft = cache(
 
 /**
  * Reads one post's stored share token. The value never leaves this module —
- * {@link canReadPostDraft} returns a boolean, and nothing logs the token.
+ * both exports above return a boolean, and nothing logs the token.
  */
-async function findShareToken(slug: string): Promise<null | string> {
+const findShareToken = cache(async (slug: string): Promise<null | string> => {
 	const payload = await getPayload({ config });
 	const result = await payload.find({
 		collection: "blog-posts",
@@ -75,4 +100,4 @@ async function findShareToken(slug: string): Promise<null | string> {
 	});
 
 	return result.docs[0]?.shareToken ?? null;
-}
+});
