@@ -430,7 +430,59 @@ describe("redactShareTokenInEvent()", () => {
 		expect(event.spans?.[1]?.data).toEqual({ "sentry.op": "function.nextjs" });
 	});
 
-	it("leaves a context carrying no data record alone", () => {
+	// the surface `captureRequestError` leaks through, and it is not `data`.
+	// `instrumentation.ts` exports Next's `onRequestError` hook as
+	// `@sentry/nextjs`'s `captureRequestError`; Next builds that hook's request
+	// object with `path: req.url || ''` — the request target, query string
+	// included (`next/dist/server/base-server.js`) — and the SDK sets it as a
+	// **flat** `contexts.nextjs.request_path` beside `router_kind`, with no
+	// nested `data` record anywhere in the context
+	// (`@sentry/nextjs/build/cjs/common/captureRequestError.js`). So every
+	// unhandled server-side error on a share link carries the raw token here
+	// unless a context's own strings are redacted as well as its `data`.
+	it("redacts the token in contexts.nextjs.request_path", () => {
+		const event = redactShareTokenInEvent({
+			contexts: {
+				nextjs: {
+					request_path: `/posts/declarative-ui?draft=true&token=${shareToken}`,
+					router_kind: "App Router",
+					router_path: "/posts/[slug]",
+					route_type: "render",
+				},
+			},
+		});
+
+		expect(event.contexts?.nextjs).toEqual({
+			request_path: "/posts/declarative-ui?draft=true&token=[Filtered]",
+			router_kind: "App Router",
+			router_path: "/posts/[slug]",
+			route_type: "render",
+		});
+	});
+
+	// the two halves are independent: `trace` carries the URL under `data`,
+	// `nextjs` carries it flat, and a context could carry both.
+	it("redacts the token in a context's own strings and its data at once", () => {
+		const event = redactShareTokenInEvent({
+			contexts: {
+				trace: {
+					span_id: "aaaaaaaaaaaaaaaa",
+					trace_id: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+					description: `GET ${postUrl}?token=${shareToken}`,
+					data: { "http.target": `/posts?token=${shareToken}` },
+				},
+			},
+		});
+
+		expect(event.contexts?.trace).toEqual({
+			span_id: "aaaaaaaaaaaaaaaa",
+			trace_id: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+			description: `GET ${postUrl}?token=[Filtered]`,
+			data: { "http.target": "/posts?token=[Filtered]" },
+		});
+	});
+
+	it("leaves a context carrying no token alone", () => {
 		const event = redactShareTokenInEvent({
 			contexts: { runtime: { name: "node", version: "v24.0.0" } },
 		});
@@ -459,6 +511,20 @@ describe("redactShareTokenInEvent()", () => {
 			"http.status_code": 200,
 			"sentry.parent_span_already_sent": true,
 		});
+	});
+
+	// `isRecord` accepts anything `typeof` calls an object, so without an array
+	// check the spread beneath it would turn a list into `{ 0: …, 1: … }`. No SDK
+	// builds one here; this pins the pass-through every other unexpected shape in
+	// this module already gets.
+	it("hands an array back as an array where a record was declared", () => {
+		const event = redactShareTokenInEvent({
+			contexts: { trace: [`${postUrl}?token=${shareToken}`] },
+			request: { headers: ["a", "b"] },
+		} as unknown as Event);
+
+		expect(Array.isArray(event.contexts?.trace)).toBe(true);
+		expect(event.request?.headers).toEqual(["a", "b"]);
 	});
 
 	it("leaves an event carrying no token untouched", () => {

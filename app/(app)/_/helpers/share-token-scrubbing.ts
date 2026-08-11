@@ -109,10 +109,10 @@ export function hasShareToken(url: string): boolean {
 /**
  * Redacts every share token an event carries: the request URL, the separate
  * `query_string` field, every request header value, every string a breadcrumb
- * carries — its `message` and its `data` alike — and every span attribute, both
- * the root span's under `contexts.trace.data` and each child span's under
- * `spans[].data`. Returns a new event rather than editing the one it was handed,
- * so nothing downstream observes a half-redacted payload.
+ * carries — its `message` and its `data` alike — every string a context carries,
+ * its own and those under a nested `data` record, and every child span's
+ * attributes under `spans[].data`. Returns a new event rather than editing the
+ * one it was handed, so nothing downstream observes a half-redacted payload.
  *
  * Generic over the event so one function serves both `beforeSend`, which is
  * handed an `ErrorEvent`, and `beforeSendTransaction`, which is handed a
@@ -195,19 +195,34 @@ function redactShareTokenInHeaders(headers: RequestHeaders): RequestHeaders {
 }
 
 /**
- * Redacts every share token an event's contexts carry, which on a transaction
- * means `contexts.trace.data` — the root span's attributes, copied there
- * verbatim.
+ * Redacts every share token an event's contexts carry, across a context's own
+ * string values **and** the nested `data` record a span-shaped one holds.
  *
- * Every context is walked rather than `trace` alone, because the shape that
- * carries a URL is "a context with a `data` record" rather than one context's
- * name, and a context holding no `data` record comes back untouched.
+ * Both halves are load-bearing, because the two contexts that carry a URL here
+ * are shaped differently:
+ *
+ * - `contexts.trace` carries the root span's attributes under `data`, copied
+ *   there verbatim by the OpenTelemetry-to-Sentry exporter — see
+ *   {@link redactShareTokenInSpanData}.
+ * - `contexts.nextjs` is **flat**. `instrumentation.ts` exports Next's
+ *   `onRequestError` hook as `@sentry/nextjs`'s `captureRequestError`, which
+ *   sets `{ request_path, router_kind, router_path, route_type }` with no
+ *   `data` record at all; Next builds that hook's request object with
+ *   `path: req.url || ''`, the request target with its query string. So every
+ *   unhandled server-side error on a share link puts the raw token in
+ *   `request_path`, which a `data`-only walk hands straight through.
+ *
+ * Walking every context's own strings is what keeps that from being a list of
+ * two names to maintain: the redaction stays matched on the **value**, exactly
+ * as the header, span, and breadcrumb passes are, so a context a later SDK
+ * version adds is covered without an edit here. A context carrying neither is
+ * copied unchanged.
  */
 function redactShareTokenInContexts(contexts: Contexts): Contexts {
 	return Object.fromEntries(
 		Object.entries(contexts).map(([name, context]) => [
 			name,
-			redactShareTokenInSpanData(context),
+			redactShareTokenInSpanData(redactShareTokenInStringValues(context)),
 		]),
 	);
 }
@@ -254,13 +269,19 @@ function redactShareTokenInSpanData<S>(span: S): S {
  * carrying no token comes back identical, so a record with nothing to redact is
  * copied rather than rewritten.
  *
+ * Anything that is not a record is handed straight back, so this can be applied
+ * inside a `map()` over values the SDK types but does not guarantee — a
+ * context, an exception value — without each caller repeating the guard.
+ *
  * The assertion holds because each string is replaced by another string and no
  * other value is touched, so the record's declared shape survives — something
  * `Object.entries` erases on the way through.
  */
-function redactShareTokenInStringValues<R extends Record<string, unknown>>(
-	record: R,
-): R {
+function redactShareTokenInStringValues<R>(record: R): R {
+	if (!isRecord(record)) {
+		return record;
+	}
+
 	const redacted: Record<string, unknown> = { ...record };
 
 	for (const [key, value] of Object.entries(redacted)) {
@@ -320,17 +341,25 @@ function redactShareTokenInQueryString(queryString: QueryString): QueryString {
 }
 
 /**
- * Whether a value is a non-null object, which is what separates a field the SDK
- * populated from one it left as `null`.
+ * Whether a value is a plain, non-null object, which is what separates a field
+ * the SDK populated from one it left as `null`.
  *
  * The event types declare these fields optional, so TypeScript is satisfied by
  * an `undefined` check — but the payload is JSON built by several integrations,
  * and a `null` reaches here in practice. A hook that throws loses the event and
  * takes the response being rendered with it, so every branch below narrows on
  * the runtime value rather than trusting the declared type.
+ *
+ * An array is excluded even though `typeof [] === "object"`. No SDK builds one
+ * where a record is declared, but every caller that passes this guard goes on
+ * to spread the value into an object literal, which would turn an array into
+ * `{ 0: …, 1: … }` — a silent reshaping rather than the pass-through every other
+ * unexpected shape here gets. The pair-list form of `query_string` is checked
+ * with `Array.isArray` before this runs, so nothing that wants an array loses
+ * one.
  */
 function isRecord(value: unknown): value is Record<string, unknown> {
-	return typeof value === "object" && value !== null;
+	return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 /**
