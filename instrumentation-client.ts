@@ -3,8 +3,34 @@ import {
 	init as initializeSentry,
 	replayIntegration,
 } from "@sentry/nextjs";
-import { redactShareTokenInEvent } from "@/helpers/share-token-scrubbing";
+import {
+	hasShareToken,
+	redactShareTokenInEvent,
+} from "@/helpers/share-token-scrubbing";
 import { sentryDsn, sha, vercelEnvironment } from "@/runtime";
+
+// whether this document has ever been at a URL carrying a post's share token.
+// sticky rather than a look at the current URL, because an error-linked replay
+// uploads the buffered minute *before* the error: a reviewer who followed a
+// share link and then navigated on within the same document still has the token
+// in that recording, while `location.search` no longer shows it. Seeded from the
+// entry URL for that case and re-checked at each error for the reverse one.
+let hasVisitedShareLink = hasShareToken(window.location.search);
+
+/**
+ * Whether an error-linked replay may be uploaded from this document.
+ *
+ * A replay records the URL through a path no `beforeSend` sees, so the
+ * redaction that keeps the token out of an event cannot reach a replay; not
+ * uploading it is the only control there is. The accepted cost is that a
+ * reviewer's error on a shared link produces no replay — the right trade for a
+ * bearer credential, and the one this change deliberately makes.
+ */
+function mayUploadErrorReplay(): boolean {
+	hasVisitedShareLink ||= hasShareToken(window.location.search);
+
+	return !hasVisitedShareLink;
+}
 
 if (sentryDsn) {
 	initializeSentry({
@@ -13,7 +39,9 @@ if (sentryDsn) {
 		// and its uploaded source maps can never file under different releases.
 		release: sha,
 		environment: vercelEnvironment,
-		integrations: [replayIntegration()],
+		integrations: [
+			replayIntegration({ beforeErrorSampling: mayUploadErrorReplay }),
+		],
 		// every event leaves with the share token redacted out of its URL, its
 		// query string, and its breadcrumbs. Both hooks are wired, because a
 		// transaction carries the URL just as an error does.
