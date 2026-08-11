@@ -9,6 +9,8 @@ import {
 
 const shareToken = "pnryCl0emXnq8uYvQGiGKTgwg2NYZ_fQf6o3KPhbXSA";
 const postUrl = "https://btnopen.com/posts/declarative-ui";
+/** Stands in for the non-string values a payload puts beside the redacted ones. */
+const okStatus = 200;
 
 describe("redactShareTokenInUrl()", () => {
 	it("replaces the token in an absolute URL", () => {
@@ -307,7 +309,7 @@ describe("redactShareTokenInEvent()", () => {
 				{
 					category: "console",
 					data: {
-						arguments: ["fetching", `${postUrl}?token=${shareToken}`, 200],
+						arguments: ["fetching", `${postUrl}?token=${shareToken}`, okStatus],
 						logger: "console",
 					},
 					message: "fetching",
@@ -316,7 +318,7 @@ describe("redactShareTokenInEvent()", () => {
 		});
 
 		expect(event.breadcrumbs?.[0]?.data).toEqual({
-			arguments: ["fetching", `${postUrl}?token=[Filtered]`, 200],
+			arguments: ["fetching", `${postUrl}?token=[Filtered]`, okStatus],
 			logger: "console",
 		});
 	});
@@ -362,11 +364,12 @@ describe("redactShareTokenInEvent()", () => {
 				{ category: "console", data: { arguments: cyclic, logger: "console" } },
 			],
 		});
-		const redacted = (event.breadcrumbs?.[0]?.data as { arguments: unknown[] })
-			.arguments;
+		const [firstArgument, secondArgument] =
+			(event.breadcrumbs?.[0]?.data as { arguments: unknown[] } | undefined)
+				?.arguments ?? [];
 
-		expect(redacted[0]).toBe(`${postUrl}?token=[Filtered]`);
-		expect(redacted[1]).toBe(cyclic);
+		expect(firstArgument).toBe(`${postUrl}?token=[Filtered]`);
+		expect(secondArgument).toBe(cyclic);
 	});
 
 	// the surface a transaction actually leaks through. Next's root server span
