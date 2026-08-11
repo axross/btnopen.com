@@ -92,6 +92,55 @@ describe("redactShareTokenInUrl()", () => {
 			`${postUrl}?token=[Filtered]&draft=true`,
 		);
 	});
+
+	// an HTML-escaped href: an error message that quoted one, or a hydration diff
+	// that printed one, carries `&amp;` where the address bar carries `&`.
+	it("redacts the token after an HTML-escaped separator", () => {
+		expect(
+			redactShareTokenInUrl(`${postUrl}?draft=true&amp;token=${shareToken}`),
+		).toBe(`${postUrl}?draft=true&amp;token=[Filtered]`);
+	});
+
+	// the share link nested as a query value of another URL — a `next=` or
+	// `redirect_url=` parameter — where its own separators are percent-encoded.
+	it("redacts the token after percent-encoded separators", () => {
+		expect(
+			redactShareTokenInUrl(
+				`https://btnopen.com/sign-in?next=%2Fposts%2Fdeclarative-ui%3Fdraft%3Dtrue%26token%3D${shareToken}`,
+			),
+		).toBe(
+			"https://btnopen.com/sign-in?next=%2Fposts%2Fdeclarative-ui%3Fdraft%3Dtrue%26token%3D[Filtered]",
+		);
+	});
+
+	it("redacts the token after a percent-encoded question mark", () => {
+		expect(
+			redactShareTokenInUrl(
+				`%2Fposts%2Fdeclarative-ui%3Ftoken%3D${shareToken}`,
+			),
+		).toBe("%2Fposts%2Fdeclarative-ui%3Ftoken%3D[Filtered]");
+	});
+
+	it("stops a percent-encoded value at the next encoded separator", () => {
+		expect(
+			redactShareTokenInUrl(`%3Ftoken%3D${shareToken}%26draft%3Dtrue`),
+		).toBe("%3Ftoken%3D[Filtered]%26draft%3Dtrue");
+	});
+
+	it("preserves the separator and the operator it found", () => {
+		expect(redactShareTokenInUrl(`%26token%3D${shareToken}`)).toBe(
+			"%26token%3D[Filtered]",
+		);
+		expect(redactShareTokenInUrl(`&amp;token=${shareToken}`)).toBe(
+			"&amp;token=[Filtered]",
+		);
+	});
+
+	it("leaves an escaped parameter merely ending in the token name alone", () => {
+		expect(redactShareTokenInUrl(`%3Fcsrftoken%3D${shareToken}`)).toBe(
+			`%3Fcsrftoken%3D${shareToken}`,
+		);
+	});
 });
 
 describe("hasShareToken()", () => {
@@ -120,6 +169,11 @@ describe("hasShareToken()", () => {
 
 	it("reports no token for a parameter whose name merely ends in it", () => {
 		expect(hasShareToken(`${postUrl}?csrftoken=${shareToken}`)).toBe(false);
+	});
+
+	it("reports a token carried in an escaped or re-encoded form", () => {
+		expect(hasShareToken(`?next=%3Ftoken%3D${shareToken}`)).toBe(true);
+		expect(hasShareToken(`?draft=true&amp;token=${shareToken}`)).toBe(true);
 	});
 });
 
@@ -355,6 +409,11 @@ describe("redactShareTokenInEvent()", () => {
 	// a self-referencing value is what an unbounded walk would hang on, and a
 	// throw or a stack overflow inside `beforeSend` loses the event and tears
 	// down the response being rendered.
+	//
+	// the self-reference comes back as the SDK's own `[Circular ~]` rather than as
+	// the original array, and that is the security-relevant half: handing the
+	// reference back would put the branch the walk just declined to visit — token
+	// and all — straight into the event about to be sent.
 	it("survives a breadcrumb argument that references itself", () => {
 		const cyclic: unknown[] = [`${postUrl}?token=${shareToken}`];
 		cyclic.push(cyclic);
@@ -369,7 +428,29 @@ describe("redactShareTokenInEvent()", () => {
 				?.arguments ?? [];
 
 		expect(firstArgument).toBe(`${postUrl}?token=[Filtered]`);
-		expect(secondArgument).toBe(cyclic);
+		expect(secondArgument).toBe("[Circular ~]");
+	});
+
+	// the other way a walk exhausts the stack: deep without ever referring to
+	// itself. the SDK normalizes the deep-prone fields to `normalizeDepth` before
+	// `beforeSend` runs, so this is the guard for the day that option is turned
+	// off — it truncates rather than descending, and truncates to a marker rather
+	// than to the unvisited subtree.
+	it("survives a value nested past the walk's depth limit", () => {
+		const deep: Record<string, unknown> = {
+			leaf: `${postUrl}?token=${shareToken}`,
+		};
+		let nested: Record<string, unknown> = deep;
+		const depthPastTheLimit = 40;
+
+		for (let level = 0; level < depthPastTheLimit; level += 1) {
+			nested = { nested };
+		}
+
+		const event = redactShareTokenInEvent({ extra: { nested } });
+
+		expect(() => JSON.stringify(event)).not.toThrow();
+		expect(JSON.stringify(event)).not.toContain(shareToken);
 	});
 
 	// the surface a transaction actually leaks through. Next's root server span
@@ -428,6 +509,128 @@ describe("redactShareTokenInEvent()", () => {
 			"http.url": `${postUrl}/thumbnail.png?token=[Filtered]`,
 		});
 		expect(event.spans?.[1]?.data).toEqual({ "sentry.op": "function.nextjs" });
+	});
+
+	// the surface a *browser* pageload leaks through, and it is not `data`.
+	// `@sentry/browser-utils` 10.69 builds every navigation-timing child span with
+	// `name: entry.name` — `_addNavigationSpans` and `_addRequest` in
+	// `metrics/browserMetrics.js` — where `entry` is the
+	// `PerformanceNavigationTiming` entry and `name` is the full document URL,
+	// query string included; `spanToJSON` then maps `name` onto `description`
+	// (`utils/spanUtils.js`). `browserTracingIntegration` is a client default in
+	// `@sentry/nextjs` and `tracesSampleRate` is 1, so every share-link pageload
+	// emits a transaction whose `browser.request`, `browser.response`,
+	// `browser.connect` and `browser.DNS` children each carry that URL verbatim.
+	it("redacts the token in a navigation-timing span's description", () => {
+		const documentUrl = `${postUrl}?draft=true&token=${shareToken}`;
+		const event = redactShareTokenInEvent({
+			type: "transaction",
+			spans: [
+				{
+					op: "browser.request",
+					description: documentUrl,
+					span_id: "cccccccccccccccc",
+					trace_id: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+					start_timestamp: 0,
+					data: { "sentry.origin": "auto.ui.browser.metrics" },
+				},
+				{
+					op: "browser.DNS",
+					description: documentUrl,
+					span_id: "dddddddddddddddd",
+					trace_id: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+					start_timestamp: 0,
+					data: { "sentry.origin": "auto.ui.browser.metrics" },
+				},
+			],
+		});
+
+		expect(event.spans?.[0]?.description).toBe(
+			`${postUrl}?draft=true&token=[Filtered]`,
+		);
+		expect(event.spans?.[1]?.description).toBe(
+			`${postUrl}?draft=true&token=[Filtered]`,
+		);
+	});
+
+	// covered rather than reasoned about. Both runtimes name a transaction from a
+	// route pattern today — the browser from `location.pathname`, Next from
+	// `${method} ${route}` — so nothing is expected to arrive here; walking it
+	// costs nothing and removes the need for that to stay true.
+	it("redacts the token in the transaction name", () => {
+		const event = redactShareTokenInEvent({
+			type: "transaction",
+			transaction: `GET ${postUrl}?draft=true&token=${shareToken}`,
+		});
+
+		expect(event.transaction).toBe(
+			`GET ${postUrl}?draft=true&token=[Filtered]`,
+		);
+	});
+
+	// the property that makes this module total, asserted directly rather than
+	// left to be inferred from the fields that happen to be listed above. The walk
+	// names no event field anywhere, so a field a later SDK version adds is
+	// covered on the day it appears rather than on the day someone notices it —
+	// which is what four review rounds of `request.headers`, `contexts.trace.data`,
+	// `contexts.nextjs.request_path` and `spans[].description` each cost.
+	it("redacts the token under a field this module names nowhere", () => {
+		const event = redactShareTokenInEvent({
+			someFieldInventedLater: `${postUrl}?token=${shareToken}`,
+			spans: [
+				{
+					span_id: "cccccccccccccccc",
+					trace_id: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+					start_timestamp: 0,
+					data: {},
+					someSpanFieldInventedLater: `${postUrl}?token=${shareToken}`,
+				},
+			],
+		} as unknown as Event);
+
+		expect(event).toEqual({
+			someFieldInventedLater: `${postUrl}?token=[Filtered]`,
+			spans: [
+				{
+					span_id: "cccccccccccccccc",
+					trace_id: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+					start_timestamp: 0,
+					data: {},
+					someSpanFieldInventedLater: `${postUrl}?token=[Filtered]`,
+				},
+			],
+		});
+	});
+
+	it("redacts the token nested below one array level", () => {
+		const event = redactShareTokenInEvent({
+			extra: {
+				attempts: [
+					{ attempted: { url: `${postUrl}?token=${shareToken}` }, status: 500 },
+				],
+			},
+		});
+
+		expect(event.extra).toEqual({
+			attempts: [
+				{ attempted: { url: `${postUrl}?token=[Filtered]` }, status: 500 },
+			],
+		});
+	});
+
+	// the one field the walk is kept out of, and the reason it can be: it is the
+	// only part of an event that is not JSON — it carries the live Node request
+	// object and the captured scopes — and `@sentry/core`'s `createEventEnvelope`
+	// deletes it before serializing, so nothing under it is ever sent.
+	it("hands sdkProcessingMetadata back exactly as it arrived", () => {
+		const sdkProcessingMetadata = { normalizedRequest: { url: shareToken } };
+		const event = redactShareTokenInEvent({
+			message: `boom ${postUrl}?token=${shareToken}`,
+			sdkProcessingMetadata,
+		});
+
+		expect(event.sdkProcessingMetadata).toBe(sdkProcessingMetadata);
+		expect(event.message).toBe(`boom ${postUrl}?token=[Filtered]`);
 	});
 
 	// the surface `captureRequestError` leaks through, and it is not `data`.
