@@ -6,11 +6,14 @@ import {
 	BlogPostShareLinkParameters,
 	buildShareLink,
 	findBlogPostShareToken,
-	hasSignedInUser,
-	mcpErrorResponse,
-	mcpTextResponse,
 	unauthenticatedShareLinkResponse,
 } from "./share-link";
+import {
+	hasSignedInUser,
+	mcpErrorResponse,
+	mcpInvalidArgumentsResponse,
+	mcpTextResponse,
+} from "./tool-handler";
 
 export const rotateBlogPostShareLinkTool = {
 	name: "rotateBlogPostShareLink",
@@ -28,14 +31,7 @@ export const rotateBlogPostShareLinkTool = {
 		const parsedArgs = BlogPostShareLinkParameters.safeParse(args);
 
 		if (!parsedArgs.success) {
-			return mcpErrorResponse(
-				parsedArgs.error.issues
-					.map(
-						(issue) =>
-							`${issue.path.join(".") || "arguments"}: ${issue.message}`,
-					)
-					.join("\n"),
-			);
+			return mcpInvalidArgumentsResponse(parsedArgs.error);
 		}
 
 		const { slug } = parsedArgs.data;

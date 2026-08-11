@@ -14,6 +14,11 @@ import { mcpLogger } from "./logger";
 import type { McpTextResponse, McpTool } from "./mcp-types";
 import { isRecord } from "./records";
 import { McpSanitizedBlogPost } from "./sanitize";
+import {
+	mcpErrorResponse,
+	mcpInvalidArgumentsResponse,
+	mcpTextResponse,
+} from "./tool-handler";
 
 const DeleteNodeInBlogPostBodyParameters = z.object({
 	...BlogPostBodyMutationParametersBase,
@@ -31,19 +36,7 @@ export const deleteNodeInBlogPostBodyTool = {
 		const parsedArgs = DeleteNodeInBlogPostBodyParameters.safeParse(args);
 
 		if (!parsedArgs.success) {
-			return {
-				content: [
-					{
-						type: "text",
-						text: `Error: ${parsedArgs.error.issues
-							.map(
-								(issue) =>
-									`${issue.path.join(".") || "arguments"}: ${issue.message}`,
-							)
-							.join("\n")}`,
-					},
-				],
-			};
+			return mcpInvalidArgumentsResponse(parsedArgs.error);
 		}
 
 		const params = parsedArgs.data;
@@ -61,14 +54,7 @@ export const deleteNodeInBlogPostBodyTool = {
 		});
 
 		if (!existingBlogPost) {
-			return {
-				content: [
-					{
-						type: "text",
-						text: `Error: No blog post exists for slug "${params.slug}".`,
-					},
-				],
-			};
+			return mcpErrorResponse(`No blog post exists for slug "${params.slug}".`);
 		}
 
 		try {
@@ -115,25 +101,14 @@ export const deleteNodeInBlogPostBodyTool = {
 				"Completed deleting node in blog post body through MCP.",
 			);
 
-			return {
-				content: [
-					{
-						type: "text",
-						text: JSON.stringify(
-							{
-								blogPost: z.decode(
-									McpSanitizedBlogPost,
-									blogPost as unknown as z.input<typeof McpSanitizedBlogPost>,
-								),
-								deletedNode,
-								message: "Deleted the node from the blog post body.",
-							},
-							null,
-							2,
-						),
-					},
-				],
-			};
+			return mcpTextResponse({
+				blogPost: z.decode(
+					McpSanitizedBlogPost,
+					blogPost as unknown as z.input<typeof McpSanitizedBlogPost>,
+				),
+				deletedNode,
+				message: "Deleted the node from the blog post body.",
+			});
 		} catch (error) {
 			const errorMessage = getErrorMessage(error);
 
@@ -146,14 +121,7 @@ export const deleteNodeInBlogPostBodyTool = {
 				"Failed deleting node in blog post body through MCP.",
 			);
 
-			return {
-				content: [
-					{
-						type: "text",
-						text: `Error: ${errorMessage}`,
-					},
-				],
-			};
+			return mcpErrorResponse(errorMessage);
 		}
 	},
 } satisfies McpTool;

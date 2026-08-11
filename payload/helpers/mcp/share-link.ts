@@ -4,12 +4,12 @@ import { PayloadBlogPost } from "@/shared/payload-types";
 import type { BlogPost } from "../../types";
 import { urlOrigin } from "../runtime";
 import { findBlogPostBySlug } from "./blog-post-body";
-import type { McpTextResponse } from "./mcp-types";
+import { mcpErrorResponse } from "./tool-handler";
 
 /**
- * What the two share-link tools share: their argument shape, the
- * authentication they both require, the lookup that reads the token, and the
- * link they both return.
+ * What the two share-link tools share: their argument shape, the refusal they
+ * both answer an anonymous caller with, the lookup that reads the token, and
+ * the link they both return.
  *
  * These are the only MCP tools that may return a `shareToken`. Every other tool
  * answers through `sanitize.ts`, whose allowlist simply omits the field — so
@@ -37,28 +37,12 @@ const shareTokenSelect = {
  */
 const shareTokenLocale = "ja-JP";
 
-export function mcpTextResponse(payload: unknown): McpTextResponse {
-	return {
-		content: [{ type: "text", text: JSON.stringify(payload, null, 2) }],
-	};
-}
-
-export function mcpErrorResponse(message: string): McpTextResponse {
-	return { content: [{ type: "text", text: `Error: ${message}` }] };
-}
-
 /**
- * Whether this MCP request carries an identity at all.
- *
- * An API key's `user` is optional here — see `api-key-fields.ts` — so a request
- * can arrive with `req.user` absent and still look authenticated to the
- * transport. A share token is a bearer credential for unpublished content, so
- * both tools refuse that request rather than answering it anonymously.
+ * What both tools answer a request carrying no identity with. A share token is
+ * a bearer credential for unpublished content, so neither answers one
+ * anonymously — `hasSignedInUser` in `tool-handler.ts` is the check, and this
+ * is the refusal.
  */
-export function hasSignedInUser(req: PayloadRequest): boolean {
-	return Boolean(req.user);
-}
-
 export const unauthenticatedShareLinkResponse = mcpErrorResponse(
 	"This tool requires an API key bound to a user.",
 );
