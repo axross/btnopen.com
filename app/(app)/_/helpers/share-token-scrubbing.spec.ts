@@ -149,6 +149,89 @@ describe("redactShareTokenInEvent()", () => {
 		]);
 	});
 
+	// `Referrer-Policy: strict-origin-when-cross-origin` sends the full URL on a
+	// same-origin request, so every subresource a draft page asks for carries the
+	// token back in `Referer` — and the SDK's own filter matches header *names*
+	// against snippets like `auth`, `token`, and `secret`, which `referer` is not.
+	it("redacts the token in a referer header", () => {
+		const event = redactShareTokenInEvent({
+			request: {
+				headers: {
+					host: "btnopen.com",
+					referer: `${postUrl}?draft=true&token=${shareToken}`,
+				},
+			},
+		});
+
+		expect(event.request?.headers).toEqual({
+			host: "btnopen.com",
+			referer: `${postUrl}?draft=true&token=[Filtered]`,
+		});
+	});
+
+	it("redacts the token whatever the header is called or cased", () => {
+		const event = redactShareTokenInEvent({
+			request: {
+				headers: {
+					Referer: `${postUrl}?token=${shareToken}`,
+					"x-forwarded-uri": `/posts/declarative-ui?token=${shareToken}`,
+				},
+			},
+		});
+
+		expect(event.request?.headers).toEqual({
+			Referer: `${postUrl}?token=[Filtered]`,
+			"x-forwarded-uri": "/posts/declarative-ui?token=[Filtered]",
+		});
+	});
+
+	it("leaves a header map carrying no token untouched", () => {
+		const headers = {
+			accept: "image/avif,image/webp,*/*",
+			host: "btnopen.com",
+			referer: `${postUrl}?draft=true`,
+		};
+
+		expect(
+			redactShareTokenInEvent({ request: { headers } }).request?.headers,
+		).toEqual(headers);
+	});
+
+	it("leaves a non-string header value alone", () => {
+		const event = redactShareTokenInEvent({
+			request: {
+				headers: {
+					"content-length": 1024,
+					referer: null,
+					"set-cookie": [`a=${shareToken}`],
+				},
+			},
+		} as unknown as Event);
+
+		expect(event.request?.headers).toEqual({
+			"content-length": 1024,
+			referer: null,
+			"set-cookie": [`a=${shareToken}`],
+		});
+	});
+
+	it("returns a request with no headers key unchanged", () => {
+		const event = redactShareTokenInEvent({
+			request: { url: `${postUrl}?token=${shareToken}` },
+		});
+
+		expect(event.request).toEqual({ url: `${postUrl}?token=[Filtered]` });
+		expect(event.request).not.toHaveProperty("headers");
+	});
+
+	it("leaves null headers exactly as they arrived", () => {
+		const event = redactShareTokenInEvent({
+			request: { headers: null },
+		} as unknown as Event);
+
+		expect(event.request).toEqual({ headers: null });
+	});
+
 	it("redacts a fetch breadcrumb's url and a navigation breadcrumb's from and to", () => {
 		const event = redactShareTokenInEvent({
 			breadcrumbs: [
@@ -206,8 +289,11 @@ describe("redactShareTokenInEvent()", () => {
 		["a null request", { request: null }],
 		["a null request url", { request: { url: null } }],
 		["a null query_string", { request: { query_string: null } }],
+		["null request headers", { request: { headers: null } }],
 		["a non-string request url", { request: { url: 42 } }],
 		["a non-string, non-object query_string", { request: { query_string: 7 } }],
+		["a non-object headers", { request: { headers: 7 } }],
+		["a null header value", { request: { headers: { referer: null } } }],
 		["null breadcrumbs", { breadcrumbs: null }],
 		["a null breadcrumb", { breadcrumbs: [null] }],
 		[
@@ -233,7 +319,10 @@ describe("redactShareTokenInEvent()", () => {
 
 	it("does not modify the event it was handed", () => {
 		const event = {
-			request: { url: `${postUrl}?token=${shareToken}` },
+			request: {
+				headers: { referer: `${postUrl}?token=${shareToken}` },
+				url: `${postUrl}?token=${shareToken}`,
+			},
 			breadcrumbs: [
 				{ category: "fetch", data: { url: `${postUrl}?token=${shareToken}` } },
 			],
@@ -242,6 +331,9 @@ describe("redactShareTokenInEvent()", () => {
 		redactShareTokenInEvent(event);
 
 		expect(event.request.url).toBe(`${postUrl}?token=${shareToken}`);
+		expect(event.request.headers.referer).toBe(
+			`${postUrl}?token=${shareToken}`,
+		);
 		expect(event.breadcrumbs[0]?.data.url).toBe(
 			`${postUrl}?token=${shareToken}`,
 		);

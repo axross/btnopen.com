@@ -54,6 +54,9 @@ const shareTokenAssignmentPattern = new RegExp(
 /** The `query_string` shapes the SDK's own request type permits. */
 type QueryString = NonNullable<RequestEventData["query_string"]>;
 
+/** The `headers` shape the SDK's own request type permits. */
+type RequestHeaders = NonNullable<RequestEventData["headers"]>;
+
 /**
  * The breadcrumb `data` keys that hold a URL in the installed SDK: `url` on a
  * `fetch` or `xhr` crumb, and `from` / `to` on a `navigation` one. Verified
@@ -98,9 +101,9 @@ export function hasShareToken(url: string): boolean {
 
 /**
  * Redacts every share token an event carries: the request URL, the separate
- * `query_string` field, and each breadcrumb URL. Returns a new event rather
- * than editing the one it was handed, so nothing downstream observes a
- * half-redacted payload.
+ * `query_string` field, every request header value, and each breadcrumb URL.
+ * Returns a new event rather than editing the one it was handed, so nothing
+ * downstream observes a half-redacted payload.
  *
  * Generic over the event so one function serves both `beforeSend`, which is
  * handed an `ErrorEvent`, and `beforeSendTransaction`, which is handed a
@@ -127,16 +130,54 @@ export function redactShareTokenInEvent<E extends Event>(event: E): E {
 function redactShareTokenInRequest(
 	request: RequestEventData,
 ): RequestEventData {
-	const { query_string: queryString, url } = request;
+	const { headers, query_string: queryString, url } = request;
 
 	return {
 		...request,
+		...(isRecord(headers)
+			? { headers: redactShareTokenInHeaders(headers) }
+			: {}),
 		...(typeof url === "string" ? { url: redactShareTokenInUrl(url) } : {}),
 		...(queryString === undefined || queryString === null
 			? {}
 			: // biome-ignore lint/style/useNamingConvention: mirrors the Sentry event payload
 				{ query_string: redactShareTokenInQueryString(queryString) }),
 	};
+}
+
+/**
+ * Redacts every share token a request header carries, matching on the header's
+ * **value** rather than its name.
+ *
+ * `Referer` is the header this exists for: `Referrer-Policy:
+ * strict-origin-when-cross-origin`, which `next.config.ts` sets, sends the full
+ * URL on a same-origin request, so every subresource a draft page asks for —
+ * its own `thumbnail.png` included — reports the token-bearing page URL back.
+ * Naming that header here would still be the wrong check, for three reasons:
+ * its casing is not guaranteed, it is not the only header a URL reaches this
+ * map through, and a name-keyed test is one rename away from silently missing.
+ *
+ * Nothing upstream covers this. `dataCollection.httpHeaders` is enabled, and
+ * the SDK's own filter — `SENSITIVE_KEY_SNIPPETS` in `@sentry/core` 10.69 —
+ * matches header *names* against snippets like `auth`, `token`, and `secret`,
+ * none of which `referer` contains; it is also applied only to span attributes,
+ * never to the `request.headers` an event carries.
+ *
+ * Only a string is rewritten. The SDK declares the values as `string`, but the
+ * map is JSON assembled by its request integration, so a value that arrives as
+ * something else is handed back exactly as it was rather than coerced — a throw
+ * here would lose the event and tear down the response being rendered.
+ */
+function redactShareTokenInHeaders(headers: RequestHeaders): RequestHeaders {
+	const redacted = { ...headers };
+
+	for (const [name, value] of Object.entries(redacted)) {
+		if (typeof value === "string" && hasShareToken(value)) {
+			redacted[name] = redactShareTokenInUrl(value);
+		}
+	}
+
+	return redacted;
 }
 
 /**
