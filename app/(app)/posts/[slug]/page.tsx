@@ -31,7 +31,8 @@ export default async function BlogPostPage({
 	// stream its own matching loading skeleton (the agentic view and the post
 	// have different shapes, so a single shared fallback would mismatch one of
 	// them). This opts the route into dynamic rendering.
-	const { agentic, draft: draftParam, token: shareToken } = await searchParams;
+	const { agentic, draft: draftParam, token } = await searchParams;
+	const shareToken = readShareToken(token);
 	const slug = params.then((p) => p.slug);
 	const draft = Promise.resolve(draftParam === "true");
 
@@ -113,6 +114,27 @@ export default async function BlogPostPage({
 	);
 }
 
+/**
+ * Normalizes the `token` search parameter into the single opaque string every
+ * consumer below expects.
+ *
+ * Next.js delivers an **array** for a repeated search parameter, so
+ * `?token=a&token=b` arrives as `["a", "b"]`. Nothing downstream is shaped for
+ * that: the gate hands the value to a constant-time character comparison, which
+ * an array of the right length would reach and fail inside. Normalizing here,
+ * at the boundary where the request stops being a URL, is what keeps every
+ * consumer able to declare a plain string.
+ *
+ * The first value wins, which is what `URLSearchParams.get()` returns and
+ * therefore what `thumbnail.png/route.tsx` already reads — so one request never
+ * resolves two ways across the page and the thumbnail it advertises.
+ */
+function readShareToken(
+	token: string | string[] | undefined,
+): string | undefined {
+	return Array.isArray(token) ? token[0] : token;
+}
+
 async function MaybeComments({
 	blogPost,
 	slug,
@@ -160,10 +182,11 @@ export async function generateMetadata({
 	params,
 	searchParams,
 }: PageProps): Promise<Metadata> {
-	const [{ slug }, { draft, agentic, token: shareToken }] = await Promise.all([
+	const [{ slug }, { draft, agentic, token }] = await Promise.all([
 		params,
 		searchParams,
 	]);
+	const shareToken = readShareToken(token);
 	const isDraft = draft === "true";
 	const locale = await getActiveLocale();
 

@@ -58,4 +58,34 @@ describe("matchesShareToken()", () => {
 	it("rejects an empty supplied token against an empty stored token", () => {
 		expect(matchesShareToken({ supplied: "", stored: "" })).toBe(false);
 	});
+
+	// Next.js hands back an array for a repeated search parameter, and an array of
+	// the stored token's length passes a length guard while having no
+	// `charCodeAt`. Repeating `token` is something any anonymous visitor can do,
+	// and every minted token is the same length, so this row is the difference
+	// between a rejection and a 500 on the post page.
+	it("rejects an array of the stored token's length", () => {
+		expect(
+			matchesShareToken({
+				supplied: Array.from({ length: storedToken.length }, () => "a"),
+				stored: storedToken,
+			}),
+		).toBe(false);
+	});
+
+	it("rejects a supplied value that is not a string", () => {
+		const aNumber = 42;
+
+		for (const supplied of [
+			aNumber,
+			true,
+			{},
+			[],
+			["a"],
+			Symbol("a"),
+			() => "a",
+		]) {
+			expect(matchesShareToken({ supplied, stored: storedToken })).toBe(false);
+		}
+	});
 });

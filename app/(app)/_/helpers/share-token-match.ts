@@ -3,7 +3,7 @@ import { timingSafeEqual } from "./timing-safe-equal";
 /** The two tokens a share-link check compares. */
 export interface ShareTokenMatchInput {
 	/** The token the request carried, if it carried one. */
-	supplied: null | string | undefined;
+	supplied: unknown;
 	/** The token stored on the post, if the post has one. */
 	stored: null | string | undefined;
 }
@@ -17,13 +17,25 @@ export interface ShareTokenMatchInput {
  * matches — which is what stops an empty `token` parameter from unlocking a
  * post that has no stored token yet.
  *
+ * The supplied side is typed `unknown` and narrowed here rather than declared a
+ * string, because it originates in a URL: Next.js hands back an array for a
+ * repeated search parameter, and an array of the stored token's length would
+ * otherwise pass the length guard inside {@link timingSafeEqual} and reach
+ * `charCodeAt` on a value that has none. Callers normalize at the route
+ * boundary; this refuses anything that is not a string regardless, because the
+ * cost of being wrong here is a 500 on a page an anonymous visitor can request.
+ *
  * Neither value is logged, and neither is returned.
  */
 export function matchesShareToken({
 	supplied,
 	stored,
 }: ShareTokenMatchInput): boolean {
-	if (!supplied || !stored) {
+	if (typeof supplied !== "string" || typeof stored !== "string") {
+		return false;
+	}
+
+	if (supplied === "" || stored === "") {
 		return false;
 	}
 
