@@ -8,20 +8,58 @@ and what already guards it.
 
 ## Environment Access
 
-Values reach the browser or the server through exactly one barrel per realm, so a
-review only has to look in one place to know what is exposed. The table below is
-the complete set of files that read `process.env` outside a Biome override —
-every one of them carries a directive naming its reason.
+Each realm — the app under `app/`, Payload under `payload/` — reads runtime
+configuration through one barrel: `app/(app)/_/runtime.ts` for the app,
+`payload/helpers/runtime.ts` for Payload. A value belongs in its realm's barrel
+however few modules consume it, and `clerkPublishableKey` — which has no
+consumer outside `app/(app)/_/runtime.ts` at all — still lives there.
+
+Two files inside those realms read `process.env` directly anyway. Each is an
+exception bounded to a named list of variables rather than to the whole file:
+`app/(app)/_/components/markdown.tsx` for `NODE_ENV`, and `payload/config.ts`
+for the six the table names. The root `next.config.ts` and
+`playwright.config.ts` and the modules under `e2e/` read directly for a
+different reason — they have no barrel to read through — so they appear in the
+table as well.
+
+A deployment build needs all six of the values `payload/config.ts` reads, not
+only the running server: that build reads the real database, rendering
+`/sitemap.xml` and running the `onInit` seed against it. Both deploy pipelines
+make the six available to the `vercel build` step;
+[production-deployment.md](../operations/production-deployment.md) and
+[preview-deployment.md](../operations/preview-deployment.md) make that a MUST
+and own where each value comes from. None of the six is required for
+`payload/config.ts` to resolve, though: `PAYLOAD_SECRET` falls back to
+`"local"`, the two libSQL values to a local SQLite file, `BLOB_PAYLOAD_PREFIX`
+to `""`, and the seed runs only when both `PAYLOAD_TEST_USER_*` values are set.
+What a deployment build needs is their real values, not their presence. The six
+are read at run time as well, since every server process that imports
+`payload/config.ts` evaluates the same module.
+
+Those six stay direct because nothing else in the Payload realm reads them:
+routing them through the barrel would add six exports with one caller each.
+Reader count is the history behind the list rather than a test to apply — the
+list is closed at these six, and a seventh direct read here belongs in the
+barrel whatever its reader count. `vercelBlobToken` is the value that went the
+other way: `payload/config.ts` and `payload/helpers/image.ts` both read it, so
+it lives in `payload/helpers/runtime.ts` and both import it from there.
+
+The table below is the complete set of source files Biome lints that read
+`process.env` outside an override — every one of them carries a directive naming
+its reason. To check what a realm reads from the environment, look in two
+places: that realm's barrel, and that realm's rows here.
 
 | File | Why it may read `process.env` |
 | --- | --- |
-| `app/(app)/_/runtime.ts` | The app realm's sanctioned barrel, exporting `urlOrigin`, `vercelEnvironment`, `sentryDsn`, `mixpanelToken`, and friends |
+| `app/(app)/_/runtime.ts` | The app realm's sanctioned barrel, and the authoritative list of its own exports — `urlOrigin`, `vercelEnvironment`, `sentryDsn`, and `mixpanelToken` are four examples, not the whole set |
 | `payload/helpers/runtime.ts` | The Payload realm's counterpart, exporting `urlOrigin` and `vercelBlobToken`. It exists so the realm never imports `app/`, and resolves the origin through the same `shared/url-origin.ts` the app barrel uses |
-| `payload/config.ts` | The Payload realm needs database and storage credentials at build time |
-| `next.config.ts` | Config-time access to `CI`, `SENTRY_ORG`, `SENTRY_PROJECT` |
-| `playwright.config.ts` | Test config-time access to `CI`, `PLAYWRIGHT_BASE_URL`, `VERCEL_AUTOMATION_BYPASS_SECRET` |
-| `app/(app)/_/components/markdown.tsx` | The one sanctioned `NODE_ENV` check in application code — see below |
+| `payload/config.ts` | `PAYLOAD_SECRET`, `LIBSQL_PAYLOAD_TURSO_DATABASE_URL`, `LIBSQL_PAYLOAD_TURSO_AUTH_TOKEN`, `BLOB_PAYLOAD_PREFIX`, `PAYLOAD_TEST_USER_EMAIL`, and `PAYLOAD_TEST_USER_PASSWORD` — the closed list a deployment build needs, read nowhere else in the Payload realm |
+| `next.config.ts` | Config-time access to `CI`, `SENTRY_ORG`, `SENTRY_PROJECT`, `DEPLOYMENT_ID`, and `NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA` |
+| `playwright.config.ts` | Test config-time access to `CI`, `PLAYWRIGHT_BASE_URL`, `PLAYWRIGHT_SERVER_MODE`, and `VERCEL_AUTOMATION_BYPASS_SECRET` |
+| `app/(app)/_/components/markdown.tsx` | `NODE_ENV`, which no other source file reads — see below |
 | `e2e/helpers/api/auth.ts`, `e2e/helpers/api/mcp.ts`, `e2e/tests/routes/posts/comments.test.ts` | Test credentials and env-driven gates, reaching the real environment on purpose |
+| `e2e/helpers/api/clerk.ts` | The `+clerk_test` reader identity (`TEST_CLERK_READER_EMAIL`) the Clerk-authenticated comment tests sign in as; unset skips them rather than substituting an account |
+| `e2e/global-setup.ts` | The Clerk availability gate (`NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`), read once before the suite runs so a credential-less run skips Clerk setup and stays green |
 
 **`markdown.tsx` is the one component in that table, and it is deliberate.** It
 compares `process.env.NODE_ENV` to `"development"` to decide whether to
@@ -29,30 +67,41 @@ compares `process.env.NODE_ENV` to `"development"` to decide whether to
 defeat the branch: bundlers prune the dev-only import by substituting the literal
 and eliminating dead code, which requires the comparison to be statically visible
 at the call site. An imported boolean is opaque to that pass, so the dev runtime
-would ship to production. This is why the rule below is scoped to *runtime
-configuration* rather than to `process.env` as a token.
+would ship to production. That static-visibility requirement is why the rule
+below is scoped to *runtime configuration* rather than to `process.env` as a
+token.
 
 **Rules:**
 
 - MUST read runtime configuration through `app/(app)/_/runtime.ts` from any
   component, repository, helper, or route handler, and through
-  `payload/helpers/runtime.ts` from anything inside `payload/`. An inline
-  `process.env.NODE_ENV` comparison that a bundler must see literally to eliminate
-  a branch, as `app/(app)/_/components/markdown.tsx` has, is the single exemption
-  — it is build-time substitution rather than deployment configuration, and it
-  extends to no other variable.
-- MUST carry a `// biome-ignore lint/style/noProcessEnv:` directive with a reason
-  on any sanctioned direct `process.env` access. That comment — not a config
-  whitelist — is what exempts every file in the table above, and it is the marker
-  a review looks for.
-- MUST NOT rely on lint to catch a stray `process.env`. `biome.jsonc` sets
-  `noProcessEnv` to `warn`, and its `off` overrides cover only `*.config.js`,
-  `*.config.cjs`, `e2e/reporters/*.ts`, `e2e/check-scenario-coverage.mjs`, and
-  `scripts/*.mjs` — none of the files above. An unsanctioned access therefore
-  surfaces as a warning while `npm run lint` still exits successfully.
-- MUST NOT add a `biome.jsonc` override to exempt application code from
-  `noProcessEnv`; the directive-per-site rule is what keeps the sanctioned set
-  enumerable.
+  `payload/helpers/runtime.ts` from anything inside `payload/`. Two exceptions
+  stand, each bounded to the variables the table names for it. The six
+  `payload/config.ts` reads are one, so a seventh direct read there belongs in
+  the barrel like any other. The inline `process.env.NODE_ENV` comparison a
+  bundler must see literally to eliminate a branch, as
+  `app/(app)/_/components/markdown.tsx` has, is the other; it reaches `NODE_ENV`
+  and no further variable, because it is build-time substitution rather than
+  deployment configuration.
+- MUST carry a `noProcessEnv` suppression with a reason on any sanctioned direct
+  `process.env` access, in whichever of Biome's three forms fits the site: a
+  single-line `// biome-ignore lint/style/noProcessEnv:` above one access, as
+  `app/(app)/_/components/markdown.tsx` has; a file-wide
+  `// biome-ignore-all lint/style/noProcessEnv:`, as both barrels have; or a
+  `// biome-ignore-start` / `// biome-ignore-end` pair around a block, as
+  `payload/config.ts` has. Whichever form is used — not a config whitelist — is
+  what exempts every file in the table above, and it is the marker a review
+  looks for.
+- MUST keep `noProcessEnv` at `"error"` in `biome.jsonc`, so an unsanctioned
+  access fails `npm run lint` instead of scrolling past as a warning. That
+  severity is what makes the rule above literal rather than aspirational: every
+  file in the table passes on its directive alone, and deleting one fails the
+  check. The `off` overrides cover only `*.config.js`, `*.config.cjs`,
+  `e2e/reporters/*.ts`, `e2e/check-scenario-coverage.mjs`, and `scripts/*.mjs` —
+  no file in the table above.
+- MUST NOT add a `biome.jsonc` override that exempts a file under `app/`,
+  `payload/`, or `shared/` from `noProcessEnv`; the directive-per-site rule is
+  what keeps the sanctioned set enumerable.
 - MUST NOT assign a `PAYLOAD_SECRET` literal outside `payload/config.ts`, and
   MUST NOT write a `PAYLOAD_TEST_USER_PASSWORD` literal anywhere but
   `.env.example`.
