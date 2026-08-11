@@ -13,8 +13,13 @@ import { sentryDsn, sha, vercelEnvironment } from "@/runtime";
 // sticky rather than a look at the current URL, because an error-linked replay
 // uploads the buffered minute *before* the error: a reviewer who followed a
 // share link and then navigated on within the same document still has the token
-// in that recording, while `location.search` no longer shows it. Seeded from the
-// entry URL for that case and re-checked at each error for the reverse one.
+// in that recording, while `location.search` no longer shows it.
+//
+// three moments write it, and each covers a case the others miss: the entry URL
+// at module scope, for a document that loaded on a share link; every client
+// navigation, for one that reached a share link and left it again without ever
+// reloading; and the error itself, for one that arrived by a route neither of
+// those saw.
 let hasVisitedShareLink = hasShareToken(window.location.search);
 
 /**
@@ -100,4 +105,27 @@ if (sentryDsn) {
 // error reporting is the diagnostic basis this site runs on, and it records no
 // ordinary session.
 
-export const onRouterTransitionStart = captureRouterTransitionStart;
+/**
+ * Next.js's client-navigation hook, which Sentry uses to open a navigation
+ * span — and which this file also uses to keep {@link mayUploadErrorReplay}
+ * honest.
+ *
+ * The destination is the only moment a share link is observable when the
+ * navigation is client-side: `window.location` has not moved yet, and by the
+ * time an error fires the reviewer may have navigated on again, leaving the
+ * token-bearing page in the replay buffer but nowhere in the current URL.
+ *
+ * Nothing here may throw — a failure in instrumentation must not break the
+ * navigation it exists to observe — so a non-string `href` is skipped rather
+ * than handed to the matcher.
+ */
+export function onRouterTransitionStart(
+	href: string,
+	navigationType: string,
+): void {
+	if (typeof href === "string") {
+		hasVisitedShareLink ||= hasShareToken(href);
+	}
+
+	captureRouterTransitionStart(href, navigationType);
+}
