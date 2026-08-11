@@ -45,6 +45,14 @@ describe("redactShareTokenInUrl()", () => {
 		).toBe(`${postUrl}?token=[Filtered]&draft=true&token=[Filtered]`);
 	});
 
+	// only reachable away from a URL, where a query value cannot carry an
+	// unescaped space: a breadcrumb message keeps what it said after the link.
+	it("stops the redaction at whitespace", () => {
+		expect(
+			redactShareTokenInUrl(`GET ${postUrl}?token=${shareToken} 200 in 12ms`),
+		).toBe(`GET ${postUrl}?token=[Filtered] 200 in 12ms`);
+	});
+
 	it("stops the redaction at the fragment", () => {
 		expect(
 			redactShareTokenInUrl(`${postUrl}?token=${shareToken}#comments`),
@@ -274,6 +282,93 @@ describe("redactShareTokenInEvent()", () => {
 		expect(event.breadcrumbs?.[0]?.data).toEqual({ url: 42, status_code: 500 });
 	});
 
+	// the console integration is a default in both SDKs, and its breadcrumb puts
+	// the logged line in `message` — which no key list reaches — and the raw
+	// arguments in `data.arguments`, which is an array rather than a string.
+	it("redacts the token in a console breadcrumb's message", () => {
+		const event = redactShareTokenInEvent({
+			breadcrumbs: [
+				{
+					category: "console",
+					data: { arguments: [], logger: "console" },
+					message: `GET ${postUrl}?draft=true&token=${shareToken} 200`,
+				},
+			],
+		});
+
+		expect(event.breadcrumbs?.[0]?.message).toBe(
+			`GET ${postUrl}?draft=true&token=[Filtered] 200`,
+		);
+	});
+
+	it("redacts the token in a console breadcrumb's arguments array", () => {
+		const event = redactShareTokenInEvent({
+			breadcrumbs: [
+				{
+					category: "console",
+					data: {
+						arguments: ["fetching", `${postUrl}?token=${shareToken}`, 200],
+						logger: "console",
+					},
+					message: "fetching",
+				},
+			],
+		});
+
+		expect(event.breadcrumbs?.[0]?.data).toEqual({
+			arguments: ["fetching", `${postUrl}?token=[Filtered]`, 200],
+			logger: "console",
+		});
+	});
+
+	// a breadcrumb data key nobody listed. The redaction matches on the value, so
+	// a key added by a later SDK version needs no change here — which is the rule
+	// docs/conventions/observability.md states for exactly this reason.
+	it("redacts the token under a breadcrumb data key no list names", () => {
+		const event = redactShareTokenInEvent({
+			breadcrumbs: [
+				{
+					category: "http",
+					data: { endpoint: `${postUrl}?token=${shareToken}` },
+				},
+			],
+		});
+
+		expect(event.breadcrumbs?.[0]?.data).toEqual({
+			endpoint: `${postUrl}?token=[Filtered]`,
+		});
+	});
+
+	it("leaves a breadcrumb with no message and no data unchanged", () => {
+		const event = redactShareTokenInEvent({
+			breadcrumbs: [{ category: "console", level: "log" }],
+		});
+
+		expect(event.breadcrumbs?.[0]).toEqual({
+			category: "console",
+			level: "log",
+		});
+	});
+
+	// a self-referencing value is what an unbounded walk would hang on, and a
+	// throw or a stack overflow inside `beforeSend` loses the event and tears
+	// down the response being rendered.
+	it("survives a breadcrumb argument that references itself", () => {
+		const cyclic: unknown[] = [`${postUrl}?token=${shareToken}`];
+		cyclic.push(cyclic);
+
+		const event = redactShareTokenInEvent({
+			breadcrumbs: [
+				{ category: "console", data: { arguments: cyclic, logger: "console" } },
+			],
+		});
+		const redacted = (event.breadcrumbs?.[0]?.data as { arguments: unknown[] })
+			.arguments;
+
+		expect(redacted[0]).toBe(`${postUrl}?token=[Filtered]`);
+		expect(redacted[1]).toBe(cyclic);
+	});
+
 	// the surface a transaction actually leaks through. Next's root server span
 	// sets `http.target` to the request URL, query string included, and the
 	// OpenTelemetry exporter copies every span attribute verbatim into
@@ -412,6 +507,15 @@ describe("redactShareTokenInEvent()", () => {
 
 	it.each(malformedEvents)("survives %s without throwing", (_label, event) => {
 		expect(() => redactShareTokenInEvent(event as Event)).not.toThrow();
+	});
+
+	// `beforeSend` reads a `null` return as "drop this event", so the value this
+	// answers with for `null` is a decision rather than a detail: it hands the
+	// caller's own `null` back, dropping only what the caller had already
+	// dropped. Nothing installed passes one — this pins the behaviour so a later
+	// refactor cannot quietly turn a pass-through into a drop signal.
+	it("hands a null event straight back rather than inventing a drop", () => {
+		expect(redactShareTokenInEvent(null as unknown as Event)).toBeNull();
 	});
 
 	it("leaves a null request url and query_string exactly as they arrived", () => {

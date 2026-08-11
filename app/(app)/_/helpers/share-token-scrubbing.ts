@@ -50,9 +50,14 @@ const redactedShareToken = "[Filtered]";
  * whole URL. The value runs to the next `&` or `#`, so a fragment survives and
  * a second parameter after this one is untouched. The name is a literal with no
  * regular-expression metacharacters, so it is interpolated without escaping.
+ *
+ * Whitespace ends the value too, which matters only away from URLs: a query
+ * value cannot carry an unescaped space, so no URL redaction changes, while a
+ * free-text breadcrumb message that mentions a share link keeps whatever it
+ * said after the link instead of having it swallowed.
  */
 const shareTokenAssignmentPattern = new RegExp(
-	`(^|[?&])${shareTokenSearchParamName}=[^&#]*`,
+	`(^|[?&])${shareTokenSearchParamName}=[^\\s&#]*`,
 	"g",
 );
 
@@ -61,15 +66,6 @@ type QueryString = NonNullable<RequestEventData["query_string"]>;
 
 /** The `headers` shape the SDK's own request type permits. */
 type RequestHeaders = NonNullable<RequestEventData["headers"]>;
-
-/**
- * The breadcrumb `data` keys that hold a URL in the installed SDK: `url` on a
- * `fetch` or `xhr` crumb, and `from` / `to` on a `navigation` one. Verified
- * against `@sentry/browser` 10.69's breadcrumbs integration rather than assumed
- * — a key added by a later version is a key this misses, so re-check the list
- * when the SDK moves.
- */
-const urlBearingBreadcrumbDataKeys = ["url", "from", "to"];
 
 /**
  * Replaces every share-token value in a URL or query string, leaving every
@@ -112,15 +108,21 @@ export function hasShareToken(url: string): boolean {
 
 /**
  * Redacts every share token an event carries: the request URL, the separate
- * `query_string` field, every request header value, each breadcrumb URL, and
- * every span attribute — both the root span's, under `contexts.trace.data`, and
- * each child span's, under `spans[].data`. Returns a new event rather than
- * editing the one it was handed, so nothing downstream observes a half-redacted
- * payload.
+ * `query_string` field, every request header value, every string a breadcrumb
+ * carries — its `message` and its `data` alike — and every span attribute, both
+ * the root span's under `contexts.trace.data` and each child span's under
+ * `spans[].data`. Returns a new event rather than editing the one it was handed,
+ * so nothing downstream observes a half-redacted payload.
  *
  * Generic over the event so one function serves both `beforeSend`, which is
  * handed an `ErrorEvent`, and `beforeSendTransaction`, which is handed a
  * `TransactionEvent`.
+ *
+ * A value that is not a record — `null` included — is handed straight back. For
+ * `null` that is deliberate rather than incidental: `beforeSend` reads a `null`
+ * return as "drop this event", so passing the caller's own `null` through
+ * preserves a decision already made instead of inventing a drop this module has
+ * no business making. Nothing in this repository passes one.
  */
 export function redactShareTokenInEvent<E extends Event>(event: E): E {
 	if (!isRecord(event)) {
@@ -182,10 +184,11 @@ function redactShareTokenInRequest(
  * none of which `referer` contains; it is also applied only to span attributes,
  * never to the `request.headers` an event carries.
  *
- * Only a string is rewritten. The SDK declares the values as `string`, but the
- * map is JSON assembled by its request integration, so a value that arrives as
- * something else is handed back exactly as it was rather than coerced — a throw
- * here would lose the event and tear down the response being rendered.
+ * Only a string, or a string inside an array, is rewritten. The SDK declares
+ * the values as `string`, but the map is JSON assembled by its request
+ * integration, so a value that arrives as something else is handed back exactly
+ * as it was rather than coerced — a throw here would lose the event and tear
+ * down the response being rendered.
  */
 function redactShareTokenInHeaders(headers: RequestHeaders): RequestHeaders {
 	return redactShareTokenInStringValues(headers);
@@ -244,9 +247,10 @@ function redactShareTokenInSpanData<S>(span: S): S {
 }
 
 /**
- * Rewrites every **string** value of a flat record and leaves every other value
+ * Rewrites every string a flat record holds — its own string values, and the
+ * string elements of a value that is an array — and leaves every other value
  * exactly as it arrived, which is what keeps this total against the numbers,
- * booleans, arrays, and `null`s a JSON payload puts beside them. A value
+ * booleans, objects, and `null`s a JSON payload puts beside them. A value
  * carrying no token comes back identical, so a record with nothing to redact is
  * copied rather than rewritten.
  *
@@ -260,12 +264,35 @@ function redactShareTokenInStringValues<R extends Record<string, unknown>>(
 	const redacted: Record<string, unknown> = { ...record };
 
 	for (const [key, value] of Object.entries(redacted)) {
-		if (typeof value === "string") {
-			redacted[key] = redactShareTokenInUrl(value);
-		}
+		redacted[key] = redactShareTokenInValue(value);
 	}
 
 	return redacted as R;
+}
+
+/**
+ * Rewrites one value of such a record: a string directly, and one level of
+ * array inside it.
+ *
+ * The walk stops at that level deliberately rather than recursing. A console
+ * breadcrumb's `data.arguments` is whatever was logged, so it can hold a value
+ * that references itself, and an unbounded walk would exhaust the stack inside
+ * `beforeSend` — losing the event and tearing down the response being rendered,
+ * which is the one failure this module exists to avoid. One level covers every
+ * array the SDKs actually build; a token buried deeper than that is accepted.
+ */
+function redactShareTokenInValue(value: unknown): unknown {
+	if (typeof value === "string") {
+		return redactShareTokenInUrl(value);
+	}
+
+	if (Array.isArray(value)) {
+		return value.map((element) =>
+			typeof element === "string" ? redactShareTokenInUrl(element) : element,
+		);
+	}
+
+	return value;
 }
 
 /**
@@ -323,28 +350,32 @@ function redactShareTokenInQueryPair(pair: [string, string]): [string, string] {
 		: [name, value];
 }
 
+/**
+ * Redacts every share token a breadcrumb carries, across its `message` and
+ * every string in its `data` — matching on the **value** rather than on a list
+ * of key names, exactly as the header and span passes above do.
+ *
+ * The console integration is why both halves are needed. It is on by default in
+ * both SDKs, and it builds `{ data: { arguments: args, logger: "console" },
+ * message: formatConsoleArgs(args) }` — so a log line that interpolated the
+ * request URL puts the token in `message`, which no key list reaches, and in
+ * `data.arguments`, which is an array rather than a string. Nothing under
+ * `app/`, `payload/`, or `shared/` calls `console.*`, but the framework and its
+ * dependencies do, and that is not a guarantee this module should depend on.
+ * Verified against `@sentry/core` and `@sentry/browser` 10.69.
+ */
 function redactShareTokenInBreadcrumb(breadcrumb: Breadcrumb): Breadcrumb {
 	if (!isRecord(breadcrumb)) {
 		return breadcrumb;
 	}
 
-	const { data } = breadcrumb;
+	const { data, message } = breadcrumb;
 
-	if (!isRecord(data)) {
-		return breadcrumb;
-	}
-
-	const redacted = { ...data };
-
-	for (const key of urlBearingBreadcrumbDataKeys) {
-		const value = redacted[key];
-
-		// only a string is rewritten: the SDK types breadcrumb data as open, so a
-		// key holding a number or an object is left exactly as it arrived.
-		if (typeof value === "string") {
-			redacted[key] = redactShareTokenInUrl(value);
-		}
-	}
-
-	return { ...breadcrumb, data: redacted };
+	return {
+		...breadcrumb,
+		...(typeof message === "string"
+			? { message: redactShareTokenInUrl(message) }
+			: {}),
+		...(isRecord(data) ? { data: redactShareTokenInStringValues(data) } : {}),
+	};
 }
