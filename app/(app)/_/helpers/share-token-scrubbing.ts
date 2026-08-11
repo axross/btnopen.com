@@ -238,11 +238,21 @@ export function redactShareTokenInEvent<E extends Event>(event: E): E {
  * a `null` where a record is declared reaches here in practice, where a throw
  * would lose the event and tear down the response being rendered.
  *
+ * An object the walk does descend into is rebuilt as a plain object or a plain
+ * array, so something exotic — a `Date`, a `Map`, a class instance — would come
+ * back reshaped rather than preserved. Nothing reaches here in that state: the
+ * SDK's own `normalize` runs before `beforeSend` and has already put every
+ * deep-prone field through `convertToPlainObject`. Reshaping is also the right
+ * direction if one ever did, since the alternative is handing back an object
+ * this module never looked inside.
+ *
  * `ancestors` holds the objects on the path from the event down to this value,
  * so a value that refers to one of them is a cycle rather than an infinite
  * walk. It is emptied on the way back out, so a value that legitimately appears
  * twice in different branches is redacted in both rather than reported as
- * circular in the second.
+ * circular in the second — at the cost of walking a shared subtree once per
+ * path that reaches it, which is exactly what `normalize` does above and is
+ * bounded by the same depth limit.
  */
 function redactShareTokenInValue(
 	value: unknown,
@@ -321,10 +331,12 @@ function redactShareTokenInArray(
  * the value is the bare secret with nothing to match on.
  *
  * The record is copied by spread rather than rebuilt from `Object.entries`, so a
- * key the payload holds as a symbol survives the pass. The assertion at the call
- * site holds because each string is replaced by another string and the shape of
- * every other value is preserved, so the record's declared type survives —
- * something `Object.entries` erases on the way through.
+ * symbol-keyed property is carried through rather than dropped — unredacted,
+ * since `Object.entries` does not report it, which costs nothing against a
+ * payload that is JSON. The assertion at the call site holds because each string
+ * is replaced by another string and the shape of every other value is preserved,
+ * so the record's declared type survives — something `Object.entries` erases on
+ * the way through.
  */
 function redactShareTokenInRecord(
 	record: Record<string, unknown>,
