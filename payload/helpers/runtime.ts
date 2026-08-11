@@ -1,4 +1,4 @@
-// biome-ignore-all lint/style/noProcessEnv: only place accessing env vars in payload realm
+// biome-ignore-all lint/style/noProcessEnv: the Payload realm's runtime configuration barrel
 
 import { resolveUrlOrigin } from "@/shared/url-origin";
 

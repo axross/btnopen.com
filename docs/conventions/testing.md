@@ -42,6 +42,16 @@ legible at a glance.
   and leave non-callable subjects bare: schemas, codecs, and type contracts as
   `describe("McpBlogPostResponse")`, UI components in angle brackets as
   `describe("<BlogPostHeader>")`.
+- MUST hold anything a `vi.mock` factory assigns to in `vi.hoisted()` rather than
+  in an ordinary module-level binding. The factory runs while the subject is
+  being imported, which is before the spec module's own body, so a plain `let` is
+  still in its temporal dead zone when the factory writes to it and the spec
+  fails on a reference error rather than on its subject.
+- MUST leave `expect(...)` in an `it(...)` body rather than in a helper the
+  scenarios call, and have such a helper throw on a broken precondition instead.
+  Biome's `noMisplacedAssertion` recognizes a `vitest` import where it did not
+  recognize `@jest/globals`, so an asserting helper that passed lint under Jest
+  now fails `npm run lint`.
 - SHOULD prefer integration or e2e coverage when confidence depends on Next.js or
   Payload runtime wiring, browser behaviour, rendering, providers, routing, or
   user-facing UI.

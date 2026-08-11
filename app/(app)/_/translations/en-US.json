@@ -1,12 +1,17 @@
 {
 	"index": {
 		"introduction-label": "Introduction",
-		"posts-heading": "Posts"
+		"posts-heading": "Posts",
+		"posts-empty": "No posts yet."
 	},
 	"not-found": {
 		"home-link": "Go back home",
 		"page-description": "The page you are looking for was not found.",
 		"post-description": "The post you are looking for was not found."
+	},
+	"error": {
+		"message": "The content could not be loaded.",
+		"retry": "Try again"
 	},
 	"agentic": {
 		"label": "Agentic",

@@ -15,29 +15,34 @@ export function BlogPostHeaderLoading({
 		<header className={clsx(css.blogPostHeaderLoading, className)} {...props}>
 			<LoadingPlaceholderRect
 				className={css.coverImage}
-				data-testid="cover-image"
+				data-testid="cover-image-loading"
 			/>
 
-			<div className={css.timestamp} data-testid="timestamp">
+			<div className={css.timestamp} data-testid="timestamp-loading">
 				<LoadingPlaceholderText sampleText="April 12, 2026" maxLines={1} />
 			</div>
 
-			<h1 className={css.title} data-testid="title">
+			<h1 className={css.title} data-testid="title-loading">
+				{/* the sample runs long on purpose: it has to wrap past two rows at
+				    every width so the two-line clamp is what sets this block's height.
+				    the shorter sample it replaced fitted on one row from ~800px up,
+				    leaving the skeleton a whole title line short of the header it
+				    stands in for. */}
 				<LoadingPlaceholderText
-					sampleText="Lorem ipsum dolor sit amet"
+					sampleText="Lorem ipsum dolor sit amet consectetur adipiscing elit sed do"
 					maxLines={2}
 				/>
 			</h1>
 
-			<div className={css.author} data-testid="author">
+			<div className={css.author} data-testid="author-loading">
 				<LoadingPlaceholderRect className={css.authorImage} />
 
-				<div className={css.authorName} data-testid="name">
+				<div className={css.authorName} data-testid="name-loading">
 					<LoadingPlaceholderText sampleText="Author Name" maxLines={1} />
 				</div>
 			</div>
 
-			<ul className={css.tags} data-testid="tags">
+			<ul className={css.tags} data-testid="tags-loading">
 				<li className={css.tag}>
 					<LoadingPlaceholderText sampleText="Tag Name" maxLines={1} />
 				</li>

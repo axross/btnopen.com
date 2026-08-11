@@ -38,7 +38,7 @@ SHOULD, SHOULD NOT, and MAY as described in
 - [specs/comments.md](./specs/comments.md) — reader comments: availability,
   submission, moderation, and what is stored about a commenter.
 - [specs/reader-surfaces.md](./specs/reader-surfaces.md) — the routes, the
-  responsive tiers, and the loading, not-found, and empty states.
+  responsive tiers, and the loading, not-found, empty, and error states.
 - [specs/visual-identity.md](./specs/visual-identity.md) — the brand: colour,
   type, shape, motion, imagery, copy voice, and the accessibility commitments.
 - [specs/content-authoring.md](./specs/content-authoring.md) — the admin, the

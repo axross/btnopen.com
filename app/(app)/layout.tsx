@@ -58,6 +58,9 @@ export default function RootLayout({
 	// rendering the document from inside a Suspense boundary lets Cache
 	// Components stream it as dynamic content instead of treating the cookie
 	// read as blocking the whole route.
+	//
+	// no fallback: a fallback here would have to be a second <html> shell, and
+	// there is nothing to show before the document's own shell exists.
 	return (
 		<Suspense>
 			<Document>{children}</Document>
@@ -85,12 +88,19 @@ async function Document({
 
 							{children}
 
+							{/* no fallback: the footer is the last thing in the document,
+							    so nothing is painted below it that a late arrival could
+							    displace. a skeleton here would add a flash of chrome
+							    without preventing any layout shift. */}
 							<Suspense>
 								<Footer data-testid="footer" />
 							</Suspense>
 
 							<AnalyticsConsentBanner data-testid="analytics-consent-banner" />
 
+							{/* no fallback: the page-view tracker is a side-effect-only
+							    client component that returns null, so it has no visible
+							    output a skeleton could stand in for. */}
 							<Suspense>
 								<PageViewTracking />
 							</Suspense>
