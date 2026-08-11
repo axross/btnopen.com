@@ -5,6 +5,10 @@ writes to the site's database, and everything here follows from that: the write
 path is layered, what is stored is deliberately minimal, and nothing a reader
 submits appears publicly until the author approves it.
 
+Commenting is also the only thing a reader signs in for. There is nothing else to
+log into, and no profile, preference, or subscription hangs off the identity —
+the sign-in exists to attribute a comment and for nothing beyond it.
+
 How the subsystem is wired is spread across
 [../conventions/payload.md](../conventions/payload.md),
 [../conventions/security.md](../conventions/security.md), and

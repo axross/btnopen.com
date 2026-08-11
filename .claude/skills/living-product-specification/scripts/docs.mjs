@@ -1,4 +1,4 @@
-// shared corpus reading for the specification validators beside this file.
+// shared docs reading for the specification validators beside this file.
 //
 // deliberately carries no shebang: this is a module, not a command. a tool that
 // identifies a CLI by its shebang would otherwise count it as a sixth validator.
@@ -10,8 +10,8 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import { basename, dirname, join, relative, resolve, sep } from "node:path";
 
-/** the conventional corpus root, used when a caller names none. */
-export const DEFAULT_CORPUS_DIR = "docs";
+/** the conventional docs directory, used when a caller names none. */
+export const DEFAULT_DOCS_DIR = "docs";
 
 /** every validator in this set, for the sibling list each one prints in --help. */
 export const VALIDATORS = [
@@ -56,7 +56,7 @@ export function parseArgs(argv, usage) {
   if (argv.length > 1) {
     return { exit: 2, message: `Expected at most one directory.\n\n${usage}` };
   }
-  return { dir: argv[0] ?? DEFAULT_CORPUS_DIR };
+  return { dir: argv[0] ?? DEFAULT_DOCS_DIR };
 }
 
 async function isDirectory(path) {
@@ -202,7 +202,7 @@ async function collectMarkdown(dir, root, out) {
 }
 
 /**
- * read a corpus, or report that the project has none.
+ * read the docs tree, or report that the project has none.
  *
  * `index.md` is the single adoption marker. its absence means the project has
  * not opted in — an unrelated `docs/` directory must never turn red just
@@ -217,7 +217,7 @@ async function collectMarkdown(dir, root, out) {
  *   hasDecisions: boolean,
  * }>}
  */
-export async function loadCorpus(dir) {
+export async function loadDocs(dir) {
   const root = resolve(dir);
   if (!(await isDirectory(root))) return null;
   if (!(await isFile(join(root, "index.md")))) return null;
@@ -240,18 +240,18 @@ export async function loadCorpus(dir) {
 }
 
 /**
- * every decision record in the corpus, sorted by filename — which, given the
+ * every decision record under docs/, sorted by filename — which, given the
  * naming rule, is chronological.
  *
- * @param {{ documents: { relative: string }[] }} corpus
+ * @param {{ documents: { relative: string }[] }} docs
  */
-export function decisionRecords(corpus) {
-  return corpus.documents.filter((doc) => doc.relative.startsWith("decisions/"));
+export function decisionRecords(docs) {
+  return docs.documents.filter((doc) => doc.relative.startsWith("decisions/"));
 }
 
 /** every document that is not a decision record. */
-export function nonDecisionDocuments(corpus) {
-  return corpus.documents.filter((doc) => !doc.relative.startsWith("decisions/"));
+export function nonDecisionDocuments(docs) {
+  return docs.documents.filter((doc) => !doc.relative.startsWith("decisions/"));
 }
 
 /**
@@ -290,7 +290,7 @@ export function report(subject, findings, passSummary) {
 }
 
 /**
- * run a validator's body with the shared argument handling, no-corpus exit, and
+ * run a validator's body with the shared argument handling, no-docs exit, and
  * error reporting, so each command file states only what it checks.
  *
  * @param {{
@@ -298,8 +298,8 @@ export function report(subject, findings, passSummary) {
  *   argv: string[],
  *   needs?: "specs" | "decisions",
  *   absent: string,
- *   run: (corpus: object) => { category: string, message: string }[] | Promise<{ category: string, message: string }[]>,
- *   pass: (corpus: object) => string,
+ *   run: (docs: object) => { category: string, message: string }[] | Promise<{ category: string, message: string }[]>,
+ *   pass: (docs: object) => string,
  * }} spec
  */
 export async function main({ usage, argv, needs, absent, run, pass }) {
@@ -309,28 +309,28 @@ export async function main({ usage, argv, needs, absent, run, pass }) {
     return parsed.exit;
   }
 
-  let corpus;
+  let docs;
   try {
-    corpus = await loadCorpus(parsed.dir);
+    docs = await loadDocs(parsed.dir);
   } catch (error) {
     console.error(`Could not read ${parsed.dir}: ${error.message}`);
     return 2;
   }
 
-  if (corpus === null) {
-    console.log(`No corpus at ${parsed.dir} (no index.md). Nothing to check.`);
+  if (docs === null) {
+    console.log(`No docs at ${parsed.dir} (no index.md). Nothing to check.`);
     return 0;
   }
-  if (needs === "specs" && !corpus.hasSpecs) {
+  if (needs === "specs" && !docs.hasSpecs) {
     console.log(`No specs/ under ${parsed.dir}. ${absent}`);
     return 0;
   }
-  if (needs === "decisions" && !corpus.hasDecisions) {
+  if (needs === "decisions" && !docs.hasDecisions) {
     console.log(`No decisions/ under ${parsed.dir}. ${absent}`);
     return 0;
   }
 
-  return report(parsed.dir, await run(corpus), pass(corpus));
+  return report(parsed.dir, await run(docs), pass(docs));
 }
 
 /** the file name of the running script, for its sibling list. */

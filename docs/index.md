@@ -1,37 +1,31 @@
 # Documentation
 
-This is the documentation root for btnopen.com. It holds three bodies, kept apart
-by directory, and the one you want depends on the question you have:
+Everything btnopen.com knows about itself. Which body answers your question:
 
-- **What does the product do?** → `overview.md`, `glossary.md`, and `specs/`.
-  These describe the site in the present tense — what it is, what its words mean,
-  and how it behaves today.
-- **How is the code written?** → `conventions/`. The rules a change follows, and
-  the shapes this repository has settled on.
-- **How is the repository built and run?** → `operations/`. The pipelines, the
+- **What does the product do?** → `specs/` — how the site behaves today, for a
+  reader and for its author.
+- **How is the code written?** → `conventions/` — the rules and shapes a change
+  has to satisfy.
+- **How is the repository built and run?** → `operations/` — the pipelines, the
   setup, and the procedures.
 
-`decisions/` sits beside all three: it records why a constraint exists, for the
-constraints whose reasoning cannot be recovered from the code.
+`decisions/` sits beside all three and holds why a constraint exists, for the
+constraints whose reasoning cannot be recovered from the code. The vocabulary all
+four bodies use is in [glossary.md](./glossary.md), split into the product's words
+and the repository's.
+
+Documents under `conventions/` and `operations/` use MUST, MUST NOT, SHOULD,
+SHOULD NOT, and MAY as
+[RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html) describes. Documents under
+`specs/` describe rather than instruct, and use none of them.
 
 The [README](../README.md) covers what this project is, how to start it, and the
-commands it has. [`CLAUDE.md`](../CLAUDE.md) is the working agreement for agent
-sessions.
+commands it has — it is the source of truth for the commands.
+[`CLAUDE.md`](../CLAUDE.md) is the working agreement for agent sessions.
 
-Documents under `conventions/` and `operations/` use the keywords MUST, MUST NOT,
-SHOULD, SHOULD NOT, and MAY as described in
-[RFC 2119](https://www.rfc-editor.org/rfc/rfc2119.html).
+## Specifications
 
-## The Product
-
-- [overview.md](./overview.md) — what btnopen.com is, who it serves, where its
-  boundary sits, and how the repository behind it is built and run.
-- [glossary.md](./glossary.md) — the vocabulary, in two halves: the product's
-  words and the repository's.
-
-### Specifications
-
-- [specs/blog-posts.md](./specs/blog-posts.md) — the primary content type: its
+- [specs/blog-posts.md](./specs/blog-posts.md) — the site's only content type: its
   fields, localization, slugs, and the draft-to-published lifecycle.
 - [specs/markdown-rendering.md](./specs/markdown-rendering.md) — what a post body
   renders into, and the content-safety guarantees around CMS-authored content.
@@ -39,14 +33,12 @@ SHOULD, SHOULD NOT, and MAY as described in
   submission, moderation, and what is stored about a commenter.
 - [specs/reader-surfaces.md](./specs/reader-surfaces.md) — the routes, the
   responsive tiers, and the loading, not-found, empty, and error states.
-- [specs/visual-identity.md](./specs/visual-identity.md) — the brand: colour,
-  type, shape, motion, imagery, copy voice, and the accessibility commitments.
 - [specs/content-authoring.md](./specs/content-authoring.md) — the admin, the
   agentic view, the authoring artifacts, and the MCP server's content model.
 
 ## Conventions
 
-- [conventions/repository-map.md](./conventions/repository-map.md) — the
+- [conventions/directory-structure.md](./conventions/directory-structure.md) — the
   directory tree, the placement tiers, path aliases, naming, support files, and
   the enforced complexity budget.
 - [conventions/routing.md](./conventions/routing.md) — route-path shape, route
@@ -58,6 +50,9 @@ SHOULD, SHOULD NOT, and MAY as described in
   component must not cross.
 - [conventions/styling.md](./conventions/styling.md) — the design tokens, the
   breakpoints, and the four templates a surface copies verbatim.
+- [conventions/visual-identity.md](./conventions/visual-identity.md) — the brand a
+  surface has to carry: colour, type, shape, motion, imagery, copy voice, and the
+  accessibility commitments.
 - [conventions/payload.md](./conventions/payload.md) — collection access, drafts,
   query bounds, caching and invalidation, and migrations.
 - [conventions/security.md](./conventions/security.md) — the environment barrels,
@@ -91,7 +86,6 @@ SHOULD, SHOULD NOT, and MAY as described in
 
 ## Decisions
 
-- [decisions/](./decisions/) — the log of constraints whose rationale cannot be
-  recovered from the code. Each record is named for the decision it holds and
-  dated the day it was made; a decision is replaced by a new record rather than
-  by editing the old one.
+- [decisions/](./decisions/) — why a constraint exists, and what was traded away.
+  Each record is named for the decision it holds and dated the day it was made; a
+  decision is replaced by a new record rather than by editing the old one.

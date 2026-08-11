@@ -2,7 +2,7 @@
 
 The surfaces a reader of btnopen.com actually meets: the routes, what each one
 shows, how they behave across widths, and what they do when there is nothing to
-show. What those surfaces look like is [visual-identity.md](./visual-identity.md);
+show. What those surfaces look like is [../conventions/visual-identity.md](../conventions/visual-identity.md);
 how a post body is rendered is
 [markdown-rendering.md](./markdown-rendering.md).
 
@@ -18,6 +18,10 @@ how a post body is rendered is
 | `/sitemap.xml` | The index page plus every published post |
 | `/robots.txt` | Allows every agent, and points at the sitemap |
 | `/admin` | The Payload admin — an author surface, see [content-authoring.md](./content-authoring.md) |
+
+The index page lists every published post in one pass. There is no search and no
+pagination, so a reader reaches any post from `/` without a second query and the
+list is the whole navigation the site offers.
 
 A request for a post that does not exist, or that is a draft the requester is not
 authorized to see, renders the not-found surface described below.

@@ -6,8 +6,8 @@ open needs a reachability judgement written where the next reader will meet it,
 and that reader is whoever runs `npm audit` and wants to know whether the count
 they see is the count that was already reasoned about.
 
-It records the state, not the history. When the count moves, replace the rows
-below rather than appending to them.
+It records the state, not the history. When the count moves, the rows below MUST
+be replaced rather than appended to.
 
 Last reconciled **2026-08-10**, in
 [#225](https://github.com/axross/btnopen.com/issues/225).
@@ -26,8 +26,8 @@ reported 25 findings, out of 45 in total.
 
 ## Standing Position
 
-**Every `high` and `critical` finding is fixed rather than deferred.** That is
-the position this repository holds, and it is what
+**Every `high` and `critical` finding MUST be fixed rather than deferred.** That
+is the position this repository holds, and it is what
 [`docs/conventions/security.md`](../conventions/security.md) points here for. A
 future finding at either severity is either cleared or gets a row in
 [Open Findings](#open-findings) naming the path it is reached by and why it does

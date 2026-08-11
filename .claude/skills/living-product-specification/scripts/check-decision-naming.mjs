@@ -3,7 +3,7 @@
 //
 // this is the one command here that reads no document. it stats the adoption
 // marker and lists one directory, which keeps it fast enough for a pre-commit
-// hook — a property it would have lost bundled with the corpus-walking checks.
+// hook — a property it would have lost bundled with the docs-walking checks.
 //
 // it is also the one check decidable from a single name, which the standard
 // this set otherwise holds to would rule out. it is kept because these
@@ -14,9 +14,9 @@
 import { readdir, stat } from "node:fs/promises";
 import { join, resolve } from "node:path";
 
-import { DEFAULT_CORPUS_DIR, parseArgs, report, selfName, siblingHelp } from "./corpus.mjs";
+import { DEFAULT_DOCS_DIR, parseArgs, report, selfName, siblingHelp } from "./docs.mjs";
 
-const USAGE = `Usage: ${selfName(import.meta.url)} [<corpus-dir>]
+const USAGE = `Usage: ${selfName(import.meta.url)} [<docs-dir>]
 
 Check that every decision record is named YYYY-MM-DD-<decision-in-kebab-case>.md
 with a real date. Run it after writing a decision.
@@ -25,7 +25,7 @@ The date is the day the decision was made and never changes, which is what lets
 a spec link to a record and keep resolving. The trailing segment states the
 decision, not its topic. Defaults to ./docs.
 
-Exit codes: 0 every filename conforms, or there is no corpus or no decisions/.
+Exit codes: 0 every filename conforms, or the project has no docs, or no decisions/.
             1 findings. 2 bad invocation.
 ${siblingHelp(selfName(import.meta.url))}`;
 
@@ -54,10 +54,10 @@ if ("exit" in parsed) {
   (parsed.exit === 0 ? console.log : console.error)(parsed.message);
   process.exitCode = parsed.exit;
 } else {
-  const root = resolve(parsed.dir ?? DEFAULT_CORPUS_DIR);
+  const root = resolve(parsed.dir ?? DEFAULT_DOCS_DIR);
 
   if (!(await exists(join(root, "index.md")))) {
-    console.log(`No corpus at ${parsed.dir} (no index.md). Nothing to check.`);
+    console.log(`No docs at ${parsed.dir} (no index.md). Nothing to check.`);
     process.exitCode = 0;
   } else if (!(await exists(join(root, "decisions")))) {
     console.log(`No decisions/ under ${parsed.dir}. Nothing to check.`);

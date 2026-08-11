@@ -21,9 +21,9 @@ import {
   resolveLink,
   selfName,
   siblingHelp,
-} from "./corpus.mjs";
+} from "./docs.mjs";
 
-const USAGE = `Usage: ${selfName(import.meta.url)} [<corpus-dir>]
+const USAGE = `Usage: ${selfName(import.meta.url)} [<docs-dir>]
 
 Check a decision log's supersede chain, and that no document still points at
 rationale that has been replaced. Run it after superseding a decision.
@@ -32,14 +32,14 @@ Each record carries "status: accepted" or "status: superseded"; a superseded one
 names its replacement in "superseded_by". A link to a superseded record still
 resolves, so nothing but this check can see it. Defaults to ./docs.
 
-Exit codes: 0 the chain is sound, or there is no corpus or no decisions/.
+Exit codes: 0 the chain is sound, or the project has no docs, or no decisions/.
             1 findings. 2 bad invocation.
 ${siblingHelp(selfName(import.meta.url))}`;
 
 const STATUSES = new Set(["accepted", "superseded"]);
 
-function run(corpus) {
-  const records = decisionRecords(corpus);
+function run(docs) {
+  const records = decisionRecords(docs);
   const findings = [];
   const superseded = new Map();
 
@@ -74,7 +74,7 @@ function run(corpus) {
     }
 
     if (replacement !== undefined) {
-      const target = join(corpus.root, "decisions", replacement);
+      const target = join(docs.root, "decisions", replacement);
       if (!records.some((candidate) => candidate.path === target)) {
         findings.push({
           category: "supersede-target",
@@ -88,7 +88,7 @@ function run(corpus) {
     }
   }
 
-  for (const doc of nonDecisionDocuments(corpus)) {
+  for (const doc of nonDecisionDocuments(docs)) {
     for (const { target, line } of extractLinks(doc.text)) {
       const replaced = superseded.get(resolveLink(doc.path, target));
       if (replaced) {
@@ -111,8 +111,8 @@ process.exitCode = await main({
   needs: "decisions",
   absent: "Nothing to check.",
   run,
-  pass: (corpus) =>
+  pass: (docs) =>
     `The supersede chain is sound and nothing cites replaced rationale (${
-      decisionRecords(corpus).length
+      decisionRecords(docs).length
     } record(s) checked).`,
 });

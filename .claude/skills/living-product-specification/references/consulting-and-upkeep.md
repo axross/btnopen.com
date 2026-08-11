@@ -1,11 +1,11 @@
 # Consulting and Upkeep
 
 Apply this reference when planning a change to a documented area, and when
-correcting the corpus in the change that invalidated it.
+correcting `docs/` in the change that invalidated it.
 
 ## Consulting Before a Plan
 
-Reading the corpus is cheap when it is done through the index and expensive when
+Reading `docs/` is cheap when it is done through the index and expensive when
 it is done by opening everything. The index exists to make the second
 unnecessary.
 
@@ -16,11 +16,11 @@ unnecessary.
 - MUST follow a spec's dependency and decision links when the change alters
   behaviour that spec describes. A decision the change would violate is the
   single most expensive thing to discover after implementation.
-- MUST stop after the index when nothing matches, and say so. A corpus that
-  covers none of the change is a fact worth stating in the plan, not a reason to
-  read it all.
-- MUST NOT load the corpus wholesale into context "for background". Almost all
-  of it is irrelevant to any one change, and the cost is paid on every turn.
+- MUST stop after the index when nothing matches, and say so. A `docs/` tree
+  that covers none of the change is a fact worth stating in the plan, not a
+  reason to read it all.
+- MUST NOT load `docs/` wholesale into context "for background". Almost all of
+  it is irrelevant to any one change, and the cost is paid on every turn.
 
 ## Naming the Damage in the Plan
 
@@ -31,8 +31,8 @@ first thing dropped under time pressure.
 
 **Guidelines:**
 
-- MUST name, in the plan, every corpus document the change will invalidate, or
-  state that it invalidates none.
+- MUST name, in the plan, every document under `docs/` the change will
+  invalidate, or state that it invalidates none.
 - MUST treat that list as provisional. Implementation reveals invalidations the
   plan could not see; the list is a scope signal, not a contract.
 - SHOULD name a decision the change would overturn as a decision to supersede,
@@ -46,22 +46,22 @@ first thing dropped under time pressure.
 | Alters an observable behaviour, rule, or state transition | That domain's `specs/<domain>.md`                        |
 | Adds, renames, or retires a domain concept                | `glossary.md`, and the spec that owns it                 |
 | Adds a whole area of behaviour                            | A new spec, its glossary heading, and an `index.md` line |
-| Changes what the product is for, or its boundary          | `overview.md`                                            |
+| Changes what the product is for, or its boundary          | The spec that bounds it, and the README                  |
 | Overturns a constraint a record established               | A new decision record, and the old one's status          |
 | Adds a dependency between domains                         | The depending spec's cross-reference                     |
 | Renames or moves a document                               | Every inbound reference, and `index.md`                  |
 
-This table stops at the corpus. A change that alters a convention or a
-procedure invalidates its document under `conventions/` or `operations/` the
-same way, once a project has adopted
-[one documentation root](./documentation-root.md#upkeep-for-a-co-located-body),
+This table stops at `specs/` and `decisions/`. A change that alters a
+convention or a procedure invalidates its document under `conventions/` or
+`operations/` the same way, once a project has adopted
+[this shape](./conventions-and-operations.md#upkeep-for-a-co-located-body),
 which states that obligation in full.
 
 **Guidelines:**
 
-- MUST correct what the change invalidated **in the same change**. A corpus
-  updated separately is a corpus that is wrong for the interval between them,
-  and the interval has a way of not ending.
+- MUST correct what the change invalidated **in the same change**. Correcting
+  it separately leaves `docs/` wrong for the interval between them, and the
+  interval has a way of not ending.
 - MUST leave a document alone when the change did not alter what it claims. An
   edit that only restyles prose costs review attention and adds no truth.
 - SHOULD delete a spec whose behaviour was removed, along with its index line
@@ -79,14 +79,14 @@ into the other is a rewrite, never a copy.
 - MUST drop anything the change did not actually land. A plan is a statement of
   intent, and intent that did not survive implementation is not a fact about the
   product.
-- MUST NOT link the corpus back to the plan, the issue, or the change that
-  produced it. Those are the history of how the product got here; the corpus is
+- MUST NOT link `docs/` back to the plan, the issue, or the change that
+  produced it. Those are the history of how the product got here; `docs/` is
   what it is now, and the two decay on different schedules.
 - SHOULD write a decision record for a trade-off the plan resolved whose
   rationale would otherwise be lost, applying the existence condition rather
   than recording every choice the plan made.
 
-## After the Corpus Changes
+## After a Change to docs/
 
 Two of the corrections above leave nothing visibly wrong behind: a renamed
 document breaks references in files nobody opened, and a supersede leaves links
@@ -95,7 +95,7 @@ checkable are checked by re-reading.
 
 **Guidelines:**
 
-- MUST run the bundled validators over the corpus and fix what they report
+- MUST run the bundled validators over `docs/` and fix what they report
   before calling the change done.
 - MUST repoint every reference a rename or supersede left stale, in the same
   change; a resolving link to superseded rationale is invisible to everything
