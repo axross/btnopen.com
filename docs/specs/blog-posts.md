@@ -113,8 +113,8 @@ link at once and is the only revocation there is. Why it works that way is
 
 The secret never reaches a signed-out caller: not through `/api/blog-posts`, and
 not through any MCP tool but the two built to serve it. GraphQL is not a third
-surface to close — `payload/config.ts` disables that API outright, so no such
-endpoint exists to ask. It
+surface to close — `payload/config.ts` disables that API, so `/api/graphql`
+answers `404` without building a schema and there is no query to ask. It
 is minted on the server, so a write that tries to set it leaves the stored value
 unchanged. It does reach one public place by design — the draft page's rendered
 HTML, in the `og:image` URL — because an unfurl of the shared link has to hand

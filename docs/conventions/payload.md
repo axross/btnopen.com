@@ -45,7 +45,8 @@ wrong everywhere at once.
   establishes is `read` consulting `req.user` with `create` and `update` both
   returning `false`, so no value a REST or MCP caller sends is ever honoured and
   a server-side `beforeChange` hook owns the stored value alone. Those two are
-  the live surfaces: `payload/config.ts` sets `graphQL: { disable: true }`, so
+  the live surfaces: `payload/config.ts` sets `graphQL: { disable: true }`, and
+  the generated `/api/graphql` route answers `404` before it builds a schema, so
   there is no GraphQL API to reason about — and re-enabling one would put every
   field-level rule in this repository back into play at once.
 - MUST NOT review or hand-edit files under `app/(payload)/`, with one exception:
