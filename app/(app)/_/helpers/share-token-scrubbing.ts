@@ -101,18 +101,43 @@ export function redactShareTokenInUrl(url: string): string {
  * it decides: the gate refuses to unlock a post on an empty secret, and this
  * refuses to upload a recording of a page whose URL says a secret was being
  * carried.
+ *
+ * What it literally answers is "would redacting change this string", so a URL
+ * that already reads `token=[Filtered]` answers `false`. That is a gap only on
+ * paper: the sole caller passes `window.location.search` or a navigation
+ * `href`, and nothing redacts a URL before it reaches the address bar — a page
+ * genuinely at `?token=[Filtered]` is carrying the literal string as its
+ * secret, which no minted token is.
  */
 export function hasShareToken(url: string): boolean {
 	return redactShareTokenInUrl(url) !== url;
 }
 
 /**
- * Redacts every share token an event carries: the request URL, the separate
- * `query_string` field, every request header value, every string a breadcrumb
- * carries — its `message` and its `data` alike — every string a context carries,
- * its own and those under a nested `data` record, and every child span's
- * attributes under `spans[].data`. Returns a new event rather than editing the
- * one it was handed, so nothing downstream observes a half-redacted payload.
+ * Redacts every share token an event carries. Returns a new event rather than
+ * editing the one it was handed, so nothing downstream observes a half-redacted
+ * payload.
+ *
+ * The pass covers every field of an event that can hold a string, which is the
+ * point rather than an excess:
+ *
+ * | Field | What puts a URL there |
+ * | --- | --- |
+ * | `request.url`, `request.query_string`, `request.headers` | the request integration; `Referer` on every same-origin subresource |
+ * | `breadcrumbs[].message`, `breadcrumbs[].data` | the console and fetch integrations |
+ * | `contexts` | `contexts.trace.data` from the span exporter, `contexts.nextjs.request_path` from `captureRequestError` |
+ * | `spans[].data` | every child span's attributes |
+ * | `exception.values[].value`, `message`, `logentry` | an error message or log line that interpolated the URL |
+ * | `extra`, `tags` | `Sentry.setExtra` / `Sentry.setTag` |
+ *
+ * The last two rows are covered **prospectively**: nothing in this repository
+ * writes a request URL into any of them today. They are here because the
+ * alternative is an enumeration that has to be revisited every time someone
+ * writes ``captureException(new Error(`failed for ${request.url}`))``, and
+ * `contexts.nextjs.request_path` is what that costs when a short enumeration is
+ * trusted — it shipped the raw token while `request.url` beside it read
+ * `[Filtered]`. Covering the whole event is cheaper than being right about which
+ * half matters.
  *
  * Generic over the event so one function serves both `beforeSend`, which is
  * handed an `ErrorEvent`, and `beforeSendTransaction`, which is handed a
@@ -129,7 +154,17 @@ export function redactShareTokenInEvent<E extends Event>(event: E): E {
 		return event;
 	}
 
-	const { breadcrumbs, contexts, request, spans } = event;
+	const {
+		breadcrumbs,
+		contexts,
+		exception,
+		extra,
+		logentry,
+		message,
+		request,
+		spans,
+		tags,
+	} = event;
 
 	return {
 		...event,
@@ -145,7 +180,39 @@ export function redactShareTokenInEvent<E extends Event>(event: E): E {
 		...(Array.isArray(spans)
 			? { spans: spans.map(redactShareTokenInSpanData) }
 			: {}),
+		...(isRecord(exception)
+			? { exception: redactShareTokenInException(exception) }
+			: {}),
+		...(typeof message === "string"
+			? { message: redactShareTokenInUrl(message) }
+			: {}),
+		...(isRecord(logentry)
+			? { logentry: redactShareTokenInStringValues(logentry) }
+			: {}),
+		...(isRecord(extra)
+			? { extra: redactShareTokenInStringValues(extra) }
+			: {}),
+		...(isRecord(tags) ? { tags: redactShareTokenInStringValues(tags) } : {}),
 	};
+}
+
+/**
+ * Redacts every share token an exception's values carry.
+ *
+ * Each value's own strings are rewritten — `value` is the one that can hold an
+ * interpolated URL, and `type` and `module` cost nothing to walk beside it —
+ * while `mechanism` and `stacktrace` are records and so pass through
+ * untouched. A stack frame's `filename` is a bundle URL rather than the page's,
+ * so nothing is lost by stopping above it.
+ */
+function redactShareTokenInException(
+	exception: NonNullable<Event["exception"]>,
+): NonNullable<Event["exception"]> {
+	const { values } = exception;
+
+	return Array.isArray(values)
+		? { ...exception, values: values.map(redactShareTokenInStringValues) }
+		: exception;
 }
 
 function redactShareTokenInRequest(
@@ -366,13 +433,20 @@ function isRecord(value: unknown): value is Record<string, unknown> {
  * Rewrites one `[name, value]` pair. Destructuring is done inside rather than in
  * the parameter list, because the pair-list form of `query_string` is JSON and a
  * malformed entry would throw on the way in.
+ *
+ * The parameter is `unknown` rather than the pair type the SDK declares, so that
+ * the guard below is one TypeScript cannot prove unreachable. Declaring it as a
+ * pair would make the compiler agree the check is dead while the runtime still
+ * needs it — the event is JSON assembled by an integration, and a `null` entry
+ * reaches here in practice. An entry that is not a pair is handed straight back,
+ * exactly as every other unexpected shape in this module is.
  */
-function redactShareTokenInQueryPair(pair: [string, string]): [string, string] {
+function redactShareTokenInQueryPair(pair: unknown): [string, string] {
 	if (!Array.isArray(pair)) {
-		return pair;
+		return pair as [string, string];
 	}
 
-	const [name, value] = pair;
+	const [name, value] = pair as [string, string];
 
 	return name === shareTokenSearchParamName
 		? [name, redactedShareToken]

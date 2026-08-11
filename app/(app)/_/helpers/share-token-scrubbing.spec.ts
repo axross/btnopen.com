@@ -513,6 +513,82 @@ describe("redactShareTokenInEvent()", () => {
 		});
 	});
 
+	// no code path builds one of these with the URL in it today. They are covered
+	// because the alternative is an enumeration that has to be revisited every
+	// time someone writes `captureException(new Error(\`failed for ${url}\`))` —
+	// and `contexts.nextjs.request_path` above is what that costs when the
+	// enumeration is trusted and turns out to be short.
+	it("redacts the token in an exception value", () => {
+		const event = redactShareTokenInEvent({
+			exception: {
+				values: [
+					{
+						type: "Error",
+						value: `Failed to render ${postUrl}?draft=true&token=${shareToken}`,
+					},
+				],
+			},
+		});
+
+		expect(event.exception?.values?.[0]).toEqual({
+			type: "Error",
+			value: `Failed to render ${postUrl}?draft=true&token=[Filtered]`,
+		});
+	});
+
+	it("leaves an exception's stack trace and mechanism alone", () => {
+		const stacktrace = { frames: [{ filename: "app.js", lineno: 1 }] };
+		const mechanism = { handled: false, type: "onunhandledrejection" };
+		const event = redactShareTokenInEvent({
+			exception: { values: [{ type: "Error", value: "boom", mechanism }] },
+		} as unknown as Event);
+
+		expect(event.exception?.values?.[0]?.mechanism).toEqual(mechanism);
+		expect(
+			redactShareTokenInEvent({
+				exception: { values: [{ stacktrace }] },
+			} as unknown as Event).exception?.values?.[0]?.stacktrace,
+		).toEqual(stacktrace);
+	});
+
+	it("redacts the token in the event message", () => {
+		const event = redactShareTokenInEvent({
+			message: `Rendering ${postUrl}?token=${shareToken} failed`,
+		});
+
+		expect(event.message).toBe(`Rendering ${postUrl}?token=[Filtered] failed`);
+	});
+
+	it("redacts the token in a logentry's message and params", () => {
+		const event = redactShareTokenInEvent({
+			logentry: {
+				message: "Rendering %s failed",
+				params: [`${postUrl}?token=${shareToken}`, okStatus],
+			},
+		});
+
+		expect(event.logentry).toEqual({
+			message: "Rendering %s failed",
+			params: [`${postUrl}?token=[Filtered]`, okStatus],
+		});
+	});
+
+	it("redacts the token in extra and in tags", () => {
+		const event = redactShareTokenInEvent({
+			extra: { attempted: `${postUrl}?token=${shareToken}`, attempts: 2 },
+			tags: { referrer: `${postUrl}?token=${shareToken}`, cached: false },
+		});
+
+		expect(event.extra).toEqual({
+			attempted: `${postUrl}?token=[Filtered]`,
+			attempts: 2,
+		});
+		expect(event.tags).toEqual({
+			referrer: `${postUrl}?token=[Filtered]`,
+			cached: false,
+		});
+	});
+
 	// `isRecord` accepts anything `typeof` calls an object, so without an array
 	// check the spread beneath it would turn a list into `{ 0: …, 1: … }`. No SDK
 	// builds one here; this pins the pass-through every other unexpected shape in
