@@ -254,9 +254,7 @@ media nor credentials with production. Add that same preview store token as the
 `BLOB_PAYLOAD_READ_WRITE_TOKEN` secret under the **`Preview`** GitHub Actions
 environment (not a plain repository secret) so `teardown` can prune it. The
 Preview environment's other non-database variables (`PAYLOAD_SECRET`, Sentry
-variables) MUST be configured so a preview can build and run, and a distinct
-Preview `PAYLOAD_SECRET` SHOULD be used, so preview session cookies and tokens
-cannot interoperate with production.
+variables) MUST be configured so a preview can build and run.
 
 `BLOB_PAYLOAD_PREFIX` MUST NOT be set in any environment by hand — the workflow
 injects `pr-<n>` per preview, and production and local development intentionally
