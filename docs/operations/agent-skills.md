@@ -305,3 +305,65 @@ admin slot component could join it.
   review finding against the installed capability while this entry stands.
 - MUST keep applying both rules in full to every component under `app/`; nothing
   outside `payload/components/` is covered here.
+
+### Deviation — a post's draft share token travels in the URL
+
+The Sentry-instrumentation capability's `data-collection` reference states
+"MUST NOT rely on a query-string convention to keep secrets out of telemetry;
+secrets do not belong in URLs regardless". The first clause this repository
+keeps — it relies on no convention, and redacts. The second it breaks
+deliberately: a post's draft share token is a secret, and it travels as the
+`token` query parameter on the post's own preview URL.
+
+Nothing else was available. The link has to work for an **unfurl crawler**,
+which carries no cookie, so the draft's own `og:image` URL must present the
+secret to render the draft's card — an acceptance criterion of
+[#205](https://github.com/axross/btnopen.com/issues/205). The cookie exchange
+that would keep the secret out of every sink after the first navigation was
+weighed twice and rejected on exactly that: it either breaks the card or keeps
+the token in the `og:image` URL anyway, which reopens most of what the exchange
+was for. The full reasoning, including the three other alternatives, is in
+[../decisions/2026-08-11-share-a-draft-with-one-rotatable-bearer-token-per-post.md](../decisions/2026-08-11-share-a-draft-with-one-rotatable-bearer-token-per-post.md).
+
+What the departure costs is real and named there rather than waved past: the
+secret reaches browser history, server and CDN access logs, and the draft page's
+own rendered HTML. What holds the line instead is a set of compensating
+controls, each of which is load-bearing rather than decorative:
+
+- The secret is 256 bits of CSPRNG output, unlocks one post's draft and nothing
+  else, and grants no write, no admin, and no cache eviction.
+- Rotation revokes it, from both the admin and the MCP server, taking effect on
+  the next request.
+- `share-token-scrubbing.ts` redacts it out of every Sentry surface that carries
+  a URL, wired into `beforeSend` **and** `beforeSendTransaction` in all three
+  initialization files — the rules in
+  [../conventions/observability.md](../conventions/observability.md) are the
+  contract, and they are what the capability's own "scrub in the hook for the
+  signal that carries it" asks for.
+- No error-linked replay is uploaded from a page that has carried one, because a
+  replay records the URL through a path no `beforeSend` sees.
+- Mixpanel's page-view parameter allowlist is closed by construction, so the
+  parameter never reaches an event.
+- Every `?draft=true` render that resolves opts out of search indexing, and
+  `Referrer-Policy: strict-origin-when-cross-origin` is set explicitly rather
+  than inherited.
+- Nothing on the path logs the request URL, and the convention document forbids
+  adding a line there.
+
+This is a deviation and not a gap: the capability's rule is right in general,
+and a project that can avoid a URL-borne secret should. Nothing is filed
+upstream.
+
+**Rules:**
+
+- MUST NOT report the share token's presence in a URL as a review finding
+  against the installed capability while this entry stands.
+- MUST keep every compensating control above intact, and treat removing one as a
+  change to this entry rather than as a cleanup — the departure was accepted
+  with them, not without.
+- MUST NOT read this entry as licence for a second URL-borne secret. It covers
+  the draft share token and nothing else; anything new carrying a secret in a
+  URL is a fresh decision for @axross, and the unfurl-crawler argument is what
+  would have to hold for it too.
+- SHOULD revisit the cookie exchange if the `og:image` requirement ever goes
+  away, since that requirement is the whole of why it was rejected.
