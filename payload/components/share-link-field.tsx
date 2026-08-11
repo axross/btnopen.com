@@ -11,6 +11,7 @@ import {
 	useFormFields,
 	useModal,
 } from "@payloadcms/ui";
+import { captureException } from "@sentry/nextjs";
 import type { TextFieldClientComponent } from "payload";
 import { type JSX, useCallback, useEffect, useState } from "react";
 
@@ -50,11 +51,15 @@ const shareLinkRows = 3;
  *   written into form state with the form left unmodified — so there is no save
  *   step to forget, and the control shows the new link as soon as it lands.
  *   Rotation is the only revocation this design has, so the action carries the
- *   danger treatment, a rotation glyph, and a confirmation.
+ *   danger treatment, a rotation glyph, and a confirmation. A rotation that
+ *   fails is reported rather than only toasted, for the same reason: it leaves
+ *   an author unable to revoke.
  * - **The origin comes from the browser.** The admin is served from the same
  *   origin as the site, so the link is built from `window.location` rather than
- *   by plumbing a server-side origin into the client bundle. It is read after
- *   mount, because there is no location during the server render.
+ *   by plumbing a server-side origin into the client bundle. Only the path is
+ *   knowable during the server render, so the box shows the path and gains its
+ *   origin on mount, and Copy reads the origin at click time — which is what
+ *   keeps the first paint from being an empty box beside a disabled Copy.
  * - **There is no signed-out branch.** `shareToken` is unreadable without a
  *   session, so this renders only for a signed-in author; a visitor state would
  *   be dead code describing a case that cannot happen.
@@ -82,44 +87,39 @@ export const ShareLinkField: TextFieldClientComponent = ({ field, path }) => {
 	}, []);
 
 	// the post's own preview URL with the secret appended — the route the author
-	// already knows from live preview, not a second address to reason about.
-	const shareUrl =
-		origin && slug && value
-			? `${origin}/posts/${slug}?draft=true&token=${encodeURIComponent(value)}`
+	// already knows from live preview, not a second address to reason about. the
+	// path is held apart from the origin because only the path is knowable during
+	// the server render, so the first paint shows something rather than nothing. a
+	// `useState` initializer reading `window` would fill that frame instead by
+	// disagreeing with the served HTML, which is a hydration mismatch rather than
+	// a fix.
+	const sharePath =
+		slug && value
+			? `/posts/${slug}?draft=true&token=${encodeURIComponent(value)}`
 			: "";
+	const shareUrl = sharePath === "" ? "" : `${origin}${sharePath}`;
 
 	const copyShareUrl = useCallback(async () => {
 		try {
-			await navigator.clipboard.writeText(shareUrl);
+			// the origin is read here rather than taken from state, so the clipboard
+			// gets an absolute link whether or not the effect above has run yet.
+			await navigator.clipboard.writeText(
+				`${window.location.origin}${sharePath}`,
+			);
 
 			toast.success("Copied the share link.");
 		} catch {
 			toast.error("Could not copy the share link.");
 		}
-	}, [shareUrl]);
+	}, [sharePath]);
 
 	const rotateShareToken = useCallback(async () => {
 		setIsRotating(true);
 
 		try {
-			const response = await fetch(
+			const rotated = await requestShareTokenRotation(
 				`${config.serverURL}${config.routes.api}/blog-posts/${id}/rotate-share-token`,
-				{ credentials: "include", method: "POST" },
 			);
-
-			if (!response.ok) {
-				throw new Error(`Rotation responded with ${response.status}.`);
-			}
-
-			const body: unknown = await response.json();
-			const rotated =
-				typeof body === "object" && body !== null && "shareToken" in body
-					? body.shareToken
-					: null;
-
-			if (typeof rotated !== "string" || rotated.length === 0) {
-				throw new Error("Rotation returned no token.");
-			}
 
 			// `true` leaves the form unmodified: the endpoint has already persisted
 			// the replacement, so showing it must not turn the document dirty and ask
@@ -129,7 +129,18 @@ export const ShareLinkField: TextFieldClientComponent = ({ field, path }) => {
 			toast.success(
 				"Rotated the share link. Every link shared before now has stopped working.",
 			);
-		} catch {
+		} catch (error) {
+			// rotation is the only revocation this design has, so a failure here is an
+			// author unable to cut off a link they have decided to revoke — worth an
+			// issue rather than a toast the author reads once. nothing else reports
+			// it: Payload catches a throwing endpoint handler internally and answers
+			// 500, so Next's `onRequestError` never sees the original either.
+			captureException(
+				new Error("Rotating a blog post's share link failed.", {
+					cause: error,
+				}),
+			);
+
 			toast.error("Could not rotate the share link.");
 		} finally {
 			setIsRotating(false);
@@ -177,7 +188,7 @@ export const ShareLinkField: TextFieldClientComponent = ({ field, path }) => {
 
 					<Button
 						buttonStyle="secondary"
-						disabled={shareUrl === ""}
+						disabled={sharePath === ""}
 						margin={false}
 						onClick={copyShareUrl}
 						size="small"
@@ -228,6 +239,41 @@ export const ShareLinkField: TextFieldClientComponent = ({ field, path }) => {
 		</div>
 	);
 };
+
+/**
+ * Posts a rotation to the collection's endpoint and answers with the
+ * replacement token.
+ *
+ * It sits outside the component because none of it is React: the component owns
+ * the pending flag, the toasts, and the form-state write, and this owns the
+ * request and the shape of the answer.
+ *
+ * @throws if the endpoint refuses the request, or answers without a usable
+ * token. Both are reported rather than resolved quietly, because either one
+ * leaves an author who meant to revoke a link still handing out the old one.
+ */
+async function requestShareTokenRotation(endpoint: string): Promise<string> {
+	const response = await fetch(endpoint, {
+		credentials: "include",
+		method: "POST",
+	});
+
+	if (!response.ok) {
+		throw new Error(`Rotation responded with ${response.status}.`);
+	}
+
+	const body: unknown = await response.json();
+	const rotated =
+		typeof body === "object" && body !== null && "shareToken" in body
+			? body.shareToken
+			: null;
+
+	if (typeof rotated !== "string" || rotated.length === 0) {
+		throw new Error("Rotation returned no token.");
+	}
+
+	return rotated;
+}
 
 /**
  * Circular-arrow glyph on the Rotate action, so the action reads as destructive
