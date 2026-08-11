@@ -39,7 +39,14 @@ test(
 
 test(
 	"MCP exposes scoped tools and mutates blog post body nodes",
-	{ tag: ["@scenario:mcp.body-mutation", "@area:mcp", "@priority:should"] },
+	{
+		tag: [
+			"@scenario:mcp.body-mutation",
+			"@scenario:mcp.share-link",
+			"@area:mcp",
+			"@priority:should",
+		],
+	},
 	async ({ page }, testInfo) => {
 		let createdBlogPostId: number | null = null;
 
@@ -167,6 +174,12 @@ function verifyToolList(toolsResponse: McpJsonRpcResponse): void {
 	expect(toolNames).not.toContain("updateBlogPostDraft");
 	expect(toolNames).not.toContain("createBlogPostDraftFromMarkdown");
 	expect(toolNames).not.toContain("updateBlogPostDraftFromMarkdown");
+	// the share-link tools serve a bearer credential for unpublished content and
+	// default to off for a new key. the assertion above uses `arrayContaining`,
+	// which says nothing about what is absent, so a grant added to the e2e key by
+	// accident would otherwise go unnoticed.
+	expect(toolNames).not.toContain("getBlogPostShareLink");
+	expect(toolNames).not.toContain("rotateBlogPostShareLink");
 }
 
 async function createPublishedBlogPost({

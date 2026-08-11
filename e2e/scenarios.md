@@ -90,6 +90,7 @@ carries its `@scenario:<id>` tag. The reporter
 | privacy.consent.collection | Granting starts collection and revoking stops it, observed on the wire | privacy | may |
 | mcp.auth-required | The MCP endpoint rejects requests without an API key | mcp | must |
 | mcp.body-mutation | MCP exposes only its scoped tools and mutates blog post body nodes | mcp | should |
+| mcp.share-link | The share-link tools are absent from an MCP key that was not granted them | mcp | should |
 | metadata.foundational | The index page emits the foundational document metadata | metadata | should |
 | index.json-ld | The index page emits Blog JSON-LD structured data | metadata | should |
 | index.open-graph | The index page emits Open Graph metadata | metadata | should |
