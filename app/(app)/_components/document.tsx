@@ -31,7 +31,9 @@ export async function Document({
 	]);
 
 	return (
-		<html lang={htmlLangByLocale[locale]} {...props}>
+		// the spread comes first: the negotiated `lang` is this component's own
+		// answer, not an attribute a caller may replace.
+		<html {...props} lang={htmlLangByLocale[locale]}>
 			<body className={fontVariablesClassName}>
 				<AuthProvider>
 					<NextIntlClientProvider>

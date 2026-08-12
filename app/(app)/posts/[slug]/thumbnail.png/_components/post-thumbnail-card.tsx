@@ -27,7 +27,10 @@ export function PostThumbnailCard({
 	};
 }): JSX.Element {
 	return (
+		// the spread comes first: the composition below is what this card is, not a
+		// style a caller may replace.
 		<div
+			{...props}
 			style={{
 				position: "relative",
 				width: "100%",
@@ -42,7 +45,6 @@ export function PostThumbnailCard({
 				// cover image behind it (the background photo covers it otherwise).
 				backgroundColor: postThumbnailBackgroundColor,
 			}}
-			{...props}
 		>
 			{backgroundImage ? (
 				// biome-ignore lint/a11y/useAltText: this is just within the image generation. alt will be omitted in the rendered result.
