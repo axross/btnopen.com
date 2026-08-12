@@ -236,7 +236,113 @@ fallback for a 2023 feature, and nothing reconciles them — so it is also filed
 upstream as [axross/skills#316](https://github.com/axross/skills/issues/316),
 which asks that the fallback MUST be qualified by interoperability rather than by
 colour format. This entry stands until that lands, and nothing here waits on it.
+
 While it stands, an `oklch()` custom property without a gamut `@supports` MUST NOT
 be reported as a review finding. If the capability gains a browser-baseline
 qualifier that resolves the inconsistency, this entry SHOULD be deleted rather
 than left standing.
+
+### Deviation — a Payload admin slot component takes Payload's props contract, not its root element's
+
+The React-component capability's props reference states two of these as MUSTs:
+"MUST base the props type on the root rendered element" and "MUST collect
+undeclared props into a rest object and spread it onto the component's root
+element", carving out only a root that renders no node of its own.
+[../conventions/react-components.md](../conventions/react-components.md)
+restates the spread as this repository's own rule.
+
+Both components under `payload/components/` do neither.
+`share-link-field.tsx` is typed `TextFieldClientComponent`, destructures
+`field` and `path`, and drops the rest; `embed-block-card.tsx` declares no props
+at all.
+
+Payload dictates that shape and leaves no seam for one of ours. Neither
+component is ever called from this repository's code: each is named as a string
+in an `admin.components` slot — the `shareToken` field's `Field` in
+`payload/collections/blog-post.ts`, the `embed` block's `Block` in
+`payload/helpers/embed-block.ts` — resolved through
+`app/(payload)/admin/importMap.js`, and instantiated by Payload's admin runtime.
+What that runtime passes is field descriptors — `field`, `path`, `permissions`,
+`schemaPath`, `readOnly` — not DOM attributes. Spreading that rest object onto the root `<div>` would put `field`
+and `permissions` on an HTML element as unknown attributes, and basing the props
+type on `ComponentProps<"div">` would type away the contract Payload actually
+calls it with. There is also no caller who could pass a `data-*` attribute,
+which is the propagation the rule exists to protect.
+
+The departure is confined to that seam: every component this repository itself
+renders — everything under `app/` — is unaffected, and only another Payload
+admin slot component could join it.
+
+A Payload admin slot component MUST be typed with the client-component type
+Payload publishes for that slot, and MUST NOT be rebased on `ComponentProps<T>`
+or have its rest object spread onto the rendered element in order to satisfy the
+installed capability. While this entry stands, such a component's missing props
+spread MUST NOT be reported as a review finding against that capability. Both
+capability rules MUST keep applying in full to every component under `app/`;
+nothing outside `payload/components/` is covered here.
+
+### Deviation — a post's draft share token travels in the URL
+
+The Sentry-instrumentation capability's `data-collection` reference states
+"MUST NOT rely on a query-string convention to keep secrets out of telemetry;
+secrets do not belong in URLs regardless". The first clause this repository
+keeps — it relies on no convention, and redacts. The second it breaks
+deliberately: a post's draft share token is a secret, and it travels as the
+`token` query parameter on the post's own preview URL.
+
+Nothing else was available. The link has to work for an **unfurl crawler**,
+which carries no cookie, so the draft's own `og:image` URL must present the
+secret to render the draft's card — an acceptance criterion of
+[#205](https://github.com/axross/btnopen.com/issues/205). The cookie exchange
+that would keep the secret out of every sink after the first navigation was
+weighed twice and rejected on exactly that: it either breaks the card or keeps
+the token in the `og:image` URL anyway, which reopens most of what the exchange
+was for. The full reasoning, including the three other alternatives, is in
+[../decisions/2026-08-11-share-a-draft-with-one-rotatable-bearer-token-per-post.md](../decisions/2026-08-11-share-a-draft-with-one-rotatable-bearer-token-per-post.md).
+
+What the departure costs is real and named there rather than waved past: the
+secret reaches browser history, server and CDN access logs, and the draft page's
+own rendered HTML. What holds the line instead is a set of compensating
+controls, each of which is load-bearing rather than decorative:
+
+- The secret is 256 bits of CSPRNG output, unlocks one post's draft and nothing
+  else, and grants no write, no admin, and no cache eviction.
+- Rotation revokes it, from both the admin and the MCP server, taking effect on
+  the next request.
+- `share-token-scrubbing.ts` redacts it out of **every string an event carries**,
+  at every depth and under every key, wired into `beforeSend` **and**
+  `beforeSendTransaction` in all three initialization files. The guarantee is
+  structural rather than a covered set: the walk names no event field, so a field
+  a later SDK version adds is reached on the day it appears. That shape replaced
+  a named set which four review rounds each found short by one field, most
+  recently `spans[].description`. The table and rules in
+  [../conventions/observability.md](../conventions/observability.md) are the
+  contract, they state what the walk still does not reach, and they are
+  what the capability's own "scrub in the hook for the signal that carries it"
+  asks for.
+- No error-linked replay is uploaded from a page that has carried one, because a
+  replay records the URL through a path no `beforeSend` sees.
+- Mixpanel's page-view parameter allowlist is closed by construction, so the
+  parameter never reaches an event.
+- Every `?draft=true` render that resolves opts out of search indexing — the
+  page through its metadata and the thumbnail it advertises through an
+  `X-Robots-Tag` header, since that image is a separate response and its URL is
+  itself the secret — and `Referrer-Policy: strict-origin-when-cross-origin` is
+  set explicitly rather than inherited.
+- Nothing on the path logs the request URL, and the convention document forbids
+  adding a line there.
+
+This is a deviation and not a gap: the capability's rule is right in general,
+and a project that can avoid a URL-borne secret should. Nothing is filed
+upstream.
+
+While this entry stands, the share token's presence in a URL MUST NOT be reported
+as a review finding against the installed capability. Every compensating control
+above MUST stay intact, and removing one MUST be treated as a change to this
+entry rather than as a cleanup — the departure was accepted with them, not
+without. This entry MUST NOT be read as licence for a second URL-borne secret: it
+covers the draft share token and nothing else, anything new carrying a secret in
+a URL is a fresh decision for @axross, and the unfurl-crawler argument is what
+would have to hold for it too. The cookie exchange SHOULD be revisited if the
+`og:image` requirement ever goes away, since that requirement is the whole of why
+it was rejected.

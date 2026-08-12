@@ -66,3 +66,90 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* inline share-link block on the blog post Metadata tab
+   (payload/components/share-link-field.tsx). Sits at full content width so the
+   whole URL is readable without truncation and the warning line has room to be
+   a sentence. */
+.share-link-field {
+  margin-bottom: var(--base);
+}
+
+.share-link-field__row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+/* the whole URL, wrapped — not an ellipsis. This control was placed inline
+   because that is the widest place on the screen and the link would be readable
+   whole; truncating here would give up the reason for the placement. So the box
+   wraps (`anywhere` breaks the opaque base64url secret rather than pushing it
+   past the edge), `field-sizing` sizes it to the URL so a short link leaves no
+   blank rows, and the element's own `rows` plus the resize handle cover a
+   browser without `field-sizing`. */
+.share-link-field__url {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 4px;
+  background-color: var(--theme-input-bg);
+  color: var(--theme-elevation-800);
+  field-sizing: content;
+  font-family: monospace;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  resize: vertical;
+}
+
+/* the focus ring, stated here rather than inherited. Payload's own bare
+   `:focus-visible` rule already reaches this input, because the rules above
+   override background and border but never `outline` — but that rule sets no
+   offset, so the ring sits flush against a border this file drew itself, while
+   Payload's buttons, pills, and table links all get the offset. Pinning both
+   custom properties keeps the indicator on Payload's own accessibility tokens
+   (so it follows the light and dark themes) and keeps it from depending on a
+   global rule this block otherwise departs from. */
+.share-link-field__url:focus-visible {
+  outline: var(--accessibility-outline);
+  outline-offset: var(--accessibility-outline-offset);
+}
+
+.share-link-field__pending,
+.share-link-field__warning {
+  margin: 0;
+  color: var(--theme-elevation-500);
+  font-size: 0.8rem;
+}
+
+.share-link-field__warning {
+  margin-top: 0.5rem;
+  max-width: 68ch;
+}
+
+/* Rotate is destructive — it revokes every outstanding link at once — so it
+   carries the danger treatment alongside its rotation glyph. Payload's Button
+   accepts `buttonStyle="error"` in its types but ships no rule for it, so the
+   colours are set here, through the same custom properties its own variants
+   use. Every value is a --theme-error-* token, which inverts under the dark
+   theme, so the treatment holds in both. */
+.share-link-field__rotate.btn {
+  --color: var(--theme-error-600);
+  --bg-color: transparent;
+  --btn-border: 1px solid var(--theme-error-500);
+  --hover-color: var(--theme-error-700);
+  --hover-bg: var(--theme-error-100);
+  --hover-btn-border: 1px solid var(--theme-error-600);
+}
+
+.share-link-field__rotate.btn--disabled {
+  --color: var(--theme-elevation-300);
+  --bg-color: transparent;
+  --btn-border: 1px solid var(--theme-elevation-200);
+  --hover-color: var(--color);
+  --hover-bg: transparent;
+  --hover-btn-border: var(--btn-border);
+}

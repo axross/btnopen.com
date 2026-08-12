@@ -246,6 +246,10 @@ export interface BlogPost {
    */
   isCommentsEnabled?: boolean | null;
   /**
+   * Secret that lets a signed-out reviewer read this post's draft. Minted on the server and replaced only by rotating it.
+   */
+  shareToken?: string | null;
+  /**
    * Authoring outline for the agent-driven authoring loop. A single Markdown bullet-point list — only list items and inline elements are permitted; no paragraphs or other block types.
    */
   outline?: string | null;
@@ -453,6 +457,14 @@ export interface PayloadMcpApiKey {
      * Delete one serialized Payload Lexical node from a blog post body at the requested nested children-array location.
      */
     deleteNodeInBlogPostBody?: boolean | null;
+    /**
+     * Return the draft share link for one blog post: its preview URL with the post's current share secret appended. Anyone holding the link can read the draft without signing in.
+     */
+    getBlogPostShareLink?: boolean | null;
+    /**
+     * Rotate one blog post's draft share secret and return the replacement link. Every link handed out under the previous secret stops working immediately; this is the only way to revoke a share link, and it cannot be undone.
+     */
+    rotateBlogPostShareLink?: boolean | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -608,6 +620,7 @@ export interface BlogPostsSelect<T extends boolean = true> {
   author?: T;
   publishedAt?: T;
   isCommentsEnabled?: T;
+  shareToken?: T;
   outline?: T;
   authoringNotes?: T;
   updatedAt?: T;
@@ -765,6 +778,8 @@ export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
     | {
         appendNodeInBlogPostBody?: T;
         deleteNodeInBlogPostBody?: T;
+        getBlogPostShareLink?: T;
+        rotateBlogPostShareLink?: T;
       };
   updatedAt?: T;
   createdAt?: T;

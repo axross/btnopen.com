@@ -119,7 +119,8 @@ who has granted consent**. The privacy question for a new surface is therefore
 | Setting | Where | What it means |
 | --- | --- | --- |
 | `dataCollection`, diagnostics on and content off | `sentry.server.config.ts`, `sentry.edge.config.ts`, `instrumentation-client.ts` | Sentry captures IP address and user identity, request and response headers, URL query parameters, and stack-frame variables with five lines of surrounding source. It does **not** capture cookies, request or response bodies, database query values, generative-AI content, or GraphQL variables. All ten categories are set explicitly in all three files |
-| Session Replay at `replaysSessionSampleRate: 0`, `replaysOnErrorSampleRate: 1.0` | Sentry client init | No ordinary session is recorded. A session that hits an error is, DOM mutations and form input included |
+| The share-token redaction | `app/(app)/_/helpers/share-token-scrubbing.ts`, wired into `beforeSend` and `beforeSendTransaction` in all three files | A post's draft share token is replaced with `[Filtered]` in **every string the event carries** — at every depth, under every key, inside every array. The walk names no event field, so this row states how it works rather than what it covers: `request.url`, a `Referer` header, a console breadcrumb's `message`, `contexts.nextjs.request_path`, `contexts.trace.data`, `spans[].data`, `spans[].description`, `transaction`, an exception value, and a field a later SDK version adds are each reached because they are part of the event and not because they are on a list. It matches on the **value**, in the escaped forms as well as the literal one, and replaces whatever is bound to the name `token` as a record key or as the head of a `[name, value]` pair — which is what the object and pair-list forms of `request.query_string`, holding the bare secret, need. What it does not reach: `sdkProcessingMetadata`, lifted out because it holds live objects rather than JSON and `createEventEnvelope` deletes it before serializing; an attachment, which is not part of the event; a value behind a reference cycle or nested past 32 levels, both of which come back as `[Circular ~]` / `[Object]` rather than as the unvisited subtree; and a bare secret bound to no name it can recognize. `urlQueryParams` is not this control and cannot be: the SDK attaches the full URL unconditionally and reads that option only for the separate `query_string` field |
+| Session Replay at `replaysSessionSampleRate: 0`, `replaysOnErrorSampleRate: 1.0` | Sentry client init | No ordinary session is recorded. A session that hits an error is, DOM mutations and form input included — unless the document has carried a share token, in which case `beforeErrorSampling` suppresses the upload |
 | `tracesSampleRate: 1` | all three Sentry init points | Every transaction is traced. Each of the three carries the one-line rationale for the rate |
 | `Mixpanel.init` with no capture options at all | `app/(app)/_/helpers/analytics.ts`, in `startAnalytics()` | Every SDK default applies: autocapture off, session recording off, heatmaps off, Do Not Track honoured. Page views and three link-click actions are sent explicitly, and are the whole of what Mixpanel receives |
 | The consent gate | `app/(app)/_/helpers/analytics-consent.ts`, `app/(app)/_/components/analytics-consent-provider.tsx` | The decision is a cookie. Until it reads `granted`, `mixpanel-browser` is not imported, so the SDK is not downloaded and cannot send |
@@ -141,7 +142,82 @@ is the case it was closed for.
 `replaysOnErrorSampleRate` MUST NOT be lowered below `1.0`. The vendor capability
 asks for error-linked capture at or near full rate; this project pins the floor
 at exactly full, because error-time replay is the most diagnostic signal
-available here and a sampled one is absent precisely when it is wanted.
+available here and a sampled one is absent precisely when it is wanted. The
+`beforeErrorSampling` hook beside it is the deliberate exception and is not a
+sampling decision: it withholds the upload from a document that has carried a
+post's share token, because a replay records the URL through a path no
+`beforeSend` sees. Suppressing there rather than lowering the rate is what keeps
+every other visitor's error replay intact.
+
+That suppression MUST be re-checked before adding the Sentry **Feedback** widget.
+`beforeErrorSampling` is consulted on the error-sampling path only. The installed
+`@sentry/replay` flushes a buffered replay from two further places, and both are
+Feedback's — the `beforeSendFeedback` and `openFeedbackWidget` client hooks —
+neither of which consults the hook. No Feedback integration is installed today,
+so the suppression is complete as things stand; adding one would reopen the
+replay upload from a token-bearing page without touching a line of this
+configuration, which is exactly the kind of silent reopening this note exists to
+prevent.
+A secret that travels in a URL MUST be redacted through `beforeSend` **and**
+`beforeSendTransaction`, in all three initialization files, rather than through
+`dataCollection.urlQueryParams`. That option is not an alternative:
+`@sentry/core` 10.69 attaches the full request URL unconditionally — its own
+source comment says so — and consults the option only for the separate
+`query_string` field, while the allow and deny forms the option's type permits
+are applied to query parameters in no installed package. A transaction carries
+the URL just as an error does, so wiring only the first hook leaves the secret in
+every trace. `share-token-scrubbing.ts` is the worked example; keep such a module
+IO-free and total, because a throw inside one of these hooks loses the event and
+takes the response being rendered with it.
+
+Such a redaction MUST be written as a walk over the **whole event** — every
+string, at every depth, under every key, in every array — and MUST NOT be written
+as a set of fields believed to carry the URL. This rule was four times an
+enumeration and four times short, and each round read like the last one's fix:
+`request.headers`, then `contexts.trace.data` and `spans[].data`, then
+`contexts.nextjs.request_path`, then `spans[].description`, which
+`@sentry/browser-utils` sets to the full document URL on every navigation-timing
+child span of every pageload. Each of those was found by a reviewer rather than
+by the walk, because a list cannot report what is missing from it. Whole-event
+coverage costs a few lines more than the shortest list that happens to be right
+today; a list costs a secret in an issue nobody notices, and one
+``captureException(new Error(`failed for ${request.url}`))`` is all it takes to
+make yesterday's list wrong. `share-token-scrubbing.ts` is the worked example and
+names no event field anywhere.
+
+Such a walk MUST be bounded against a cycle and against depth, and MUST answer a
+value it declines to visit with a marker rather than with the value itself.
+Handing the unvisited subtree back is the one outcome a redaction cannot have —
+it returns the branch that was never redacted straight into the event about to be
+sent. `share-token-scrubbing.ts` answers with `@sentry/core`'s own `[Circular ~]`
+and `[Object]`, so a reader of an issue meets one convention rather than two.
+Such a redaction MUST match on a header's, an attribute's, or a breadcrumb
+field's **value** rather than on its name. `Referer` is why: `Referrer-Policy:
+strict-origin-when-cross-origin` sends the full URL on a same-origin request, so
+every subresource a token-bearing page asks for reports that URL back, and a
+name-keyed check is one header rename or one new span attribute away from
+silently missing. The SDK's own `SENSITIVE_KEY_SNIPPETS` filter is no help
+either: it matches attribute *names* against `auth`, `token`, `secret` and the
+rest, and `http.target`, `url.full`, and `http.url` contain none of them. Match
+on the name only where the value cannot be recognized at all — the object and
+pair-list forms of `request.query_string` hold the bare secret with no `token=`
+prefix to see — and apply that check wherever such a binding appears rather than
+at the one field that needs it, so it does not become a small enumeration of its
+own.
+
+Over-redaction SHOULD be accepted as the cheap direction of this trade. A
+value-matched walk rewrites any string that reads like the assignment, including
+a source-context line that quotes one, and it rewrites the escaped forms —
+`&amp;` from an HTML-escaped href, `%3F` / `%26` / `%3D` from a link nested as
+another URL's query value — that a name-and-shape-matched one would pass through.
+Losing a byte of diagnostic context is recoverable; a leaked bearer credential is
+not.
+
+A secret that travels in a URL MUST NOT be logged, and adding no log line on its
+path at all is preferable to adding one that omits it. The share-token path
+carries no logging for exactly that reason: no line to get wrong is a stronger
+guarantee than a line that currently happens to be right.
+
 `replaysSessionSampleRate` MUST NOT be raised above `0` without a stated privacy
 basis. Recording sessions that never failed is the collection this project
 removed deliberately — see

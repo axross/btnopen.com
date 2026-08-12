@@ -11,6 +11,8 @@
  * on top of the same-site origin check in `request-origin.ts`.
  */
 
+import { timingSafeEqual } from "./timing-safe-equal";
+
 /** Cookie the token endpoint pins the CSRF token in (HttpOnly, SameSite=Strict). */
 export const COMMENT_CSRF_COOKIE = "comment-csrf-token";
 
@@ -57,22 +59,4 @@ function readCookie(cookieHeader: string | null, name: string): string | null {
 	}
 
 	return null;
-}
-
-function timingSafeEqual(a: string, b: string): boolean {
-	if (a.length !== b.length) {
-		return false;
-	}
-
-	let mismatch = 0;
-
-	// bitwise accumulation compares every character regardless of an early
-	// mismatch, so the loop's timing does not reveal the cookie value.
-	// biome-ignore-start lint/suspicious/noBitwiseOperators: constant-time token comparison
-	for (let i = 0; i < a.length; i += 1) {
-		mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
-	}
-	// biome-ignore-end lint/suspicious/noBitwiseOperators: constant-time token comparison
-
-	return mismatch === 0;
 }

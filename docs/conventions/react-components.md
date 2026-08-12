@@ -12,13 +12,19 @@ settled on, and the seams a component must not cross.
 
 ## Anatomy
 
-Every component here is typed from the element it roots, so a caller can pass any
-attribute that element accepts without the component enumerating them. A
-component SHOULD therefore use `ComponentProps<T>` from React as its base props
-type, where `T` is the root rendered element type — `ComponentProps<"div">` for a
-component rooting a `<div>`, `ComponentProps<"ul">` for a `<ul>` — and SHOULD use
-`interface` over `type` for props that are purely object types, with no
-intersection or union.
+Every component this repository renders is typed from the element it roots, so a
+caller can pass any attribute that element accepts without the component
+enumerating them. A component SHOULD therefore use `ComponentProps<T>` from React
+as its base props type, where `T` is the root rendered element type —
+`ComponentProps<"div">` for a component rooting a `<div>`, `ComponentProps<"ul">`
+for a `<ul>` — and SHOULD use `interface` over `type` for props that are purely
+object types, with no intersection or union. The rules below reach the components
+under `app/` — the ones this repository's own code instantiates.
+
+They do not reach a Payload admin slot component under `payload/components/`,
+whose props contract is Payload's rather than ours and which no caller here
+renders. That departure, and why it was accepted, is recorded in
+[../operations/agent-skills.md](../operations/agent-skills.md).
 
 The same openness reaches the runtime: a component MUST spread `...props` onto
 the root element so caller-supplied `data-*` attributes propagate, per the

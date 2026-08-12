@@ -6,17 +6,30 @@ import { MarkdownContent } from "./markdown-content";
 export async function BlogPostContent({
 	slug: slugPromise,
 	draft: draftPromise,
+	shareToken,
 	...props
 }: Omit<ComponentProps<"div">, "children"> & {
 	slug: Promise<string>;
 	draft?: Promise<boolean>;
+	/**
+	 * The share token the request carried, already read at the route boundary.
+	 * Passed as a resolved value rather than a promise because the page reads it
+	 * from the same `searchParams` it awaits to pick its branch, so wrapping it
+	 * would suspend on nothing.
+	 */
+	shareToken?: string;
 }): Promise<JSX.Element | null> {
 	const [slug, draft, locale] = await Promise.all([
 		slugPromise,
 		draftPromise,
 		getActiveLocale(),
 	]);
-	const markdown = await getBlogPostMarkdown({ slug, draft, locale });
+	const markdown = await getBlogPostMarkdown({
+		slug,
+		draft,
+		locale,
+		shareToken,
+	});
 
 	if (!markdown) {
 		return null;

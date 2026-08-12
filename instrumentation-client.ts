@@ -3,7 +3,39 @@ import {
 	init as initializeSentry,
 	replayIntegration,
 } from "@sentry/nextjs";
+import {
+	hasShareToken,
+	redactShareTokenInEvent,
+} from "@/helpers/share-token-scrubbing";
 import { sentryDsn, sha, vercelEnvironment } from "@/runtime";
+
+// whether this document has ever been at a URL carrying a post's share token.
+// sticky rather than a look at the current URL, because an error-linked replay
+// uploads the buffered minute *before* the error: a reviewer who followed a
+// share link and then navigated on within the same document still has the token
+// in that recording, while `location.search` no longer shows it.
+//
+// three moments write it, and each covers a case the others miss: the entry URL
+// at module scope, for a document that loaded on a share link; every client
+// navigation, for one that reached a share link and left it again without ever
+// reloading; and the error itself, for one that arrived by a route neither of
+// those saw.
+let hasVisitedShareLink = hasShareToken(window.location.search);
+
+/**
+ * Whether an error-linked replay may be uploaded from this document.
+ *
+ * A replay records the URL through a path no `beforeSend` sees, so the
+ * redaction that keeps the token out of an event cannot reach a replay; not
+ * uploading it is the only control there is. The accepted cost is that a
+ * reviewer's error on a shared link produces no replay — the right trade for a
+ * bearer credential, and the one this change deliberately makes.
+ */
+function mayUploadErrorReplay(): boolean {
+	hasVisitedShareLink ||= hasShareToken(window.location.search);
+
+	return !hasVisitedShareLink;
+}
 
 if (sentryDsn) {
 	initializeSentry({
@@ -12,7 +44,17 @@ if (sentryDsn) {
 		// and its uploaded source maps can never file under different releases.
 		release: sha,
 		environment: vercelEnvironment,
-		integrations: [replayIntegration()],
+		integrations: [
+			replayIntegration({ beforeErrorSampling: mayUploadErrorReplay }),
+		],
+		// every event leaves with a post's share token redacted out of it, through
+		// `beforeSend` for an error and `beforeSendTransaction` for a transaction,
+		// which carries the URL just as an error does. what the redaction reaches
+		// is `share-token-scrubbing.ts`'s to state rather than this file's: it
+		// walks the whole event rather than a list of fields, so there is no
+		// covered set named here that could fall behind it.
+		beforeSend: redactShareTokenInEvent,
+		beforeSendTransaction: redactShareTokenInEvent,
 		// a personal blog's traffic fits inside the free quota whole, so nothing is
 		// gained by sampling and a sampled trace is missing precisely when a slow
 		// page is being chased.
@@ -34,7 +76,15 @@ if (sentryDsn) {
 			userInfo: true,
 			// the SDK filters sensitive keys (authorization, cookie, token, …) regardless.
 			httpHeaders: { request: true, response: true },
-			// this app's query parameters are routing state, never secrets.
+			// left on, and deliberately not the control that keeps a post's share
+			// token out of an event. The SDK attaches the full request URL
+			// unconditionally and consults this flag only for the separate
+			// `query_string` field, and the allow/deny forms its type permits are
+			// applied to query parameters in no installed package (verified against
+			// @sentry/core 10.69). Turning it off would therefore drop the routing
+			// state that makes an issue answerable and keep the token; the
+			// `beforeSend` / `beforeSendTransaction` redaction in this file is what
+			// actually removes it, from this field and from everywhere else in the event.
 			urlQueryParams: true,
 			stackFrameVariables: true,
 			frameContextLines: 5,
@@ -58,4 +108,27 @@ if (sentryDsn) {
 // error reporting is the diagnostic basis this site runs on, and it records no
 // ordinary session.
 
-export const onRouterTransitionStart = captureRouterTransitionStart;
+/**
+ * Next.js's client-navigation hook, which Sentry uses to open a navigation
+ * span — and which this file also uses to keep {@link mayUploadErrorReplay}
+ * honest.
+ *
+ * The destination is the only moment a share link is observable when the
+ * navigation is client-side: `window.location` has not moved yet, and by the
+ * time an error fires the reviewer may have navigated on again, leaving the
+ * token-bearing page in the replay buffer but nowhere in the current URL.
+ *
+ * Nothing here may throw — a failure in instrumentation must not break the
+ * navigation it exists to observe — so a non-string `href` is skipped rather
+ * than handed to the matcher.
+ */
+export function onRouterTransitionStart(
+	href: string,
+	navigationType: string,
+): void {
+	if (typeof href === "string") {
+		hasVisitedShareLink ||= hasShareToken(href);
+	}
+
+	captureRouterTransitionStart(href, navigationType);
+}

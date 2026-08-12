@@ -75,6 +75,12 @@ const nextConfig: NextConfig = {
 				{ key: "Accept-CH", value: "Sec-CH-Prefers-Color-Scheme" },
 				{ key: "Critical-CH", value: "Sec-CH-Prefers-Color-Scheme" },
 				{ key: "Vary", value: "Sec-CH-Prefers-Color-Scheme" },
+				// the value every modern browser already defaults to, so this changes
+				// no behaviour — it makes the guarantee explicit rather than
+				// inherited. A post's share link carries a bearer token in its query
+				// string, and this is what keeps that URL out of the `Referer` header
+				// when a reviewer follows a link out of the draft to another origin.
+				{ key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
 			],
 		},
 	],

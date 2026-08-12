@@ -3,8 +3,11 @@ export interface PostReadModeInput {
 	/** Whether the caller asked for the draft view. */
 	requested: boolean;
 	/**
-	 * Whether the request is allowed to read drafts — the result of
-	 * `canReadDrafts()`.
+	 * Whether the request is allowed to read this post's draft. Two gates answer
+	 * it, and which one a caller uses is the caller's decision, not this
+	 * function's: `canReadDrafts()` for a post-agnostic read — the index list and
+	 * the agentic view — and `canReadPostDraft()` for the two single-post reader
+	 * surfaces, which a share token can also unlock.
 	 */
 	permitted: boolean;
 }
@@ -16,10 +19,11 @@ export type PostReadMode = "draft" | "published";
  * Decides whether a blog-post read is served as a draft or as the published
  * document.
  *
- * The draft view is served only to a request that both asked for it and carries
- * a Payload session permitted to read drafts; every other combination falls
- * back to the published document, which is what keeps unpublished content
- * private.
+ * The draft view is served only to a request that both asked for it and was
+ * permitted it; every other combination falls back to the published document,
+ * which is what keeps unpublished content private. This function decides
+ * nothing about permission itself — it pairs a request with an answer someone
+ * else resolved, which is what keeps it pure and total.
  *
  * The two modes also differ in caching, deliberately. A published read is
  * served from a `"use cache"` entry tagged for the post, which a publish busts.

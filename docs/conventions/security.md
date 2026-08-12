@@ -203,8 +203,27 @@ the comment write path. That helper is this repository's worked CSRF example:
 when the header matches the cookie, compared in constant time. Reuse it rather
 than writing a second token scheme.
 
-`app/(payload)/` MUST NOT be treated as in scope for this lens; the Payload admin
-routes own their own CSRF and request validation.
+`app/(payload)/` MUST NOT be treated as in scope for this lens.
+`isSameSiteRequest` and the double-submit helper are for handlers this repository
+writes; the Payload realm's routes are mounted by Payload and are not ours to
+wrap. What protects them is **the auth cookie's `SameSite=Lax` default**, which
+keeps a cross-site `POST` from carrying a session at all — not Payload's `csrf`
+allowlist, which enforces nothing here. That option defaults to `[]`, gains
+`serverURL` only when one is configured, and `payload/config.ts` configures none;
+`extractJWT`'s cookie strategy accepts the session cookie whenever
+`payload.config.csrf.length === 0`, whatever `Origin` says. Verified against the
+installed `payload` 3.87.1, in `dist/auth/extractJWT.js`,
+`dist/config/defaults.js`, `dist/config/sanitize.js`, and
+`dist/collections/config/defaults.js`.
+
+That basis MUST be re-derived before adding a Payload collection `endpoints`
+entry that mutates, rather than assuming the allowlist covers it. `SameSite=Lax`
+exempts top-level `GET` navigations, so a mutating endpoint reachable by `GET`
+would not be covered by it — the rotation endpoint at
+`POST /api/blog-posts/:id/rotate-share-token` is `POST`-only for that reason as
+well as its own. Populating `csrf` would be a global posture change across every
+Payload route and belongs to its own decision, not to whichever change first
+notices this.
 
 ## Input Validation
 

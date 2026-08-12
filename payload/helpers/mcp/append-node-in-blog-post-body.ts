@@ -13,6 +13,11 @@ import { getErrorMessage } from "./errors";
 import { mcpLogger } from "./logger";
 import type { McpTextResponse, McpTool } from "./mcp-types";
 import { McpSanitizedBlogPost } from "./sanitize";
+import {
+	mcpErrorResponse,
+	mcpInvalidArgumentsResponse,
+	mcpTextResponse,
+} from "./tool-handler";
 
 const LexicalNode = z
 	.object({
@@ -40,19 +45,7 @@ export const appendNodeInBlogPostBodyTool = {
 		const parsedArgs = AppendNodeInBlogPostBodyParameters.safeParse(args);
 
 		if (!parsedArgs.success) {
-			return {
-				content: [
-					{
-						type: "text",
-						text: `Error: ${parsedArgs.error.issues
-							.map(
-								(issue) =>
-									`${issue.path.join(".") || "arguments"}: ${issue.message}`,
-							)
-							.join("\n")}`,
-					},
-				],
-			};
+			return mcpInvalidArgumentsResponse(parsedArgs.error);
 		}
 
 		const params = parsedArgs.data;
@@ -70,14 +63,7 @@ export const appendNodeInBlogPostBodyTool = {
 		});
 
 		if (!existingBlogPost) {
-			return {
-				content: [
-					{
-						type: "text",
-						text: `Error: No blog post exists for slug "${params.slug}".`,
-					},
-				],
-			};
+			return mcpErrorResponse(`No blog post exists for slug "${params.slug}".`);
 		}
 
 		try {
@@ -114,25 +100,14 @@ export const appendNodeInBlogPostBodyTool = {
 				"Completed appending node in blog post body through MCP.",
 			);
 
-			return {
-				content: [
-					{
-						type: "text",
-						text: JSON.stringify(
-							{
-								blogPost: z.decode(
-									McpSanitizedBlogPost,
-									blogPost as unknown as z.input<typeof McpSanitizedBlogPost>,
-								),
-								insertedAt: [...parentLocation, index],
-								message: "Inserted the node in the blog post body.",
-							},
-							null,
-							2,
-						),
-					},
-				],
-			};
+			return mcpTextResponse({
+				blogPost: z.decode(
+					McpSanitizedBlogPost,
+					blogPost as unknown as z.input<typeof McpSanitizedBlogPost>,
+				),
+				insertedAt: [...parentLocation, index],
+				message: "Inserted the node in the blog post body.",
+			});
 		} catch (error) {
 			const errorMessage = getErrorMessage(error);
 
@@ -145,14 +120,7 @@ export const appendNodeInBlogPostBodyTool = {
 				"Failed appending node in blog post body through MCP.",
 			);
 
-			return {
-				content: [
-					{
-						type: "text",
-						text: `Error: ${errorMessage}`,
-					},
-				],
-			};
+			return mcpErrorResponse(errorMessage);
 		}
 	},
 } satisfies McpTool;

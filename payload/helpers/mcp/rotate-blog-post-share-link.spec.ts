@@ -1,0 +1,107 @@
+import type { PayloadRequest, TypedUser } from "payload";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { SHARE_TOKEN_ROTATION_CONTEXT_KEY } from "../share-token";
+import { mcpLogger } from "./logger";
+import { rotateBlogPostShareLinkTool } from "./rotate-blog-post-share-link";
+
+const signedInUser = { id: 1 } as unknown as TypedUser;
+
+interface RequestInput {
+	docs?: unknown[];
+	update?: ReturnType<typeof vi.fn>;
+	user?: null | TypedUser;
+}
+
+function request({
+	docs = [{ id: 1, slug: "hello-world", shareToken: "stored-token" }],
+	update,
+	user = signedInUser,
+}: RequestInput): PayloadRequest {
+	return {
+		// every real `PayloadRequest` carries one: `createPayloadRequest` seeds it
+		// to `{}` and `createLocalReq` replaces it, and the type declares it
+		// non-optional. `rotateShareToken` reads it unguarded, so a fake without
+		// one stands in for a request that cannot arrive.
+		context: {},
+		payload: {
+			find: vi.fn().mockResolvedValue({ docs }),
+			update:
+				update ??
+				vi.fn().mockResolvedValue({ id: 1, shareToken: "rotated-token" }),
+		},
+		user,
+	} as unknown as PayloadRequest;
+}
+
+async function respondText(
+	input: RequestInput,
+	args: Record<string, unknown> = { slug: "hello-world" },
+): Promise<string> {
+	const response = await rotateBlogPostShareLinkTool.handler(
+		args,
+		request(input),
+	);
+
+	return response.content[0]?.text ?? "";
+}
+
+describe("rotateBlogPostShareLinkTool()", () => {
+	// the logger is a module singleton, so silencing it is a mutation of shared
+	// state rather than of this file's own. Vitest isolates per file today and
+	// nothing leaks, but that is a runner setting rather than a property of the
+	// code — restoring the level is what keeps this file from becoming
+	// order-dependent the day `isolate: false` or a different pool lands.
+	let mcpLoggerLevel = mcpLogger.level;
+
+	beforeAll(() => {
+		mcpLoggerLevel = mcpLogger.level;
+		mcpLogger.level = "silent";
+	});
+
+	afterAll(() => {
+		mcpLogger.level = mcpLoggerLevel;
+	});
+
+	it("refuses the rotation when the request carries no user", async () => {
+		const update = vi.fn();
+
+		const text = await respondText({ update, user: null });
+
+		expect(text).toContain("Error:");
+		expect(update).not.toHaveBeenCalled();
+	});
+
+	it("returns the replacement link when a signed-in caller rotates", async () => {
+		expect(JSON.parse(await respondText({}))).toMatchObject({
+			shareLink: expect.stringContaining(
+				"/posts/hello-world?draft=true&token=rotated-token",
+			),
+			slug: "hello-world",
+		});
+	});
+
+	it("rotates through the shared helper rather than minting a token itself", async () => {
+		const update = vi
+			.fn()
+			.mockResolvedValue({ id: 1, shareToken: "rotated-token" });
+
+		await respondText({ update });
+
+		expect(update).toHaveBeenCalledWith(
+			expect.objectContaining({
+				collection: "blog-posts",
+				context: { [SHARE_TOKEN_ROTATION_CONTEXT_KEY]: true },
+				// a draft write, so rotating never publishes pending content.
+				draft: true,
+				id: 1,
+			}),
+		);
+	});
+
+	it("reports an error when no post exists for the slug", async () => {
+		const update = vi.fn();
+
+		expect(await respondText({ docs: [], update })).toContain("Error:");
+		expect(update).not.toHaveBeenCalled();
+	});
+});

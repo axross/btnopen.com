@@ -34,8 +34,26 @@ the narrower case of one field being opened up inside an otherwise-gated
 collection, and the comment is what separates a deliberate exposure from an
 oversight.
 
+A field holding a secret inside a collection whose documents are readable MUST be
+given a field-level `access` rule — the inverse case, closing a field rather than
+opening one. A collection's `read` rule is a **document** filter, not a field
+filter: `blog-posts` returns every field of every published post to an anonymous
+caller, so a secret added without one is published alongside the post it
+protects. `shareToken` is the worked example, and the shape it establishes is
+`read` consulting `req.user` with `create` and `update` both returning `false`,
+so no value a REST or MCP caller sends is ever honoured and a server-side
+`beforeChange` hook owns the stored value alone. Those two are the live surfaces:
+`payload/config.ts` sets `graphQL: { disable: true }`, and the generated
+`/api/graphql` route answers `404` before it builds a schema, so there is no
+GraphQL API to reason about — and re-enabling one would put every field-level
+rule in this repository back into play at once.
+
 Files under `app/(payload)/` MUST NOT be reviewed or hand-edited; Payload owns
-that route segment.
+that route segment, with one exception: `app/(payload)/custom.scss` is this
+repository's hand-authored admin stylesheet and always has been. Payload
+generates and owns everything else in that segment,
+`app/(payload)/admin/importMap.js` included — that one is regenerated rather than
+edited, per Generated Artifacts below.
 
 ## Draft and Published Gating
 

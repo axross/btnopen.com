@@ -5,9 +5,11 @@ import { configureMcpApiKeyField } from "./mcp/api-key-fields";
 import { appendNodeInBlogPostBodyTool } from "./mcp/append-node-in-blog-post-body";
 import { deleteNodeInBlogPostBodyTool } from "./mcp/delete-node-in-blog-post-body";
 import { getErrorMessage } from "./mcp/errors";
+import { getBlogPostShareLinkTool } from "./mcp/get-blog-post-share-link";
 import { mcpLogger } from "./mcp/logger";
 import type { McpEvent } from "./mcp/mcp-types";
 import { isRecord } from "./mcp/records";
+import { rotateBlogPostShareLinkTool } from "./mcp/rotate-blog-post-share-link";
 import {
 	McpBlogPostResponse,
 	McpSanitizedWebsite,
@@ -151,7 +153,15 @@ export const payloadMcpPlugin = mcpPlugin({
 				version: "1.0.0",
 			},
 		},
-		tools: [appendNodeInBlogPostBodyTool, deleteNodeInBlogPostBodyTool],
+		// custom tools default to off per API key (see `disableCustomToolDefault`),
+		// which is what keeps the two share-link tools a deliberate grant rather
+		// than something every key inherits.
+		tools: [
+			appendNodeInBlogPostBodyTool,
+			deleteNodeInBlogPostBodyTool,
+			getBlogPostShareLinkTool,
+			rotateBlogPostShareLinkTool,
+		],
 	},
 	overrideApiKeyCollection: (collection) => ({
 		...collection,

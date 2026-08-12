@@ -76,6 +76,131 @@ export async function getPublishedBlogPost({
 	);
 }
 
+// reads one post's draft share token through the AUTHENTICATED REST API. It is
+// only readable that way: the field's access rule requires `req.user`, so the
+// same request signed out comes back without the field at all — which is what
+// makes this helper's success a check on the access rule as well as a fixture.
+// not parsed through `PayloadBlogPost`: that schema is the content model MCP
+// responses are sanitized against, and `shareToken` is deliberately absent from
+// it.
+export async function getBlogPostShareToken({
+	page,
+	slug,
+	testInfo,
+}: {
+	page: Page;
+	slug: string;
+	testInfo: TestInfo;
+}): Promise<string> {
+	const url = new URL("/api/blog-posts", testInfo.project.use.baseURL);
+	url.searchParams.set("where[slug][equals]", slug);
+	url.searchParams.set("draft", "true");
+	url.searchParams.set("limit", "1");
+
+	const response = await page.request.get(`${url}`);
+
+	if (!response.ok()) {
+		throw new Error(
+			`Failed to read the blog post share token: ${response.status()} ${await response.text()}`,
+		);
+	}
+
+	const json: unknown = await response.json();
+
+	if (
+		isRecord(json) &&
+		Array.isArray(json.docs) &&
+		isRecord(json.docs[0]) &&
+		typeof json.docs[0].shareToken === "string" &&
+		json.docs[0].shareToken.length > 0
+	) {
+		return json.docs[0].shareToken;
+	}
+
+	throw new Error(
+		`Failed to read the blog post share token because "${slug}" returned none.`,
+	);
+}
+
+// rotates one post's share token through the authenticated endpoint Payload
+// mounts on the collection, and returns the replacement. This is the only way to
+// revoke a share link, so it is also the only way a test can produce a stale one.
+export async function rotateBlogPostShareToken({
+	id,
+	page,
+	testInfo,
+}: {
+	id: number;
+	page: Page;
+	testInfo: TestInfo;
+}): Promise<string> {
+	const url = new URL(
+		`/api/blog-posts/${id}/rotate-share-token`,
+		testInfo.project.use.baseURL,
+	);
+
+	const response = await page.request.post(`${url}`);
+
+	if (!response.ok()) {
+		throw new Error(
+			`Failed to rotate the blog post share token: ${response.status()} ${await response.text()}`,
+		);
+	}
+
+	const json: unknown = await response.json();
+
+	if (isRecord(json) && typeof json.shareToken === "string") {
+		return json.shareToken;
+	}
+
+	throw new Error(
+		"Failed to rotate the blog post share token because no token was returned.",
+	);
+}
+
+// writes through the collection's BULK update endpoint — `?where[...]` with no
+// `draft` parameter — which is the path the admin list view's Edit → "Publish
+// changes" takes. It matters here because Payload sources each document from the
+// collection row on that path, rather than from its latest version the way every
+// single-document write does, so it is the one write a token rotation has to
+// survive without being carried backwards.
+export async function bulkUpdateBlogPost({
+	data,
+	id,
+	page,
+	testInfo,
+}: {
+	data: Record<string, unknown>;
+	id: number;
+	page: Page;
+	testInfo: TestInfo;
+}): Promise<void> {
+	const url = new URL("/api/blog-posts", testInfo.project.use.baseURL);
+	url.searchParams.set("where[id][equals]", String(id));
+	url.searchParams.set("locale", "ja-JP");
+
+	const response = await page.request.patch(`${url}`, {
+		headers: {
+			"content-type": "application/json",
+		},
+		data,
+	});
+
+	if (!response.ok()) {
+		throw new Error(
+			`Failed to bulk-update the blog post: ${response.status()} ${await response.text()}`,
+		);
+	}
+}
+
+// the share link an author hands out: the post's own preview URL with the
+// secret appended. Built here rather than spelled out per test so the shape
+// stays in one place — it is the same one `payload/helpers/mcp/share-link.ts`
+// builds.
+export function shareLinkPath(slug: string, shareToken: string): string {
+	return `/posts/${slug}?draft=true&token=${encodeURIComponent(shareToken)}`;
+}
+
 // creates a draft blog post through the authenticated REST API, reusing the
 // seeded cover image and current test user so the caller only supplies the
 // slug/title and the optional agentic authoring fields. Pair every call with

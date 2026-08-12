@@ -1,0 +1,300 @@
+"use client";
+
+import {
+	Button,
+	ConfirmationModal,
+	FieldLabel,
+	toast,
+	useConfig,
+	useDocumentInfo,
+	useField,
+	useFormFields,
+	useModal,
+} from "@payloadcms/ui";
+import { captureException } from "@sentry/nextjs";
+import type { TextFieldClientComponent } from "payload";
+import { type JSX, useCallback, useEffect, useState } from "react";
+
+const baseClass = "share-link-field";
+
+/**
+ * Slug of the confirmation modal Rotate opens. One edit view renders one share
+ * link, so a constant slug is unambiguous.
+ */
+const rotateModalSlug = "rotate-blog-post-share-link";
+
+/**
+ * Lines the link box falls back to where `field-sizing: content` — which sizes
+ * it to the URL exactly — is not supported. Three fits an ordinary link at the
+ * widths the admin lays this control out at; a long enough slug at a narrow
+ * enough width still overflows them, which the box's resize handle covers.
+ */
+const shareLinkRows = 3;
+
+/**
+ * The `shareToken` field's admin control: the draft's share link, a copy
+ * action, and a rotate action, rendered inline among the post's Metadata
+ * fields.
+ *
+ * Its props contract is Payload's rather than this repository's:
+ * `TextFieldClientComponent` is the shape Payload's admin runtime instantiates
+ * a `Field` slot with, and its props are field descriptors, not DOM
+ * attributes. That is why this component does not base its props on the element
+ * it roots and does not spread a rest object onto it, which the installed
+ * React-component capability otherwise requires — the departure is recorded in
+ * `docs/operations/agent-skills.md`.
+ *
+ * Four things about it are deliberate rather than incidental:
+ *
+ * - **Rotation persists by itself.** Rotate posts to the collection's rotation
+ *   endpoint, which writes the replacement server-side, and the new value is
+ *   written into form state with the form left unmodified — so there is no save
+ *   step to forget, and the control shows the new link as soon as it lands.
+ *   Rotation is the only revocation this design has, so the action carries the
+ *   danger treatment, a rotation glyph, and a confirmation. A rotation that
+ *   fails is reported rather than only toasted, for the same reason: it leaves
+ *   an author unable to revoke.
+ * - **The origin comes from the browser.** The admin is served from the same
+ *   origin as the site, so the link is built from `window.location` rather than
+ *   by plumbing a server-side origin into the client bundle. Only the path is
+ *   knowable during the server render, so the box shows the path and gains its
+ *   origin on mount, and Copy reads the origin at click time — which is what
+ *   keeps the first paint from being an empty box beside a disabled Copy.
+ * - **There is no signed-out branch.** `shareToken` is unreadable without a
+ *   session, so this renders only for a signed-in author; a visitor state would
+ *   be dead code describing a case that cannot happen.
+ * - **There are no test hooks.** The Playwright suite authenticates against the
+ *   API and never drives `/admin`, so `docs/conventions/testing.md`'s rule —
+ *   test ids go on elements tests need to identify — puts none here. An admin
+ *   suite would add the ones it actually locates by, against the markup as it
+ *   stands then.
+ */
+export const ShareLinkField: TextFieldClientComponent = ({ field, path }) => {
+	const { setValue, value } = useField<string>({ path });
+	const { id } = useDocumentInfo();
+	const { config } = useConfig();
+	const { openModal } = useModal();
+	const slug = useFormFields(([fields]) => {
+		const slugValue = fields?.slug?.value;
+
+		return typeof slugValue === "string" ? slugValue : "";
+	});
+	const [origin, setOrigin] = useState("");
+	const [isRotating, setIsRotating] = useState(false);
+
+	useEffect(() => {
+		setOrigin(window.location.origin);
+	}, []);
+
+	// the post's own preview URL with the secret appended — the route the author
+	// already knows from live preview, not a second address to reason about. the
+	// path is held apart from the origin because only the path is knowable during
+	// the server render, so the first paint shows something rather than nothing. a
+	// `useState` initializer reading `window` would fill that frame instead by
+	// disagreeing with the served HTML, which is a hydration mismatch rather than
+	// a fix.
+	const sharePath =
+		slug && value
+			? `/posts/${slug}?draft=true&token=${encodeURIComponent(value)}`
+			: "";
+	const shareUrl = sharePath === "" ? "" : `${origin}${sharePath}`;
+
+	const copyShareUrl = useCallback(async () => {
+		try {
+			// the origin is read here rather than taken from state, so the clipboard
+			// gets an absolute link whether or not the effect above has run yet.
+			await navigator.clipboard.writeText(
+				`${window.location.origin}${sharePath}`,
+			);
+
+			toast.success("Copied the share link.");
+		} catch {
+			toast.error("Could not copy the share link.");
+		}
+	}, [sharePath]);
+
+	const rotateShareToken = useCallback(async () => {
+		setIsRotating(true);
+
+		try {
+			const rotated = await requestShareTokenRotation(
+				`${config.serverURL}${config.routes.api}/blog-posts/${id}/rotate-share-token`,
+			);
+
+			// `true` leaves the form unmodified: the endpoint has already persisted
+			// the replacement, so showing it must not turn the document dirty and ask
+			// the author to save something that is already saved.
+			setValue(rotated, true);
+
+			toast.success(
+				"Rotated the share link. Every link shared before now has stopped working.",
+			);
+		} catch (error) {
+			// rotation is the only revocation this design has, so a failure here is an
+			// author unable to cut off a link they have decided to revoke — worth an
+			// issue rather than a toast the author reads once. nothing else reports
+			// it: Payload catches a throwing endpoint handler internally and answers
+			// 500, so Next's `onRequestError` never sees the original either.
+			captureException(
+				new Error("Rotating a blog post's share link failed.", {
+					cause: error,
+				}),
+			);
+
+			toast.error("Could not rotate the share link.");
+		} finally {
+			setIsRotating(false);
+		}
+	}, [config.routes.api, config.serverURL, id, setValue]);
+
+	// Payload's own text field derives its input id from the field path this way,
+	// so the label and the warning line associate with the input the same way
+	// every other field on the tab does.
+	const inputId = `field-${path.replaceAll(".", "__")}`;
+	const warningId = `${inputId}-warning`;
+	// an unsaved post has no id and no minted token, so the link box — and with
+	// it the only form control this field renders — is not on the page yet.
+	const hasShareLink = Boolean(id && value);
+
+	return (
+		<div className={baseClass}>
+			{/* `htmlFor` and `path` are both withheld while there is no control to
+			    point at, because withholding one is not enough: `FieldLabel` falls
+			    back to `generateFieldID(path, …)` when `htmlFor` is absent, and only
+			    renders a `<span>` instead of a dangling `<label for>` once both
+			    resolve to nothing. */}
+			<FieldLabel
+				htmlFor={hasShareLink ? inputId : undefined}
+				label={field?.label}
+				path={hasShareLink ? path : undefined}
+			/>
+
+			{hasShareLink ? (
+				<div className={`${baseClass}__row`}>
+					{/* a textarea rather than an input, because an input cannot wrap and
+					    the whole point of putting this control at full content width is
+					    that the whole URL is readable. It stays a form control so the
+					    label still associates, the warning still describes it, and the
+					    value is still focusable and selectable by keyboard. */}
+					<textarea
+						aria-describedby={warningId}
+						className={`${baseClass}__url`}
+						id={inputId}
+						readOnly={true}
+						rows={shareLinkRows}
+						spellCheck={false}
+						value={shareUrl}
+					/>
+
+					<Button
+						buttonStyle="secondary"
+						disabled={sharePath === ""}
+						margin={false}
+						onClick={copyShareUrl}
+						size="small"
+					>
+						{"Copy"}
+					</Button>
+
+					{/* `buttonStyle="error"` is in Payload's type union but has no rule in
+					    its stylesheet, so the danger treatment comes from
+					    `share-link-field__rotate` in `app/(payload)/custom.scss`. The
+					    glyph carries the same signal in shape, so the action does not
+					    rely on colour alone. */}
+					<Button
+						buttonStyle="error"
+						className={`${baseClass}__rotate`}
+						disabled={isRotating}
+						icon={<RotateGlyph />}
+						iconPosition="left"
+						margin={false}
+						onClick={() => openModal(rotateModalSlug)}
+						size="small"
+					>
+						{isRotating ? "Rotating…" : "Rotate"}
+					</Button>
+				</div>
+			) : (
+				<p className={`${baseClass}__pending`}>
+					{"This post gets its share link once it is saved."}
+				</p>
+			)}
+
+			<p className={`${baseClass}__warning`} id={warningId}>
+				{
+					"Anyone holding this link can read the draft, with no sign-in. It never expires — rotating is the only way to revoke it, and rotating revokes every copy at once."
+				}
+			</p>
+
+			<ConfirmationModal
+				body={
+					"Every link shared under the current secret stops working immediately, including the one you sent five minutes ago. This cannot be undone."
+				}
+				confirmLabel="Rotate"
+				confirmingLabel="Rotating…"
+				heading="Rotate this post's share link?"
+				modalSlug={rotateModalSlug}
+				onConfirm={rotateShareToken}
+			/>
+		</div>
+	);
+};
+
+/**
+ * Posts a rotation to the collection's endpoint and answers with the
+ * replacement token.
+ *
+ * It sits outside the component because none of it is React: the component owns
+ * the pending flag, the toasts, and the form-state write, and this owns the
+ * request and the shape of the answer.
+ *
+ * @throws if the endpoint refuses the request, or answers without a usable
+ * token. Both are reported rather than resolved quietly, because either one
+ * leaves an author who meant to revoke a link still handing out the old one.
+ */
+async function requestShareTokenRotation(endpoint: string): Promise<string> {
+	const response = await fetch(endpoint, {
+		credentials: "include",
+		method: "POST",
+	});
+
+	if (!response.ok) {
+		throw new Error(`Rotation responded with ${response.status}.`);
+	}
+
+	const body: unknown = await response.json();
+	const rotated =
+		typeof body === "object" && body !== null && "shareToken" in body
+			? body.shareToken
+			: null;
+
+	if (typeof rotated !== "string" || rotated.length === 0) {
+		throw new Error("Rotation returned no token.");
+	}
+
+	return rotated;
+}
+
+/**
+ * Circular-arrow glyph on the Rotate action, so the action reads as destructive
+ * through shape as well as colour.
+ */
+function RotateGlyph(): JSX.Element {
+	return (
+		<svg
+			aria-hidden="true"
+			fill="none"
+			height="16"
+			stroke="currentColor"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			strokeWidth="2"
+			viewBox="0 0 24 24"
+			width="16"
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			<path d="M21 12a9 9 0 1 1-3.36-7" />
+			<path d="M21 3v6h-6" />
+		</svg>
+	);
+}

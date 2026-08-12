@@ -8,6 +8,7 @@ import {
 	getActiveLocale,
 	openGraphLocaleByLocale,
 } from "@/helpers/i18n";
+import { matchesPostShareToken } from "@/helpers/post-draft-access";
 import { thumbnailHeight, thumbnailWidth } from "@/helpers/thumbnail";
 import { type BlogPostDetail, getBlogPost } from "@/repositories/get-blog-post";
 import { getBlogPostAgentic } from "@/repositories/get-blog-post-agentic";
@@ -31,11 +32,15 @@ export default async function BlogPostPage({
 	// stream its own matching loading skeleton (the agentic view and the post
 	// have different shapes, so a single shared fallback would mismatch one of
 	// them). This opts the route into dynamic rendering.
-	const { agentic, draft: draftParam } = await searchParams;
+	const { agentic, draft: draftParam, token } = await searchParams;
+	const shareToken = readShareToken(token);
 	const slug = params.then((p) => p.slug);
 	const draft = Promise.resolve(draftParam === "true");
 
 	if (agentic === "true") {
+		// the agentic view is session-only by decision, so the token is not
+		// forwarded into it — a share link unlocks the reader-facing post and
+		// nothing else.
 		return <BlogPostAgenticView slug={slug} draft={draft} data-testid="page" />;
 	}
 
@@ -49,7 +54,12 @@ export default async function BlogPostPage({
 	// evaluated argument) so the dynamic cookie read happens within the Suspense
 	// boundaries that await `blogPost`.
 	const blogPost = Promise.all([slug, draft]).then(async ([s, d]) =>
-		getBlogPost({ slug: s, draft: d, locale: await getActiveLocale() }),
+		getBlogPost({
+			slug: s,
+			draft: d,
+			locale: await getActiveLocale(),
+			shareToken,
+		}),
 	);
 
 	return (
@@ -66,7 +76,11 @@ export default async function BlogPostPage({
 					    this boundary blocks rather than streaming a skeleton the reader
 					    would only watch be replaced. */}
 					<Suspense>
-						<BlogPostContent slug={slug} draft={draft} />
+						<BlogPostContent
+							slug={slug}
+							draft={draft}
+							shareToken={shareToken}
+						/>
 					</Suspense>
 				</main>
 
@@ -99,6 +113,27 @@ export default async function BlogPostPage({
 			</Suspense>
 		</>
 	);
+}
+
+/**
+ * Normalizes the `token` search parameter into the single opaque string every
+ * consumer below expects.
+ *
+ * Next.js delivers an **array** for a repeated search parameter, so
+ * `?token=a&token=b` arrives as `["a", "b"]`. Nothing downstream is shaped for
+ * that: the gate hands the value to a constant-time character comparison, which
+ * an array of the right length would reach and fail inside. Normalizing here,
+ * at the boundary where the request stops being a URL, is what keeps every
+ * consumer able to declare a plain string.
+ *
+ * The first value wins, which is what `URLSearchParams.get()` returns and
+ * therefore what `thumbnail.png/route.tsx` already reads — so one request never
+ * resolves two ways across the page and the thumbnail it advertises.
+ */
+function readShareToken(
+	token: string | string[] | undefined,
+): string | undefined {
+	return Array.isArray(token) ? token[0] : token;
 }
 
 async function MaybeComments({
@@ -148,10 +183,11 @@ export async function generateMetadata({
 	params,
 	searchParams,
 }: PageProps): Promise<Metadata> {
-	const [{ slug }, { draft, agentic }] = await Promise.all([
+	const [{ slug }, { draft, agentic, token }] = await Promise.all([
 		params,
 		searchParams,
 	]);
+	const shareToken = readShareToken(token);
 	const isDraft = draft === "true";
 	const locale = await getActiveLocale();
 
@@ -180,12 +216,22 @@ export async function generateMetadata({
 
 	const [website, blogPost] = await Promise.all([
 		getWebsite({ locale }),
-		getBlogPost({ slug, draft: isDraft, locale }),
+		getBlogPost({ slug, draft: isDraft, locale, shareToken }),
 	]);
 
 	if (!website || !blogPost) {
 		notFound();
 	}
+
+	// whether the request carried THIS post's own current token — not whether the
+	// render resolved as a draft, which for a signed-in author is true whatever
+	// token the URL carried. The token lookup beneath `matchesPostShareToken` is
+	// `cache()`d on the slug, so a render performs it at most once however many
+	// callers ask, and the `isDraft` guard short-circuits this away entirely on
+	// the published path, which therefore still reads no dynamic API.
+	const carriesOwnShareToken =
+		isDraft && (await matchesPostShareToken(slug, shareToken));
+	const thumbnailUrl = `${urlOrigin}/posts/${blogPost.slug}/thumbnail.png`;
 
 	return {
 		title: blogPost.title,
@@ -199,6 +245,16 @@ export async function generateMetadata({
 		],
 		creator: website.creator.name,
 		publisher: website.creator.name,
+		// a draft render is never indexable, whatever it resolved to. the site-wide
+		// `index: true` in the root layout would otherwise leave a leaked or
+		// forwarded share link free to put unpublished content into a search index;
+		// no `?draft=true` URL is in the sitemap, so this costs nothing.
+		//
+		// spread rather than `robots: isDraft ? … : undefined`: Next.js treats a
+		// present key holding `undefined` as an explicit reset and drops the
+		// layout's `index, follow` tag entirely. Omitting the key is what leaves a
+		// published render's metadata identical to what it is today.
+		...(isDraft ? { robots: { index: false, follow: false } } : {}),
 		openGraph: {
 			title: blogPost.title,
 			description: blogPost.brief,
@@ -206,7 +262,22 @@ export async function generateMetadata({
 			url: `${urlOrigin}/posts/${blogPost.slug}`,
 			images: [
 				{
-					url: `${urlOrigin}/posts/${blogPost.slug}/thumbnail.png`,
+					// the thumbnail route gates the draft on the same token this request
+					// carried, so an unfurl of a shared link has to hand it back to
+					// render the draft's own card. The accepted consequence is that the
+					// token appears in the draft page's rendered HTML — only a holder can
+					// render that page. The published path builds the bare URL it always
+					// did, so a published render's metadata is unchanged.
+					//
+					// keyed on this post's own token having matched, so nothing else is
+					// ever echoed back into the page's <head>: not a token supplied for a
+					// published post, and not another post's token supplied by a
+					// signed-in author, on a URL this post's thumbnail gate rejects
+					// anyway.
+					url:
+						carriesOwnShareToken && shareToken
+							? `${thumbnailUrl}?token=${encodeURIComponent(shareToken)}`
+							: thumbnailUrl,
 					width: thumbnailWidth,
 					height: thumbnailHeight,
 					alt: blogPost.title,
