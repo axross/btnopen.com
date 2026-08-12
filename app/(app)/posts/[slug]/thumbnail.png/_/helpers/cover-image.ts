@@ -1,3 +1,5 @@
+import "server-only";
+
 import { get as getBlob } from "@vercel/blob";
 import sharp from "sharp";
 import { postThumbnailCoverTintColor } from "@/helpers/brand-colors";

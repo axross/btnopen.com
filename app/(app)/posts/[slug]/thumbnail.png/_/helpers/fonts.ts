@@ -1,3 +1,5 @@
+import "server-only";
+
 // biome-ignore-start lint/correctness/noNodejsModules: this is running on nodejs runtime
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
