@@ -98,7 +98,7 @@ async function retrieveImageFromVercelBlob(
  *
  * @throws if the stored pathname resolves to an origin other than this
  * deployment's, which would turn the render into an outbound fetch of a foreign
- * host.
+ * host, or if the media API does not answer with the image.
  */
 async function retrieveImageViaAPI(pathname: string): Promise<ArrayBuffer> {
 	logger.info({ pathname }, "Started fetching image via API.");
@@ -115,6 +115,19 @@ async function retrieveImageViaAPI(pathname: string): Promise<ArrayBuffer> {
 	}
 
 	const imageResponse = await fetch(url);
+
+	// `arrayBuffer()` resolves whatever the response carried, so an error page
+	// arrives here as bytes rather than as a failure: the media document
+	// outlives its stored file often enough to matter (a cleaned-up preview
+	// store, a half-finished upload). Without this the HTML body reaches
+	// `sharp`, which rejects it as an unsupported image format further along —
+	// outside the caller's `try`, where the failure becomes a 500 instead of
+	// the 404 an unreadable cover image is meant to answer with.
+	if (!imageResponse.ok) {
+		throw new Error(
+			`Media API answered ${imageResponse.status} for the stored cover image (${url.pathname}).`,
+		);
+	}
 
 	const imageBuffer = await imageResponse.arrayBuffer();
 
