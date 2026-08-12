@@ -1,0 +1,348 @@
+@layer components {
+	/* `.indexPageMain` is a scope root and nothing else: `<main>` shipped
+	 * class-less before these rules moved here from the route's own
+	 * `page.module.css`, and it still takes its column layout from the
+	 * `.indexPage` flex container above it. Declaring anything on the root would
+	 * be a style change dressed as a move.
+	 *
+	 * `--max-width` and `--page-variant` are read but never declared here — they
+	 * come from that same `.indexPage` container, and inherit through this root
+	 * untouched. */
+	@scope (.indexPageMain) {
+		.pageHeading {
+			position: absolute;
+			inline-size: var(--size-1);
+			block-size: var(--size-1);
+			margin: calc(var(--size-1) * -1);
+			padding: 0;
+			overflow: hidden;
+			clip-path: inset(50%);
+			white-space: nowrap;
+		}
+
+		.intro {
+			display: flex;
+			width: stretch;
+			max-inline-size: var(--max-width);
+			/* container: intro / inline-size; */
+			align-items: center;
+			flex-direction: column;
+			margin-block-start: var(--size-64);
+			padding-inline: var(--size-16);
+
+			@container style(--page-variant: "desktop") {
+				flex-direction: row-reverse;
+				column-gap: var(--size-32);
+				padding-inline: unset;
+			}
+		}
+
+		.portrait {
+			position: relative;
+			width: 75cqw;
+			height: auto;
+			container: cover / inline-size;
+			aspect-ratio: 1;
+			overflow: hidden;
+
+			@container style(--page-variant: "desktop") {
+				flex: 2;
+			}
+		}
+
+		.portraitForeground {
+			position: absolute;
+			inset-block-start: 15cqw;
+			inset-inline-end: 15cqw;
+			width: 85cqw;
+			height: auto;
+			filter: sepia(0.5) saturate(1.75)
+				hue-rotate(calc(var(--accent-hue) - 92deg));
+			z-index: 1;
+
+			@container style(--theme: dark) {
+				filter: sepia(0.5) saturate(2)
+					hue-rotate(calc(var(--accent-hue) - 92deg)) brightness(0.9);
+			}
+		}
+
+		/* The brush-mark backdrop behind the portrait. The artwork lives at
+		   /images/brush-grunge.svg and is painted by masking it over a box the
+		   palette colours, so the mark follows the accent solid in both schemes
+		   instead of baking a colour into the asset.
+
+		   Each layer paints the mark twice: ::before is the offset shadow copy
+		   and ::after the mark itself, in that order because ::after paints
+		   over ::before — which is how the SVG's own feDropShadow composited
+		   them. Neither pseudo element carries the layer's background-color, so
+		   the glitch layers' opaque plate stays a full rectangle rather than
+		   being clipped to the mark's silhouette. */
+		.portraitGrunge,
+		.portraitGrungeGlitchFirst,
+		.portraitGrungeGlitchSecond {
+			/* the artwork's own viewBox, so the box ratio and the shadow offset
+			   below read in the units the SVG was authored in. */
+			--grunge-artwork-width: 763;
+			--grunge-artwork-height: 932;
+			/* feDropShadow's dx was in those user units rather than pixels, so
+			   the CSS copy is offset by the same fraction of the box and keeps
+			   scaling with the viewport the way the filter did. */
+			--grunge-shadow-offset: 2;
+
+			position: absolute;
+			inset-block-start: 0;
+			inset-inline-start: 0;
+			aspect-ratio: var(--grunge-artwork-width) / var(--grunge-artwork-height);
+			color: var(--color-solid-accent-rest);
+		}
+
+		.portraitGrunge::before,
+		.portraitGrunge::after,
+		.portraitGrungeGlitchFirst::before,
+		.portraitGrungeGlitchFirst::after,
+		.portraitGrungeGlitchSecond::before,
+		.portraitGrungeGlitchSecond::after {
+			content: "";
+			position: absolute;
+			inset: 0;
+			mask-image: url("/images/brush-grunge.svg");
+			mask-size: 100% 100%;
+			mask-repeat: no-repeat;
+		}
+
+		.portraitGrunge::before,
+		.portraitGrungeGlitchFirst::before,
+		.portraitGrungeGlitchSecond::before {
+			background-color: var(--grunge-outline, transparent);
+			translate: calc(
+				var(--grunge-shadow-offset) /
+				var(--grunge-artwork-width) *
+				100%
+			);
+		}
+
+		.portraitGrunge::after,
+		.portraitGrungeGlitchFirst::after,
+		.portraitGrungeGlitchSecond::after {
+			background-color: currentColor;
+		}
+
+		.portraitGrunge {
+			inset-inline-end: 0;
+			z-index: -5;
+		}
+
+		.portraitGrungeGlitchFirst {
+			inset-inline-end: calc(var(--size-2) * -1);
+			--grunge-outline: oklch(
+				from var(--color-solid-accent-rest) l c calc(h - 32)
+			);
+			--grunge-shadow-offset: -2;
+			background-color: var(--color-background-neutral-plain);
+			animation: noise-fast var(--duration-glitch-fast) infinite linear
+				alternate-reverse;
+			z-index: -4;
+		}
+
+		.portraitGrungeGlitchSecond {
+			inset-inline-end: var(--size-2);
+			--grunge-outline: oklch(
+				from var(--color-solid-accent-rest) l c calc(h + 32)
+			);
+			--grunge-shadow-offset: 2;
+			background-color: var(--color-background-neutral-plain);
+			animation: noise-slow var(--duration-glitch-slow) infinite linear
+				alternate-reverse;
+			z-index: -3;
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			.portraitGrungeGlitchFirst,
+			.portraitGrungeGlitchSecond {
+				display: none;
+			}
+		}
+
+		.headline {
+			margin-block-start: var(--size-32);
+			color: var(--color-text-neutral-high);
+			font-size: var(--text-xl);
+			font-weight: 700;
+			line-height: var(--leading-md);
+		}
+
+		.bio {
+			display: flex;
+			flex-direction: column;
+			align-items: stretch;
+			row-gap: var(--size-32);
+			margin-block-start: var(--size-32);
+
+			@container style(--page-variant: "desktop") {
+				flex: 3;
+			}
+		}
+
+		.bioContent {
+			display: flex;
+			flex-direction: column;
+			align-items: stretch;
+			row-gap: var(--size-16);
+			font-size: var(--text-md);
+			line-height: var(--leading-lg);
+		}
+
+		.section {
+			width: stretch;
+			max-inline-size: var(--max-width);
+			margin-block-start: var(--size-48);
+			padding-inline: var(--size-16);
+
+			@container style(--page-variant: "desktop") {
+				padding-inline: unset;
+			}
+		}
+
+		.sectionHeading {
+			color: var(--color-text-neutral-high);
+			font-size: var(--text-xl);
+			font-weight: 700;
+		}
+
+		.blogPosts {
+			margin-block-start: var(--size-24);
+		}
+
+		@keyframes noise-fast {
+			0% {
+				clip-path: inset(55% 0 43% 0);
+			}
+			5% {
+				clip-path: inset(64% 0 18% 0);
+			}
+			10% {
+				clip-path: inset(46% 0 45% 0);
+			}
+			15% {
+				clip-path: inset(11% 0 79% 0);
+			}
+			20% {
+				clip-path: inset(45% 0 13% 0);
+			}
+			25% {
+				clip-path: inset(22% 0 21% 0);
+			}
+			30% {
+				clip-path: inset(52% 0 36% 0);
+			}
+			35% {
+				clip-path: inset(10% 0 86% 0);
+			}
+			40% {
+				clip-path: inset(86% 0 4% 0);
+			}
+			45% {
+				clip-path: inset(95% 0 2% 0);
+			}
+			50% {
+				clip-path: inset(8% 0 61% 0);
+			}
+			55% {
+				clip-path: inset(79% 0 12% 0);
+			}
+			60% {
+				clip-path: inset(79% 0 10% 0);
+			}
+			65% {
+				clip-path: inset(78% 0 10% 0);
+			}
+			70% {
+				clip-path: inset(79% 0 3% 0);
+			}
+			75% {
+				clip-path: inset(33% 0 7% 0);
+			}
+			80% {
+				clip-path: inset(80% 0 8% 0);
+			}
+			85% {
+				clip-path: inset(37% 0 39% 0);
+			}
+			90% {
+				clip-path: inset(23% 0 14% 0);
+			}
+			95% {
+				clip-path: inset(90% 0 8% 0);
+			}
+			100% {
+				clip-path: inset(71% 0 16% 0);
+			}
+		}
+
+		@keyframes noise-slow {
+			0% {
+				clip-path: inset(84% 0 12% 0);
+			}
+			5% {
+				clip-path: inset(95% 0 1% 0);
+			}
+			10% {
+				clip-path: inset(86% 0 12% 0);
+			}
+			15% {
+				clip-path: inset(62% 0 16% 0);
+			}
+			20% {
+				clip-path: inset(46% 0 10% 0);
+			}
+			25% {
+				clip-path: inset(73% 0 5% 0);
+			}
+			30% {
+				clip-path: inset(89% 0 7% 0);
+			}
+			35% {
+				clip-path: inset(4% 0 80% 0);
+			}
+			40% {
+				clip-path: inset(78% 0 19% 0);
+			}
+			45% {
+				clip-path: inset(50% 0 41% 0);
+			}
+			50% {
+				clip-path: inset(8% 0 72% 0);
+			}
+			55% {
+				clip-path: inset(79% 0 14% 0);
+			}
+			60% {
+				clip-path: inset(79% 0 22% 0);
+			}
+			65% {
+				clip-path: inset(74% 0 25% 0);
+			}
+			70% {
+				clip-path: inset(22% 0 10% 0);
+			}
+			75% {
+				clip-path: inset(71% 0 10% 0);
+			}
+			80% {
+				clip-path: inset(58% 0 13% 0);
+			}
+			85% {
+				clip-path: inset(23% 0 52% 0);
+			}
+			90% {
+				clip-path: inset(50% 0 44% 0);
+			}
+			95% {
+				clip-path: inset(75% 0 16% 0);
+			}
+			100% {
+				clip-path: inset(45% 0 49% 0);
+			}
+		}
+	}
+}
