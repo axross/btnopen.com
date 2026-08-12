@@ -1,9 +1,9 @@
 @layer components {
-	/* Every rule below the scope root mirrors its counterpart in the index page's
-	 * own `page.module.css`, because a CSS Module may not import another
-	 * component's. The two move together: a spacing change on either side belongs
-	 * on both, or the skeleton stops collapsing into the loaded region without a
-	 * shift.
+	/* Every rule below the scope root mirrors its counterpart in the loaded
+	 * region's own `index-page-main.module.css`, because a CSS Module may not
+	 * import another component's. The two move together: a spacing change on
+	 * either side belongs on both, or the skeleton stops collapsing into the
+	 * loaded region without a shift.
 	 *
 	 * The social-link rules are the one section whose counterpart lives elsewhere:
 	 * the loaded region delegates that row to `<SocialLinkList>`, so they mirror
@@ -12,13 +12,13 @@
 	 * the exception — it has no counterpart at all, because the loaded glyph takes
 	 * its size from the SVG asset rather than from a rule.
 	 *
-	 * The scope root is the exception, and has nothing to mirror: `page.tsx`
-	 * renders its `<main>` under a `css.main` that `page.module.css` never
-	 * defines, so the loaded region's root ships class-less and takes its column
-	 * layout from the `.indexPage` flex container above it. These declarations
-	 * restate that layout so the two roots lay their children out alike — which
-	 * they measurably do: the `.intro` box starts at the same y in both states at
-	 * 412px, 712px, and 1280px.
+	 * The scope root is the exception, and has nothing to mirror:
+	 * `index-page-main.module.css` declares `.indexPageMain` as a scope root and
+	 * nothing else, so the loaded region's root carries no declarations of its own
+	 * and takes its column layout from the `.indexPage` flex container above it.
+	 * These declarations restate that layout so the two roots lay their children
+	 * out alike — which they measurably do: the `.intro` box starts at the same y
+	 * in both states at 412px, 712px, and 1280px.
 	 *
 	 * `--max-width` and `--page-variant` are not restated — they come from the
 	 * `.indexPage` container this skeleton renders inside, the same ancestor the

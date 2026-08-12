@@ -330,8 +330,8 @@ drawn bounds of an icon are not its tap area.
 request rather than fixed. `negotiateLocale` in `app/(app)/_/helpers/i18n.ts`
 takes an explicit `NEXT_LOCALE` cookie choice first, then the highest-quality
 `Accept-Language` entry mapping to a supported locale, then falls back to
-`ja-JP`. Three root documents render it: `app/(app)/layout.tsx` and
-`app/global-not-found.tsx` resolve the live negotiated locale, while
+`ja-JP`. Three root documents render it: `app/(app)/_components/document.tsx`
+and `app/global-not-found.tsx` resolve the live negotiated locale, while
 `app/(app)/global-error.tsx` uses the default because a last-resort error boundary
 cannot do request-time async work. A run of content whose language differs from
 the negotiated root MUST carry its own `lang` attribute — the language switcher's

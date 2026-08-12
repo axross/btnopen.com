@@ -14,8 +14,10 @@ import css from "./index-page-main-loading.module.css";
  * so nothing shifts when the real content arrives, and hands the post list
  * itself to the skeleton that list already owns.
  *
- * `<IndexPageMain>` lives in `page.tsx` rather than in its own file, so this
- * fallback is a standalone component rather than the `loading` half of a triad.
+ * `<IndexPageMain>` has a file of its own, but its pending state is owned by
+ * the route-level `<Suspense>` in `page.tsx` rather than by the component, so
+ * this fallback is a standalone component rather than the `loading` half of a
+ * triad.
  */
 export function IndexPageMainLoading({
 	className,

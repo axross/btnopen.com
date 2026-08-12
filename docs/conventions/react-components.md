@@ -76,13 +76,15 @@ not the surrounding markup.
 
 A skeleton standing at a **route-level** `<Suspense>` boundary cannot buy that
 adjacency, because no single component owns both states there — the page does.
-`<IndexPageMain>` is declared inline in `app/(app)/(index)/page.tsx` and has no
-component file to be a triad's root; `<Comments>` has a file but is mounted
-conditionally by `app/(app)/posts/[slug]/page.tsx`, so the pending state belongs
-to the page's boundary rather than to the component. Splitting either out purely
-to earn the triad would move a route's own markup into a component the route is
-the only caller of. A standalone `<region>-loading.tsx` MAY be built beside the
-region it covers instead, when the pending state is owned by a route-level
+`<IndexPageMain>` and `<Comments>` each have a component file of their own, but
+neither mounts its own skeleton: `app/(app)/(index)/page.tsx` and
+`app/(app)/posts/[slug]/page.tsx` each mount one behind the route's own
+`<Suspense>`, the second conditionally, so the pending state belongs to the
+page's boundary rather than to the component. Neither has a `loaded` half for a
+`loading` sibling to pair with, and giving either one a skeleton of its own
+would move a decision the route makes into a component the route is the only
+caller of. A standalone `<region>-loading.tsx` MAY be built beside the region
+it covers instead, when the pending state is owned by a route-level
 `<Suspense>` boundary rather than by a component with a `loaded` sibling; it is
 the sanctioned shape there, and it carries by hand the discipline adjacency used
 to enforce. `index-page-main-loading.tsx` and `comments/comments-loading.tsx` are
