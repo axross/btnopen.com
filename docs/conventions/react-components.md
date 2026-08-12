@@ -78,9 +78,10 @@ A skeleton standing at a **route-level** `<Suspense>` boundary cannot buy that
 adjacency, because no single component owns both states there — the page does.
 `<IndexPageMain>` and `<Comments>` each have a component file of their own, but
 neither mounts its own skeleton: `app/(app)/(index)/page.tsx` and
-`app/(app)/posts/[slug]/page.tsx` each mount one behind the route's own
-`<Suspense>`, the second conditionally, so the pending state belongs to the
-page's boundary rather than to the component. Neither has a `loaded` half for a
+`app/(app)/posts/[slug]/page.tsx` each mount one unconditionally behind the
+route's own `<Suspense>` — on the post page even where `<Comments>` is not
+rendered at all, because that post has comments disabled — so the pending state
+belongs to the page's boundary rather than to the component. Neither has a `loaded` half for a
 `loading` sibling to pair with, and giving either one a skeleton of its own
 would move a decision the route makes into a component the route is the only
 caller of. A standalone `<region>-loading.tsx` MAY be built beside the region
