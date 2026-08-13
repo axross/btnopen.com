@@ -157,6 +157,12 @@ so the pair is found and moved together. A CSS module's base name SHOULD match
 its component file; `blog-post-header.tsx` paired with `header.module.css` is the
 finding.
 
+A component Satori renders inside a `next/og` `ImageResponse` is the one
+exception: that renderer resolves no external stylesheet, so the component styles
+its DOM through inline `style` objects and has no CSS module to be paired with.
+`app/(app)/posts/[slug]/thumbnail.png/_components/post-thumbnail-card.tsx` is the
+only one today.
+
 ## Identifier Naming
 
 A symbol named or cased unlike its neighbours makes the reader stop to check

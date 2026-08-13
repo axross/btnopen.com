@@ -10,17 +10,18 @@ import {
 } from "@/helpers/i18n";
 import { matchesPostShareToken } from "@/helpers/post-draft-access";
 import { thumbnailHeight, thumbnailWidth } from "@/helpers/thumbnail";
-import { type BlogPostDetail, getBlogPost } from "@/repositories/get-blog-post";
+import { getBlogPost } from "@/repositories/get-blog-post";
 import { getBlogPostAgentic } from "@/repositories/get-blog-post-agentic";
 import { getWebsite } from "@/repositories/get-website";
 import { urlOrigin } from "@/runtime";
+import { readShareToken } from "./_/helpers/share-token-param";
 import { BlogPostAgenticView } from "./_components/blog-post-agentic-view";
 import { BlogPostContent } from "./_components/blog-post-content";
 import { BlogPostHeader } from "./_components/blog-post-header";
 import { BlogPostingJsonLd } from "./_components/blog-posting-json-ld";
-import { Comments } from "./_components/comments/comments";
 import { CommentsLoading } from "./_components/comments/comments-loading";
-import { PayloadLivePreview } from "./_components/payload-live-preview";
+import { MaybeComments } from "./_components/comments/maybe-comments";
+import { MaybePayloadLivePreview } from "./_components/maybe-payload-live-preview";
 import css from "./page.module.css";
 import type { PageProps } from "./page-props";
 
@@ -113,70 +114,6 @@ export default async function BlogPostPage({
 			</Suspense>
 		</>
 	);
-}
-
-/**
- * Normalizes the `token` search parameter into the single opaque string every
- * consumer below expects.
- *
- * Next.js delivers an **array** for a repeated search parameter, so
- * `?token=a&token=b` arrives as `["a", "b"]`. Nothing downstream is shaped for
- * that: the gate hands the value to a constant-time character comparison, which
- * an array of the right length would reach and fail inside. Normalizing here,
- * at the boundary where the request stops being a URL, is what keeps every
- * consumer able to declare a plain string.
- *
- * The first value wins, which is what `URLSearchParams.get()` returns and
- * therefore what `thumbnail.png/route.tsx` already reads — so one request never
- * resolves two ways across the page and the thumbnail it advertises.
- */
-function readShareToken(
-	token: string | string[] | undefined,
-): string | undefined {
-	return Array.isArray(token) ? token[0] : token;
-}
-
-async function MaybeComments({
-	blogPost,
-	slug,
-	draft,
-}: {
-	blogPost: Promise<BlogPostDetail | null>;
-	slug: Promise<string>;
-	draft: Promise<boolean>;
-}): Promise<JSX.Element | null> {
-	const [post, resolvedSlug, isDraft] = await Promise.all([
-		blogPost,
-		slug,
-		draft,
-	]);
-
-	if (!post?.isCommentsEnabled) {
-		return null;
-	}
-
-	return <Comments slug={resolvedSlug} draft={isDraft} />;
-}
-
-async function MaybePayloadLivePreview({
-	slug: slugPromise,
-	preview: previewPromise,
-}: {
-	slug: Promise<string>;
-	preview?: Promise<boolean>;
-}): Promise<JSX.Element | null> {
-	const [slug, preview] = await Promise.all([slugPromise, previewPromise]);
-
-	if (preview) {
-		return (
-			<PayloadLivePreview
-				path={`/posts/${slug}?preview=true&draft=true`}
-				serverURL={urlOrigin}
-			/>
-		);
-	}
-
-	return null;
 }
 
 export async function generateMetadata({

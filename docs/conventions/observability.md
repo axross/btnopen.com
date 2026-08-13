@@ -47,7 +47,7 @@ one emoji is the scheme working, not a collision.
 | `🔐` | draft authorization | `app/(app)/_/helpers/draft-access.ts` |
 | `👁️` | Payload live preview | `app/(app)/posts/[slug]/_components/payload-live-preview/refresh.ts` |
 | `🖼️` | media and image handling | `app/(app)/_/components/media.tsx` |
-| `👽` | OG image generation | `app/(app)/posts/[slug]/thumbnail.png/route.tsx` |
+| `👽` | OG image generation | the two helpers under `app/(app)/posts/[slug]/thumbnail.png/_/helpers/` — `fonts.ts` and `cover-image.ts` |
 | `🚢` | the Payload realm | `payload/helpers/logger.ts` |
 | `🤖` | the Payload MCP server | `payload/helpers/mcp/logger.ts` |
 

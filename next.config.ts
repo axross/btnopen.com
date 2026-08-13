@@ -65,6 +65,22 @@ const nextConfig: NextConfig = {
 	// bundler fails the build with "non-ecmascript placeable asset". pino and
 	// pino-pretty are stream-based and equally incompatible.
 	serverExternalPackages: ["re2", "pino", "pino-pretty"],
+	// the post thumbnail route reads its title font off disk at request time.
+	// while that `readFile` sat in the route module itself, Next's tracer found
+	// the file; once it moved into a helper two directories below, the tracer
+	// stopped resolving the path and the deployed bundle shipped without the
+	// font — the route then answered 500 with ENOENT, on a deployment only, with
+	// `next build && next start` locally still passing because it serves the
+	// whole source tree. This is the framework's own mechanism for a file the
+	// trace misses.
+	//
+	// both sides are picomatch globs, which is why neither spells the real path:
+	// the key would otherwise read `[slug]` as a character class, and the value
+	// would read `(app)` and `[slug]` the same way. `_assets/` occurs once in the
+	// tree, so the value glob is exact in practice.
+	outputFileTracingIncludes: {
+		"/posts/*/thumbnail.png": ["./app/**/_assets/**/*"],
+	},
 	experimental: {
 		globalNotFound: true,
 	},
