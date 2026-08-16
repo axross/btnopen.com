@@ -244,11 +244,11 @@
 			background-color: var(--color-background-neutral-subtle);
 			border: 0.5px var(--color-border-neutral-subtle) solid;
 			border-radius: var(--radius-sm);
-			/* The mono optical correction (see docs/conventions/visual-identity.md).
-			   It is `em` rather than a `--text-*` tier because an inline chip has to
-			   track whatever it sits inside — a heading, a list item, a blockquote,
-			   or a table cell — and a fixed tier cannot. */
-			font-size: 0.9375em;
+			/* The mono optical correction (see docs/conventions/styling.md). It
+			   multiplies `1em` rather than a `--text-*` tier because an inline chip
+			   has to track whatever it sits inside — a heading, a list item, a
+			   blockquote, or a table cell — and a fixed tier cannot. */
+			font-size: calc(1em * var(--font-mono-optical-scale));
 			font-family: var(--font-mono);
 			font-feature-settings: var(--font-mono-features);
 			word-break: break-word;
