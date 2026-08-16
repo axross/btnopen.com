@@ -119,6 +119,21 @@ Size and leading sit on a restrained, site-wide scale with named tiers. A size
 that fits no existing tier is a design-level decision, not a component-level
 tweak.
 
+The scale is tuned on the sans, so **monospace set against it MUST carry an
+optical correction of `0.9375`**. JetBrains Mono's x-height is 0.5625 per em
+against IBM Plex Sans's 0.5313, so an uncorrected mono surface reads larger than
+the prose beside it at the same nominal size; `0.9375` is the clean fraction
+closest to that ratio. A surface that must track its container — an inline code
+chip inside a heading, a list item, a blockquote, or a table cell — MUST apply it
+as `font-size: 0.9375em`, because a fixed tier cannot follow the context. A
+surface that sits on a tier of its own — the code block — MUST apply it as
+`calc(var(--text-…) * 0.9375)`. The correction belongs to the pairing of the two
+families rather than to either surface, so a later retune of the `--text-*` scale
+MUST carry it forward; dropping it silently restores the oversized rendering it
+exists to fix. Display monospace that is not set beside prose — the not-found
+heading and its meta line — is deliberately outside the rule and stays
+uncorrected.
+
 Weight reads as a semantic hierarchy rather than a visual flourish:
 
 | Weight | Used for |
