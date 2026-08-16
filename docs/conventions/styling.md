@@ -27,7 +27,7 @@ tokens declared in `app/(app)/variables.css`.
 | Radius | `--radius-xs` / `--radius-sm` / `--radius-md` / `--radius-lg` / `--radius-full` |
 | Duration | `--duration-sm` / `--duration-md` / `--duration-lg` / `--duration-xl` / `--duration-2xl` / `--duration-3xl` |
 | Easing | `--ease-in-out` — the only easing token |
-| Font | `--font-sans` / `--font-mono`, each paired with `--font-sans-features` / `--font-mono-features` |
+| Font | `--font-sans` / `--font-mono`, each paired with `--font-sans-features` / `--font-mono-features`; `--font-mono-optical-scale`, the mono optical correction |
 | Colour | `--color-<tier>-<scheme>-<slot>`, plus an `-alpha` twin of each; `<scheme>` is `accent` (brand) or `neutral` (chrome) |
 
 A CSS Module MUST be imported as `css`, and an incoming `className` MUST be
@@ -39,6 +39,18 @@ A font-family declaration MUST be paired with its feature-settings variable
 `tab-size` MUST be declared explicitly on code-display surfaces; the snippet
 viewer uses `tab-size: 2`, and the browser default produces inconsistent indent
 widths across platforms.
+
+The two code surfaces MUST take the mono optical correction through
+`--font-mono-optical-scale` rather than as a literal multiplier. A surface that
+has to track its container — the inline code chip, which appears inside a
+heading, a list item, a blockquote, and a table cell — MUST apply it as
+`font-size: calc(1em * var(--font-mono-optical-scale))`, because a fixed tier
+cannot follow the context. A surface that sits on a tier of its own — the snippet
+viewer — MUST apply it as
+`font-size: calc(var(--text-…) * var(--font-mono-optical-scale))`. What the
+correction is for, which surfaces carry it, and why a retune of the `--text-*`
+scale has to carry it forward are in
+[visual-identity.md](./visual-identity.md).
 
 A literal `3s ease-in-out` MAY be used for a long atmospheric reveal such as the
 thumbnail sepia fade, which is deliberately off the `--duration-*` interaction

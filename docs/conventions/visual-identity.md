@@ -119,6 +119,24 @@ Size and leading sit on a restrained, site-wide scale with named tiers. A size
 that fits no existing tier is a design-level decision, not a component-level
 tweak.
 
+The scale is tuned on the sans, so **the two code surfaces — inline code and the
+code block — MUST carry an optical correction of `0.9375`**. IBM Plex Sans's
+x-height is 0.5313 per em against JetBrains Mono's 0.5625, a ratio of 0.9444, so
+an uncorrected mono surface reads larger than the prose beside it at the same
+nominal size; `0.9375` is the nearest sixteenth to that ratio. The correction
+belongs to the pairing of the two families rather than to either surface, so a
+later retune of the `--text-*` scale MUST carry it forward; dropping it silently
+restores the oversized rendering it exists to fix. How a surface applies it is in
+[styling.md](./styling.md). Why this correction rather than `font-size-adjust` or
+a size tier of its own is in
+[../decisions/2026-08-16-correct-the-two-code-surfaces-with-an-optical-scale-token.md](../decisions/2026-08-16-correct-the-two-code-surfaces-with-an-optical-scale-token.md).
+
+The rule reaches those two surfaces and no others. The site's remaining
+monospace is uncorrected today and sits outside it: the comment count, the
+empty-state expression, the commenter handle, the badge, and the timestamp; the
+web-embed URL; the state message; and the not-found heading and the `404`
+status-code glyph.
+
 Weight reads as a semantic hierarchy rather than a visual flourish:
 
 | Weight | Used for |

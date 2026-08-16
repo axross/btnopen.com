@@ -32,7 +32,9 @@
 		.viewer {
 			width: fit-content;
 			padding-inline: var(--size-16);
-			font-size: var(--text-sm);
+			/* The tier, times the mono optical correction (see
+			   docs/conventions/styling.md). */
+			font-size: calc(var(--text-sm) * var(--font-mono-optical-scale));
 			font-family: var(--font-mono);
 			font-feature-settings: var(--font-mono-features);
 			line-height: var(--leading-md);
