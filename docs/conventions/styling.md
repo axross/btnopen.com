@@ -47,7 +47,9 @@ heading, a list item, a blockquote, and a table cell — MUST apply it as
 `font-size: calc(1em * var(--font-mono-optical-scale))`, because a fixed tier
 cannot follow the context. A surface that sits on a tier of its own — the snippet
 viewer — MUST apply it as
-`font-size: calc(var(--text-…) * var(--font-mono-optical-scale))`. What the
+`font-size: calc(var(--text-…) * var(--font-mono-optical-scale))`, and carries a
+second, coarse-pointer-gated declaration on top of it; see
+[Pointer Adaptation](#pointer-adaptation) before changing its size. What the
 correction is for, which surfaces carry it, and why a retune of the `--text-*`
 scale has to carry it forward are in
 [visual-identity.md](./visual-identity.md).
@@ -204,6 +206,25 @@ scale move an accessibility floor. A minimum MUST be measured as the hit area
 rather than as the drawn glyph. A 24px social-link glyph centred in a 44×44
 target passes; growing the glyph itself is not what the minimum asks for.
 
+A **type-size** floor of `11pt` (14.667px) applies under the same gate, and
+reaches the snippet viewer alone. The viewer MUST express it as
+`max(11pt, calc(var(--text-sm) * var(--font-mono-optical-scale)))` — as a `max()`
+against the corrected value, so the declaration states the relationship rather
+than a bare constant. The gate is load-bearing rather than incidental: the
+corrected tier maxes at 14.0625px and so sits under the floor at *every*
+viewport width, meaning an unscoped floor would not raise the block occasionally
+but pin it to a constant everywhere and take the optical correction out of it.
+`11pt` is a literal for the same reason the target minimums are, and is written
+in points rather than as its pixel equivalent because points is the unit the
+platform states the floor in, so no rounding of the conversion can leave the
+value under the figure it expresses.
+
+**Inline code is deliberately not floored.** A chip is sized to sit optically
+level with the prose it interrupts, so a floor would restore the oversizing the
+correction exists to remove; it renders below 14.667px wherever its container is
+small enough to put it there, and that is correct. Why the floor exists at all
+is in [visual-identity.md](./visual-identity.md).
+
 Fine-pointer rendering MUST NOT change in order to reach a coarse-pointer
 minimum. Every control sized under the coarse gate renders on a mouse exactly
 as it did before it was sized.
@@ -256,7 +277,9 @@ not on short labels — titles, tags, timestamps.
 - Pixel literals MAY be used inside hairline borders (`var(--size-1)`,
   `0.5px`), SVG `width` / `height` attributes, the coarse-pointer target
   minimums and the padding derived from them, and the root-level definitions in
-  `variables.css`.
+  `variables.css`. The coarse-pointer type-size floor is the one absolute
+  literal not written in pixels — it is written in points, for the reason given
+  under [Pointer Adaptation](#pointer-adaptation).
 - Four surfaces name a role whose generic label does not match their local job,
   and they are deliberate rather than mistakes: the focus ring sits on
   `component.accent.selected` where the canonical role for a focus ring would be

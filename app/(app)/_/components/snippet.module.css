@@ -40,6 +40,23 @@
 			line-height: var(--leading-md);
 			white-space: pre;
 			tab-size: 2;
+
+			/* The 11pt platform floor for body text, applied where it was
+			   written to apply — a touch reader. The corrected tier above maxes
+			   at 14.0625px, which is under the floor at every viewport width, so
+			   an unscoped floor would pin the block to a constant and take the
+			   optical correction out of it entirely. 11pt is a literal, and
+			   written in points rather than as its 14.667px equivalent, because
+			   it is an accessibility constant fixed by the platform: a retune of
+			   the spacing scale must not be able to move it, and no rounding of
+			   the conversion can leave it under the figure it states. See
+			   docs/conventions/styling.md. */
+			@media (any-pointer: coarse) {
+				font-size: max(
+					11pt,
+					calc(var(--text-sm) * var(--font-mono-optical-scale))
+				);
+			}
 		}
 	}
 }
