@@ -120,8 +120,8 @@ that fits no existing tier is a design-level decision, not a component-level
 tweak.
 
 The scale is tuned on the sans, so **the two code surfaces — inline code and the
-code block — MUST carry an optical correction of `0.9375`**. JetBrains Mono's
-x-height is 0.5625 per em against IBM Plex Sans's 0.5313, a ratio of 0.9444, so
+code block — MUST carry an optical correction of `0.9375`**. IBM Plex Sans's
+x-height is 0.5313 per em against JetBrains Mono's 0.5625, a ratio of 0.9444, so
 an uncorrected mono surface reads larger than the prose beside it at the same
 nominal size; `0.9375` is the nearest sixteenth to that ratio. The correction
 belongs to the pairing of the two families rather than to either surface, so a

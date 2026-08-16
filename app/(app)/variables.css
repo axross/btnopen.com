@@ -21,6 +21,17 @@
 		--leading-md: 1.5;
 		--leading-lg: 1.75;
 
+		/* The `--text-*` scale is tuned on the sans, so a mono surface set on it
+		   reads larger than the prose beside it at the same nominal size: IBM
+		   Plex Sans's x-height is 0.5313 per em against JetBrains Mono's 0.5625,
+		   a ratio of 0.9444. This is the nearest sixteenth to that ratio, and the
+		   two code surfaces multiply their size by it. A pure ratio with no
+		   dependency on the font-variable classes `<body>` carries, so it sits
+		   here with the other unitless scalars rather than beside `--font-mono`.
+		   See docs/conventions/visual-identity.md for what the correction is for
+		   and docs/conventions/styling.md for how a surface applies it. */
+		--font-mono-optical-scale: 0.9375;
+
 		/* Reading measure: cap the reading column at ~80 characters. Because
 		   `ch` is font-relative and the body font is fluid, the column widens
 		   with the font and holds ~80 Latin (≈40 full-width Japanese)
@@ -468,14 +479,5 @@
 		--font-mono-features:
 			"cv02", "cv03", "cv04", "cv05", "cv06", "cv07", "cv11", "cv14", "cv16",
 			"cv17", "cv18", "cv20";
-
-		/* The `--text-*` scale is tuned on the sans, so a mono surface set on it
-		   reads larger than the prose beside it at the same nominal size:
-		   JetBrains Mono's x-height is 0.5625 per em against IBM Plex Sans's
-		   0.5313, a ratio of 0.9444. This is the nearest sixteenth to that
-		   ratio, and the two code surfaces multiply their size by it. See
-		   docs/conventions/visual-identity.md for what the correction is for and
-		   docs/conventions/styling.md for how a surface applies it. */
-		--font-mono-optical-scale: 0.9375;
 	}
 }

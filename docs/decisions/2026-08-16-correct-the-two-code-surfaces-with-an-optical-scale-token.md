@@ -6,8 +6,8 @@ status: accepted
 
 The site's one type scale, `--text-xs` through `--text-4xl`, was tuned on IBM
 Plex Sans, and both surfaces that render code read off it uncorrected. The two
-families do not share metrics: measured per em in the running build, JetBrains
-Mono has an x-height of 0.5625 against IBM Plex Sans's 0.5313. The code block
+families do not share metrics: measured per em in the running build, IBM Plex
+Sans has an x-height of 0.5313 against JetBrains Mono's 0.5625. The code block
 took a single step down to `--text-sm`, which under-compensated for that
 difference, and inline code took no step at all — it switched family and kept the
 prose size whole, so a chip rendered visibly larger than the sentence it
@@ -15,10 +15,10 @@ interrupted.
 
 The correction chosen is `0.9375`, the nearest sixteenth to the measured 0.9444
 x-height ratio, applied to both code surfaces through a
-`--font-mono-optical-scale` token declared beside `--font-mono` in the theme
-file. Routing it through a token rather than repeating the literal is what lets
-the two surfaces state the same intent and lets a later reader find every carrier
-of the correction in one search.
+`--font-mono-optical-scale` token declared in the theme file. Routing it through
+a token rather than repeating the literal is what lets the two surfaces state the
+same intent and lets a later reader find every carrier of the correction in one
+search.
 
 `font-size-adjust: 0.5313` was the principled alternative and the first one
 considered, because the browser derives the correction from the font's own
