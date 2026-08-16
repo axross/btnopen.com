@@ -6,7 +6,7 @@ superseded_by: 2026-08-16-revert-the-code-block-floor-since-the-platform-minimum
 # Floor the code block at 11pt on coarse pointers
 
 The optical correction recorded in
-[2026-08-16-correct-the-two-code-surfaces-with-an-optical-scale-token.md](./2026-08-16-correct-the-two-code-surfaces-with-an-optical-scale-token.md)
+2026-08-16-correct-the-two-code-surfaces-with-an-optical-scale-token.md
 left the code block below the 11pt (14.667px) platform minimum for body text on
 a phone — 13.18px at a 390px viewport. The size before that correction was
 already under the minimum, so the correction deepened a breach rather than

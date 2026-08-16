@@ -4,7 +4,7 @@ status: accepted
 
 # Revert the code block floor since the platform minimum is 11px
 
-[2026-08-16-floor-the-code-block-at-11pt-on-coarse-pointers.md](./2026-08-16-floor-the-code-block-at-11pt-on-coarse-pointers.md)
+2026-08-16-floor-the-code-block-at-11pt-on-coarse-pointers.md
 floored the snippet viewer on touch devices to honour a platform minimum it read
 as 14.667px. That reading was a unit error, and this record reverts the floor it
 produced.
@@ -42,7 +42,7 @@ puts the block a tier below body copy deliberately, so it is recorded as a known
 gap in the guidance rather than treated as a constraint this change had to meet.
 
 The optical correction recorded in
-[2026-08-16-correct-the-two-code-surfaces-with-an-optical-scale-token.md](./2026-08-16-correct-the-two-code-surfaces-with-an-optical-scale-token.md)
+2026-08-16-correct-the-two-code-surfaces-with-an-optical-scale-token.md
 is untouched by the error and stays in force on both code surfaces. The
 consequence of reverting is that the block renders one size at a given viewport
 regardless of the input hardware attached, and no pointer-conditional type sizing
