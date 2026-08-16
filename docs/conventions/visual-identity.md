@@ -131,18 +131,6 @@ restores the oversized rendering it exists to fix. How a surface applies it is i
 a size tier of its own is in
 [../decisions/2026-08-16-correct-the-two-code-surfaces-with-an-optical-scale-token.md](../decisions/2026-08-16-correct-the-two-code-surfaces-with-an-optical-scale-token.md).
 
-Legibility bounds the correction from below. Type read at arm's length on
-handheld hardware has a platform minimum of **11pt**, and the corrected code
-block sits under it at every viewport width, so **the code block MUST NOT render
-below that minimum on a touch device**. The commitment is about the hardware a
-reader is holding rather than the width of their window, which is why it follows
-the pointer and not a breakpoint. Inline code is deliberately exempt: a chip is
-not independently sized body text but a run set inside a sentence, and its whole
-job is to sit level with that sentence, so flooring it would restore the
-oversizing the correction removes. How the floor is expressed is in
-[styling.md](./styling.md); why this scope rather than a width-based one is in
-[../decisions/2026-08-16-floor-the-code-block-at-11pt-on-coarse-pointers.md](../decisions/2026-08-16-floor-the-code-block-at-11pt-on-coarse-pointers.md).
-
 The rule reaches those two surfaces and no others. The site's remaining
 monospace is uncorrected today and sits outside it: the comment count, the
 empty-state expression, the commenter handle, the badge, and the timestamp; the
