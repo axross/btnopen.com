@@ -1,5 +1,6 @@
 ---
-status: accepted
+status: superseded
+superseded_by: 2026-08-16-revert-the-code-block-floor-since-the-platform-minimum-is-11px.md
 ---
 
 # Floor the code block at 11pt on coarse pointers
