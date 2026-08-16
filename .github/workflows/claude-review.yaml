@@ -168,7 +168,7 @@ jobs:
       # bumps the pin to the branch HEAD and leaves the comment stale.
       # This action's tags are ANNOTATED, so `git ls-remote` returns tag-object
       # SHAs that will not resolve in `uses:` — peel them
-      # (`refs/tags/v1.0.183^{}`) to get the commit. The full convention is in
+      # (`refs/tags/vX.Y.Z^{}`) to get the commit. The full convention is in
       # the CI supply chain section of docs/conventions/security.md.
       - name: Claude Review
         uses: anthropics/claude-code-action@1623c36729ac1cd5895198cded705a287de7db79 # v1.0.187
