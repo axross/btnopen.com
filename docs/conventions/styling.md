@@ -233,8 +233,8 @@ visible position does not move.
 An inline box is the one case that takes padding alone. Vertical padding on it
 does not affect the line box, so there is nothing for a margin to offset, and an
 inert negative margin would read as though it were doing something.
-`markdown-content.module.css` `.a` and the tweet embed's `.link` are the two
-occurrences.
+`markdown-content.module.css` `.a`, the tweet embed's `.link`, and the privacy
+page's `.link` are the three occurrences.
 
 ## Truncation
 
