@@ -66,7 +66,10 @@ async function PrivacyPage(_props: PageProps): Promise<JSX.Element> {
 				<Section heading={t("control-heading")}>
 					<p>{t("control-body")}</p>
 
-					<AnalyticsConsentControl data-testid="analytics-consent-control" />
+					<AnalyticsConsentControl
+						className={css.consentControl}
+						data-testid="analytics-consent-control"
+					/>
 				</Section>
 			</main>
 		</div>

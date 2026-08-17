@@ -94,5 +94,13 @@
 			outline: var(--color-component-accent-selected) solid var(--size-3);
 			outline-offset: var(--size-3);
 		}
+
+		/* the control is a bordered card rather than another line of prose, so it
+		   takes more than the section's own paragraph rhythm — but less than the
+		   gap between sections, which would read as though it had left the one it
+		   belongs to. */
+		.consentControl {
+			margin-block-start: var(--size-12);
+		}
 	}
 }
