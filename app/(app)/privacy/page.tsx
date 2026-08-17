@@ -18,11 +18,13 @@ async function PrivacyPage(_props: PageProps): Promise<JSX.Element> {
 			<main className={css.main}>
 				<h1 className={css.pageHeading}>{t("heading")}</h1>
 
-				<p className={css.lede}>
-					{t.rich("lede", { source: externalLink(repositoryUrl) })}
-				</p>
+				{/* the two paragraphs are one lede, so they sit at a section's internal
+				    spacing rather than at the gap `.main` puts between sections. */}
+				<div className={css.lede}>
+					<p>{t.rich("lede", { source: externalLink(repositoryUrl) })}</p>
 
-				<p className={css.lede}>{t("lede-bases")}</p>
+					<p>{t("lede-bases")}</p>
+				</div>
 
 				<Section heading={t("analytics-heading")}>
 					<ul className={css.list}>

@@ -45,7 +45,7 @@
 		"analytics-body": "<mixpanel>Mixpanel</mixpanel> does the collecting. Unrelated clicks and scrolling are not observed, and sessions are not recorded. Your browser's Do Not Track setting is honoured.",
 		"analytics-gate": "Until you allow it, the Mixpanel code itself is never loaded, and not a single HTTP request is sent.",
 		"diagnostics-heading": "Running whether or not you allow it",
-		"diagnostics-body": "<sentry>Sentry</sentry> collects and records the following when an error occurs, which is what the site is improved from.",
+		"diagnostics-body": "When an error occurs, <sentry>Sentry</sentry> collects and records the following, and the site is improved from what it records.",
 		"diagnostics-item-identity": "Your IP address and user information",
 		"diagnostics-item-headers": "HTTP request and response headers",
 		"diagnostics-item-params": "URL query parameters",
