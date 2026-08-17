@@ -12,8 +12,12 @@ import {
 import { useAnalyticsConsent } from "@/components/analytics-consent-provider";
 import css from "./analytics-consent-banner.module.css";
 
-/** The gap left between the banner and whatever it is floating over. */
-const bannerClearancePixels = 32;
+/**
+ * The space reserved beyond the banner's own height: the 16px the banner is
+ * inset from the viewport edge, plus the 32px gap left between it and whatever
+ * it floats over. Raising this widens that gap and nothing else.
+ */
+const bannerClearancePixels = 48;
 
 /**
  * Asks for the analytics decision once, and never again — either answer is a
@@ -49,9 +53,17 @@ function PendingAnalyticsConsentBanner({
 
 		const root = document.documentElement;
 		const observer = new ResizeObserver(([entry]) => {
+			// the border box, not `contentRect`: that one reports the content box,
+			// which leaves out the card's 16px padding and 1px border on each side.
+			// reserving it made the footer 34px short and the banner overlapped the
+			// row it was supposed to clear.
+			const height =
+				entry.borderBoxSize?.[0]?.blockSize ??
+				entry.target.getBoundingClientRect().height;
+
 			root.style.setProperty(
 				"--analytics-consent-banner-clearance",
-				`${entry.contentRect.height + bannerClearancePixels}px`,
+				`${height + bannerClearancePixels}px`,
 			);
 		});
 

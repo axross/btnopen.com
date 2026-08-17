@@ -13,7 +13,7 @@ how a post body is rendered is
 | `/` | The site's only landing surface: the author's portrait, bio, social links, and the blog-post list |
 | `/posts/[slug]` | One blog post — header, body, and, when enabled, its comments |
 | `/posts` | Nothing of its own; it redirects to `/` |
-| `/privacy` | What the site collects, on what basis, and the permanent control for changing the analytics decision |
+| `/privacy` | What the site collects, on what basis, and the permanent control for changing the analytics decision; it links out to the site's own source repository and to Mixpanel, Sentry, and Clerk |
 | `/posts/[slug]/thumbnail.png` | The post's generated Open Graph image |
 | `/sitemap.xml` | The index page plus every published post |
 | `/robots.txt` | Allows every agent, and points at the sitemap |
