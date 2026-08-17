@@ -49,5 +49,47 @@
 			line-height: var(--leading-sm);
 			font-weight: 600;
 		}
+
+		/* the same treatment `markdown-content.module.css` gives an unordered list,
+		   so the two reading surfaces stay on one shape. */
+		.list {
+			display: flex;
+			flex-direction: column;
+			gap: var(--size-8);
+			/* the base layer zeroes padding on everything, so the marker indent has
+			   to be declared here rather than inherited from the UA stylesheet. */
+			padding-inline-start: var(--size-24);
+			list-style: disc;
+
+			& > li::marker {
+				color: var(--color-text-neutral-low);
+			}
+		}
+
+		/* the same treatment `markdown-content.module.css` gives an inline anchor,
+		   for the same reason. */
+		.link {
+			color: var(--color-text-accent-low);
+			border-radius: var(--radius-sm);
+			text-decoration: underline;
+			text-underline-offset: var(--size-2);
+			font-weight: 500;
+			outline: none;
+
+			/* an inline box, where vertical padding grows the hit area without
+			   touching the line box — so no offsetting margin is wanted here, and
+			   an inert one would read as if it were doing something. 2px is a
+			   literal rather than a spacing step because it exists only to clear
+			   the 24px minimum: the inline box is 21px, and a retune of the scale
+			   must not be able to drop it back under. */
+			@media (any-pointer: coarse) {
+				padding-block: 2px;
+			}
+		}
+
+		.link:focus-visible {
+			outline: var(--color-component-accent-selected) solid var(--size-3);
+			outline-offset: var(--size-3);
+		}
 	}
 }
