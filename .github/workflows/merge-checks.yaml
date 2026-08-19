@@ -124,20 +124,20 @@ jobs:
         with:
           node-version-file: package.json
       - name: Check Documentation
-        # Deliberately no `npm ci`: the validators import only the Node
-        # standard library, and `npm run` executes a script without an
-        # install, so this job costs checkout plus Node setup and little else.
-        # The runner separates a documentation finding (1) from a gate that
-        # could not run at all (2) — an installed skill renamed out from under
-        # it, or a missing docs/index.md — so the two are annotated apart and
-        # the original code is re-raised.
+        # Invoked directly rather than through an npm script, and deliberately
+        # with no `npm ci`: the runner and the validators it spawns import only
+        # the Node standard library, so this job costs checkout plus Node setup
+        # and little else. The runner separates a documentation finding (1)
+        # from a gate that could not run at all (2) — an installed skill
+        # renamed out from under it, or a missing docs/index.md — so the two
+        # are annotated apart and the original code is re-raised.
         run: |
-          npm run check:docs || {
+          node scripts/check-docs.mjs || {
             code=$?
             if [ "$code" -eq 2 ]; then
               echo '::error::The documentation gate could not run, so nothing under docs/ was checked. See the step log for the path it expected.'
             else
-              echo '::error::Documentation checks reported findings under docs/. Run `npm run check:docs` locally and fix what it reports.'
+              echo '::error::Documentation checks reported findings under docs/. Run `node scripts/check-docs.mjs` locally and fix what it reports.'
             fi
             exit $code
           }

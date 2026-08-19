@@ -73,10 +73,11 @@ only; internal self-review triage still flags these findings.
   TypeScript run (`npm run typecheck`), the Jest unit-test run
   (`npm run test:unit`), the Payload Artifacts drift check (which
   regenerates `app/(payload)/admin/importMap.js` and `payload/types.ts` and
-  fails on any diff), and the Documentation gate (`npm run check:docs`, which
-  runs the installed documentation validators over `docs/` and fails on an
-  unindexed document, an unresolvable relative link, a spec with no glossary
-  heading, a malformed decision filename, or an inconsistent supersede chain)
+  fails on any diff), and the Documentation gate
+  (`node scripts/check-docs.mjs`, which runs the installed documentation
+  validators over `docs/` and fails on an unindexed document, an unresolvable
+  relative link, a spec with no glossary heading, a malformed decision
+  filename, or an inconsistent supersede chain)
   in the Merge Checks workflow
   ([`merge-checks.yaml`](.github/workflows/merge-checks.yaml)), and the lint
   run, the Playwright e2e run, and the e2e scenario-coverage gate
