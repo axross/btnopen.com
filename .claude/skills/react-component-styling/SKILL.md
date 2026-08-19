@@ -80,6 +80,10 @@ See [style-property-order.md](./references/style-property-order.md) for:
 - where custom properties, nested at-rules, and pseudo-selector blocks sit
 - the order of composed styles — base, variant, state, animated, consumer
 
+**Guidelines:**
+
+- MUST read [style-property-order.md](./references/style-property-order.md) before writing or reviewing the order of declarations inside a style block, or the order of styles composed into one element.
+
 ## Global Styles
 
 See [global-styles.md](./references/global-styles.md) for:

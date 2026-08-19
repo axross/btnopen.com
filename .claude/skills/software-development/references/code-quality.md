@@ -53,7 +53,7 @@ The linter catches correctness and quality problems the formatter cannot see (an
 
 ## Comments
 
-There are two kinds of comment, each with its own style: **doc-comments** that document an API, and **line comments** that explain a specific spot in the code. Both are written in the comment voice below. These rules apply to source-code comments only, not to commit messages — which the project's Conventional Commits practices own — or to prose documentation.
+There are two kinds of comment, each with its own style: **doc-comments** that document an API, and **explanatory comments** that explain a specific spot in the code. Both are written in the comment voice below, and both are held to the admissibility test that follows it before either kind's own form and length rules apply. These rules apply to source-code comments only, not to commit messages — which the project's Conventional Commits practices own — or to prose documentation.
 
 ### Comment Voice
 
@@ -69,25 +69,68 @@ Comment prose is lowercase, and emphasis comes from what a sentence says rather 
 - MUST keep a linter suppression directive in the tool's required casing; only the trailing human-readable reason follows the comment voice.
 - MUST follow the project's own comment convention instead of this default where the project documents one. A project documents a convention by stating it — in its contributor documentation or its agent instructions — not by having source files that exhibit it.
 
+### Admissibility
+
+A comment earns its place only by carrying something the code beside it does not already say. Read the code — including following it to the definition, type, call site, or test it itself names — and a comment that only reports what that reading already produced has added a second copy of the same fact, not a second fact. That failure is not fixed by phrasing it more carefully: a restated fact stays a restated fact no matter how it is worded, so the fix is deleting the comment, never rewriting it.
+
+Two comment forms fail this test regardless of what they say, because neither carries a fact in the first place: an author line or a change-history block in a file header, which version control already owns and keeps more accurately than a comment anyone could forget to update; and a banner or section-divider comment, which marks a boundary the code's own structure — a file, a function, a blank line — already marks.
+
+**Guidelines:**
+
+- MUST NOT write a comment that states anything a reader recovers by reading the code it sits beside, or by following that code to a definition, type, call site, or test the code itself names.
+- MUST delete a comment that fails the test above rather than reword it; a restated fact is inadmissible at any length or phrasing.
+- MUST NOT add an author line or a change-history block to a file header.
+- MUST NOT add a banner or section-divider comment.
+
 ### Doc-Comments
 
-Doc-comments carry the API-level documentation, written in the project's doc-comment standard. A public surface without one forces every consumer to read the implementation to learn what it does.
+Doc-comments carry the API-level documentation, written in the project's doc-comment standard. A public surface without one forces every consumer to read the implementation to learn what it does. A comment at the top of a module or file that states what it holds and why is a doc-comment like any other, whatever syntax the language uses to carry it — a leading `//` block in a language with no dedicated module-doc form documents the unit the same way `/** */`, `///`, or a docstring does elsewhere, so it follows the doc-comment standard's own form and length rather than the Explanatory Comments rules below.
 
 **Guidelines:**
 
 - MUST give every exported/public type definition, and every function whose body exceeds ~5 lines, a doc-comment in the project's doc-comment standard stating what it is or does.
-- MUST document the conditions under which a function throws, using the standard's throws tag (e.g., `@throws`) when the standard supports one.
+- MUST treat a module- or file-level comment as a doc-comment regardless of the syntax carrying it, so neither the line-comment-form rule nor the length ceiling in Explanatory Comments below reaches it.
+- MUST document the conditions under which a function throws, using the standard's throws tag (e.g., `@throws`), where the language uses unchecked exceptions; where an error reaches the caller as a value in the signature instead — a `Result` type, a `(value, error)` return pair, a typed union in the return type — the signature already states the condition, and no comment is owed on top of it.
+- MUST NOT restate, in a documentation tag, a type the language's own type system already carries, in a statically typed language — a `@param {string} name` beside a parameter the signature already types as `string` repeats a fact the compiler already checks. This does not reach a language with no static type system to restate, such as plain JavaScript's existing `@param` usage.
 - SHOULD add parameter/return documentation only when the name and type do not already make the meaning obvious; do NOT add restating noise.
 
-### Line Comments
+### Explanatory Comments
 
-Line comments earn their place: a comment that merely restates the next line adds reading cost without information, while a missing "why" comment leaves the next reader to rediscover the reason.
+An explanatory comment that clears the admissibility test above still has to be written in the right shape: the language's own line-comment form, and no longer than a reader can hold at a glance while still seeing the code it sits beside.
 
 **Guidelines:**
 
-- MUST keep line comments minimal — write one only when control flow, a business rule, or a non-obvious reason is not conveyed by the code alone — and remove a comment that only restates the code it precedes.
+- MUST write an explanatory comment in the language's line-comment form (e.g. `//`, `#`) rather than a block-comment form.
+- MUST keep an explanatory comment within a two-to-four-line ceiling: a single line is well within it, and a comment already spanning more than one line stops at four. A comment that needs more room is carrying material that belongs in Outside the Code below, not in a longer comment.
 - MUST NOT delete a comment that explains a "why", an edge case, or non-obvious behavior.
 - MUST let the linter/formatter enforce comment conventions where it can, and fix any comment-style violations it reports.
+
+### TODO Comments
+
+A `TODO` is a promise that something not-yet-good-enough gets finished later, and a promise nobody can find again is not a plan. Marking it with the issue it is tracked under is what keeps it findable — and pointing at the project's own issue tracker anywhere else in a comment does not earn that same concession, because nothing there anchors it to being acted on. A `TODO` is an explanatory comment, so the form and length rules above govern it too; what the issue it names cannot hold belongs in that issue rather than in a longer comment.
+
+Four other comment forms carry an identifier or a URL for a different reason: each names something the code cannot state at all, and a documented standard already prescribes exactly this shape for it.
+
+**Guidelines:**
+
+- MUST write a `TODO` comment as `TODO(#123):` — the issue number in parentheses immediately after `TODO`, no space, followed by a colon — unless the project documents its own convention, in which case follow that instead.
+- MUST reference, in a `TODO(#123):` comment, an issue already tracked in the project's own issue or ticket tracker that resolves to a follow-up someone can act on.
+- MUST use `TODO` for anything temporary or good-enough-but-not-perfect that a future action can settle, and MUST NOT mark the same case with `FIXME`, `XXX`, `HACK`, or any other marker; `TODO` is the one vocabulary this convention collects.
+- MUST NOT reference the project's own issue or ticket tracker anywhere in a comment except inside a `TODO(#123):` comment; a bare issue number or a link to one, left in an explanatory comment or a doc-comment, is not admissible.
+- MUST treat each of the following as admissible despite carrying an identifier or a URL:
+  - an SPDX license identifier at the top of a source file — `// SPDX-License-Identifier: MIT`
+  - a linter suppression directive's required reason — `// eslint-disable-next-line no-explicit-any -- vendor types are wrong here`
+  - a documentation standard's own reference-link syntax inside a doc-comment, resolved by that standard rather than left as a bare address — Go's `[Wrap]`-style doc link, or TSDoc's `{@link}` tag
+  - a reference to the upstream bug or specification a workaround is written against, naming the tracker and the issue rather than only describing it — `// works around a parser bug in the vendor's library, tracked upstream as issue 4821, until the next release`
+
+### Outside the Code
+
+A comment kept out by the rules above still has to go somewhere, or the discipline just deletes information instead of relocating it. Where a project ships no living-documentation capability these rules name no destination and add no obligation of their own, which settles the case they would otherwise leave open: a "why" that genuinely will not compress, in a project with nowhere to move it, stays where it is and over the ceiling. The rule against deleting such a comment outranks the length ceiling, because that ceiling exists to relocate material rather than to destroy it.
+
+**Guidelines:**
+
+- MUST move a specification fact or a domain-vocabulary definition evicted from a comment into a specification or glossary entry, and a piece of rationale evicted from a comment into a decision record, where the project ships a living-documentation capability — consult that capability for when a record is owed and how it is written, rather than any summary of that gating here.
+- MUST route the reasoning behind a specific change to the commit message that made it, per the project's Conventional Commits practices, rather than leaving it in a comment beside the diff.
 
 ## Import Hygiene
 
