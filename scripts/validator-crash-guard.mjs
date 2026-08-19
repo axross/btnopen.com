@@ -10,20 +10,34 @@
  * are separated from outside: this replaces Node's default handling with an exit
  * code no validator uses — their whole vocabulary is 0, 1, and 2.
  *
- * Not run directly. `scripts/check-docs.mjs` passes it to `node --import`, and
- * carries the same exit code on its side.
+ * The code and the explanation both live here rather than being shared with
+ * `scripts/check-docs.mjs`, which passes this file to `node --import` and needs
+ * no copy of either: any exit outside 0 and 1 already counts there as a check
+ * that did not reach a verdict. Sharing them by import would be worse than the
+ * duplication it removes — importing this module runs it, so the aggregator
+ * would install these handlers on *itself* and answer its own crash with a
+ * validator's exit code.
+ *
+ * Not run directly.
  */
+
+import { basename } from "node:path";
 
 // sysexits.h's EX_SOFTWARE: an internal error rather than a verdict about input.
 const EXIT_VALIDATOR_CRASHED = 70;
 
 /**
- * Print what escaped the validator and end with the code that says so.
+ * Print what escaped the validator, say whose fault it is, and end with the code
+ * that says a verdict was never reached.
  *
  * @param {unknown} error
  */
 function reportAndExit(error) {
 	console.error(error);
+	// process.argv[1] is the validator this was preloaded into, not this file.
+	console.error(
+		`\n✗ ${basename(process.argv[1])} threw the error above instead of checking docs/. The validator is at fault, not docs/.`,
+	);
 	process.exit(EXIT_VALIDATOR_CRASHED);
 }
 

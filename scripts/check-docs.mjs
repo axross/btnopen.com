@@ -22,7 +22,9 @@
  * A validator that throws would otherwise be a third silence, quieter than
  * those two: Node exits 1 on an uncaught exception, which is also how a
  * validator reports findings. `validator-crash-guard.mjs` is preloaded into
- * each one so the two cases end with different codes.
+ * each one so a crash ends outside the 0/1/2 a validator can mean, and this
+ * file needs to know no more than that. The same confusion is answered for
+ * this script's own crash at the bottom of the file.
  *
  * Exit codes: 0 every validator passed.
  *             1 at least one validator reported findings.
@@ -55,10 +57,6 @@ const EXIT_PASS = 0;
 const EXIT_FINDINGS = 1;
 const EXIT_GATE_BROKEN = 2;
 
-// what validator-crash-guard.mjs makes a validator that threw exit with; kept
-// out of 0, 1, and 2, which are a validator's whole vocabulary.
-const EXIT_VALIDATOR_CRASHED = 70;
-
 /**
  * Report a gate-level failure and yield the exit code that carries it.
  *
@@ -86,24 +84,6 @@ function discoverValidators() {
 	} catch (error) {
 		return { names: [], error };
 	}
-}
-
-/**
- * Say how a validator ended when it did not reach a verdict, so the log names
- * the cause rather than a bare number a reader has to look up.
- *
- * @param {number | null} status
- * @param {string | null} signal
- * @returns {string}
- */
-function describeAbnormalExit(status, signal) {
-	if (status === null) {
-		return `was killed on ${signal} without checking docs/.`;
-	}
-	if (status === EXIT_VALIDATOR_CRASHED) {
-		return "threw the error above instead of checking docs/. The validator is at fault, not docs/.";
-	}
-	return `exited with ${status} without checking docs/.`;
 }
 
 /**
@@ -150,7 +130,9 @@ function main() {
 			// a validator's own bad-invocation code, a crash, or a signal: the
 			// check did not run, which is this gate's failure rather than docs/'s.
 			couldNotRun += 1;
-			console.error(`✗ ${validator} ${describeAbnormalExit(status, signal)}`);
+			const outcome =
+				status === null ? `was killed on ${signal}` : `exited with ${status}`;
+			console.error(`✗ ${validator} ${outcome} without checking docs/.`);
 		}
 	}
 
@@ -169,4 +151,11 @@ function main() {
 	return withFindings > 0 ? EXIT_FINDINGS : EXIT_PASS;
 }
 
-process.exitCode = main();
+try {
+	process.exitCode = main();
+} catch (error) {
+	// the same confusion the crash guard removes from a validator, one level up:
+	// Node would exit 1 here, which the workflow reads as findings under docs/.
+	console.error(error);
+	process.exitCode = brokenGate("threw the error above before checking docs/.");
+}
