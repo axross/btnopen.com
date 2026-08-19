@@ -1,11 +1,11 @@
 name: Merge Checks
 
-# The project's fast merge-gating CI: lint, type-check, unit tests, and a
-# drift check over the committed Payload artifacts, on every pull
-# request and on pushes to the default branch. This is the CI the
-# loop-engineering change loop's tail polls after a push (see
-# .claude/skills/loop-engineering/SKILL.md). Keep REVIEW.md's do-not-report
-# list in sync with exactly what these jobs enforce.
+# The project's fast merge-gating CI: lint, type-check, unit tests, a drift
+# check over the committed Payload artifacts, and the documentation
+# validators — on every pull request and on pushes to the default branch.
+# This is the CI the loop-engineering change loop's tail polls after a push
+# (see .claude/skills/loop-engineering/SKILL.md). Keep REVIEW.md's
+# do-not-report list in sync with exactly what these jobs enforce.
 # The heavier e2e + deploy pipeline lives in check-and-deploy.yaml.
 
 on:
@@ -109,4 +109,35 @@ jobs:
           git diff --exit-code -- 'app/(payload)/admin/importMap.js' payload/types.ts || {
             echo '::error::Committed Payload artifacts are stale. Run `npx payload generate:importmap` and `npx payload generate:types`, then commit the result.'
             exit 1
+          }
+
+  docs:
+    name: Documentation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup Node
+        # No `cache: npm`, because no install follows for it to speed up.
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: package.json
+      - name: Check Documentation
+        # Deliberately no `npm ci`: the validators import only the Node
+        # standard library, and `npm run` executes a script without an
+        # install, so this job costs checkout plus Node setup and little else.
+        # The runner separates a documentation finding (1) from a gate that
+        # could not run at all (2) — an installed skill renamed out from under
+        # it, or a missing docs/index.md — so the two are annotated apart and
+        # the original code is re-raised.
+        run: |
+          npm run check:docs || {
+            code=$?
+            if [ "$code" -eq 2 ]; then
+              echo '::error::The documentation gate could not run, so nothing under docs/ was checked. See the step log for the path it expected.'
+            else
+              echo '::error::Documentation checks reported findings under docs/. Run `npm run check:docs` locally and fix what it reports.'
+            fi
+            exit $code
           }

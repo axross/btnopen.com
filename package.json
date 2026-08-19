@@ -27,7 +27,8 @@
     "migrate:up": "bash -o pipefail -c 'payload migrate | pino-pretty'",
     "lint": "biome check",
     "format": "biome format --write",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check:docs": "node scripts/check-docs.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
