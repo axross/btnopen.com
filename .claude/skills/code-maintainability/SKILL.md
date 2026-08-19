@@ -25,17 +25,25 @@ See [naming-and-organization.md](./references/naming-and-organization.md) for:
 - Placing components, helpers, and data-access modules in the correct directory tier (route-local before group-shared before global), with a decision flowchart for the tier
 - Following the project's own routing convention, if it defines one, and co-locating a route's required sibling files (props/types, not-found, social-image)
 - Matching identifier names and casing to the conventions in and around the changed file
-- Falling back to a stated vocabulary — `is<Noun>`, `is<Adjective>`, `<pastParticiple>At`, `<verb>In`, and a plural reserved for list-shaped values — where the project defines no convention of its own
+- The fallback identifier vocabulary for a name nothing else governs, and how it yields to a project convention, an owning capability, or a platform/host API the value crosses into
+
+**Guidelines:**
+
+- MUST read [naming-and-organization.md](./references/naming-and-organization.md) before naming a file, placing a module in a directory tier, adding a route's co-located sibling files, or naming an identifier that no project convention, owning capability, or platform API already governs.
 
 ## Abstraction Boundaries
 
 See [abstraction-boundaries.md](./references/abstraction-boundaries.md) for:
 
-- Judging what belongs inside one unit by its cohesion — functional for a function or class, sequential or communicational as the floor for a module bundling several jobs — and reading the unit's own name as the test
+- Deciding what belongs inside one function, class, or module, and why the cohesion scale is non-linear — functional far stronger than the rest, coincidental and logical far weaker than the intermediate levels
 - Placing new shared logic at the lowest tier that has more than one caller (route-local before group-shared before global)
 - Splitting the server / client boundary per the project's own component convention, if it defines one
 - Keeping a domain-specific pipeline (such as a content-rendering chain) behind its single owning module, per the project's own domain convention, if it defines one
 - Keeping tier imports pointed the right way, so shared code never depends on route-local code
+
+**Guidelines:**
+
+- MUST read [abstraction-boundaries.md](./references/abstraction-boundaries.md) before deciding what belongs inside one function, class, or module, or before judging where a change put it.
 
 ## Complexity and Readability
 
@@ -44,8 +52,13 @@ See [complexity-and-readability.md](./references/complexity-and-readability.md) 
 - Staying within the project's configured linter and complexity budget instead of silently bypassing it
 - Giving magic numbers and strings a named constant or design token, reserving an inline lint-suppression directive (with a justifying comment) for the rare justified case
 - Removing dead code (unused imports, unreachable branches, commented-out blocks)
-- Writing an implementation that explains itself — named intermediate steps, types carrying the shape of the data, and a boundary doc-comment that makes a unit usable without reading it
+- Why a comment is the fallback rather than the plan, and why a unit, a nullability, or a bound's inclusivity belongs in the type or the name before it belongs in a comment
+- Why a boundary doc-comment that has to describe implementation details signals a shallow interface, not a well-documented one
 - Deferring doc-comment, restating-comment, and comment-voice rules to the project's development conventions, and extracting a repeated inline type into a named alias in a statically-typed language
+
+**Guidelines:**
+
+- MUST read [complexity-and-readability.md](./references/complexity-and-readability.md) before adding a literal constant, a comment, or a doc-comment on a module or domain boundary, before leaving a function past the project's configured complexity or length budget, and before removing or keeping code that looks dead.
 
 ## Scope Discipline
 

@@ -64,13 +64,26 @@ See [body-content-style.md](./references/body-content-style.md) for:
 
 ## Progressive Disclosure
 
+A rule is **load-bearing** when an agent that loads `SKILL.md` and opens no reference would produce wrong output for want of it — held before the work starts, not looked up once the reader already knows the question exists. That test still sorts a skill's material, but its consequence is a conditional read obligation rather than a relocation: a load-bearing rule's own statement stays in its reference, and `SKILL.md` carries an RFC-2119 obligation to read that reference before the work its rule governs. A reference nobody is told to read never gets read; a `SKILL.md` that states every rule directly cannot be tree-shaken by the sessions that will never touch most of them. This test is itself load-bearing for a skill's author, so it is stated here as a rule rather than left behind the pointer below.
+
 See [progressive-disclosure.md](./references/progressive-disclosure.md) for:
 
 - deciding when a skill should stay single-file or split into `references/`
+- the load-bearing test's full sorting table, and how it decides whether a reference earns a conditional read obligation
 - the size thresholds that signal a skill or reference file has grown too large
-- using the parent routing-section format: `## Topic`, `See [file.md](./references/file.md) for:`, then descriptive situation bullets
+- using the parent routing-section format: `## Topic`, `See [file.md](./references/file.md) for:`, descriptive situation bullets, then a `**Guidelines:**` block carrying the read obligation
+- wording a read obligation's triggering condition narrowly enough to be skippable
 - stating the fact a routing bullet points at — the flag, limit, or rule by name — instead of announcing that one exists
 - keeping parent routing bullets free of RFC-2119-style requirement keywords so they remain routing cues, not duplicated rules
+- the one case where a rule's own statement stays in `SKILL.md` instead of moving to its reference
+
+**Guidelines:**
+
+- MUST treat a rule as load-bearing when an agent that loads `SKILL.md` alone would produce wrong output for want of it — a fixed order, a closed set, or a constraint whose violation is not self-evident from the output — and as elaboration otherwise.
+- MUST place a load-bearing rule's own statement, its RFC-2119 bullets, and everything that elaborates it in the reference file that governs it, not in `SKILL.md`.
+- MUST give `SKILL.md` a `**Guidelines:**` block, placed after a reference's routing list, carrying one RFC-2119 bullet per reference that names the reference and states the condition — narrow enough to be skippable — under which it MUST be read.
+- MUST NOT restate a load-bearing rule's statement or its RFC-2119 bullets in `SKILL.md` once its reference states them, except under the carve-out below.
+- MUST keep a rule's own statement in `SKILL.md`, never moved to a reference, when the rule's triggering condition is unconditional within its own skill's scope — a pointer that would fire on every turn costs a read and shakes nothing.
 
 ## Cross-Referencing and Discovery
 
