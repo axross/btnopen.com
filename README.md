@@ -67,6 +67,7 @@ contributors and agents alike. `package.json` pins Node.js `>=24.0.0` and npm
 | `npm run format` | Formats code and documentation with Biome. | After every set of edits, before committing. |
 | `npm run lint` | Runs `biome check` — formatting and lint rules together. | After formatting; fix every reported error before finishing. |
 | `npm run typecheck` | Runs `tsc --noEmit`. Needs no prior build. | After any change to TypeScript signatures, types, or imports. |
+| `node scripts/check-docs.mjs` | Runs every documentation validator the installed `living-project-documentation` skill ships against [`docs/`](docs/index.md), and fails the gate if any of them cannot run. Invoked directly rather than through an npm script, and needs no `npm install`. | After adding or removing a document under `docs/`, editing one's links, adding a spec, or writing or superseding a decision record. |
 | `npm run test:unit` | Runs the Vitest unit suite once, without entering watch mode. | When a change affects code the unit suite covers. |
 | `npm run test:e2e` | Runs the Playwright end-to-end suite. | When a change affects a UI output surface or e2e coverage. |
 | `npm run test:e2e -- --update-snapshots` | Regenerates Playwright snapshots for the local platform. | Only when a visual change is intentional — pair it with the reason. |
@@ -77,12 +78,13 @@ contributors and agents alike. `package.json` pins Node.js `>=24.0.0` and npm
 | `npm run migrate:create` | Creates a migration after a schema change. | Immediately after changing a Payload collection schema. |
 | `npm run migrate:up` | Applies pending migrations to the selected database. | Locally, before testing a schema change. |
 
-`npm run lint`, `npm run typecheck`, `npm run test:unit`, and the **Payload
-Artifacts** drift check are the four checks CI gates a merge on; the e2e suite and
-its scenario-coverage gate run after merge, on `main`. Never edit an
-already-applied migration file — create a new one instead. If a required command
-cannot be run, say so — naming the command, the reason, and the residual risk —
-rather than presenting the change as fully verified.
+`npm run lint`, `npm run typecheck`, `npm run test:unit`,
+`node scripts/check-docs.mjs`, and the **Payload Artifacts** drift check are the
+five checks CI gates a merge on; the e2e suite and its scenario-coverage gate
+run after merge, on `main`.
+Never edit an already-applied migration file — create a new one instead. If a
+required command cannot be run, say so — naming the command, the reason, and the
+residual risk — rather than presenting the change as fully verified.
 
 ## Where everything else lives
 

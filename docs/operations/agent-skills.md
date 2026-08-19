@@ -41,6 +41,15 @@ absent from `skills-lock.json` MUST NOT be added to `.claude/skills/`: the
 lockfile describes the directory's entire contents, and that correspondence is
 what makes drift detectable.
 
+One installed skill is load-bearing for CI. The **Documentation** job in
+[`merge-checks.yaml`](../../.github/workflows/merge-checks.yaml) reaches the
+validator scripts under `.claude/skills/living-project-documentation/scripts/`
+by path and runs them against `docs/`. A refresh that renames or removes that
+skill therefore turns the job red rather than letting it pass over an empty
+list: [`scripts/check-docs.mjs`](../../scripts/check-docs.mjs) finds no
+validator and exits 2, naming the path it expected. Such a refresh MUST repoint
+that runner in the same change.
+
 ## Deviations and Gaps
 
 Two different things route here, and they resolve the same way. A **deviation**
