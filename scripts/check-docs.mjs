@@ -19,6 +19,11 @@
  * which is why the Documentation job in `.github/workflows/merge-checks.yaml`
  * needs no dependency install.
  *
+ * A validator that throws would otherwise be a third silence, quieter than
+ * those two: Node exits 1 on an uncaught exception, which is also how a
+ * validator reports findings. `validator-crash-guard.mjs` is preloaded into
+ * each one so the two cases end with different codes.
+ *
  * Exit codes: 0 every validator passed.
  *             1 at least one validator reported findings.
  *             2 the gate could not run as intended — no validators discovered,
@@ -43,9 +48,16 @@ const VALIDATORS_DIR = join(
 const DOCS_DIR = join(repositoryRoot, "docs");
 const DOCS_MARKER = join(DOCS_DIR, "index.md");
 
+const CRASH_GUARD = new URL("./validator-crash-guard.mjs", import.meta.url)
+	.href;
+
 const EXIT_PASS = 0;
 const EXIT_FINDINGS = 1;
 const EXIT_GATE_BROKEN = 2;
+
+// what validator-crash-guard.mjs makes a validator that threw exit with; kept
+// out of 0, 1, and 2, which are a validator's whole vocabulary.
+const EXIT_VALIDATOR_CRASHED = 70;
 
 /**
  * Report a gate-level failure and yield the exit code that carries it.
@@ -74,6 +86,24 @@ function discoverValidators() {
 	} catch (error) {
 		return { names: [], error };
 	}
+}
+
+/**
+ * Say how a validator ended when it did not reach a verdict, so the log names
+ * the cause rather than a bare number a reader has to look up.
+ *
+ * @param {number | null} status
+ * @param {string | null} signal
+ * @returns {string}
+ */
+function describeAbnormalExit(status, signal) {
+	if (status === null) {
+		return `was killed on ${signal} without checking docs/.`;
+	}
+	if (status === EXIT_VALIDATOR_CRASHED) {
+		return "threw the error above instead of checking docs/. The validator is at fault, not docs/.";
+	}
+	return `exited with ${status} without checking docs/.`;
 }
 
 /**
@@ -110,7 +140,7 @@ function main() {
 
 		const { status, signal } = spawnSync(
 			process.execPath,
-			[join(VALIDATORS_DIR, validator), DOCS_DIR],
+			["--import", CRASH_GUARD, join(VALIDATORS_DIR, validator), DOCS_DIR],
 			{ stdio: "inherit" },
 		);
 
@@ -120,8 +150,7 @@ function main() {
 			// a validator's own bad-invocation code, a crash, or a signal: the
 			// check did not run, which is this gate's failure rather than docs/'s.
 			couldNotRun += 1;
-			const outcome = status === null ? `on ${signal}` : `with ${status}`;
-			console.error(`✗ ${validator} exited ${outcome} without checking docs/.`);
+			console.error(`✗ ${validator} ${describeAbnormalExit(status, signal)}`);
 		}
 	}
 
