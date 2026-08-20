@@ -182,7 +182,7 @@ export function MenuItem({
   label,
   style,
   ...props
-}: ComponentPropsWithoutRef<typeof View> & {
+}: ComponentPropsWithRef<typeof View> & {
   icon: ComponentType<{ color?: string; size?: number }>;
   label: string;
 }): JSX.Element {

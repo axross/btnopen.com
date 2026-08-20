@@ -18,11 +18,12 @@ See [code-quality.md](./references/code-quality.md) for:
 
 - running the format → lint → fix → re-lint loop after any change
 - language compliance and import hygiene
+- what makes text a comment when the carrying format has no comment syntax of its own, and why a field a program reads as data stays out of scope
 - the comment voice — lowercase prose, no all-caps emphasis, and what keeps its real casing
 - the admissibility test a comment must clear — nothing recoverable by reading the code or following it — and deletion rather than rewording as the fix
-- doc-comment and explanatory-comment conventions in source files, including the line-comment form and the two-to-four-line ceiling
-- the `TODO(#123):` convention, the tracked follow-up it must resolve to, and the standardized forms that may still carry an identifier or a URL
-- where a specification, a domain term, or a rationale goes once a comment may no longer carry it
+- doc-comment and explanatory-comment conventions in source files, including the line-comment form and the ~300-character prose budget on an explanatory comment
+- the `TODO(#123):` convention, the unfinished-code test that earns a site the marker, the tracked follow-up it must resolve to, and the standardized forms that may still carry an identifier or a URL
+- where a specification, a domain term, a decision's rationale, or an incompressible file-local "why" goes once a comment may no longer carry it
 
 ## Change Management
 

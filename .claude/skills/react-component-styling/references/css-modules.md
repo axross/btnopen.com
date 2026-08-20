@@ -6,6 +6,8 @@ Apply this reference to a web component that already uses CSS Modules, and to a 
 
 Every module has the same three-part frame: the cascade layer that fixes its precedence, the scope that stops its selectors reaching other components, and a zero-specificity scope root that a consumer's class can override with one class.
 
+Both at-rules in that frame gate their own contents: a browser that does not parse `@layer` or `@scope` drops the whole block rather than the one rule it did not understand, and renders the component unstyled. That makes the skeleton an adoption decision taken once against the project's browser support matrix — see [feature-support.md](./feature-support.md) — rather than something guarded per use, and it makes the two of them the floor every other feature in the module is measured against.
+
 **Example:**
 
 ```css
@@ -34,6 +36,7 @@ import css from "./blog-post-header.module.css";
 
 - MUST place every component rule inside `@layer components`, and MUST NOT leave a rule outside a layer — an unlayered rule outranks every layered one regardless of specificity.
 - MUST wrap a component's rules in `@scope (.<componentRoot>)` so its selectors cannot match another component's markup.
+- MUST check `@layer` and `@scope` against the project's own browser support matrix before adopting this skeleton, and record the decision. No fallback can be written inside either block — a browser that drops the block never reaches anything in it — so a matrix that cannot accommodate them needs a different structure rather than a degraded version of this one.
 - MUST declare the scope root through `:where(:scope)` rather than `:scope`. The bare form carries specificity, which defeats the consumer-override contract; a consumer's single class must be enough to win.
 - MUST import the module under one consistent local name across the project (`css`), so a reader recognises a module reference at a glance.
 - MUST NOT nest one `@scope` inside another.
@@ -143,7 +146,7 @@ The subtle failure is the timeline resolving to the wrong scroller: [`animation-
 
 **Guidelines:**
 
-- MUST wrap any use of a scroll timeline in `@supports (animation-timeline: scroll())`, and MUST author the un-animated resting state so it is a correct fallback rather than an accident.
+- MUST wrap any use of a scroll timeline in `@supports (animation-timeline: scroll())`, and MUST author the un-animated resting state so it is a correct fallback rather than an accident. What earns the guard is the feature's interoperability against the project's support matrix, not the property being unfamiliar — see [feature-support.md](./feature-support.md), and re-check that interoperability rather than assuming the premise behind this rule still holds.
 - MUST use a named `scroll-timeline` plus `timeline-scope` when the animated element is an ancestor of the scroll container rather than inside it; the anonymous form resolves to the wrong scroller.
 - MUST confirm the element consuming a timeline is structurally related to the intended scroll container before using the anonymous form. A silent fall-through to the viewport is the failure this rule prevents.
 - SHOULD name a timeline with a component-specific prefix so a second component adopting the pattern cannot collide.
@@ -158,4 +161,4 @@ Each property below removes a value the stylesheet would otherwise keep in sync 
 - MUST use `currentColor` for SVG strokes and fills that should track surrounding text colour.
 - SHOULD prefer `stretch` to `100%` for filling a parent axis, and the dynamic viewport units (`dvh`, `dvi`, `svh`) to `vh` for viewport-relative sizing.
 - MAY use line- and character-relative units where they express the intent directly — `1lh` for vertical rhythm that tracks the current line box, `1ch` for a monospace column width.
-- MUST guard a property whose absence changes layout rather than polish with `@supports`, and MUST author the unguarded state as a usable fallback.
+- MUST guard a property whose absence changes layout rather than polish with `@supports` once the project's support matrix calls for a guard at all, and MUST author the unguarded state as a usable fallback. Interoperability decides whether to guard and consequence decides what the fallback must do; [feature-support.md](./feature-support.md) owns the pair.

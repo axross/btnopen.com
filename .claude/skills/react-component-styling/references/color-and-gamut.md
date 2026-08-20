@@ -103,9 +103,15 @@ The two schemes share a lightness scale that inverts end to end: step 0 is the l
   - **Browser- and OS-level primitives** — the colour-scheme declaration, scrollbar colours, selection colours — which are declared once at the root and never per surface.
 - MUST treat any third category as a design smell and re-examine the role choice before adding a branch.
 
-## Wide-Gamut Colour with an sRGB Fallback
+## Wide-Gamut Colour, and When It Needs an sRGB Fallback
 
-Prefer the widest colour format the platform can express, and fall back to sRGB. Two separate mechanisms are involved and conflating them is the usual mistake:
+Prefer the widest colour format the platform can express. Whether that format also needs an sRGB fallback is **not** a property of the format — it is decided against the project's own browser support matrix, and against what else already gates the surface the fallback would serve. [feature-support.md](./feature-support.md) owns that decision; this section owns how the fallback is written once the decision calls for one.
+
+The reason it matters here rather than anywhere else in the skill is scale. The ramp above mandates all thirteen steps for every scheme, in both light and dark, across at least two schemes, plus `text.onSolid` and a parallel alpha ramp for each — so an unconditional fallback is a second declaration for every one of those values, not one line. And a partial fallback is inert rather than partial, for the reason the custom-property rule below gives: any unguarded declaration takes down the colours of everything that reads it, regardless of what the guarded ones do.
+
+The two wide-gamut formats also move together rather than separately. Verified on **2026-08-20**, [`oklch()`](https://web-platform-dx.github.io/web-features-explorer/features/oklab/) and [`color()`](https://web-platform-dx.github.io/web-features-explorer/features/color-function/) were both widely available since 2025-11-09 and both floored at Chrome and Edge 111 and Firefox 113 — so no browser parsed one and not the other. Re-check that before relying on it; two features that coincide today can diverge.
+
+Two separate mechanisms are involved and conflating them is the usual mistake:
 
 - **`@supports`** answers _does this browser understand this colour syntax?_ It is how a fallback is written.
 - **`@media (color-gamut: p3)`** answers _can this display show a wider gamut than sRGB?_ It is how a deliberate enhancement is written — not a fallback.
@@ -123,7 +129,7 @@ A third fact removes most of the work: `oklch()` and `color(display-p3 …)` are
 }
 ```
 
-**Example — the feature-query fallback, for a token:**
+**Example — the feature-query fallback, for a token, where the support matrix calls for one:**
 
 ```css
 :root {
@@ -139,8 +145,10 @@ A third fact removes most of the work: `oklch()` and `color(display-p3 …)` are
 
 **Guidelines:**
 
-- MUST author colour in a wide-gamut format (`oklch()`, or `color(display-p3 …)`) and MUST provide an sRGB fallback for browsers that do not parse it.
-- MUST use the feature-query form (`@supports`) when the colour is assigned to a custom property; the cascade form does not work there, because an unparseable value on a custom property is not discarded at parse time the way a real property's is.
+- MUST author colour in a wide-gamut format (`oklch()`, or `color(display-p3 …)`).
+- MUST decide whether that format needs an sRGB fallback per [feature-support.md](./feature-support.md), rather than from the format itself: required where the project's support matrix includes a browser that does not parse it and can still render the surface the fallback serves, and dead code where it does not.
+- MUST take that decision once for both formats rather than separately for each, for as long as the profile coincidence stated above holds — and MUST re-check the coincidence rather than assume it, since two features aligned today can diverge.
+- MUST use the feature-query form (`@supports`) when a fallback is required and the colour is assigned to a custom property; the cascade form does not work there, because an unparseable value on a custom property is not discarded at parse time the way a real property's is.
 - MAY use the cascade form (sRGB declaration followed by the wide-gamut one) when assigning directly to a real property.
 - MUST NOT use `@media (color-gamut: p3)` as a fallback mechanism — it describes the display, not the browser, and a browser that cannot parse the colour will fail inside the query just as it would outside it.
 - MUST keep every colour in one space within a project. Mixing `oklch()` with `hsl()` or hex produces visible hue shifts wherever the two meet, including across a fallback boundary.

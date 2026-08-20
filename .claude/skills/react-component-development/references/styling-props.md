@@ -60,7 +60,7 @@ Native styles compose as an **array**, evaluated left to right, with the consume
 export function Card({
   style,
   ...props
-}: ComponentPropsWithoutRef<typeof View>): JSX.Element {
+}: ComponentPropsWithRef<typeof View>): JSX.Element {
   return <View style={[styles.card, style]} {...props} />;
 }
 ```

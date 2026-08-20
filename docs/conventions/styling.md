@@ -266,3 +266,20 @@ not on short labels — titles, tags, timestamps.
   the role layer existed. Correcting them means moving colour on several surfaces
   at once, so it is a design change with its own issue and MUST NOT be made as a
   rename in passing.
+- `variables.css` assigns 55 `oklch()` values to custom properties and guards
+  none with a gamut `@supports`. That is deliberate and, since the
+  React-component-styling capability gained its feature-support reference, no
+  longer a deviation: whether a colour needs an sRGB fallback is decided against
+  what else gates the surface, and every component rule here sits inside
+  `@scope`, which is the less interoperable feature. On **2026-08-20**,
+  `oklch()` was widely available (Chrome/Edge 111, Firefox 113, Safari 15.4)
+  against `@scope` newly available (Chrome/Edge 143, Firefox 146, Safari 26.4),
+  so a browser too old for the colour applies no component rule at all. A
+  fallback would buy a correctly coloured unstyled page. Re-check that ordering
+  before relying on it. A **partial** fallback MUST NOT be added: an unparseable
+  `oklch()` invalidates a custom property at computed-value time, so anything
+  short of the whole palette leaves the remainder resolving to `unset` and takes
+  the page's colours with it. Adopting a whole-palette fallback would also
+  collapse the single brand-hue knob into per-scheme literals, so it SHOULD be a
+  standalone change with its own issue rather than part of one that happens to
+  touch `variables.css`.

@@ -43,6 +43,10 @@ See [error-handling.md](./references/error-handling.md) for:
 - Reporting caught errors before an early return, redirect, or fallback path
 - Top-level error boundaries and writing actionable error messages
 
+**Guidelines:**
+
+- MUST read [error-handling.md](./references/error-handling.md) before adding or moving a try-catch, before letting a catch block swallow, recover from, or rethrow what it caught, and before adding a top-level error boundary or writing the message an error carries.
+
 ## Error Tracking
 
 See [error-tracking.md](./references/error-tracking.md) for:
@@ -51,6 +55,10 @@ See [error-tracking.md](./references/error-tracking.md) for:
 - Which failures are worth capturing and which are ordinary control flow
 - Breadcrumbs, trace/replay sampling, and instrumentation boundaries
 - Keeping secrets and PII out of telemetry event context
+
+**Guidelines:**
+
+- MUST read [error-tracking.md](./references/error-tracking.md) before wiring an error-reporting service or its init module, before adding a capture call, a breadcrumb, or a sampling rate, and before attaching context to a reported event.
 
 ## Logging
 
@@ -61,6 +69,10 @@ See [logging.md](./references/logging.md) for:
 - Deriving module-scoped child loggers from one shared root logger
 - Structured context objects and "Started / Completed" message conventions
 
+**Guidelines:**
+
+- MUST read [logging.md](./references/logging.md) before adding a log call or choosing its level, and before configuring the root logger or deriving a module-scoped child from it.
+
 ## Metrics
 
 See [metrics.md](./references/metrics.md) for:
@@ -69,6 +81,10 @@ See [metrics.md](./references/metrics.md) for:
 - Choosing between a counter, a gauge, and a distribution, and declaring the unit
 - Keeping labels low-cardinality, and the identifiers that must never become one
 - Emitting through one wrapper that is gated, non-blocking, and cannot throw
+
+**Guidelines:**
+
+- MUST read [metrics.md](./references/metrics.md) before emitting a counter, gauge, or distribution, before attaching a label to one, and before adding the wrapper a metric is emitted through.
 
 ## Product Event Tracking
 
@@ -80,3 +96,7 @@ See [product-event-tracking.md](./references/product-event-tracking.md) for:
 - Emitting where the fact becomes true, including the failure path and the server-side case
 - Identity calls, reset on logout, session definitions, and consent-gated initialization
 - Asserting an event in tests, and migrating or retiring one without emptying a chart
+
+**Guidelines:**
+
+- MUST read [product-event-tracking.md](./references/product-event-tracking.md) before naming, adding, renaming, or retiring a product event, before choosing its properties or where the call sits, and before writing an identity, reset, or consent-gated initialization call.

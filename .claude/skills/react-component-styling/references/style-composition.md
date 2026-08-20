@@ -63,7 +63,7 @@ export function Snippet({
 export function Card({
   style,
   ...props
-}: ComponentPropsWithoutRef<typeof View>): JSX.Element {
+}: ComponentPropsWithRef<typeof View>): JSX.Element {
   return <View style={[styles.card, style]} {...props} />;
 }
 ```
