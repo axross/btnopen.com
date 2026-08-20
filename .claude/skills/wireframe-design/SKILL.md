@@ -178,3 +178,11 @@ See [responsive-and-platform.md](./references/responsive-and-platform.md) for:
 
 - wireframing mobile-first at real device scale and thumb reach
 - setting breakpoints from content and adapting navigation per platform
+
+**Guidelines:**
+
+- MUST read [fidelity-and-intent.md](./references/fidelity-and-intent.md) before choosing how rough or finished a round should be, and before judging whether a set of screens is solved enough to put in front of a reviewer.
+- MUST read [process-and-collaboration.md](./references/process-and-collaboration.md) before deciding how many alternatives to produce, what to declare out of scope, or when to put a round in front of collaborators or users.
+- MUST read [structure-and-content.md](./references/structure-and-content.md) before laying out a screen's regions and hierarchy, before choosing spacing over an enclosure to group them, and before filling a placeholder with copy.
+- MUST read [flow-and-annotation.md](./references/flow-and-annotation.md) before connecting screens into a flow, and before adding a callout that states intent rather than UI.
+- MUST read [responsive-and-platform.md](./references/responsive-and-platform.md) before wireframing a second viewport width, setting a breakpoint, or adapting a navigation pattern to a platform.

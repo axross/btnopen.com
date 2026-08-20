@@ -6,6 +6,8 @@ Apply this reference when declaring a component's props, destructuring them, nam
 
 A component's props type starts from the element it actually renders, so every attribute that element accepts passes through without being re-declared. Custom props are intersected onto that base.
 
+The helper that supplies that base varies with how the root element carries `ref`. An intrinsic web element's type already includes it; a native primitive's does not. So on React 19 and later, where `ref` is an ordinary prop the spread has to be able to carry (see [Refs](#refs)), a native primitive takes the variant that adds it rather than the plain or without-ref form.
+
 **Example:**
 
 ```tsx
@@ -23,14 +25,15 @@ function JobListItem({
   job,
   style,
   ...props
-}: ComponentPropsWithoutRef<typeof View> & { job: Job }): JSX.Element {
+}: ComponentPropsWithRef<typeof View> & { job: Job }): JSX.Element {
   // …
 }
 ```
 
 **Guidelines:**
 
-- MUST base the props type on the root rendered element: `ComponentProps<"div">` for an intrinsic web element, `ComponentPropsWithoutRef<typeof Primitive>` for a native primitive, and `ComponentProps<typeof Component>` when the component wraps another component.
+- MUST base the props type on the root rendered element: `ComponentProps<"div">` for an intrinsic web element, `ComponentPropsWithRef<typeof Primitive>` for a native primitive on React 19 and later, and `ComponentProps<typeof Component>` when the component wraps another component.
+- MUST use `ComponentPropsWithoutRef<typeof Primitive>` for a native primitive instead when the host project targets an earlier React version, where `ref` is not an ordinary prop and reaches the root through that project's own forwarding mechanism rather than through the props type.
 - MUST intersect custom props onto that base with `&` rather than re-declaring the element's own attributes.
 - MUST declare the component's return type explicitly (`JSX.Element`, `JSX.Element | null`, or `null` for a component that renders nothing).
 - MUST `Omit` a base prop before redefining it, rather than shadowing it with an incompatible type.

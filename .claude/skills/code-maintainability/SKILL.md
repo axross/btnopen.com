@@ -67,3 +67,7 @@ See [scope-discipline.md](./references/scope-discipline.md) for:
 - Keeping the change matched to its stated goal — no drive-by refactors, per the project's development conventions
 - Flagging pre-existing problems separately instead of bundling them into this change
 - Justifying a new abstraction with two or more concrete call sites (YAGNI), and consolidating repeated logic only when it is truly the same concern (DRY without coupling unrelated callers)
+
+**Guidelines:**
+
+- MUST read [scope-discipline.md](./references/scope-discipline.md) before adding a new helper, prop, configuration option, or generic type parameter, before extracting or consolidating duplicated logic, and before touching a file the change's stated goal does not name.

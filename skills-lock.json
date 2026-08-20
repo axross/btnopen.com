@@ -5,7 +5,7 @@
       "source": "axross/skills",
       "sourceType": "github",
       "skillPath": "skills/agent-skill-authoring/SKILL.md",
-      "computedHash": "e07e1bdd222a7862bca68fbcce31cf5b52f73f4b66c6eb78ede2211f22d38f5f"
+      "computedHash": "90b4b039faefc0020f6d852e988156094d2c6ddffed31b39d4a3af961fce72de"
     },
     "agent-skill-management": {
       "source": "axross/skills",
@@ -23,7 +23,7 @@
       "source": "axross/skills",
       "sourceType": "github",
       "skillPath": "skills/code-maintainability/SKILL.md",
-      "computedHash": "c8773317aa8e0dd4de859ae9285b5cbef0cab9f8cd4426845ee50caab3159048"
+      "computedHash": "78c98594a00132b8831102db98fd7917874e04b70819daee287cbbb3fcd211df"
     },
     "code-review": {
       "source": "axross/skills",
@@ -41,7 +41,7 @@
       "source": "axross/skills",
       "sourceType": "github",
       "skillPath": "skills/end-to-end-testing/SKILL.md",
-      "computedHash": "cc8db69e7e10b2155d3c44c057e0b15193d0a22f6cb1f11673092d1243a83238"
+      "computedHash": "f5f0f4f13b7f90091c21fb1e185cdf32e4bf0726b3801535a26b179347d526cf"
     },
     "github-operation": {
       "source": "axross/skills",
@@ -65,7 +65,7 @@
       "source": "axross/skills",
       "sourceType": "github",
       "skillPath": "skills/loop-engineering/SKILL.md",
-      "computedHash": "cb340e9a5610b3f80a228d9b3a146208992c84b018886cc3cad5df71d5ec3549"
+      "computedHash": "9ea85928ac3b34b6520f51c4565c427fd964292d5236d5b9c016aadd3da201c7"
     },
     "next-app-development": {
       "source": "axross/skills",
@@ -89,19 +89,19 @@
       "source": "axross/skills",
       "sourceType": "github",
       "skillPath": "skills/quality-assurance/SKILL.md",
-      "computedHash": "4e69b2f6ca9a49d5c0adeb94752dd65fe3836a54f92726d59b06e850384c1921"
+      "computedHash": "6219e4545255a2ce9400449169fc420ea92981576c5e27e02e17a6e7bb2bf58b"
     },
     "react-component-development": {
       "source": "axross/skills",
       "sourceType": "github",
       "skillPath": "skills/react-component-development/SKILL.md",
-      "computedHash": "0ef5cdc6172245abb3bf2839b44e7d40042cd0ad8fa3ae41484f49f8be41e7ca"
+      "computedHash": "07efc2acf908dac73b9d2c0e6cd217fed14a3d9db6015932bfc8b88a30cfaa4b"
     },
     "react-component-styling": {
       "source": "axross/skills",
       "sourceType": "github",
       "skillPath": "skills/react-component-styling/SKILL.md",
-      "computedHash": "18c3d9507915e787c29d890186d538fbce41564eb2e8df9e3c5e94737bb87558"
+      "computedHash": "54d4eab71a1b9a2bd939f3b0921a5e37e50dc360f512beb383bbc92558e3561f"
     },
     "sentry-instrumentation": {
       "source": "axross/skills",
@@ -113,19 +113,19 @@
       "source": "axross/skills",
       "sourceType": "github",
       "skillPath": "skills/software-development/SKILL.md",
-      "computedHash": "70180d0b59e36bacaf7fcc86cbb5eed2fc4211fbdc37fda8578d7ec4fd6eb584"
+      "computedHash": "e04136f3399acfb66e300bd8cf196c3cb1b2882482f98fcf5efdf72ed69684da"
     },
     "software-instrumentation": {
       "source": "axross/skills",
       "sourceType": "github",
       "skillPath": "skills/software-instrumentation/SKILL.md",
-      "computedHash": "e81d884437eb1ab8584fc17f3b1bd922bdb4ba95201d7d3f9b16b2b0b12d429c"
+      "computedHash": "f54bdf7b8b75aa83ae6116442912806a660ad9f479e181a455281a3f4dc8495d"
     },
     "technical-document-authoring": {
       "source": "axross/skills",
       "sourceType": "github",
       "skillPath": "skills/technical-document-authoring/SKILL.md",
-      "computedHash": "757d6b587f77e9a9055d9567a0a2d6b2b13978bb06b773271b8ae7666256ae8e"
+      "computedHash": "a4eba2adc0234cb9ec0c2871b9a78ba1d2494ff3fedad235c6e6d1b4e79121ee"
     },
     "unit-testing": {
       "source": "axross/skills",
@@ -143,7 +143,7 @@
       "source": "axross/skills",
       "sourceType": "github",
       "skillPath": "skills/wireframe-design/SKILL.md",
-      "computedHash": "3d49b63957a3bf62d342c8dc52a20dbafc91db3f9d547f2e66073e600a581cd6"
+      "computedHash": "4f2f0d70c4dee54804f8082104d392925a2a4d27eacb1de607b72cde0d2525f7"
     },
     "zod-schema": {
       "source": "axross/skills",
