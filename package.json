@@ -41,7 +41,7 @@
     "@payloadcms/ui": "^3.81.0",
     "@sentry/nextjs": "^10.69.0",
     "@shikijs/langs": "^3.22.0",
-    "@shikijs/rehype": "^3.22.0",
+    "@shikijs/rehype": "^4.4.3",
     "@vercel/blob": "^2.3.2",
     "change-case": "^5.4.4",
     "clsx": "^2.1.1",
